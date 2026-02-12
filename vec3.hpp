@@ -1,5 +1,5 @@
-#ifndef __VEC_THREE_HPP__
-#define __VEC_THREE_HPP__
+#ifndef __VEC_3_HPP__
+#define __VEC_3_HPP__
 
 #include <cmath>
 #include <iostream>
