@@ -97,3 +97,9 @@ Subtracts `rhs.x`, `rhs.y`, & `rhs.z` from current vector's `x`, `y`, & `z` resp
 ### `Tvec3 operator-(const Tvec3& rhs)` 
 Completes the same computation as the `-=` overload but returns a copy of
 the current vector after subtraction without changing the current vector's values
+
+### `int ivec3::mag()`
+Specialized version of the `mag()` function for the `ivec3` class that rounds the magnitude to the nearest integer then casts it as an integer
+
+### `ivec3 ivec3::unit()`
+Specialized version of the `unit()` function for the `ivec3` class that rounds each component of the computed unit vector to the nearest integer and then casts each as an `int`
