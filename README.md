@@ -10,15 +10,51 @@ main.cpp is a demonstration program
 
 ## Description
 
-Class description
+`Matrix` is a 2D array of floats:
+- `MATRIX_MAX` defined to be 3, used for both dimensions
+- `float matrix[MATRIX_MAX][MATRIX_MAX]`
+- `x[a][c]` is defined to be a float
+    - *Note: Bracket access is not a public method
 
 ## Methods
 
-### return identifier(parameter list)
+### `Matrix()`
+Matrix constructor. Initializes all elements to 0 using list initialization
 
-Description of method
+### `Matrix(float _data[MATRIX_MAX][MATRIX_MAX])`
+Creates a new Matrix object with floats stored in 2D _data array
+- Uses a nested for loop to assign corresponding elements from `_data` to `components` array
 
-etc..
+### `Matrix(const Matrix& cp)`
+Copy constructor. Places values in `components` with values from Matrix `cp`
+- Uses a nested for loop to assign corresponding elements from `cp.components` to `components`
+
+### `Matrix& operator=(const Matrix& cp)`
+Replaces values in target Matrix's `components` with values from `cp.components`
+- If target Matrix and Matrix cp are equal, this function immediately returns
+- Uses a nested for loop to assign corresponding elements from `cp.components` to `components`
+
+### `bool operator==(Matrix rhs)`
+Checks Matrices for equality
+- Uses a nested for loop to check target Matrix's values against corresponding values in Matrix rhs
+- Returns false immediately if any values do not match between Matrices
+- Returns true if nested for loops cycle through entire Matrix
+
+### `bool operator!=(Matrix rhs)`
+Returns the inverse of operator==
+- Negates operator== in implementation
+- Refer to operator== documentation for description of funtionality
+
+### `Matrix operator*(Matrix rhs)`
+Performs matrix multiplication with the target matrix on the left hand side and Matrix rhs on the right hand side, returning a Matrix
+- Creates a vec3 for each row and column to utilize existing dot() functionality defined in vec3.hpp
+- Performs dot product between each row and column according to the steps of matrix multiplication
+- Creates a temporary 2D array of floats before returning a Matrix
+
+### `Matrix transpose()`
+Returns the transpose of target Matrix as a Matrix
+- Creates a temporary 2D array of floats before returning a Matrix
+
 
 # vec2
 
