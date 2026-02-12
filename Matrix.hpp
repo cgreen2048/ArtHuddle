@@ -10,7 +10,7 @@
 class Matrix {
     private:
         float components[MATRIX_MAX][MATRIX_MAX];
-        vec3& operator[](int);
+        vec3 operator[](int);
     
     public:
         Matrix();    
