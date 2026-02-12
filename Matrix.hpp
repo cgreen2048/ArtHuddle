@@ -1,9 +1,10 @@
 #ifndef __VEC_HPP__
 #define __VEC_HPP__
 
-#include <vec3.hpp>
+#include "vec3.hpp"
 #include <iostream>
 #include <string>
+#include <cmath>
 #define MATRIX_MAX 3
 
 class Matrix {
