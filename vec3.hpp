@@ -50,7 +50,11 @@ class Tvec3 {
         }
 
         Tvec3 unit() { 
-            T magnitudeReciprocal = 1 / mag();
+            T magnitude = mag();
+            if (magnitude == 0) {
+              return Tvec3{0,0,0};
+            }
+            T magnitudeReciprocal = 1 / magnitude;
             return Tvec3{x * magnitudeReciprocal, y * magnitudeReciprocal, z * magnitudeReciprocal};
         }
 
@@ -63,7 +67,7 @@ class Tvec3 {
         }
 
         bool operator==(Tvec3 rhs) {   
-            return x == rhs.x && y == rhs.y && z == rhs.z
+            return x == rhs.x && y == rhs.y && z == rhs.z;
         }
 
         bool operator!=(Tvec3 rhs) {   
@@ -107,7 +111,29 @@ class Tvec3 {
         Tvec3 operator-(Tvec3 rhs) {  
             return Tvec3(*this) -= rhs;
         }
+};
+
+typedef Tvec3<float> vec3;
+typedef Tvec3<int> ivec3;
+
+// Specialization for ivec3 magnitude: rounds to nearest integer then casts
+template<>
+inline int Tvec3<int>::mag() {
+  return static_cast<int>(std::round(std::sqrt(x * x + y * y + z * z)));
 }
 
-
+// Specialization for ivec3 unit: rounds to nearest integer and casts for each component
+template<>
+inline ivec3 Tvec3<int>::unit() {
+  float magnitude = mag();
+  if (magnitude == 0) {
+    return ivec3{0,0,0};
+  }
+  float magnitudeReciprocal = 1 / magnitude;
+  return ivec3{
+    static_cast<int>(std::round(x * magnitudeReciprocal)), 
+    static_cast<int>(std::round(y * magnitudeReciprocal)),
+    static_cast<int>(std::round(z * magnitudeReciprocal))
+  };
+}
 #endif
