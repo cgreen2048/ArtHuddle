@@ -34,7 +34,7 @@ Matrix& Matrix::operator=(const Matrix& cp) {
     return *this;
 }
 
-vec3 Matrix::operator[](int i) {
+vec3 Matrix::operator[](int i) {    // private method
     if ((i < 0) || (i > sizeof(components)/sizeof(components[0]))) {
         std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE\n";
         exit(1);
@@ -43,7 +43,7 @@ vec3 Matrix::operator[](int i) {
     return holder;
 }
 
-bool Matrix::operator==(Matrix rhs) {   // equality
+bool Matrix::operator==(Matrix rhs) {
     for (int i = 0; i < MATRIX_MAX; i++) {
         for (int j = 0; j < MATRIX_MAX; j++) {
             if (this->components[i][j] != rhs.components[i][j]) return false;
@@ -52,7 +52,7 @@ bool Matrix::operator==(Matrix rhs) {   // equality
     return true;
 }
 
-bool Matrix::operator!=(Matrix rhs) {   // non-equality
+bool Matrix::operator!=(Matrix rhs) {
     return !(*this == rhs);
 }
 
