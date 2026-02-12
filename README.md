@@ -1,35 +1,303 @@
 # SP26_Team02
 
 # main.cpp
+
 ## Description
+
 main.cpp is a demonstration program
 
 # Matrix
+
 ## Description
+
 Class description
 
 ## Methods
+
 ### return identifier(parameter list)
+
 Description of method
 
 etc..
 
 # vec2
+
 ## Description
-Class description
+
+`vec2` is a 2D mathematical vector storing:
+
+- `x` component (`float`)
+- `y` component (`float`)
+
+`ivec2` is the integer specialization of `vec2`, storing:
+
+- `x` component (`int`)
+- `y` component (`int`)
 
 ## Methods
-### return identifier(parameter list)
-Description of method
 
-etc..
+### Constructors
+
+### `Tvec2()`
+
+Default constructor. Initializes both components to zero and binds `x` and `y` as references to the underlying `components` array.
+
+- Initializes `components` to `{0, 0}`
+- Sets `x` to alias `components[0]`
+- Sets `y` to alias `components[1]`
+
+---
+
+### `Tvec2(const Tvec2& cp)`
+
+Copy constructor. Creates a new vector with the same component values as `cp`.
+
+- Uses constructor delegation to run the default constructor first
+- Copies `cp.x` and `cp.y` into this vector
+
+Parameters:
+- `cp` — the vector to copy from
+
+---
+
+### `Tvec2(T _x, T _y)`
+
+Value constructor. Creates a new vector with the given `x` and `y` component values.
+
+- Uses constructor delegation to run the default constructor first
+- Assigns `_x` to `x` and `_y` to `y`
+
+Parameters:
+- `_x` — initial x-component value  
+- `_y` — initial y-component value  
+
+---
+
+### Assignment
+
+### `Tvec2& operator=(const Tvec2& cp)`
+
+Copy assignment operator. Replaces this vector’s component values with `cp`’s component values.
+
+- Self-assignment safe (checks `this == &cp`)
+- Copies `cp.x` and `cp.y`
+- Returns `*this` to allow chaining
+
+Parameters:
+- `cp` — the vector to copy from
+
+Returns:
+- A reference to the modified vector (`*this`)
+
+---
+
+### Vector Math
+
+### `T dot(Tvec2 rhs)`
+
+Computes the dot product between this vector and `rhs`.
+
+Parameters:
+- `rhs` — the other vector
+
+Returns:
+- The dot product as type `T`
+
+---
+
+### `T mag()`
+
+Computes the Euclidean magnitude (length) of the vector.
+
+
+Returns:
+- The magnitude as type `T`
+
+---
+
+### `Tvec2 unit()`
+
+Returns the unit (normalized) vector pointing in the same direction as this vector.
+
+
+Returns:
+- A new `Tvec2` with components `(x / mag(), y / mag())`
+
+Notes:
+- If the magnitude is zero, this will divide by zero (undefined behavior).
+
+---
+
+### Comparison Operators
+
+### `bool operator==(Tvec2 rhs)`
+
+Checks component-wise equality with `rhs`.
+
+Returns:
+- `true` if `x == rhs.x` and `y == rhs.y`, otherwise `false`
+
+---
+
+### `bool operator!=(Tvec2 rhs)`
+
+Checks component-wise inequality with `rhs`.
+
+Returns:
+- `true` if at least one component differs, otherwise `false`
+
+---
+
+### Element Access
+
+### `T& operator[](int index)`
+
+Provides mutable access to a vector component using array-style indexing.
+
+- `index == 0` accesses `x`
+- `index == 1` accesses `y`
+
+Parameters:
+- `index` — the component position to access
+
+Returns:
+- A reference to the component at the specified index
+
+Notes:
+- Because this function returns a reference (`T&`), the returned component can be modified (e.g., `v[0] = 5;`).
+- If `index` is out of range, this implementation prints an error message and terminates the program.
+
+---
+
+### Arithmetic Operators
+
+### `Tvec2& operator+=(Tvec2 rhs)`
+
+Adds `rhs` to this vector (component-wise) and returns the modified vector.
+
+Parameters:
+- `rhs` — vector to add
+
+Returns:
+- A reference to the modified vector (`*this`)
+
+---
+
+### `Tvec2 operator+(Tvec2 rhs)`
+
+Returns the component-wise sum of this vector and `rhs`.
+
+Parameters:
+- `rhs` — vector to add
+
+Returns:
+- A new `Tvec2` equal to `(*this + rhs)`
+
+---
+
+### `Tvec2& operator*=(T scalar)`
+
+Multiplies this vector by a scalar and returns the modified vector.
+
+Parameters:
+- `scalar` — the scalar multiplier
+
+Returns:
+- A reference to the modified vector (`*this`)
+
+---
+
+### `Tvec2 operator*(T scalar)`
+
+Returns the result of scalar multiplication.
+
+Parameters:
+- `scalar` — the scalar multiplier
+
+Returns:
+- A new `Tvec2` equal to `(*this * scalar)`
+
+---
+
+### `Tvec2& operator-=(Tvec2 rhs)`
+
+Subtracts `rhs` from this vector (component-wise) and returns the modified vector.
+
+Parameters:
+- `rhs` — vector to subtract
+
+Returns:
+- A reference to the modified vector (`*this`)
+
+---
+
+### `Tvec2 operator-(Tvec2 rhs)`
+
+Returns the component-wise difference of this vector and `rhs`.
+
+Parameters:
+- `rhs` — vector to subtract
+
+Returns:
+- A new `Tvec2` equal to `(*this - rhs)`
+
+---
+
+### Template Specializations (`T = int`)
+
+The following member functions are explicitly specialized for `Tvec2<int>` (i.e., `ivec2`) to preserve integer return types while performing floating-point calculations internally.
+
+---
+
+### `int mag()`  *(specialization for `ivec2`)*
+
+Computes the Euclidean magnitude of the integer vector and returns the result rounded to the nearest integer.
+
+
+Implementation details:
+
+- Computes the magnitude using `std::sqrt`
+- Rounds the result using `std::round`
+- Casts the result to `int` using `static_cast<int>`
+
+Returns:
+- The rounded magnitude as an `int`
+
+Notes:
+- Uses `inline` to prevent multiple definition errors when included in header files.
+
+---
+
+### `ivec2 unit()`  *(specialization for `ivec2`)*
+
+Returns the unit vector of an integer vector with each component rounded to the nearest integer.
+
+Implementation details:
+
+- Computes the integer magnitude using the specialized `mag()`
+- Divides each component by the magnitude
+- Rounds each result using `std::round`
+- Casts each component to `int`
+
+Returns:
+- A new `ivec2` with rounded integer components
+
+Notes:
+- If the magnitude is zero, this results in division by zero (undefined behavior).
+- Because integer vectors cannot exactly represent most normalized vectors, rounding is required.
+
+
 
 # vec3
+
 ## Description
+
 Class description
 
 ## Methods
+
 ### return identifier(parameter list)
+
 Description of methods
 
 etc..
