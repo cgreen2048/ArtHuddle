@@ -1,5 +1,5 @@
-#ifndef __VEC_HPP__
-#define __VEC_HPP__
+#ifndef __MATRIX_HPP__
+#define __MATRIX_HPP__
 
 #include "vec3.hpp"
 #include <iostream>
