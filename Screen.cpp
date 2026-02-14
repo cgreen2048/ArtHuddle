@@ -43,7 +43,17 @@ Screen& Screen::operator=(const Screen& cp) {
 
 void Screen::colorOnePixel(vec2 coords, vec3 colors) {
     uint8_t* pixelPtr = static_cast<uint8_t*>(surface->pixels);
-    uint8_t* pixel = pixelPtr + coords.x * surface->format->BytesPerPixel + coords.y * surface->pitch;
-    uint32_t* pixel32 = reinterpret_cast<uint32_t>(pixel);
-    pixel32 = SDL_MapRGBA(surface->format, colors.x, colors.y, colors.z, ALPHA_VALUE);
+    uint8_t* pixel = pixelPtr 
+        + static_cast<int>coords.x * sizeof(uint32_t) 
+        + static_cast<int>coords.y * surface->pitch;
+    uint32_t* pixel32 = reinterpret_cast<uint32_t*>(pixel);
+    uint32_t pixelColor = SDL_MapRGBA(
+        surface->format, 
+        static_cast<int>colors.x, 
+        static_cast<int>colors.y, 
+        static_cast<int>colors.z, 
+        static_cast<int>ALPHA_VALUE
+    );
+    
+    *pixel32 = pixelColor;
 }
