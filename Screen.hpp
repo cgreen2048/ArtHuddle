@@ -2,11 +2,11 @@
 #define __SCREEN_HPP__
 
 #include <iostream>
-#include <cmath>
+#include <algorithm>
 #include <SDL3/SDL.h>
 #include "vec2.hpp"
 #include "vec3.hpp"
-#define ALPHA_VALUE 255
+#define MAX_COLOR_VALUE 255
 
 class Screen {
     private:
@@ -18,11 +18,41 @@ class Screen {
         Screen(const Screen&);
         ~Screen();
         Screen& operator=(const Screen&);
-        void colorOnePixel(vec2, vec3);
         void blitTo(SDL_Surface*);
         void drawBresenhamLine(ivec2, ivec2, ivec3);
-        void drawBox(ivec2, ivec2);
-        void drawBox(ivec3, ivec3);
+
+        template<typename T1, typename T2>
+        void colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors) {
+            uint8_t* pixelPtr = static_cast<uint8_t*>(surface->pixels);
+            uint8_t* pixel = pixelPtr 
+                + static_cast<int>(coords.x) * sizeof(uint32_t) 
+                + static_cast<int>(coords.y) * surface->pitch;
+            uint32_t* pixel32 = reinterpret_cast<uint32_t*>(pixel);
+            uint32_t pixelColor = SDL_MapRGBA(
+                surface->format, 
+                std::clamp(static_cast<int>(colors.x), 0, MAX_COLOR_VALUE), 
+                std::clamp(static_cast<int>(colors.y), 0, MAX_COLOR_VALUE), 
+                std::clamp(static_cast<int>(colors.z), 0, MAX_COLOR_VALUE), 
+                static_cast<int>(MAX_COLOR_VALUE)
+            );
+            
+            *pixel32 = pixelColor;
+        }
+
+        template<typename T1, typename T2, typename T3>
+        void drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors) {
+            int minX = std::clamp(static_cast<int>(std::min(min.x, max.x)), 0, width-1);
+            int maxX = std::clamp(static_cast<int>(std::max(min.x, max.x)), 0, width-1);
+            int minY = std::clamp(static_cast<int>(std::min(min.y, max.y)), 0, height-1);
+            int maxY = std::clamp(static_cast<int>(std::max(min.y, max.y)), 0, height-1);
+
+            for (int i = minX; i <= maxX; ++i) {
+                for (int j = minY; j <= maxY; ++j) {
+                    colorOnePixel(ivec2{i,j}, colors);
+                }
+            }
+        }
+
 };
 
 #endif
