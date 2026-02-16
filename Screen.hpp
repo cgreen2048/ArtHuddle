@@ -2,9 +2,10 @@
 #define __SCREEN_HPP__
 
 #include <iostream>
+#include <cmath>
 #include <SDL3/SDL.h>
-#include "vec2.h"
-#include "vec3.h"
+#include "vec2.hpp"
+#include "vec3.hpp"
 #define ALPHA_VALUE 255
 
 class Screen {
@@ -19,7 +20,7 @@ class Screen {
         Screen& operator=(const Screen&);
         void colorOnePixel(vec2, vec3);
         void blitTo(SDL_Surface*);
-        void drawBresenhamLine();
+        void drawBresenhamLine(ivec2, ivec2, ivec3);
         void drawBox(ivec2, ivec2);
         void drawBox(ivec3, ivec3);
 };
