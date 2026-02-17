@@ -12,7 +12,9 @@ class Screen {
     private:
         uint32_t width, height;
         SDL_Surface* surface = nullptr;
+        
     public:
+        void clearSurface();
         Screen();
         Screen(uint32_t, uint32_t);
         Screen(const Screen&);
@@ -23,12 +25,12 @@ class Screen {
 
         template<typename T1, typename T2>
         void colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors) {
-            uint8_t* pixelPtr = static_cast<uint8_t*>(surface->pixels);
+            uint8_t* pixelPtr = static_cast<uint8_t*>(this->surface->pixels);
             uint8_t* pixel = pixelPtr 
                 + static_cast<int>(coords.x) * sizeof(uint32_t) 
-                + static_cast<int>(coords.y) * surface->pitch;
+                + static_cast<int>(coords.y) * this->surface->pitch;
             uint32_t* pixel32 = reinterpret_cast<uint32_t*>(pixel);
-            const SDL_PixelFormatDetails *details =  SDL_GetPixelFormatDetails(surface->format);
+            const SDL_PixelFormatDetails *details =  SDL_GetPixelFormatDetails(this->surface->format);
             uint32_t pixelColor = SDL_MapRGBA(
                 details,
                 nullptr, 
@@ -43,14 +45,14 @@ class Screen {
 
         template<typename T1, typename T2, typename T3>
         void drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors) {
-            int minX = std::clamp(static_cast<int>(std::min(min.x, max.x)), 0, static_cast<int>(width-1));
-            int maxX = std::clamp(static_cast<int>(std::max(min.x, max.x)), 0, static_cast<int>(width-1));
-            int minY = std::clamp(static_cast<int>(std::min(min.y, max.y)), 0, static_cast<int>(height-1));
-            int maxY = std::clamp(static_cast<int>(std::max(min.y, max.y)), 0, static_cast<int>(height-1));
+            int minX = std::clamp(static_cast<int>(std::min(min.x, max.x)), 0, static_cast<int>(this->width-1));
+            int maxX = std::clamp(static_cast<int>(std::max(min.x, max.x)), 0, static_cast<int>(this->width-1));
+            int minY = std::clamp(static_cast<int>(std::min(min.y, max.y)), 0, static_cast<int>(this->height-1));
+            int maxY = std::clamp(static_cast<int>(std::max(min.y, max.y)), 0, static_cast<int>(this->height-1));
 
             for (int i = minX; i <= maxX; ++i) {
                 for (int j = minY; j <= maxY; ++j) {
-                    colorOnePixel(ivec2{i,j}, colors);
+                    this->colorOnePixel(ivec2{i,j}, colors);
                 }
             }
         }
