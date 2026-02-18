@@ -45,11 +45,12 @@ int screenTest() {
 			}
 		}
 
-		screen.drawBox(ivec2(X/4, Y/4), ivec2((3*X)/4, (3*Y)/4), ivec3(160, 75, 27));
-		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(X/2-X/2, Y/2-Y/2), ivec3(90, 150, 50));
-		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(X/2+X/2, Y/2-Y/2), ivec3(90, 150, 50));
-		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(X/2-X/2, Y/2+Y/2), ivec3(90, 150, 50));
-		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(X/2+X/2, Y/2+Y/2), ivec3(90, 150, 50));
+		// screen.drawBox(ivec2(X/4, Y/4), ivec2((3*X)/4, (3*Y)/4), ivec3(160, 75, 27));
+		screen.drawBox(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27));
+		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(0, 0), ivec3(90, 150, 50));
+		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(X - 1, 0), ivec3(90, 150, 50));
+		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(0, Y - 1), ivec3(90, 150, 50));
+		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(X - 1, Y - 1), ivec3(90, 150, 50));
 
 		screen.blitTo(SDL_GetWindowSurface(window));
 		SDL_UpdateWindowSurface(window);

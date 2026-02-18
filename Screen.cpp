@@ -103,6 +103,19 @@ void Screen::drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color) {
     int x1 = end.x;
     int y1 = end.y;
 
+    if ((x0 < 0) || (x0 > this->width - 1) || (y0 < 0) || (y0 > this->height - 1)) {
+        std::cerr << "Line start point is out of bounds\n";
+        return;
+    }
+    if ((x1 < 0) || (x1 > this->width - 1) || (y1 < 0) || (y1 > this->height - 1)) {
+        std::cerr << "Line end point is out of bounds\n";
+        return;
+    }
+    if ((color.x < 0) || (color.x > 255) || (color.y < 0) || (color.y > 255) || (color.z < 0) || (color.z > 255)) {
+        std::cerr << "Invalid color value\n";
+        return;
+    }
+
     int dx = std::abs(x1 - x0);
     int sx = x0 < x1 ? 1 : -1; // sign(+/-) of x
 
