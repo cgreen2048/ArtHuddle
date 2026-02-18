@@ -56,6 +56,45 @@ Returns the transpose of target Matrix as a Matrix
 - Creates a temporary 2D array of floats before returning a Matrix
 
 
+# Screen
+
+## Description
+`Screen` is a class representing an SDL_Surface with methods to draw to and color pixels on the surface. THhe surface can then be displayed using an SDL_Window.
+- `uint32_t width, height`: The width and height of the surface
+- `SDL_Surface* surface`: Holds a pointer to the SDL_Surface object
+
+## Methods
+
+### `blitTo(SDL_Surface*) const`
+Blits the current Screen object to the target surface
+- Verifies target surface exists
+- Uses SDL_BlitSurface to blit between surfaces
+
+### `colorOnePixel(const Tvec2<T1>, const Tvec3<T2>)`
+
+
+### `drawBox(Tvec2<T1>, Tvec2<T2>, Tvec3<T3>)`
+
+
+### `drawBresenhamLine(ivec2, ivec2, ivec3)`
+
+
+### `Screen()`
+
+
+### `Screen(uint32_t, uint_32)`
+
+
+### `Screen(const Screen&)`
+
+
+### `Screen& operator=(const Screen&)`
+
+
+### `~Screen()`
+
+
+
 # vec2
 
 ## Description

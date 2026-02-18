@@ -14,7 +14,6 @@ class Screen {
         SDL_Surface* surface = nullptr;
         
     public:
-        void clearSurface();
         Screen();
         Screen(uint32_t, uint32_t);
         Screen(const Screen&);
