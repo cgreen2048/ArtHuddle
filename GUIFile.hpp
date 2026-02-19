@@ -45,23 +45,26 @@ class GUIFile {
                 vec3 color;
             } typedef Line;
 
-            struct {
-                vec2 min;
-                vec2 max;
-                vec3 color;
-            } typedef Box;
+        struct {
+            vec2 min;
+            vec2 max;
+            vec3 color;
+        } typedef Box;
 
-            struct {
-                vec2 position;
-                vec3 color;
-            } typedef Point;
+        struct {
+            vec2 position;
+            vec3 color;
+        } typedef Point;
 
-            GUIFile();
-            const std::vector<Line>& getLines() const;
-            const std::vector<Box>&  getBoxes() const;
-            const std::vector<Point>& getPoints() const;
-            void readFile(std::string);
-            void writeFile(std::string);
+        GUIFile();
+        const std::vector<Line>& getLines() const;
+        const std::vector<Box>&  getBoxes() const;
+        const std::vector<Point>& getPoints() const;
+        void addLine(Line l);
+        void addBox(Box b);
+        void addPoint(Point p);
+        void readFile(std::string);
+        void writeFile(std::string);
 
         private:
             std::vector<Line> lines;

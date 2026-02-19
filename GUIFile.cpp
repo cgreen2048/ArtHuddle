@@ -24,6 +24,10 @@ const std::vector<GUIFile::Point>& GUIFile::getPoints() const {
     return points; 
 }
 
+void GUIFile::addLine(Line l) { lines.push_back(l); }
+void GUIFile::addBox(Box b) { boxes.push_back(b); }
+void GUIFile::addPoint(Point p) { points.push_back(p); }
+
 
 void GUIFile::readFile(std::string fileName) {
     std::ifstream inFile{fileName};
@@ -213,4 +217,87 @@ void GUIFile::readFile(std::string fileName) {
         }
     }
     return;
+}
+
+
+void GUIFile::writeFile(std::string fileName) {
+    std::ofstream out(fileName);
+    if (!out.is_open()) return;
+
+    out << "<layout>\n";
+
+    // Write lines
+    for (const auto& l : lines) {
+        out << "  <line>\n";
+
+        // write start vec2
+        out << "    <vec2>\n";
+        out << "        <x>" << l.start.x  << "</x>\n";
+        out << "        <y>" << l.start.y  << "</y>\n";
+        out << "    </vec2>\n";
+        
+        // write end vec2
+        out << "    <vec2>\n";
+        out << "        <x>" << l.end.x  << "</x>\n";
+        out << "        <y>" << l.end.y  << "</y>\n";
+        out << "    </vec2>\n";
+
+        // write color vec3
+        out << "    <vec3>\n";
+        out << "        <x>" << l.color.x  << "</x>\n";
+        out << "        <y>" << l.color.y  << "</y>\n";
+        out << "        <z>" << l.color.z  << "</z>\n";
+        out << "    </vec3>\n";
+
+        out << "  </line>\n";
+    }
+
+    // Write boxes
+    for (const auto& b : boxes) {
+        out << "  <box>\n";
+
+        // write min vec2
+        out << "    <vec2>\n";
+        out << "        <x>" << b.min.x  << "</x>\n";
+        out << "        <y>" << b.min.y  << "</y>\n";
+        out << "    </vec2>\n";
+        
+        // write max vec2
+        out << "    <vec2>\n";
+        out << "        <x>" << b.max.x  << "</x>\n";
+        out << "        <y>" << b.max.y  << "</y>\n";
+        out << "    </vec2>\n";
+
+        // write color vec3
+        out << "    <vec3>\n";
+        out << "        <x>" << b.color.x  << "</x>\n";
+        out << "        <y>" << b.color.y  << "</y>\n";
+        out << "        <z>" << b.color.z  << "</z>\n";
+        out << "    </vec3>\n";
+
+        out << "  </box>\n";
+    }
+
+    // // Write points
+    for (const auto& p : points) {
+        out << "  <point>\n";
+
+        // write position vec2
+        out << "    <vec2>\n";
+        out << "        <x>" << p.position.x  << "</x>\n";
+        out << "        <y>" << p.position.y  << "</y>\n";
+        out << "    </vec2>\n";
+        
+
+        // write color vec3
+        out << "    <vec3>\n";
+        out << "        <x>" << p.color.x  << "</x>\n";
+        out << "        <y>" << p.color.y  << "</y>\n";
+        out << "        <z>" << p.color.z  << "</z>\n";
+        out << "    </vec3>\n";
+
+        out << "  </point>\n";
+    }
+
+    out << "</layout>\n";
 }
