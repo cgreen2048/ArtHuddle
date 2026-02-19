@@ -6,6 +6,8 @@
 #include <stack>
 #include <fstream>
 #include <sstream>
+#include <vector>
+#include <algorithm>
 #include "vec2.hpp"
 #include "vec3.hpp"
 
@@ -36,20 +38,39 @@ const std::vector<std::string> OPENERS = {LAYOUT_OPEN, LINE_OPEN, BOX_OPEN, POIN
 const std::vector<std::string> CLOSERS = {LAYOUT_CLOSE, LINE_CLOSE, BOX_CLOSE, POINT_CLOSE, VEC2_CLOSE, VEC3_CLOSE, IVEC2_CLOSE, IVEC3_CLOSE, X_CLOSE, Y_CLOSE, Z_CLOSE};
 
 class GUIFile {
-    private:
-        // struct {
-        //     vec2 start;
-        //     vec2 end;
-        //     vec3 color;
-        // } typedef line;
-    
-    
-        // std::vector<std::vector<
-        // line stores vec2, vec2, vec3
     public:
-        GUIFile();
-        void readFile(std::string);
-        void writeFile(std::string);
+        struct {
+                vec2 start;
+                vec2 end;
+                vec3 color;
+            } typedef Line;
+
+            struct {
+                vec2 min;
+                vec2 max;
+                vec3 color;
+            } typedef Box;
+
+            struct {
+                vec2 position;
+                vec3 color;
+            } typedef Point;
+
+            GUIFile();
+            const std::vector<Line>& getLines() const;
+            const std::vector<Box>&  getBoxes() const;
+            const std::vector<Point>& getPoints() const;
+            void readFile(std::string);
+            void writeFile(std::string);
+
+        private:
+            std::vector<Line> lines;
+            std::vector<Box> boxes;
+            std::vector<Point> points;
+    
+        // Line stores vec2, vec2, vec3
+        
+
 };
 
 #endif

@@ -6,5 +6,4 @@ int main() {
     GUIFile x = GUIFile();
     
     x.readFile(name);
-
 }
