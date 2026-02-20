@@ -35,7 +35,24 @@ Draws a box on the target Screen object's SDL_Surface
 - Calls `colorOnePixel` for each coordinate in the bounds of the box in a double nested for loop
 
 ### `drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color)`
-# TODO ADD DESCRIPTION HERE
+Draws a line to the Target Screen object's SDL_Surface using the Bresenham algorithm
+- Uses 2D mathematical vectors to store the start and end points of the line
+- Will only draw on pixels that exist in the surface
+- Calls colorOnePixel for each pixel that exists on the line
+
+### `SDL_Surface* getSurface()`
+Returns the surface for comparisons
+
+### `uint32_t getHeight()`
+Returns the height stored in the Screen object
+
+### `uint32_t getWidth()`
+Returns the width stored in the Screen object
+
+### `bool surfaceEqual(const SDL_Surface* rhs)`
+Compares the current Screen's SDL_Surface with the target SDL_Surface
+- Uses `memcmp` to compare the memory of the two surfaces
+- Returns false if either surface does not exist or is not equal, true otherwise
 
 ### `Screen()`
 Default constructor. Initializes `width` and `height` to 0
@@ -51,6 +68,12 @@ Copy constructor. Creates a new Screen with the same values as `cp`
 ### `Screen& operator=(const Screen& cp)`
 Copy assignment operator. Replaces Screen object's values with values from `cp`.
 - Calls `cp.blitTo(this->surface)` to blit existing surface to the new surface
+
+### `bool operator==(const Screen rhs)`
+Compares two Screen objects
+- Compares Screen widths and heights
+- Calls surfaceEqual to check surface equality
+- Returns false if any checks fail, true otherwise
 
 ### `~Screen()`
 Destructor method. Checks if Screen object has a valid SDL_Surface before calling `SDL_DestroySurface`

@@ -58,7 +58,7 @@ bool Screen::operator==(const Screen rhs) {
         return false;
     }
 
-    if (!this->surfacesEqual(rhs.surface)) {
+    if (!this->surfaceEqual(rhs.surface)) {
         return false;
     }
 
@@ -70,7 +70,7 @@ bool Screen::surfaceEqual(const SDL_Surface* rhs) {
         return false;
     }
 
-    int pixelBytes = this->surface.pitch * static_cast<int>(this->height);
+    int pixelBytes = this->surface->pitch * static_cast<int>(this->height);
     if (std::memcmp(this->surface->pixels, rhs->pixels, pixelBytes)) {
         return false;
     }
@@ -131,6 +131,10 @@ SDL_Surface* Screen::getSurface() {
     return this->surface;
 }
 
+uint32_t Screen::getWidth() {
+    return this->width;
+}
 
-
-
+uint32_t Screen::getHeight() {
+    return this->height;
+}
