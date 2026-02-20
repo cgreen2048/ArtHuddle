@@ -25,6 +25,8 @@ class Screen {
         void blitTo(SDL_Surface*) const;
         void drawBresenhamLine(ivec2, ivec2, ivec3);
         SDL_Surface* getSurface();
+        uint32_t getWidth();
+        uint32_t getHeight();
 
         template<typename T1, typename T2>
         void colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors) {
