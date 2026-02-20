@@ -1,6 +1,6 @@
 #include "Matrix.hpp"
 
-// Source file for vec header, holds Matrix class implementation
+// Source file for Matrix header, holds Matrix class implementation
 
 Matrix::Matrix() : components{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}} {
     // placeholder

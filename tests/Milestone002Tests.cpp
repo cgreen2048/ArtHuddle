@@ -47,6 +47,15 @@ int main(int argc, char** argv) {
     if (box || line || pixel || blit) failure = 1;
 
     std::cout << "Testing copy constructor\n";
+    Screen copyScreen{screen};
+    if (copyScreen == screen) {
+        std::cout << "copy constructor working\n";
+    }
+    else {
+        std::cout << "copy constructor FAILED!\n";
+        failure = 1;
+    }
+
     Screen blank = screen;
     if (blank == screen) {
         std::cout << "copy constructor working\n";
@@ -65,7 +74,7 @@ int blitToTest(Screen screen, SDL_Window *window) {
     int failure = 0;
     
     // tests go here
-    Screen windowScreen = SDL_GetWindowSurface(window)
+    SDL_Surface *windowScreen = SDL_GetWindowSurface(window);
     screen.blitTo(windowScreen);
     SDL_UpdateWindowSurface(window);
 
@@ -78,9 +87,10 @@ int blitToTest(Screen screen, SDL_Window *window) {
 	while (!quit) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
                     quit = true;
                     break;
+                }
 			}
 		}
     }
@@ -130,9 +140,10 @@ int drawBresenhamLineTest(Screen screen, SDL_Window *window) {
 	while (!quit) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
+				case SDL_EVENT_MOUSE_BUTTON_DOWN: {
                     quit = true;
                     break;
+                }
 			}
 		}
     }
@@ -178,9 +189,10 @@ int colorOnePixelTest(Screen screen, SDL_Window *window) {
 	while (!quit) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
+				case SDL_EVENT_MOUSE_BUTTON_DOWN: {
                     quit = true;
                     break;
+                }
 			}
 		}
     }
@@ -229,9 +241,10 @@ int drawBoxTest(Screen screen, SDL_Window *window) {
 	while (!quit) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
+				case SDL_EVENT_MOUSE_BUTTON_DOWN: {
                     quit = true;
                     break;
+                }
 			}
 		}
     }
