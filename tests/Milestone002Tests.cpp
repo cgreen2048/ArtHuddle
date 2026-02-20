@@ -192,8 +192,35 @@ int drawBoxTest(Screen screen, SDL_Window *window) {
     std::cout << "Testing drawBox function\n";
     int failure = 0;
     
+    uint8_t r, g, b;
     screen.drawBox(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27));
+    for (int i = X/4; i < (3*X/4); ++i) {
+        for (int j = Y/4; j < (3*Y)/4; ++j) {
+            getPixelColor(screen.getSurface(), ivec2{i,j}, r, g, b);
+            if (r != 160 || g != 75 || b != 27) {
+                failure = 1;
+                break;
+            }
+        }
+        if (failure == 1) {
+            break;
+        }
+    }
+
     screen.drawBox(ivec2(-X, -Y), ivec2(X*2, Y*2), ivec3(-34, 276, 0));
+    for (int i = 0; i < X; ++i) {
+        for (int j = 0; j < Y; ++j) {
+            getPixelColor(screen.getSurface(), ivec2{i,j}, r, g, b);
+            if (r != 0 || g != 255 || b != 0) {
+                failure = 1;
+                break;
+            }
+        }
+        if (failure == 1) {
+            break;
+        }
+    }
+
     screen.blitTo(SDL_GetWindowSurface(window));
     SDL_UpdateWindowSurface(window);
 
