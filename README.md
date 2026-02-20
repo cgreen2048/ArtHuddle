@@ -6,6 +6,56 @@
 
 main.cpp is a demonstration program
 
+# Screen
+
+## Description
+`Screen` is a class representing an SDL_Surface with methods to draw to and color pixels on the surface. THhe surface can then be displayed using an SDL_Window.
+- `uint32_t width, height`: The width and height of the surface
+- `SDL_Surface* surface`: Holds a pointer to the SDL_Surface object
+
+## Methods
+
+### `blitTo(SDL_Surface* target) const`
+Blits the current Screen object to the target surface
+- Takes in pointer to an SDL_Surface as the target to blit to
+- Verifies target surface exists
+- Uses `SDL_BlitSurface` to blit between surfaces
+
+### `colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors)`
+Colors target pixel in object's SDL_Surface
+- Uses a 2D mathematical vector object to hold target pixel's X and Y components
+- Uses a 3D mathematical vector object to hold target pixel's color value in RGB format (clamped between 0 and 255)
+- Uses `SDL_MapRGBA` to convert the color to the pixel
+
+### `drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors`
+Draws a box on the target Screen object's SDL_Surface
+- Uses 2D mathematical vectors to store the minimum and maximum coordinates for the box
+- Clamps minimum and maximum X and Y values between 0 and the Screen object's height/width values
+- Uses 3D mathematical vector to store the target color for the box
+- Calls `colorOnePixel` for each coordinate in the bounds of the box in a double nested for loop
+
+### `drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color)`
+# TODO ADD DESCRIPTION HERE
+
+### `Screen()`
+Default constructor. Initializes `width` and `height` to 0
+
+### `Screen(uint32_t w, uint_32 h)`
+Constructor that takes in values for width and height. Calls SDL_CreateSurface to create an SDL_Surface for the object
+- Calls drawBox() to fill the entire screen with a black box as a way of clearing garbage values
+
+### `Screen(const Screen& cp)`
+Copy constructor. Creates a new Screen with the same values as `cp`
+- Calls `cp.blitTo(this->surface)` to blit existing surface to the new surface
+
+### `Screen& operator=(const Screen& cp)`
+Copy assignment operator. Replaces Screen object's values with values from `cp`.
+- Calls `cp.blitTo(this->surface)` to blit existing surface to the new surface
+
+### `~Screen()`
+Destructor method. Checks if Screen object has a valid SDL_Surface before calling `SDL_DestroySurface`
+
+
 # Matrix
 
 ## Description
@@ -54,57 +104,6 @@ Performs matrix multiplication with the target matrix on the left hand side and 
 ### `Matrix transpose()`
 Returns the transpose of target Matrix as a Matrix
 - Creates a temporary 2D array of floats before returning a Matrix
-
-
-# Screen
-
-## Description
-`Screen` is a class representing an SDL_Surface with methods to draw to and color pixels on the surface. THhe surface can then be displayed using an SDL_Window.
-- `uint32_t width, height`: The width and height of the surface
-- `SDL_Surface* surface`: Holds a pointer to the SDL_Surface object
-
-## Methods
-
-### `blitTo(SDL_Surface* target) const`
-Blits the current Screen object to the target surface
-- Takes in pointer to an SDL_Surface as the target to blit to
-- Verifies target surface exists
-- Uses `SDL_BlitSurface` to blit between surfaces
-
-### `colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors)`
-Colors target pixel in object's SDL_Surface
-- Uses a 2D mathematical vector object to hold target pixel's X and Y components
-- Uses a 3D mathematical vector object to hold target pixel's color value in RGB format (clamped between 0 and 255)
-- Uses `SDL_MapRGBA` to convert the color to the pixel
-
-### `drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors`
-Draws a box on the target Screen object's SDL_Surface
-- Uses 2D mathematical vectors to store the minimum and maximum coordinates for the box
-- Clamps minimum and maximum X and Y values between 0 and the Screen object's height/width values
-- Uses 3D mathematical vector to store the target color for the box
-- Calls `colorOnePixel` for each coordinate in the bounds of the box in a double nested for loop
-
-### `drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color)`
-
-
-### `Screen()`
-Default constructor. Initializes `width` and `height` to 0
-
-### `Screen(uint32_t w, uint_32 h)`
-Constructor that takes in values for width and height. Calls SDL_CreateSurface to create an SDL_Surface for the object
-- Calls drawBox() to fill the entire screen with a black box as a way of clearing garbage values
-
-### `Screen(const Screen& cp)`
-Copy constructor. Creates a new Screen with the same values as `cp`
-- Calls `cp.blitTo(this->surface)` to blit existing surface to the new surface
-
-### `Screen& operator=(const Screen& cp)`
-Copy assignment operator. Replaces Screen object's values with values from `cp`.
-- Calls `cp.blitTo(this->surface)` to blit existing surface to the new surface
-
-### `~Screen()`
-Destructor method. Checks if Screen object has a valid SDL_Surface before calling `SDL_DestroySurface`
-
 
 # vec2
 

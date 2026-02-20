@@ -1,8 +1,6 @@
 #include "Screen.hpp"
 
-Screen::Screen() : width{0}, height{0} {
-    // placeholder
-}
+Screen::Screen() : width{0}, height{0} {}
 
 Screen::Screen(uint32_t w, uint32_t h) : Screen() {
     this->width = w;
@@ -24,7 +22,6 @@ Screen::Screen(const Screen& cp) : Screen() {
         exit(1);
     }
     
-    // must copy over the exact pixels from cp's surface to this surface
     if (this->surface) {
         cp.blitTo(this->surface);
     }
@@ -54,6 +51,31 @@ Screen& Screen::operator=(const Screen& cp) {
     cp.blitTo(this->surface);
     
     return *this;
+}
+
+bool Screen::operator==(const Screen rhs) {
+    if (this->width != rhs.width || this->height != rhs.height) {
+        return false;
+    }
+
+    if (!this->surfacesEqual(rhs.surface)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool Screen::surfaceEqual(const SDL_Surface* rhs) {
+    if (!this->surface || !rhs) {
+        return false;
+    }
+
+    int pixelBytes = this->surface.pitch * static_cast<int>(this->height);
+    if (std::memcmp(this->surface->pixels, rhs->pixels, pixelBytes)) {
+        return false;
+    }
+
+    return true;
 }
 
 void Screen::blitTo(SDL_Surface* target) const {
@@ -104,6 +126,11 @@ void Screen::drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color) {
         }
     }     
 }
+
+SDL_Surface* Screen::getSurface() {
+    return this->surface;
+}
+
 
 
 

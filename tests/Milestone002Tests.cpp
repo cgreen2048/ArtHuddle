@@ -4,7 +4,7 @@
 #include "../vec2.hpp"
 #include "../vec3.hpp"
 
-// unit tests for screen class
+// Unit tests for Screen class
 
 const int X = 960;
 const int Y = 540;
@@ -23,10 +23,20 @@ int main(int argc, char** argv) {
 	}
     
     int failure = 0;
+
+    std::cout << "Testing default constructor\n";
+    Screen defaultScreen = Screen();
+    if (defaultScreen.width == 0 && defaultScreen.height == 0 && defaultScreen.surface == nullptr) {
+        std::cout << "default constructor working\n";
+    }
+    else {
+        std::cout << "default constructor FAILED!\n";
+        failure = 1;
+    }
+
     Screen screen = Screen(X, Y);
     
-    std::cout << "Testing copy constructor\n";
-    Screen blank = screen;
+
 	SDL_Window *window = SDL_CreateWindow("Hello Window", X, Y, 0);
 
     int box = drawBoxTest(screen, window);
@@ -34,11 +44,148 @@ int main(int argc, char** argv) {
     int pixel = colorOnePixelTest(screen, window);
     int blit = blitToTest(screen, window);
 
-    
     if (box || line || pixel || blit) failure = 1;
+
+    std::cout << "Testing copy constructor\n";
+    Screen blank = screen;
+    if (blank == screen) {
+        std::cout << "copy constructor working\n";
+    }
+    else {
+        std::cout << "copy constructor FAILED\n";
+        failure = 1;
+    }
 
 	SDL_Quit();
 	return failure;
+}
+
+int blitToTest(Screen screen, SDL_Window *window) {
+    std::cout << "Testing blitTo function\n";
+    int failure = 0;
+    
+    // tests go here
+    Screen windowScreen = SDL_GetWindowSurface(window)
+    screen.blitTo(windowScreen);
+    SDL_UpdateWindowSurface(window);
+
+    if (!screen.surfaceEqual(windowScreen)) {
+        failure = 1;
+    }
+
+    bool quit = false;
+    SDL_Event event;
+	while (!quit) {
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
+                    quit = true;
+                    break;
+			}
+		}
+    }
+
+    return failure;
+}
+
+int drawBresenhamLineTest(Screen screen, SDL_Window *window) {
+    std::cout << "Testing drawBresenhamLine function\n";
+    int failure = 0;
+    
+    uint8_t r1,g1,b1,r2,g2,b2;
+
+    screen.drawBresenhamLine(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27));
+    getPixelColor(screen.getSurface(), ivec2((3*X)/4, (3*Y)/4), r1, g1, b1);
+    getPixelColor(screen.getSurface(), ivec2(X/4, Y/4), r2, g2, b2);
+    if (r1 != 160 || g1 != 75 || b1 != 27 || r2 != 160 || g2 != 75 || b2 != 27) {
+        failure = 1;
+    }
+
+    screen.drawBresenhamLine(ivec2(-X, -Y), ivec2(X*2, Y*2), ivec3(-34, 276, 0));
+    getPixelColor(screen.getSurface(), ivec2(0,0), r1,g1,b1);
+    getPixelColor(screen.getSurface(), ivec2(X-1, Y-1), r2,g2,b2);
+    if (r1 != 0 || g1 != 255 || b1 != 0 || r2 != 0 || g2 != 255 || b2 != 0) {
+        failure = 1;
+    }
+
+    screen.drawBresenhamLine(ivec2(0, Y), ivec2(X*2, 0), ivec3(-34, 276, 0));
+    getPixelColor(screen.getSurface(), ivec2(0,Y), r1,g1,b1);
+    getPixelColor(screen.getSurface(), ivec2(X-1, 0), r2,g2,b2);
+    if (r1 != 0 || g1 != 255 || b1 != 0 || r2 != 0 || g2 != 255 || b2 != 0) {  
+        failure = 1;
+    }
+
+    screen.drawBresenhamLine(ivec2(0, Y), ivec2(X/2, Y/2), ivec3(-34, 276, 0));
+    getPixelColor(screen.getSurface(), ivec2(0, Y), r1,g1,b1);
+    getPixelColor(screen.getSurface(), ivec2(X/2, Y/2), r2,g2,b2);
+    if (r1 != 0 || g1 != 255 || b1 != 0 || r2 != 0 || g2 != 255 || b2 != 0) {
+        failure = 1;
+    }
+
+    screen.blitTo(SDL_GetWindowSurface(window));
+    SDL_UpdateWindowSurface(window);
+
+    bool quit = false;
+    SDL_Event event;
+	while (!quit) {
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
+                    quit = true;
+                    break;
+			}
+		}
+    }
+
+    return failure;
+}
+
+int colorOnePixelTest(Screen screen, SDL_Window *window) {
+    std::cout << "Testing colorOnePixel function\n";
+    int failure = 0;
+    
+    uint8_t r, g, b;
+
+    screen.colorOnePixel(ivec2((3*X)/4, (3*Y)/4), ivec3(160, 75, 27));
+    getPixelColor(screen.getSurface(), ivec2((3*X)/4, (3*Y)/4), r, g, b);
+    if (r != 160 || g != 75 || b != 27) {
+        failure = 1;
+    }
+
+    screen.colorOnePixel(ivec2(-X, -Y), ivec3(-34, 276, 0));
+    getPixelColor(screen.getSurface(), ivec2(0, 0), r, g, b);
+    if (r != 0 || g != 255 || b != 0) {
+        failure = 1;
+    }
+
+    screen.colorOnePixel(vec2(0, 0), vec3(-34, 276, 0));
+    getPixelColor(screen.getSurface(), ivec2(0,0), r, g, b);
+    if (r != 0 || g != 255 || b != 0) {
+        failure = 1;
+    }
+
+    screen.colorOnePixel(ivec2(0, 0), ivec3(-34, 276, 0));
+    getPixelColor(screen.getSurface(), ivec2(0,0), r, g, b);
+    if (r != 0 || g != 255 || b != 0) {
+        failure = 1;
+    }
+
+    screen.blitTo(SDL_GetWindowSurface(window));
+    SDL_UpdateWindowSurface(window);
+
+    bool quit = false;
+    SDL_Event event;
+	while (!quit) {
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
+                    quit = true;
+                    break;
+			}
+		}
+    }
+
+    return failure;
 }
 
 int drawBoxTest(Screen screen, SDL_Window *window) {
@@ -65,76 +212,14 @@ int drawBoxTest(Screen screen, SDL_Window *window) {
     return failure;
 }
 
-int drawBresenhamLineTest(Screen screen, SDL_Window *window) {
-    std::cout << "Testing drawBresenhamLine function\n";
-    int failure = 0;
-    
-    screen.drawBresenhamLine(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27));
-    screen.drawBresenhamLine(ivec2(-X, -Y), ivec2(X*2, Y*2), ivec3(-34, 276, 0));
-    screen.drawBresenhamLine(ivec2(0, Y), ivec2(X*2, 0), ivec3(-34, 276, 0));
-    screen.drawBresenhamLine(ivec2(0, Y), ivec2(X/2, Y/2), ivec3(-34, 276, 0));
-    screen.blitTo(SDL_GetWindowSurface(window));
-    SDL_UpdateWindowSurface(window);
+void getPixelColor(SDL_Surface* surface, ivec2 coords, uint8_t& r, uint8_t& g, uint8_t& b) {
+    uint8_t* pixelPtr = static_cast<uint8_t*>(surface->pixels);
+    uint8_t* pixel = pixelPtr 
+        + static_cast<int>(coords.x) * sizeof(uint32_t) 
+        + static_cast<int>(coords.y) * surface->pitch;
+    uint32_t pixel32 = *reinterpret_cast<uint32_t*>(pixel);
+    const SDL_PixelFormatDetails *details =  SDL_GetPixelFormatDetails(surface->format);
 
-    bool quit = false;
-    SDL_Event event;
-	while (!quit) {
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
-                    quit = true;
-                    break;
-			}
-		}
-    }
-
-    return failure;
-}
-
-int colorOnePixelTest(Screen screen, SDL_Window *window) {
-    std::cout << "Testing colorOnePixel function\n";
-    int failure = 0;
-    
-    screen.colorOnePixel(ivec2((3*X)/4, (3*Y)/4), ivec3(160, 75, 27));
-    screen.colorOnePixel(ivec2(-X, -Y), ivec3(-34, 276, 0));
-    screen.colorOnePixel(vec2(0, 0), vec3(-34, 276, 0));
-    screen.colorOnePixel(ivec2(0, 0), ivec3(-34, 276, 0));
-
-    SDL_UpdateWindowSurface(window);
-
-    bool quit = false;
-    SDL_Event event;
-	while (!quit) {
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
-                    quit = true;
-                    break;
-			}
-		}
-    }
-
-    return failure;
-}
-
-int blitToTest(Screen screen, SDL_Window *window) {
-    std::cout << "Testing blitTo function\n";
-    int failure = 0;
-    
-    // tests go here
-    SDL_UpdateWindowSurface(window);
-
-    bool quit = false;
-    SDL_Event event;
-	while (!quit) {
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_EVENT_MOUSE_BUTTON_DOWN: 
-                    quit = true;
-                    break;
-			}
-		}
-    }
-
-    return failure;
+    uint8_t a;
+    SDL_GetRGBA(pixel32, details, &r, &g, &b, &a);
 }

@@ -6,6 +6,7 @@
 #include <SDL3/SDL.h>
 #include "vec2.hpp"
 #include "vec3.hpp"
+#define MIN_COLOR_VALUE 0
 #define MAX_COLOR_VALUE 255
 
 class Screen {
@@ -19,8 +20,11 @@ class Screen {
         Screen(const Screen&);
         ~Screen();
         Screen& operator=(const Screen&);
+        bool operator==(const Screen);
+        bool surfaceEqual(const SDL_Surface*);
         void blitTo(SDL_Surface*) const;
         void drawBresenhamLine(ivec2, ivec2, ivec3);
+        SDL_Surface* getSurface();
 
         template<typename T1, typename T2>
         void colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors) {
@@ -37,9 +41,9 @@ class Screen {
             uint32_t pixelColor = SDL_MapRGBA(
                 details,
                 nullptr, 
-                std::clamp(static_cast<int>(colors.x), 0, MAX_COLOR_VALUE), 
-                std::clamp(static_cast<int>(colors.y), 0, MAX_COLOR_VALUE), 
-                std::clamp(static_cast<int>(colors.z), 0, MAX_COLOR_VALUE), 
+                std::clamp(static_cast<int>(colors.x), MIN_COLOR_VALUE, MAX_COLOR_VALUE), 
+                std::clamp(static_cast<int>(colors.y), MIN_COLOR_VALUE, MAX_COLOR_VALUE), 
+                std::clamp(static_cast<int>(colors.z), MIN_COLOR_VALUE, MAX_COLOR_VALUE), 
                 static_cast<int>(MAX_COLOR_VALUE)
             );
             
@@ -52,9 +56,9 @@ class Screen {
             int maxX = std::clamp(static_cast<int>(std::max(min.x, max.x)), 0, static_cast<int>(this->width-1));
             int minY = std::clamp(static_cast<int>(std::min(min.y, max.y)), 0, static_cast<int>(this->height-1));
             int maxY = std::clamp(static_cast<int>(std::max(min.y, max.y)), 0, static_cast<int>(this->height-1));
-            ivec3 clampedColor = ivec3(std::clamp(static_cast<int>(colors.x), 0, static_cast<int>(MAX_COLOR_VALUE)),
-                                        std::clamp(static_cast<int>(colors.y), 0, static_cast<int>(MAX_COLOR_VALUE)),
-                                        std::clamp(static_cast<int>(colors.z), 0, static_cast<int>(MAX_COLOR_VALUE)));
+            ivec3 clampedColor = ivec3(std::clamp(static_cast<int>(colors.x), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE)),
+                                        std::clamp(static_cast<int>(colors.y), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE)),
+                                        std::clamp(static_cast<int>(colors.z), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE)));
 
             for (int i = minX; i <= maxX; ++i) {
                 for (int j = minY; j <= maxY; ++j) {
