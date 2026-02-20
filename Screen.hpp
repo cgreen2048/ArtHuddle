@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <SDL3/SDL.h>
+#include <cstring>
 #include "vec2.hpp"
 #include "vec3.hpp"
 #define MIN_COLOR_VALUE 0
