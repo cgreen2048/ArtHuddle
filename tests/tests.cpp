@@ -11,7 +11,6 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-
 	SDL_Quit();
 
 	std::cout << "SDL opened and closed successfully\n";
