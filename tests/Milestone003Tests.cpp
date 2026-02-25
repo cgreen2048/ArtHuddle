@@ -6,6 +6,7 @@ int readTest1();
 int readTest2();
 int readTest3();
 int readTest4();
+int writeTest1();
 
 int main() {
     int failure = 0;
@@ -24,6 +25,10 @@ int main() {
     if (readTest4()) {
         failure = 1;
     }
+    if (writeTest1()){
+        failure = 1;
+    }
+
 
 
     if (failure) {
@@ -95,10 +100,10 @@ int readTest1() {
     }
 
     if (failure) {
-        std::cout << "reading test (good input) FAILED\n";
+        std::cout << "reading test 1 (good input) FAILED\n";
     }
     else {
-        std::cout << "reading test (good input) passed\n";
+        std::cout << "reading test 1 (good input) passed\n";
     }
 
     return failure;
@@ -228,3 +233,81 @@ int readTest4() {
 
     return failure;
 }
+
+
+int writeTest1(){
+    int failure = 0;
+
+    std::vector<GUIFile::Line> lines;
+    std::vector<GUIFile::Box> boxes;
+    std::vector<GUIFile::Point> points;
+
+
+    lines.push_back(GUIFile::Line{vec2(50.5, 902.47), vec2(75.6, 1024.6), vec3(244.0, 245.0, 103.3)});
+    boxes.push_back(GUIFile::Box{vec2(250.3, 122.5), vec2(420.34, 254.9), vec3(212, 22, 124)});
+    points.push_back(GUIFile::Point{vec2(480, 270), vec3(67, 200, 142)});
+
+    GUIFile gui = GUIFile();
+    gui.addLine(GUIFile::Line{vec2(50.5, 902.47), vec2(75.6, 1024.6), vec3(244.0, 245.0, 103.3)});
+    gui.addBox(GUIFile::Box{vec2(250.3, 122.5), vec2(420.34, 254.9), vec3(212, 22, 124)});
+    gui.addPoint(GUIFile::Point{vec2(480, 270), vec3(67, 200, 142)});
+    gui.writeFile("../output.xml");
+    gui.readFile("../output.xml");
+
+    std::vector<GUIFile::Line> guiLines = gui.getLines();
+    std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
+    std::vector<GUIFile::Point> guiPoints = gui.getPoints();
+
+    if (lines.size() == guiLines.size()) {
+        for (GUIFile::Line l: lines) {
+            for (GUIFile::Line gl: gui.getLines()) {
+                if ((l.start != gl.start) || (l.end != gl.end) || (l.color != gl.color)) {
+                    failure = 1;
+                }
+            }
+        }
+    }
+    else {
+        failure = 1;
+    }
+
+    if (boxes.size() == guiBoxes.size()) {
+        for (GUIFile::Box b: boxes) {
+            for (GUIFile::Box gb: gui.getBoxes()) {
+                if ((b.min != gb.min) || (b.max != gb.max) || (b.color != gb.color)) {
+                    failure = 1;
+                }
+            }
+        }
+    }
+    else {
+        failure = 1;
+    }
+
+    if (points.size() == guiPoints.size()) {
+        for (GUIFile::Point p: points) {
+            for (GUIFile::Point gp: gui.getPoints()) {
+                if ((p.position != gp.position) || (p.color != gp.color)) {
+                    failure = 1;
+                }
+            }
+        }
+    }
+    else {
+        failure = 1;
+    }
+
+    if (failure) {
+        std::cout << "writing test 1 (write then read) FAILED\n";
+    }
+    else {
+        std::cout << "writing test 1 (write then read) passed\n";
+    }
+
+    return failure;
+}
+
+
+
+
+

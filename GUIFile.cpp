@@ -24,12 +24,26 @@ const std::vector<GUIFile::Point>& GUIFile::getPoints() const {
     return points; 
 }
 
-void GUIFile::addLine(Line l) { lines.push_back(l); }
-void GUIFile::addBox(Box b) { boxes.push_back(b); }
-void GUIFile::addPoint(Point p) { points.push_back(p); }
+void GUIFile::addLine(const Line& l) { 
+    lines.push_back(l); 
+}
+void GUIFile::addBox(const Box& b) { 
+    boxes.push_back(b); 
+}
+void GUIFile::addPoint(const Point& p) { 
+    points.push_back(p); 
+}
+
+void GUIFile::clear() {
+    lines.clear();
+    boxes.clear();
+    points.clear();
+}
 
 
 void GUIFile::readFile(std::string fileName) {
+    clear();
+    
     std::ifstream inFile{fileName};
     if (!inFile.is_open()) {
         std::cerr << "Error opening file\n";
@@ -220,7 +234,7 @@ void GUIFile::readFile(std::string fileName) {
 }
 
 
-void GUIFile::writeFile(std::string fileName) {
+void GUIFile::writeFile(const std::string& fileName) const {
     std::ofstream out(fileName);
     if (!out.is_open()) return;
 

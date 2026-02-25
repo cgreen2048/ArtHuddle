@@ -60,11 +60,12 @@ class GUIFile {
         const std::vector<Line>& getLines() const;
         const std::vector<Box>&  getBoxes() const;
         const std::vector<Point>& getPoints() const;
-        void addLine(Line l);
-        void addBox(Box b);
-        void addPoint(Point p);
+        void addLine(const Line& l);
+        void addBox(const Box& b);
+        void addPoint(const Point& p);
         void readFile(std::string);
-        void writeFile(std::string);
+        void writeFile(const std::string& fileName) const;
+        void clear();
 
         private:
             std::vector<Line> lines;
