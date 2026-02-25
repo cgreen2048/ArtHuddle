@@ -54,7 +54,7 @@ int readTest1() {
     points.push_back(GUIFile::Point{vec2(480, 270), vec3(67, 200, 142)});
 
     GUIFile gui = GUIFile();
-    gui.readFile("../input.xml");
+    gui.readFile("testFiles/input.xml");
 
     std::vector<GUIFile::Line> guiLines = gui.getLines();
     std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
@@ -113,7 +113,7 @@ int readTest2() {
     int failure = 0;
 
     GUIFile gui = GUIFile();
-    gui.readFile("../badInput.xml");
+    gui.readFile("testFiles/badInput.xml");
 
     if ((gui.getLines().size() != 0) || (gui.getBoxes().size() != 0) || (gui.getPoints().size() != 0)) {
         failure = 1;
@@ -142,15 +142,11 @@ int readTest3() {   // need to kill GUIFile if line, box, or point has too few o
     points.push_back(GUIFile::Point{vec2(480, 270), vec3(67, 200, 142)});
 
     GUIFile gui = GUIFile();
-    gui.readFile("../malformed.xml");
+    gui.readFile("testFiles/malformed.xml");
 
     std::vector<GUIFile::Line> guiLines = gui.getLines();
     std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
     std::vector<GUIFile::Point> guiPoints = gui.getPoints();
-
-    std::cout << gui.getLines().size();
-    std::cout << gui.getBoxes().size();
-    std::cout << gui.getPoints().size();
 
     if ((gui.getLines().size() != 0) || (gui.getBoxes().size() != 0) || (gui.getPoints().size() != 0)) {
         failure = 1;
@@ -179,7 +175,7 @@ int readTest4() {
     points.push_back(GUIFile::Point{vec2(480, 270), vec3(67, 200, 142)});
 
     GUIFile gui = GUIFile();
-    gui.readFile("../oddSpacing.xml");
+    gui.readFile("testFiles/oddSpacing.xml");
 
     std::vector<GUIFile::Line> guiLines = gui.getLines();
     std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();

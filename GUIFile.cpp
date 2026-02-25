@@ -61,6 +61,9 @@ void GUIFile::readFile(std::string fileName) {
     vec3 currentVec3;
     bool buildingVec2 = false;
     bool buildingVec3 = false;
+    bool capturedX = false;
+    bool capturedY = false;
+    bool capturedZ = false;
 
     char currentCoord = 0;   // 0 means “not capturing”
 
@@ -80,34 +83,75 @@ void GUIFile::readFile(std::string fileName) {
 
             if (!payload.empty() && currentCoord != 0 && (buildingVec2 || buildingVec3) ) {
                 float value = std::stof(payload);
-                if(buildingVec2){
-                    switch (currentCoord)
-                    {
-                    case 'x':
-                        currentVec2.x = value;
-                        break;
-                    case 'y':
-                        currentVec2.y = value;
-                        break;
-                    default:
-                        std::cerr << "Malformed XML\n";
-                        return;
+                if (buildingVec2) {
+                    switch (currentCoord) {
+                        case 'x': {
+                            if (!capturedX) {
+                                currentVec2.x = value;
+                                capturedX = true;
+                            }
+                            else {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
+                            break;
+                        }
+                        case 'y': {
+                            if (!capturedY) {
+                                currentVec2.y = value;
+                                capturedY = true;
+                            }
+                            else {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
+                            break;
+                        }
+                        default: {
+                            std::cerr << "Malformed XML\n";
+                            return;
+                        }
                     }
-                }else if(buildingVec3){
-                    switch (currentCoord)
-                    {
-                    case 'x':
-                        currentVec3.x = value;
-                        break;
-                    case 'y':
-                        currentVec3.y = value;
-                        break;
-                    case 'z':
-                        currentVec3.z = value;
-                        break;
-                    default:
-                        std::cerr << "Malformed XML\n";
-                        return;
+                }
+                else if (buildingVec3) {
+                    switch (currentCoord) {
+                        case 'x': {
+                            if (!capturedX) {
+                                currentVec3.x = value;
+                                capturedX = true;
+                            }
+                            else {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
+                            break;
+                        }
+                        case 'y': {
+                            if (!capturedY) {
+                                currentVec3.y = value;
+                                capturedY = true;
+                            }
+                            else {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
+                            break;
+                        }
+                        case 'z': {
+                            if (!capturedZ) {
+                                currentVec3.z = value;
+                                capturedZ = true;
+                            }
+                            else {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
+                            break;
+                        }
+                        default: {
+                            std::cerr << "Malformed XML\n";
+                            return;
+                        }
                     }
                 }
             }
@@ -129,33 +173,46 @@ void GUIFile::readFile(std::string fileName) {
                     inLine = true;
                     currentLine = Line();      // reset it
                     lineVec2Index = 0;         // first vec2 will be start
-                    }
+                    buildingVec2 = false;
+                    buildingVec3 = false;
+                }
                 else if (token == BOX_OPEN) {
                     inBox = true;
                     currentBox = Box();
                     boxVec2Index = 0;
-                    }
+                    buildingVec2 = false;
+                    buildingVec3 = false;
+                }
                 else if (token == POINT_OPEN) {
                     inPoint = true;
-                    currentPoint = Point(); 
-                    }
-                else if (token == VEC2_OPEN || token == IVEC2_OPEN){
+                    currentPoint = Point();
+                    buildingVec2 = false;
+                    buildingVec3 = false;
+                }
+                else if (token == VEC2_OPEN || token == IVEC2_OPEN) {
                     buildingVec2 = true;
+                    capturedX = false;
+                    capturedY = false;
                     currentVec2 = vec2();
-                    }
-                else if (token == VEC3_OPEN || token == IVEC3_OPEN){
+                    buildingVec3 = false;
+                }
+                else if (token == VEC3_OPEN || token == IVEC3_OPEN) {
                     buildingVec3 = true;
+                    capturedX = false;
+                    capturedY = false;
+                    capturedZ = false;
                     currentVec3 = vec3();
+                    buildingVec2 = false;
                     }
-                else if (token == X_OPEN){
+                else if (token == X_OPEN) {
                    currentCoord = 'x';
-                    }
-                else if (token == Y_OPEN){
+                }
+                else if (token == Y_OPEN) {
                    currentCoord = 'y';
-                    }
-                else if (token == Z_OPEN){
+                }
+                else if (token == Z_OPEN) {
                    currentCoord = 'z';
-                    }
+                }
             }     
             else {
                 locator = std::find(CLOSERS.begin(), CLOSERS.end(), token);
@@ -177,51 +234,72 @@ void GUIFile::readFile(std::string fileName) {
                             std::cerr << "Malformed XML\n";
                             return;
                         }
+                    // else if ((buildingVec2 && (!capturedX || !capturedY)) || 
+                    //     (buildingVec3 && (!capturedX || !capturedY || !capturedZ))) {
+                    //         std::cerr << "Malformed XML\n";
+                    //         return;
+                    // }
                     else {
-                        if(token == LINE_CLOSE){
+                        if (token == LINE_CLOSE){
                             lines.push_back(currentLine);
                             inLine = false;
                         }
-                        else if(token == BOX_CLOSE){
+                        else if (token == BOX_CLOSE){
                             boxes.push_back(currentBox);
                             inBox = false;
                         }
-                        else if(token == POINT_CLOSE){
+                        else if (token == POINT_CLOSE){
                             points.push_back(currentPoint);
                             inPoint = false;
                         }
                         else if (token == VEC2_CLOSE || token == IVEC2_CLOSE){
+                            if (!capturedX || !capturedY) {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
                             buildingVec2 = false;
-                            if(inLine){
+                            if (inLine) {
                                 if (lineVec2Index == 0) currentLine.start = currentVec2;
                                 else if(lineVec2Index == 1) currentLine.end = currentVec2;
                                 lineVec2Index += 1;
-                            }else if(inBox){
-                                if (boxVec2Index == 0) currentBox.min = currentVec2;
-                                else if(boxVec2Index == 1) currentBox.max = currentVec2;
+                            }
+                            else if (inBox) {
+                                if (boxVec2Index == 0) {
+                                    currentBox.min = currentVec2;
+                                }
+                                else if (boxVec2Index == 1) {
+                                    currentBox.max = currentVec2;
+                                }
                                 boxVec2Index += 1;
-                            }else if(inPoint){
+                            }
+                            else if (inPoint) {
                                 currentPoint.position = currentVec2;
                             }
                            
                         }
-                        else if (token == VEC3_CLOSE || token == IVEC3_CLOSE){
+                        else if (token == VEC3_CLOSE || token == IVEC3_CLOSE) {
+                            if (!capturedX || !capturedY || !capturedZ) {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
                             buildingVec3 = false;
-                            if(inLine){
+                            if (inLine) {
                                 currentLine.color = currentVec3;
-                            }else if(inBox){
+                            }
+                            else if (inBox) {
                                 currentBox.color = currentVec3;
-                            }else if(inPoint){
+                            }
+                            else if(inPoint) {
                                 currentPoint.color = currentVec3;
                             }
                         }
-                        else if (token == X_CLOSE){
+                        else if (token == X_CLOSE) {
                             currentCoord = 0;
                         }
-                        else if (token == Y_CLOSE){
+                        else if (token == Y_CLOSE) {
                             currentCoord = 0;
                         }
-                        else if (token == Z_CLOSE){
+                        else if (token == Z_CLOSE) {
                             currentCoord = 0;
                         }
                         matcher.pop();
@@ -236,7 +314,9 @@ void GUIFile::readFile(std::string fileName) {
 
 void GUIFile::writeFile(const std::string& fileName) const {
     std::ofstream out(fileName);
-    if (!out.is_open()) return;
+    if (!out.is_open()) {
+        return;
+    }
 
     out << "<layout>\n";
 
