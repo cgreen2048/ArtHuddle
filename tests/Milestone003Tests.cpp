@@ -6,6 +6,7 @@ int readTest1();
 int readTest2();
 int readTest3();
 int readTest4();
+int readTest5();
 int writeTest1();
 
 int main() {
@@ -23,6 +24,9 @@ int main() {
         failure = 1;
     }
     if (readTest4()) {
+        failure = 1;
+    }
+    if (readTest5()) {
         failure = 1;
     }
     if (writeTest1()){
@@ -129,20 +133,11 @@ int readTest2() {
     return failure;
 }
 
-int readTest3() {   // need to kill GUIFile if line, box, or point has too few or too many inputs
+int readTest3() {
     int failure = 0;
 
-    std::vector<GUIFile::Line> lines;
-    std::vector<GUIFile::Box> boxes;
-    std::vector<GUIFile::Point> points;
-
-
-    lines.push_back(GUIFile::Line{vec2(50.5, 902.47), vec2(75.6, 1024.6), vec3(244.0, 245.0, 103.3)});
-    boxes.push_back(GUIFile::Box{vec2(250.3, 122.5), vec2(420.34, 254.9), vec3(212, 22, 124)});
-    points.push_back(GUIFile::Point{vec2(480, 270), vec3(67, 200, 142)});
-
     GUIFile gui = GUIFile();
-    gui.readFile("testFiles/malformed.xml");
+    gui.readFile("testFiles/malformedVector.xml");
 
     std::vector<GUIFile::Line> guiLines = gui.getLines();
     std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
@@ -153,10 +148,10 @@ int readTest3() {   // need to kill GUIFile if line, box, or point has too few o
     }
 
     if (failure) {
-        std::cout << "reading test 3 (malformed input) FAILED\n";
+        std::cout << "reading test 3 (malformed vector) FAILED\n";
     }
     else {
-        std::cout << "reading test 3 (malformed input) passed\n";
+        std::cout << "reading test 3 (malformed vector) passed\n";
     }
 
     return failure;
@@ -230,6 +225,65 @@ int readTest4() {
     return failure;
 }
 
+int readTest5() {
+    int failure = 0;
+
+    std::vector<GUIFile::Line> lines;
+    std::vector<GUIFile::Box> boxes;
+    std::vector<GUIFile::Point> points;
+
+
+    lines.push_back(GUIFile::Line{vec2(50.5, 902.47), vec2(75.6, 1024.6), vec3(244.0, 245.0, 103.3)});
+    boxes.push_back(GUIFile::Box{vec2(250.3, 122.5), vec2(420.34, 254.9), vec3(212, 22, 124)});
+    points.push_back(GUIFile::Point{vec2(480, 270), vec3(67, 200, 142)});
+
+    GUIFile gui = GUIFile();
+    gui.readFile("testFiles/missingTag.xml");
+
+    std::vector<GUIFile::Line> guiLines = gui.getLines();
+    std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
+    std::vector<GUIFile::Point> guiPoints = gui.getPoints();
+
+    if (lines.size() == guiLines.size()) {
+        for (GUIFile::Line l: lines) {
+            for (GUIFile::Line gl: gui.getLines()) {
+                if ((l.start != gl.start) || (l.end != gl.end) || (l.color != gl.color)) {
+                    failure = 1;
+                }
+            }
+        }
+    }
+    else {
+        failure = 1;
+    }
+
+    if (boxes.size() == guiBoxes.size()) {
+        for (GUIFile::Box b: boxes) {
+            for (GUIFile::Box gb: gui.getBoxes()) {
+                if ((b.min != gb.min) || (b.max != gb.max) || (b.color != gb.color)) {
+                    failure = 1;
+                }
+            }
+        }
+    }
+    else {
+        failure = 1;
+    }
+
+    if (gui.getPoints().size() != 0) {
+        failure = 1;
+    }
+
+
+    if (failure) {
+        std::cout << "reading test 5 (missing tag) FAILED\n";
+    }
+    else {
+        std::cout << "reading test 5 (missing tag) passed\n";
+    }
+
+    return failure;
+}
 
 int writeTest1(){
     int failure = 0;
