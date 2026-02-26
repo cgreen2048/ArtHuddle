@@ -20,12 +20,6 @@ studentMachine:
 	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) -o screenDemo
 	$(CXX) ../GUIFile.cpp Milestone003Tests.cpp -Wall -o milestone003
 
-studentMachine:
-	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS)
-	$(CXX) ../Matrix.cpp Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) -o milestone001
-	$(CXX) ../Screen.cpp Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) -o milestone002
-	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) -o screenDemo
-
 mac:
 	g++ tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall
 	g++ ../Matrix.cpp Milestone001Tests.cpp -Wall -o milestone001
