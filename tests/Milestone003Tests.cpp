@@ -35,13 +35,13 @@ int main() {
     if (readTest5()) {
         failure = 1;
     }
-    if (writeTest1()){
+    if (writeTest1()) {
         failure = 1;
     }
-    if (writeTest2()){
+    if (writeTest2()) {
         failure = 1;
     }
-    if(writeTest3()){
+    if (writeTest3()) {
         failure = 1;
     }
 
@@ -63,10 +63,9 @@ int linesComparsion(std::vector<GUIFile::Line> line1, std::vector<GUIFile::Line>
     }
     else {
         for (size_t i = 0; i < line1.size(); ++i) {
-            if (line1[i].start != line2[i].start || line1[i].end != line2[i].end  
-                || line1[i].color != line2[i].color) {
-                    return 1;
-                }
+            if (line1[i].start != line2[i].start || line1[i].end != line2[i].end  || line1[i].color != line2[i].color) {
+                return 1;
+            }
         }
     }
     return 0;
@@ -78,23 +77,22 @@ int boxesComparsion(std::vector<GUIFile::Box> box1, std::vector<GUIFile::Box> bo
     }
     else {
         for (size_t i = 0; i < box1.size(); ++i) {
-            if ((box1[i].min != box2[i].min) || (box1[i].max != box2[i].max) 
-            || (box1[i].color != box2[i].color)) {
-                    return 1;
-                }
+            if ((box1[i].min != box2[i].min) || (box1[i].max != box2[i].max) || (box1[i].color != box2[i].color)) {
+                return 1;
+            }
         }
     }
     return 0;
 }
 
 int pointsComparsion(std::vector<GUIFile::Point> point1, std::vector<GUIFile::Point> point2) {
-     if (point1.size() != point2.size()) {
+    if (point1.size() != point2.size()) {
         return 1;
     }
     else {
         for (size_t i = 0; i < point1.size(); ++i) {
             if ((point1[i].position != point2[i].position) || (point1[i].color != point2[i].color)) {
-                    return 1;
+                return 1;
             }
         }
     }
@@ -401,8 +399,3 @@ int writeTest3() {
     return failure;
 
 }
-
-
-
-
-

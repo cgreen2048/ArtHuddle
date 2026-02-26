@@ -7,8 +7,9 @@ GUIFile::GUIFile() {
 
 static std::string trim(const std::string& s) {
     size_t first = s.find_first_not_of(" \t\n\r");
-    if (first == std::string::npos)
+    if (first == std::string::npos) {
         return "";
+    }
 
     size_t last = s.find_last_not_of(" \t\n\r");
     return s.substr(first, last - first + 1);
@@ -83,7 +84,9 @@ void GUIFile::readFile(std::string fileName) {
     while(std::getline(inFile, line)) {
         while (1) {
             start = line.find('<');
-            if (start == std::string::npos) break;
+            if (start == std::string::npos) {
+                break;
+            }
             std::string payload = line.substr(0, start);
             payload = trim(payload);
 
@@ -128,7 +131,8 @@ void GUIFile::readFile(std::string fileName) {
                                     currentIVec2.x = value; capturedX = true; 
                                 }
                                 else { 
-                                    std::cerr << "Malformed XML\n"; return; 
+                                    std::cerr << "Malformed XML\n";
+                                    return; 
                                 }
                                 break;
 
@@ -136,12 +140,16 @@ void GUIFile::readFile(std::string fileName) {
                                 if (!capturedY) { 
                                     currentIVec2.y = value; capturedY = true; 
                                 }
-                                else { std::cerr << "Malformed XML\n"; return; }
+                                else {
+                                    std::cerr << "Malformed XML\n";
+                                    return;
+                                }
                                 break;
 
-                            default:
+                            default: {
                                 std::cerr << "Malformed XML\n";
                                 return;
+                            }
                         }
                     }
                     else if (buildingVec3) {
@@ -233,7 +241,9 @@ void GUIFile::readFile(std::string fileName) {
             line.erase(0, start);
 
             end = line.find('>');
-            if (end == std::string::npos) break;
+            if (end == std::string::npos) {
+                break;
+            }
             
 
             std::string token = line.substr(0, end + 1);
@@ -319,7 +329,10 @@ void GUIFile::readFile(std::string fileName) {
             else {
                 locator = std::find(CLOSERS.begin(), CLOSERS.end(), token);
                 if (locator != CLOSERS.end()) {
-                    if (matcher.empty()) { std::cerr << "Malformed XML\n"; return; } // In case XML starts with a closer
+                    if (matcher.empty()) {  // In case XML starts with a closer
+                        std::cerr << "Malformed XML\n"; 
+                        return;
+                    }
                     std::string top = matcher.top();
                     if ((token == LAYOUT_CLOSE && top != LAYOUT_OPEN) ||
                         (token == LINE_CLOSE && top != LINE_OPEN) ||
@@ -336,11 +349,6 @@ void GUIFile::readFile(std::string fileName) {
                             std::cerr << "Malformed XML\n";
                             return;
                         }
-                    // else if ((buildingVec2 && (!capturedX || !capturedY)) || 
-                    //     (buildingVec3 && (!capturedX || !capturedY || !capturedZ))) {
-                    //         std::cerr << "Malformed XML\n";
-                    //         return;
-                    // }
                     else {
                         if (token == LINE_CLOSE) {
                             lines.push_back(currentLine);
@@ -554,7 +562,7 @@ void GUIFile::writeFile(const std::string& fileName) const {
 
         if (b.minType == TagType::IVec) {
             writeIVec2(out, b.min);
-         }
+        }
         else {
             writeVec2(out, b.min);
         }
