@@ -59,9 +59,11 @@ class Screen {
             int maxX = std::clamp(static_cast<int>(std::max(min.x, max.x)), 0, static_cast<int>(this->width-1));
             int minY = std::clamp(static_cast<int>(std::min(min.y, max.y)), 0, static_cast<int>(this->height-1));
             int maxY = std::clamp(static_cast<int>(std::max(min.y, max.y)), 0, static_cast<int>(this->height-1));
-            ivec3 clampedColor = ivec3(std::clamp(static_cast<int>(colors.x), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE)),
-                                        std::clamp(static_cast<int>(colors.y), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE)),
-                                        std::clamp(static_cast<int>(colors.z), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE)));
+            ivec3 clampedColor = ivec3(
+                std::clamp(static_cast<int>(colors.x), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE)),
+                std::clamp(static_cast<int>(colors.y), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE)),
+                std::clamp(static_cast<int>(colors.z), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE))
+            );
 
             for (int i = minX; i <= maxX; ++i) {
                 for (int j = minY; j <= maxY; ++j) {

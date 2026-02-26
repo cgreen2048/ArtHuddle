@@ -46,7 +46,9 @@ vec3 Matrix::operator[](int i) {    // private method
 bool Matrix::operator==(Matrix rhs) {
     for (int i = 0; i < MATRIX_MAX; i++) {
         for (int j = 0; j < MATRIX_MAX; j++) {
-            if (this->components[i][j] != rhs.components[i][j]) return false;
+            if (this->components[i][j] != rhs.components[i][j]) {
+                return false;
+            }
         }
     }
     return true;
@@ -65,15 +67,20 @@ Matrix Matrix::operator*(Matrix rhs) {
     vec3 col1 = vec3((*this)[1][0], (*this)[1][1], (*this)[1][2]);
     vec3 col2 = vec3((*this)[2][0], (*this)[2][1], (*this)[2][2]);
 
-    float holder[MATRIX_MAX][MATRIX_MAX] = {{row0.dot(col0), row0.dot(col1), row0.dot(col2)},
-                                            {row1.dot(col0), row1.dot(col1), row1.dot(col2)},
-                                            {row2.dot(col0), row2.dot(col1), row2.dot(col2)}};
+    float holder[MATRIX_MAX][MATRIX_MAX] = {
+        {row0.dot(col0), row0.dot(col1), row0.dot(col2)},
+        {row1.dot(col0), row1.dot(col1), row1.dot(col2)},
+        {row2.dot(col0), row2.dot(col1), row2.dot(col2)}
+    };
+
     return Matrix(holder);
 }
 
 Matrix Matrix::transpose() {
-    float holder[MATRIX_MAX][MATRIX_MAX] = {{(*this)[0][0], (*this)[1][0], (*this)[2][0]},
-                                            {(*this)[0][1], (*this)[1][1], (*this)[2][1]},
-                                            {(*this)[0][2], (*this)[1][2], (*this)[2][2]}};
+    float holder[MATRIX_MAX][MATRIX_MAX] = {
+        {(*this)[0][0], (*this)[1][0], (*this)[2][0]},
+        {(*this)[0][1], (*this)[1][1], (*this)[2][1]},
+        {(*this)[0][2], (*this)[1][2], (*this)[2][2]}
+    };
     return Matrix(holder);
 }

@@ -44,11 +44,15 @@ class Tvec2 {
             return Tvec2{this->x / magnitude, this->y / magnitude};
         }
         bool operator==(Tvec2 rhs) {    // equality
-            if ((this->x == rhs.x) && (this->y == rhs.y)) return true;
+            if ((this->x == rhs.x) && (this->y == rhs.y)) {
+                return true;
+            }
             return false;
         }
         bool operator!=(Tvec2 rhs) {    // non-equality
-            if ((this->x == rhs.x) && (this->y == rhs.y)) return false;
+            if ((this->x == rhs.x) && (this->y == rhs.y)) {
+                return false;
+            }
             return true;
         }
         T& operator[](int index) {   // access via array notation

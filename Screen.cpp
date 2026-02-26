@@ -109,7 +109,7 @@ void Screen::drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color) {
             colorOnePixel(ivec2(x0, y0),color);
         }
 
-        if (x0 == x1 && y0 == y1){
+        if (x0 == x1 && y0 == y1) {
             break;
         }
 

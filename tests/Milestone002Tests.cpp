@@ -72,7 +72,9 @@ int main(int argc, char** argv) {
         std::cout << "blitTo working\n";
     }
 
-    if (box || line || pixel || blit) failure = 1;
+    if (box || line || pixel || blit) {
+        failure = 1;
+    }
 
     std::cout << "Testing copy constructor\n";
     Screen copyScreen{screen};
@@ -244,7 +246,6 @@ int drawBoxTest(Screen screen, SDL_Window *window) {
     int boxYMin = Y/4;
     int boxYMax = (3*Y)/4;
     screen.drawBox(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27));
-    // screen.drawBox(ivec2(-X, -Y), ivec2(X*2, Y*2), ivec3(-34, 276, 0));
     screen.blitTo(SDL_GetWindowSurface(window));
     SDL_UpdateWindowSurface(window);
 
@@ -266,7 +267,9 @@ int drawBoxTest(Screen screen, SDL_Window *window) {
                 }
             }
         }
-        if (failure) break;
+        if (failure) {
+            break;
+        } 
     }
 
     bool quit = false;
