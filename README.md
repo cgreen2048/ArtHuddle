@@ -203,9 +203,6 @@ Integer vectors are written using rounded float values.
 
 ---
 
-## UML Diagram
-
-
 These are static helper utilities used during parsing and writing:
 
 - `trim()` → Removes leading/trailing whitespace
@@ -219,7 +216,10 @@ These functions ensure consistent formatting of XML output.
 
 ---
 
-## Helper Functions (Internal)
+## UML Diagram
+![UML Diagram](images/Milestone003_UML.png)
+
+---
 
 # Screen
 
