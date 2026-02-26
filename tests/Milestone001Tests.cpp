@@ -332,7 +332,9 @@ int ivec3_tester() {
 
     expected = ivec3(static_cast<int>(std::round(2.0f / test.mag())), static_cast<int>(std::round(3.0f / test.mag())), static_cast<int>(std::round(4.0f / test.mag())));
     result = test.unit();
-    if (expected == result) std::cout << "unit vector function working\n";
+    if (expected == result) {
+        std::cout << "unit vector function working\n";
+    } 
     else {
         std::cout << "unit vector function FAILED!\n";
         std::cout << result.x << ' ' << result.y << ' ' << result.z << '\n';

@@ -44,18 +44,23 @@ class Tvec2 {
             return Tvec2{this->x / magnitude, this->y / magnitude};
         }
         bool operator==(Tvec2 rhs) {    // equality
-            if ((this->x == rhs.x) && (this->y == rhs.y)) return true;
+            if ((this->x == rhs.x) && (this->y == rhs.y)) {
+                return true;
+            }
             return false;
         }
         bool operator!=(Tvec2 rhs) {    // non-equality
-            if ((this->x == rhs.x) && (this->y == rhs.y)) return false;
+            if ((this->x == rhs.x) && (this->y == rhs.y)) {
+                return false;
+            }
             return true;
         }
         T& operator[](int index) {   // access via array notation
                                     // Can do a mutable operation like v[0] = 5
-            if ((index < 0) || (index > sizeof(components)/sizeof(components[0]))) {
-                std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE\n";
-                exit(1);
+            int size = sizeof(components)/sizeof(components[0]);
+            if ((index < 0) || (index >= size)) {
+                std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE. RETURNING FIRST COMPONENT\n";
+                return components[0];  // return components[0] because we still need to return T&
             }
             return components[index];
         }

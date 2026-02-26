@@ -52,7 +52,7 @@ class Tvec3 {
         Tvec3 unit() { 
             T magnitude = mag();
             if (magnitude == 0) {
-              return Tvec3{0,0,0};
+                return Tvec3{0,0,0};
             }
             T magnitudeReciprocal = 1 / magnitude;
             return Tvec3{x * magnitudeReciprocal, y * magnitudeReciprocal, z * magnitudeReciprocal};
@@ -75,9 +75,10 @@ class Tvec3 {
         }
 
         T& operator[](int index) {   
-            if ((index < 0) || (index > sizeof(components)/sizeof(components[0]))) {
-                std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE\n";
-                exit(1);
+            int size = sizeof(components)/sizeof(components[0]);
+            if ((index < 0) || (index >= size)) {
+                std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE. RETURNING FIRST COMPONENT\n";
+                return components[0];  // return components[0] because we still need to return T&
             }
             return components[index];
         }
@@ -119,21 +120,21 @@ typedef Tvec3<int> ivec3;
 // Specialization for ivec3 magnitude: rounds to nearest integer then casts
 template<>
 inline int Tvec3<int>::mag() {
-  return static_cast<int>(std::round(std::sqrt(x * x + y * y + z * z)));
+    return static_cast<int>(std::round(std::sqrt(x * x + y * y + z * z)));
 }
 
 // Specialization for ivec3 unit: rounds to nearest integer and casts for each component
 template<>
 inline ivec3 Tvec3<int>::unit() {
-  float magnitude = mag();
-  if (magnitude == 0) {
-    return ivec3{0,0,0};
-  }
-  float magnitudeReciprocal = 1 / magnitude;
-  return ivec3{
-    static_cast<int>(std::round(x * magnitudeReciprocal)), 
-    static_cast<int>(std::round(y * magnitudeReciprocal)),
-    static_cast<int>(std::round(z * magnitudeReciprocal))
-  };
+    float magnitude = mag();
+    if (magnitude == 0) {
+        return ivec3{0,0,0};
+    }
+    float magnitudeReciprocal = 1 / magnitude;
+    return ivec3{
+        static_cast<int>(std::round(x * magnitudeReciprocal)), 
+        static_cast<int>(std::round(y * magnitudeReciprocal)),
+        static_cast<int>(std::round(z * magnitudeReciprocal))
+    };
 }
 #endif
