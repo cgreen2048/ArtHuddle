@@ -34,9 +34,18 @@ int main(int argc, char** argv)
 		{
 			switch(event.type)
 			{
-			case SDL_EVENT_QUIT: end = true; break;
-			case SDL_EVENT_KEY_DOWN: std::cout << "Key pressed\n"; break;
-			case SDL_EVENT_KEY_UP: std::cout << "Key released\n"; break;
+			case SDL_EVENT_QUIT: {
+				end = true; 
+				break;
+			}
+			case SDL_EVENT_KEY_DOWN: {
+				std::cout << "Key pressed\n"; 
+				break;
+			}
+			case SDL_EVENT_KEY_UP: {
+				std::cout << "Key released\n"; 
+				break;
+			}
 			}
 		}
 		clearSurface(buffer);

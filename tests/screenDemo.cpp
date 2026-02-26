@@ -35,7 +35,10 @@ void screenDemo(Screen screen, SDL_Window *window) {
 	while (!end) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_EVENT_QUIT: end = true; break;
+				case SDL_EVENT_QUIT: {
+					end = true; 
+					break;
+				}
 			}
 		}
 
