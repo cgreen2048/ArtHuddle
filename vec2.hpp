@@ -57,9 +57,10 @@ class Tvec2 {
         }
         T& operator[](int index) {   // access via array notation
                                     // Can do a mutable operation like v[0] = 5
-            if ((index < 0) || (index > sizeof(components)/sizeof(components[0]))) {
-                std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE\n";
-                return -1;
+            int size = sizeof(components)/sizeof(components[0]);
+            if ((index < 0) || (index >= size)) {
+                std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE. RETURNING FIRST COMPONENT\n";
+                return components[0];  // return components[0] because we still need to return T&
             }
             return components[index];
         }
