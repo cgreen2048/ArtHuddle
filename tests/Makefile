@@ -1,11 +1,10 @@
-SDL3_ROOT := $(HOME)/esc-courses/sp26-cse-40232.01/public/SDL
-SDL3_INC  := $(SDL3_ROOT)/include
-SDL3_LIB  := $(SDL3_ROOT)/build
+STUDENT_MACHINE_SDL3_ROOT := $(HOME)/esc-courses/sp26-cse-40232.01/public/SDL
+SDL3_INC  := $(STUDENT_MACHINE_SDL3_ROOT)/include
+SDL3_LIB  := $(STUDENT_MACHINE_SDL3_ROOT)/build
 
 CXX      := g++
 CXXFLAGS := -std=c++17 -Wall -I$(SDL3_INC)
 LDFLAGS  := -L$(SDL3_LIB) -lSDL3
-
 
 
 
