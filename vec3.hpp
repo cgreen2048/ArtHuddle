@@ -77,7 +77,7 @@ class Tvec3 {
         T& operator[](int index) {   
             if ((index < 0) || (index > sizeof(components)/sizeof(components[0]))) {
                 std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE\n";
-                exit(1);
+                return -1;
             }
             return components[index];
         }

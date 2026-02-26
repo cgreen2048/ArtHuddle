@@ -37,7 +37,7 @@ Matrix& Matrix::operator=(const Matrix& cp) {
 vec3 Matrix::operator[](int i) {    // private method
     if ((i < 0) || (i > sizeof(components)/sizeof(components[0]))) {
         std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE\n";
-        exit(1);
+        return vec3(0, 0, 0);
     }
     vec3 holder = vec3(components[i][0], components[i][1], components[i][2]);
     return holder;

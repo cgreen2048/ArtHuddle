@@ -8,7 +8,7 @@ Screen::Screen(uint32_t w, uint32_t h) : Screen() {
     this->surface = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGBA32);
     if (!this->surface) {
         std::cerr << SDL_GetError();
-        exit(1);
+        return;
     }
     this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), ivec3(0, 0, 0));
 }
@@ -19,7 +19,7 @@ Screen::Screen(const Screen& cp) : Screen() {
     this->surface = SDL_CreateSurface(this->width, this->height, SDL_PIXELFORMAT_RGBA32);
     if (!this->surface) {
         std::cerr << SDL_GetError();
-        exit(1);
+        return;
     }
     
     if (this->surface) {
@@ -45,7 +45,7 @@ Screen& Screen::operator=(const Screen& cp) {
     this->surface = SDL_CreateSurface(this->width, this->height, SDL_PIXELFORMAT_RGBA32);
     if (!this->surface) {
         std::cerr << SDL_GetError();
-        exit(1);
+        return *this;
     }
     
     cp.blitTo(this->surface);

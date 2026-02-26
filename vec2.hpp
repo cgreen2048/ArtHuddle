@@ -59,7 +59,7 @@ class Tvec2 {
                                     // Can do a mutable operation like v[0] = 5
             if ((index < 0) || (index > sizeof(components)/sizeof(components[0]))) {
                 std::cerr << "ERROR: ACCESSING MEMORY OUTSIDE OF SCOPE\n";
-                exit(1);
+                return -1;
             }
             return components[index];
         }
