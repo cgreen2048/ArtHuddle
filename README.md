@@ -6,6 +6,221 @@
 
 main.cpp is a demonstration program
 
+# GUIFile
+
+## Description
+
+`GUIFile` is a class responsible for reading and writing a simple XML-like layout file that describes graphical primitives.
+
+It stores three types of objects:
+
+- `std::vector<Line> lines`
+- `std::vector<Box> boxes`
+- `std::vector<Point> points`
+
+Each object stores position data (`vec2` / `ivec2`) and color data (`vec3` / `ivec3`).  
+
+The class supports both floating-point vectors (`<vec2>`, `<vec3>`) and integer vectors (`<ivec2>`, `<ivec3>`), tracking which type was used through the `TagType` enum.
+
+---
+
+## Internal Data Structures
+
+### `enum class TagType`
+Indicates whether a vector was parsed/written as:
+- `TagType::Vec` → `<vec2>` or `<vec3>`
+- `TagType::IVec` → `<ivec2>` or `<ivec3>`
+
+---
+
+### `Line`
+
+A nested struct inside GUIFile that represents a line segment
+
+- `vec2 start`
+- `vec2 end`
+- `vec3 color`
+- `TagType startType`
+- `TagType endType`
+- `TagType colorType`
+
+Used to store both geometric and color information for a line.
+
+---
+
+### `Box`
+
+A nested struct inside GUIFile that represents an axis-aligned rectangle.
+
+- `vec2 min`
+- `vec2 max`
+- `vec3 color`
+- `TagType minType`
+- `TagType maxType`
+- `TagType colorType`
+
+---
+
+### `Point`
+
+A nested struct inside GUIFile that represents a single point in space.
+
+- `vec2 position`
+- `vec3 color`
+- `TagType posType`
+- `TagType colorType`
+
+---
+
+## Supported XML Layout Format
+
+The layout file must follow this structure:
+
+```xml
+<layout>
+    <line>
+        <vec2>
+            <x>...</x>
+            <y>...</y>
+        </vec2>
+        <vec2>
+            <x>...</x>
+            <y>...</y>
+        </vec2>
+        <vec3>
+            <x>...</x>
+            <y>...</y>
+            <z>...</z>
+        </vec3>
+    </line>
+
+    <box> ... </box>
+
+    <point> ... </point>
+</layout>
+```
+
+Both `<vec*>` and `<ivec*>` variants are supported.
+
+---
+
+## Public Methods
+
+### `GUIFile()`
+
+Default constructor.  
+Initializes empty vectors of lines, boxes, and points.
+
+---
+
+### `const std::vector<Line>& getLines() const`
+Returns all stored `Line` objects.
+
+---
+
+### `const std::vector<Box>& getBoxes() const`
+Returns all stored `Box` objects.
+
+---
+
+### `const std::vector<Point>& getPoints() const`
+Returns all stored `Point` objects.
+
+---
+
+### `void addLine(const Line& l)`
+Appends a `Line` to the internal list.
+
+---
+
+### `void addBox(const Box& b)`
+Appends a `Box` to the internal list.
+
+---
+
+### `void addPoint(const Point& p)`
+Appends a `Point` to the internal list.
+
+---
+
+### `void clear()`
+Clears all stored layout data:
+- `lines`
+- `boxes`
+- `points`
+
+Used before loading a new file.
+
+---
+
+## File Parsing
+
+### `void readFile(std::string fileName)`
+
+Reads a layout file and parses its contents.
+
+### Behavior:
+
+- Opens the file using `std::ifstream`
+- Uses a stack to match opening and closing tags
+- Detects malformed XML structures
+- Builds:
+  - `Line`
+  - `Box`
+  - `Point`
+- Validates:
+  - Proper tag nesting
+  - Required `<x>`, `<y>`, `<z>` values
+  - Matching open/close tag pairs
+- Converts `<ivec*>` values into floating-point equivalents when stored
+
+If malformed input is detected:
+- Prints `"Malformed XML"`
+- Immediately exits parsing
+
+---
+
+## File Writing
+
+### `void writeFile(const std::string& fileName) const`
+
+Writes the current layout data to file in proper XML format.
+
+### Behavior:
+
+- Opens output file
+- Writes root `<layout>` tag
+- Iterates through:
+  - Lines
+  - Boxes
+  - Points
+- Writes each object using the correct tag type:
+  - `<vec2>` vs `<ivec2>`
+  - `<vec3>` vs `<ivec3>`
+- Closes layout properly
+
+Integer vectors are written using rounded float values.
+
+---
+
+These are static helper utilities used during parsing and writing:
+
+- `trim()` → Removes leading/trailing whitespace
+- `toInt()` → Rounds float and converts to int
+- `writeVec2()`
+- `writeIVec2()`
+- `writeVec3()`
+- `writeIVec3()`
+
+These functions ensure consistent formatting of XML output.
+
+---
+
+## UML Diagram
+![UML Diagram](images/Milestone003_UML.png)
+
+---
+
 # Screen
 
 ## Description
