@@ -5,7 +5,7 @@ GUIFile::GUIFile() {
     return;
 }
 
-std::string trim(const std::string& s) {
+static std::string trim(const std::string& s) {
     size_t first = s.find_first_not_of(" \t\n\r");
     if (first == std::string::npos)
         return "";
@@ -58,9 +58,15 @@ void GUIFile::readFile(std::string fileName) {
     bool inPoint = false;
 
     vec2 currentVec2;
+    ivec2 currentIVec2;
     vec3 currentVec3;
+    ivec3 currentIVec3;
+
     bool buildingVec2 = false;
+    bool buildingIVec2 = false;
     bool buildingVec3 = false;
+    bool buildingIVec3 = false;
+
     bool capturedX = false;
     bool capturedY = false;
     bool capturedZ = false;
@@ -81,80 +87,147 @@ void GUIFile::readFile(std::string fileName) {
             std::string payload = line.substr(0, start);
             payload = trim(payload);
 
-            if (!payload.empty() && currentCoord != 0 && (buildingVec2 || buildingVec3) ) {
-                float value = std::stof(payload);
-                if (buildingVec2) {
-                    switch (currentCoord) {
-                        case 'x': {
-                            if (!capturedX) {
-                                currentVec2.x = value;
-                                capturedX = true;
+            if (!payload.empty() && currentCoord != 0 && (buildingVec2 || buildingIVec2 
+                || buildingVec3 || buildingIVec3)) {
+                    float value = std::stof(payload);
+                    if (buildingVec2) {
+                        switch (currentCoord) {
+                            case 'x': {
+                                if (!capturedX) {
+                                    currentVec2.x = value;
+                                    capturedX = true;
+                                }
+                                else {
+                                    std::cerr << "Malformed XML\n";
+                                    return;
+                                }
+                                break;
                             }
-                            else {
+                            case 'y': {
+                                if (!capturedY) {
+                                    currentVec2.y = value;
+                                    capturedY = true;
+                                }
+                                else {
+                                    std::cerr << "Malformed XML\n";
+                                    return;
+                                }
+                                break;
+                            }
+                            default: {
                                 std::cerr << "Malformed XML\n";
                                 return;
                             }
-                            break;
                         }
-                        case 'y': {
-                            if (!capturedY) {
-                                currentVec2.y = value;
-                                capturedY = true;
+                    }
+                    else if (buildingIVec2) {
+                        int value = std::stoi(payload);
+                        switch (currentCoord) {
+                            case 'x':
+                                if (!capturedX) { 
+                                    currentIVec2.x = value; capturedX = true; 
+                                }
+                                else { 
+                                    std::cerr << "Malformed XML\n"; return; 
+                                }
+                                break;
+
+                            case 'y':
+                                if (!capturedY) { 
+                                    currentIVec2.y = value; capturedY = true; 
+                                }
+                                else { std::cerr << "Malformed XML\n"; return; }
+                                break;
+
+                            default:
+                                std::cerr << "Malformed XML\n";
+                                return;
+                        }
+                    }
+                    else if (buildingVec3) {
+                        switch (currentCoord) {
+                            case 'x': {
+                                if (!capturedX) {
+                                    currentVec3.x = value;
+                                    capturedX = true;
+                                }
+                                else {
+                                    std::cerr << "Malformed XML\n";
+                                    return;
+                                }
+                                break;
                             }
-                            else {
+                            case 'y': {
+                                if (!capturedY) {
+                                    currentVec3.y = value;
+                                    capturedY = true;
+                                }
+                                else {
+                                    std::cerr << "Malformed XML\n";
+                                    return;
+                                }
+                                break;
+                            }
+                            case 'z': {
+                                if (!capturedZ) {
+                                    currentVec3.z = value;
+                                    capturedZ = true;
+                                }
+                                else {
+                                    std::cerr << "Malformed XML\n";
+                                    return;
+                                }
+                                break;
+                            }
+                            default: {
                                 std::cerr << "Malformed XML\n";
                                 return;
                             }
-                            break;
                         }
-                        default: {
-                            std::cerr << "Malformed XML\n";
-                            return;
+                    }
+                    else if (buildingIVec3) {
+                        int value = std::stoi(payload);
+                        switch (currentCoord) {
+                            case 'x': {
+                                if (!capturedX) {
+                                    currentIVec3.x = value;
+                                    capturedX = true;
+                                }
+                                else {
+                                    std::cerr << "Malformed XML\n";
+                                    return;
+                                }
+                                break;
+                            }
+                            case 'y': {
+                                if (!capturedY) {
+                                    currentIVec3.y = value;
+                                    capturedY = true;
+                                }
+                                else {
+                                    std::cerr << "Malformed XML\n";
+                                    return;
+                                }
+                                break;
+                            }
+                            case 'z': {
+                                if (!capturedZ) {
+                                    currentIVec3.z = value;
+                                    capturedZ = true;
+                                }
+                                else {
+                                    std::cerr << "Malformed XML\n";
+                                    return;
+                                }
+                                break;
+                            }
+                            default: {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
                         }
                     }
                 }
-                else if (buildingVec3) {
-                    switch (currentCoord) {
-                        case 'x': {
-                            if (!capturedX) {
-                                currentVec3.x = value;
-                                capturedX = true;
-                            }
-                            else {
-                                std::cerr << "Malformed XML\n";
-                                return;
-                            }
-                            break;
-                        }
-                        case 'y': {
-                            if (!capturedY) {
-                                currentVec3.y = value;
-                                capturedY = true;
-                            }
-                            else {
-                                std::cerr << "Malformed XML\n";
-                                return;
-                            }
-                            break;
-                        }
-                        case 'z': {
-                            if (!capturedZ) {
-                                currentVec3.z = value;
-                                capturedZ = true;
-                            }
-                            else {
-                                std::cerr << "Malformed XML\n";
-                                return;
-                            }
-                            break;
-                        }
-                        default: {
-                            std::cerr << "Malformed XML\n";
-                            return;
-                        }
-                    }
-                }
-            }
             
 
             line.erase(0, start);
@@ -174,36 +247,65 @@ void GUIFile::readFile(std::string fileName) {
                     currentLine = Line();      // reset it
                     lineVec2Index = 0;         // first vec2 will be start
                     buildingVec2 = false;
+                    buildingIVec2 = false;
                     buildingVec3 = false;
+                    buildingIVec3 = false;
                 }
                 else if (token == BOX_OPEN) {
                     inBox = true;
                     currentBox = Box();
                     boxVec2Index = 0;
                     buildingVec2 = false;
+                    buildingIVec2 = false;
                     buildingVec3 = false;
+                    buildingIVec3 = false;
                 }
                 else if (token == POINT_OPEN) {
                     inPoint = true;
                     currentPoint = Point();
                     buildingVec2 = false;
+                    buildingIVec2 = false;
                     buildingVec3 = false;
+                    buildingIVec3 = false;
                 }
-                else if (token == VEC2_OPEN || token == IVEC2_OPEN) {
+                else if (token == VEC2_OPEN) {
                     buildingVec2 = true;
+                    buildingIVec2 = false;
                     capturedX = false;
                     capturedY = false;
                     currentVec2 = vec2();
                     buildingVec3 = false;
+                    buildingIVec3 = false;
                 }
-                else if (token == VEC3_OPEN || token == IVEC3_OPEN) {
+                 else if (token == IVEC2_OPEN) {
+                    buildingIVec2 = true;
+                    buildingVec2 = false;
+                    capturedX = false;
+                    capturedY = false;
+                    currentIVec2 = ivec2();
+                    buildingIVec3 = false;
+                    buildingVec3 = false;
+                }
+                else if (token == VEC3_OPEN) {
                     buildingVec3 = true;
+                    buildingIVec3 = false;
                     capturedX = false;
                     capturedY = false;
                     capturedZ = false;
                     currentVec3 = vec3();
                     buildingVec2 = false;
-                    }
+                    buildingIVec2 = false;
+                }
+                else if (token == IVEC3_OPEN) {
+                    buildingIVec3 = true;
+                    buildingVec3 = false;
+                    capturedX = false;
+                    capturedY = false;
+                    capturedZ = false;
+                    currentIVec3 = ivec3();
+                    buildingIVec2 = false;
+                    buildingVec2 = false;
+                }
                 else if (token == X_OPEN) {
                    currentCoord = 'x';
                 }
@@ -240,44 +342,86 @@ void GUIFile::readFile(std::string fileName) {
                     //         return;
                     // }
                     else {
-                        if (token == LINE_CLOSE){
+                        if (token == LINE_CLOSE) {
                             lines.push_back(currentLine);
                             inLine = false;
                         }
-                        else if (token == BOX_CLOSE){
+                        else if (token == BOX_CLOSE) {
                             boxes.push_back(currentBox);
                             inBox = false;
                         }
-                        else if (token == POINT_CLOSE){
+                        else if (token == POINT_CLOSE) {
                             points.push_back(currentPoint);
                             inPoint = false;
                         }
-                        else if (token == VEC2_CLOSE || token == IVEC2_CLOSE){
+                        else if (token == VEC2_CLOSE) {
                             if (!capturedX || !capturedY) {
                                 std::cerr << "Malformed XML\n";
                                 return;
                             }
                             buildingVec2 = false;
                             if (inLine) {
-                                if (lineVec2Index == 0) currentLine.start = currentVec2;
-                                else if(lineVec2Index == 1) currentLine.end = currentVec2;
+                                if (lineVec2Index == 0) {
+                                    currentLine.start = currentVec2;
+                                    currentLine.startType = TagType::Vec;
+                                }
+                                else if(lineVec2Index == 1) {
+                                    currentLine.end = currentVec2;
+                                    currentLine.endType = TagType::Vec;
+                                }
                                 lineVec2Index += 1;
                             }
                             else if (inBox) {
                                 if (boxVec2Index == 0) {
                                     currentBox.min = currentVec2;
+                                    currentBox.minType = TagType::Vec;
                                 }
                                 else if (boxVec2Index == 1) {
                                     currentBox.max = currentVec2;
+                                    currentBox.maxType = TagType::Vec;
                                 }
                                 boxVec2Index += 1;
                             }
                             else if (inPoint) {
                                 currentPoint.position = currentVec2;
-                            }
-                           
+                                currentPoint.posType = TagType::Vec;
+                            } 
                         }
-                        else if (token == VEC3_CLOSE || token == IVEC3_CLOSE) {
+                        else if (token == IVEC2_CLOSE) {
+                            if (!capturedX || !capturedY) {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
+                            buildingIVec2 = false;
+                            vec2 converted(static_cast<float>(currentIVec2.x), static_cast<float>(currentIVec2.y));
+                            if (inLine) {
+                                if (lineVec2Index == 0) {
+                                    currentLine.start = converted;
+                                    currentLine.startType = TagType::IVec;
+                                }
+                                else if(lineVec2Index == 1) {
+                                    currentLine.end = converted;
+                                    currentLine.endType = TagType::IVec;
+                                }
+                                lineVec2Index += 1;
+                            }
+                            else if (inBox) {
+                                if (boxVec2Index == 0) {
+                                    currentBox.min = converted;
+                                    currentBox.minType = TagType::IVec;
+                                }
+                                else if (boxVec2Index == 1) {
+                                    currentBox.max = converted;
+                                    currentBox.maxType = TagType::IVec;
+                                }
+                                boxVec2Index += 1;
+                            }
+                            else if (inPoint) {
+                                currentPoint.position = converted;
+                                currentPoint.posType = TagType::IVec;
+                            }
+                        }
+                        else if (token == VEC3_CLOSE) {
                             if (!capturedX || !capturedY || !capturedZ) {
                                 std::cerr << "Malformed XML\n";
                                 return;
@@ -285,12 +429,36 @@ void GUIFile::readFile(std::string fileName) {
                             buildingVec3 = false;
                             if (inLine) {
                                 currentLine.color = currentVec3;
+                                currentLine.colorType = TagType::Vec;
                             }
                             else if (inBox) {
                                 currentBox.color = currentVec3;
+                                currentBox.colorType = TagType::Vec;
                             }
                             else if(inPoint) {
                                 currentPoint.color = currentVec3;
+                                currentPoint.colorType = TagType::Vec;
+                            }
+                        }
+                        else if (token == IVEC3_CLOSE) {
+                            if (!capturedX || !capturedY || !capturedZ) {
+                                std::cerr << "Malformed XML\n";
+                                return;
+                            }
+                            buildingIVec3 = false;
+                            vec3 converted(static_cast<float>(currentIVec3.x), static_cast<float>(currentIVec3.y),
+                            static_cast<float>(currentIVec3.z));
+                            if (inLine) {
+                                currentLine.color = converted;
+                                currentLine.colorType = TagType::IVec;
+                            }
+                            else if (inBox) {
+                                currentBox.color = converted;
+                                currentBox.colorType = TagType::IVec;
+                            }
+                            else if(inPoint) {
+                                currentPoint.color = converted;
+                                currentPoint.colorType = TagType::IVec;
                             }
                         }
                         else if (token == X_CLOSE) {
@@ -311,6 +479,40 @@ void GUIFile::readFile(std::string fileName) {
     return;
 }
 
+static int toInt(float x) {
+    return static_cast<int>(std::lround(x));
+}
+
+static void writeVec2(std::ofstream& out, const vec2& v) {
+    out << "    <vec2>\n";
+    out << "        <x>" << v.x  << "</x>\n";
+    out << "        <y>" << v.y  << "</y>\n";
+    out << "    </vec2>\n";
+}
+
+static void writeIVec2(std::ofstream& out, const vec2& v) {
+    out << "    <ivec2>\n";
+    out << "        <x>" << toInt(v.x)  << "</x>\n";
+    out << "        <y>" << toInt(v.y)  << "</y>\n";
+    out << "    </ivec2>\n";
+}
+
+static void writeVec3(std::ofstream& out, const vec3& v) {
+    out << "    <vec3>\n";
+    out << "        <x>" << v.x  << "</x>\n";
+    out << "        <y>" << v.y  << "</y>\n";
+    out << "        <z>" << v.z  << "</z>\n";
+    out << "    </vec3>\n";
+}
+
+static void writeIVec3(std::ofstream& out, const vec3& v) {
+    out << "    <ivec3>\n";
+    out << "        <x>" << toInt(v.x)  << "</x>\n";
+    out << "        <y>" << toInt(v.y)  << "</y>\n";
+    out << "        <z>" << toInt(v.z)  << "</z>\n";
+    out << "    </ivec3>\n";
+}
+
 
 void GUIFile::writeFile(const std::string& fileName) const {
     std::ofstream out(fileName);
@@ -320,75 +522,76 @@ void GUIFile::writeFile(const std::string& fileName) const {
 
     out << "<layout>\n";
 
-    // Write lines
     for (const auto& l : lines) {
         out << "  <line>\n";
 
-        // write start vec2
-        out << "    <vec2>\n";
-        out << "        <x>" << l.start.x  << "</x>\n";
-        out << "        <y>" << l.start.y  << "</y>\n";
-        out << "    </vec2>\n";
-        
-        // write end vec2
-        out << "    <vec2>\n";
-        out << "        <x>" << l.end.x  << "</x>\n";
-        out << "        <y>" << l.end.y  << "</y>\n";
-        out << "    </vec2>\n";
+        if (l.startType == TagType::IVec){ 
+            writeIVec2(out, l.start);
+        }
+        else {
+            writeVec2(out, l.start);
+        }
 
-        // write color vec3
-        out << "    <vec3>\n";
-        out << "        <x>" << l.color.x  << "</x>\n";
-        out << "        <y>" << l.color.y  << "</y>\n";
-        out << "        <z>" << l.color.z  << "</z>\n";
-        out << "    </vec3>\n";
+        if (l.endType == TagType::IVec) {
+            writeIVec2(out, l.end);
+        }
+        else { 
+            writeVec2(out, l.end);
+        }
+
+        if (l.colorType == TagType::IVec) { 
+            writeIVec3(out, l.color);
+        }
+        else { 
+            writeVec3(out, l.color);
+        }
 
         out << "  </line>\n";
     }
 
-    // Write boxes
     for (const auto& b : boxes) {
         out << "  <box>\n";
 
-        // write min vec2
-        out << "    <vec2>\n";
-        out << "        <x>" << b.min.x  << "</x>\n";
-        out << "        <y>" << b.min.y  << "</y>\n";
-        out << "    </vec2>\n";
-        
-        // write max vec2
-        out << "    <vec2>\n";
-        out << "        <x>" << b.max.x  << "</x>\n";
-        out << "        <y>" << b.max.y  << "</y>\n";
-        out << "    </vec2>\n";
+        if (b.minType == TagType::IVec) {
+            writeIVec2(out, b.min);
+         }
+        else {
+            writeVec2(out, b.min);
+        }
 
-        // write color vec3
-        out << "    <vec3>\n";
-        out << "        <x>" << b.color.x  << "</x>\n";
-        out << "        <y>" << b.color.y  << "</y>\n";
-        out << "        <z>" << b.color.z  << "</z>\n";
-        out << "    </vec3>\n";
+        if (b.maxType == TagType::IVec) {
+            writeIVec2(out, b.max);
+        }
+        else {
+            writeVec2(out, b.max);
+        }
+
+        if (b.colorType == TagType::IVec) { 
+            writeIVec3(out, b.color);
+        }
+        else {
+            writeVec3(out, b.color);
+        }
 
         out << "  </box>\n";
     }
 
-    // // Write points
     for (const auto& p : points) {
         out << "  <point>\n";
 
-        // write position vec2
-        out << "    <vec2>\n";
-        out << "        <x>" << p.position.x  << "</x>\n";
-        out << "        <y>" << p.position.y  << "</y>\n";
-        out << "    </vec2>\n";
-        
+        if (p.posType == TagType::IVec) {
+            writeIVec2(out, p.position);
+        }
+        else {
+            writeVec2(out, p.position);
+        }
 
-        // write color vec3
-        out << "    <vec3>\n";
-        out << "        <x>" << p.color.x  << "</x>\n";
-        out << "        <y>" << p.color.y  << "</y>\n";
-        out << "        <z>" << p.color.z  << "</z>\n";
-        out << "    </vec3>\n";
+        if (p.colorType == TagType::IVec) {
+            writeIVec3(out, p.color);
+        }
+        else {
+            writeVec3(out, p.color);
+        }
 
         out << "  </point>\n";
     }

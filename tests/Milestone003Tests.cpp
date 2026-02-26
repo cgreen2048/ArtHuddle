@@ -8,6 +8,12 @@ int readTest3();
 int readTest4();
 int readTest5();
 int writeTest1();
+int writeTest2();
+int writeTest3();
+int linesComparsion(std::vector<GUIFile::Line>, std::vector<GUIFile::Line>);
+int boxesComparsion(std::vector<GUIFile::Box>, std::vector<GUIFile::Box>);
+int pointsComparsion(std::vector<GUIFile::Point>, std::vector<GUIFile::Point>);
+
 
 int main() {
     int failure = 0;
@@ -32,6 +38,12 @@ int main() {
     if (writeTest1()){
         failure = 1;
     }
+    if (writeTest2()){
+        failure = 1;
+    }
+    if(writeTest3()){
+        failure = 1;
+    }
 
 
 
@@ -45,6 +57,50 @@ int main() {
     return failure;
 }
 
+int linesComparsion(std::vector<GUIFile::Line> line1, std::vector<GUIFile::Line> line2) {
+    if (line1.size() != line2.size()) {
+        return 1;
+    }
+    else {
+        for (size_t i = 0; i < line1.size(); ++i) {
+            if (line1[i].start != line2[i].start || line1[i].end != line2[i].end  
+                || line1[i].color != line2[i].color) {
+                    return 1;
+                }
+        }
+    }
+    return 0;
+}
+
+int boxesComparsion(std::vector<GUIFile::Box> box1, std::vector<GUIFile::Box> box2) {
+    if (box1.size() != box2.size()) {
+        return 1;
+    }
+    else {
+        for (size_t i = 0; i < box1.size(); ++i) {
+            if ((box1[i].min != box2[i].min) || (box1[i].max != box2[i].max) 
+            || (box1[i].color != box2[i].color)) {
+                    return 1;
+                }
+        }
+    }
+    return 0;
+}
+
+int pointsComparsion(std::vector<GUIFile::Point> point1, std::vector<GUIFile::Point> point2) {
+     if (point1.size() != point2.size()) {
+        return 1;
+    }
+    else {
+        for (size_t i = 0; i < point1.size(); ++i) {
+            if ((point1[i].position != point2[i].position) || (point1[i].color != point2[i].color)) {
+                    return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 int readTest1() {
     int failure = 0;
 
@@ -54,7 +110,6 @@ int readTest1() {
 
 
     lines.push_back(GUIFile::Line{vec2(50.5, 902.47), vec2(75.6, 1024.6), vec3(244.0, 245.0, 103.3)});
-    lines.push_back(GUIFile::Line{vec2(60.5, 1002.47), vec2(85.6, 2024.6), vec3(344.0, 345.0, 203.3)});
     boxes.push_back(GUIFile::Box{vec2(250.3, 122.5), vec2(420.34, 254.9), vec3(212, 22, 124)});
     points.push_back(GUIFile::Point{vec2(480, 270), vec3(67, 200, 142)});
 
@@ -65,39 +120,15 @@ int readTest1() {
     std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
     std::vector<GUIFile::Point> guiPoints = gui.getPoints();
 
-    if (lines.size() != guiLines.size()) {
-        failure = 1;
-    }
-    else {
-        for (size_t i = 0; i < lines.size(); ++i) {
-            if (lines[i].start != guiLines[i].start || lines[i].end != guiLines[i].end  
-                || lines[i].color != guiLines[i].color) {
-                    failure = 1;
-                }
-        }
-    }
 
-    if (boxes.size() != guiBoxes.size()) {
+    if (linesComparsion(lines, guiLines)) {
         failure = 1;
     }
-    else {
-        for (size_t i = 0; i < boxes.size(); ++i) {
-            if ((boxes[i].min != guiBoxes[i].min) || (boxes[i].max != guiBoxes[i].max) 
-            || (boxes[i].color != guiBoxes[i].color)) {
-                    failure = 1;
-                }
-        }
-    }
-
-    if (points.size() != guiPoints.size()) {
+    if (boxesComparsion(boxes, guiBoxes)) {
         failure = 1;
     }
-    else {
-        for (size_t i = 0; i < points.size(); ++i) {
-            if ((points[i].position != guiPoints[i].position) || (points[i].color != guiPoints[i].color)) {
-                    failure = 1;
-            }
-        }
+    if (pointsComparsion(points, guiPoints)) {
+        failure = 1;
     }
 
 
@@ -174,39 +205,14 @@ int readTest4() {
     std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
     std::vector<GUIFile::Point> guiPoints = gui.getPoints();
 
-    if (lines.size() != guiLines.size()) {
+    if (linesComparsion(lines, guiLines)) {
         failure = 1;
     }
-    else {
-        for (size_t i = 0; i < lines.size(); ++i) {
-            if (lines[i].start != guiLines[i].start || lines[i].end != guiLines[i].end  
-                || lines[i].color != guiLines[i].color) {
-                    failure = 1;
-                }
-        }
-    }
-
-    if (boxes.size() != guiBoxes.size()) {
+    if (boxesComparsion(boxes, guiBoxes)) {
         failure = 1;
     }
-    else {
-        for (size_t i = 0; i < boxes.size(); ++i) {
-            if ((boxes[i].min != guiBoxes[i].min) || (boxes[i].max != guiBoxes[i].max) 
-            || (boxes[i].color != guiBoxes[i].color)) {
-                    failure = 1;
-                }
-        }
-    }
-
-    if (points.size() != guiPoints.size()) {
+    if (pointsComparsion(points, guiPoints)) {
         failure = 1;
-    }
-    else {
-        for (size_t i = 0; i < points.size(); ++i) {
-            if ((points[i].position != guiPoints[i].position) || (points[i].color != guiPoints[i].color)) {
-                    failure = 1;
-            }
-        }
     }
 
     if (failure) {
@@ -238,33 +244,13 @@ int readTest5() {
     std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
     std::vector<GUIFile::Point> guiPoints = gui.getPoints();
 
-    if (lines.size() == guiLines.size()) {
-        for (GUIFile::Line l: lines) {
-            for (GUIFile::Line gl: gui.getLines()) {
-                if ((l.start != gl.start) || (l.end != gl.end) || (l.color != gl.color)) {
-                    failure = 1;
-                }
-            }
-        }
-    }
-    else {
+    if (linesComparsion(lines, guiLines)) {
         failure = 1;
     }
-
-    if (boxes.size() == guiBoxes.size()) {
-        for (GUIFile::Box b: boxes) {
-            for (GUIFile::Box gb: gui.getBoxes()) {
-                if ((b.min != gb.min) || (b.max != gb.max) || (b.color != gb.color)) {
-                    failure = 1;
-                }
-            }
-        }
-    }
-    else {
+    if (boxesComparsion(boxes, guiBoxes)) {
         failure = 1;
     }
-
-    if (gui.getPoints().size() != 0) {
+    if (guiPoints.size() != 0) {
         failure = 1;
     }
 
@@ -279,7 +265,7 @@ int readTest5() {
     return failure;
 }
 
-int writeTest1(){
+int writeTest1() {
     int failure = 0;
 
     std::vector<GUIFile::Line> lines;
@@ -295,48 +281,24 @@ int writeTest1(){
     gui.addLine(GUIFile::Line{vec2(50.5, 902.47), vec2(75.6, 1024.6), vec3(244.0, 245.0, 103.3)});
     gui.addBox(GUIFile::Box{vec2(250.3, 122.5), vec2(420.34, 254.9), vec3(212, 22, 124)});
     gui.addPoint(GUIFile::Point{vec2(480, 270), vec3(67, 200, 142)});
-    gui.writeFile("../output.xml");
-    gui.readFile("../output.xml");
-
+    gui.writeFile("testFiles/output.xml");
+    
+    gui.readFile("testFiles/output.xml");
     std::vector<GUIFile::Line> guiLines = gui.getLines();
     std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
     std::vector<GUIFile::Point> guiPoints = gui.getPoints();
 
-    if (lines.size() != guiLines.size()) {
+    if (linesComparsion(lines, guiLines)) {
         failure = 1;
     }
-    else {
-        for (size_t i = 0; i < lines.size(); ++i) {
-            if (lines[i].start != guiLines[i].start || lines[i].end != guiLines[i].end  
-                || lines[i].color != guiLines[i].color) {
-                    failure = 1;
-                }
-        }
-    }
-
-    if (boxes.size() != guiBoxes.size()) {
+    if (boxesComparsion(boxes, guiBoxes)) {
         failure = 1;
     }
-    else {
-        for (size_t i = 0; i < boxes.size(); ++i) {
-            if ((boxes[i].min != guiBoxes[i].min) || (boxes[i].max != guiBoxes[i].max) 
-            || (boxes[i].color != guiBoxes[i].color)) {
-                    failure = 1;
-                }
-        }
-    }
-
-    if (points.size() != guiPoints.size()) {
+    if (pointsComparsion(points, guiPoints)) {
         failure = 1;
     }
-    else {
-        for (size_t i = 0; i < points.size(); ++i) {
-            if ((points[i].position != guiPoints[i].position) || (points[i].color != guiPoints[i].color)) {
-                    failure = 1;
-            }
-        }
-    }
 
+    
     if (failure) {
         std::cout << "writing test 1 (write then read) FAILED\n";
     }
@@ -345,6 +307,99 @@ int writeTest1(){
     }
 
     return failure;
+}
+
+int writeTest2() {
+    int failure = 0;
+
+    GUIFile gui = GUIFile();
+    gui.writeFile("testFiles/empty.xml");
+
+    gui.readFile("testFiles/empty.xml");
+    std::vector<GUIFile::Line> guiLines = gui.getLines();
+    std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
+    std::vector<GUIFile::Point> guiPoints = gui.getPoints();
+
+
+    if (guiLines.size() != 0) {
+        failure = 1;
+    }
+    if (guiBoxes.size() != 0) {
+        failure = 1;
+    }
+    if (guiPoints.size() != 0) {
+        failure = 1;
+    }
+
+
+    if (failure) {
+        std::cout << "writing test 2 (empty tag) FAILED\n";
+    }
+    else {
+        std::cout << "writing test 2 (empty tag) passed\n";
+    }
+
+    return failure;
+}
+
+int writeTest3() {
+    int failure = 0;
+
+    GUIFile gui = GUIFile();
+
+    std::vector<GUIFile::Line> expLines = {
+            {vec2(1.1, 2.2), vec2(3.3, 4.4), vec3(10.0, 20.0, 30.0), GUIFile::TagType::Vec, GUIFile::TagType::Vec, GUIFile::TagType::IVec},
+            {vec2(5.5, 6.6), vec2(7.7, 8.8), vec3(40.0, 50.0, 60.0), GUIFile::TagType::Vec, GUIFile::TagType::Vec, GUIFile::TagType::IVec},
+            {vec2(9.9, 10.01), vec2(11.11, 12.12), vec3(70.0, 80.0, 90.0), GUIFile::TagType::Vec, GUIFile::TagType::Vec, GUIFile::TagType::IVec}
+    };
+
+    std::vector<GUIFile::Box> expBoxes = {
+        {vec2(100.1, 200.2), vec2(300.3, 400.4), vec3(1.0, 2.0, 3.0)},
+        {vec2(500.5, 600.6), vec2(700.7, 800.8), vec3(4.0, 5.0, 6.0)}
+    };
+
+    std::vector<GUIFile::Point> expPoints = {
+        {vec2(13.0, 14.0), vec3(101.0, 102.0, 103.0), GUIFile::TagType::IVec, GUIFile::TagType::IVec},
+        {vec2(15.0, 16.0), vec3(104.0, 105.0, 106.0), GUIFile::TagType::IVec, GUIFile::TagType::IVec},
+        {vec2(17.0, 18.0), vec3(107.0, 108.0, 109.0)},
+        {vec2(19.0, 20.0), vec3(110.0, 111.0, 112.0)}
+    };
+
+    for (const auto& l : expLines) {
+        gui.addLine(l);
+    }
+    for (const auto& b : expBoxes) {
+        gui.addBox(b);
+    }
+    for (const auto& p : expPoints) {
+        gui.addPoint(p);
+    }
+    gui.writeFile("testFiles/multipleSurfaceObjects.xml");
+
+    gui.readFile("testFiles/multipleSurfaceObjects.xml");
+    std::vector<GUIFile::Line> guiLines = gui.getLines();
+    std::vector<GUIFile::Box> guiBoxes = gui.getBoxes();
+    std::vector<GUIFile::Point> guiPoints = gui.getPoints();
+
+    if (linesComparsion(expLines, guiLines)) {
+        failure = 1;
+    }
+    if (boxesComparsion(expBoxes, guiBoxes)) {
+        failure = 1;
+    }
+    if (pointsComparsion(expPoints, guiPoints)) {
+        failure = 1;
+    }
+
+    if (failure) {
+        std::cout << "writing test 3 (multiple surface objects) FAILED\n";
+    }
+    else {
+        std::cout << "writing test 3 (multiple surface objects) passed\n";
+    }
+
+    return failure;
+
 }
 
 

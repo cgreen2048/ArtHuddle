@@ -37,23 +37,38 @@ const std::string Z_CLOSE = "</z>";
 const std::vector<std::string> OPENERS = {LAYOUT_OPEN, LINE_OPEN, BOX_OPEN, POINT_OPEN, VEC2_OPEN, VEC3_OPEN, IVEC2_OPEN, IVEC3_OPEN, X_OPEN, Y_OPEN, Z_OPEN};
 const std::vector<std::string> CLOSERS = {LAYOUT_CLOSE, LINE_CLOSE, BOX_CLOSE, POINT_CLOSE, VEC2_CLOSE, VEC3_CLOSE, IVEC2_CLOSE, IVEC3_CLOSE, X_CLOSE, Y_CLOSE, Z_CLOSE};
 
+
+
 class GUIFile {
     public:
+        enum class TagType {Vec, IVec};
+
         struct {
-                vec2 start;
-                vec2 end;
-                vec3 color;
-            } typedef Line;
+            vec2 start;
+            vec2 end;
+            vec3 color;
+            
+            TagType startType = TagType::Vec; // <vec2> vs <ivec2>
+            TagType endType = TagType::Vec;
+            TagType colorType = TagType::Vec; // <vec3> vs <ivec3>
+        } typedef Line;
 
         struct {
             vec2 min;
             vec2 max;
             vec3 color;
+
+            TagType minType = TagType::Vec;
+            TagType maxType = TagType::Vec;
+            TagType colorType = TagType::Vec;
         } typedef Box;
 
         struct {
             vec2 position;
             vec3 color;
+
+            TagType posType = TagType::Vec;
+            TagType colorType = TagType::Vec;
         } typedef Point;
 
         GUIFile();
@@ -67,13 +82,10 @@ class GUIFile {
         void writeFile(const std::string& fileName) const;
         void clear();
 
-        private:
-            std::vector<Line> lines;
-            std::vector<Box> boxes;
-            std::vector<Point> points;
-    
-        // Line stores vec2, vec2, vec3
-        
+    private:
+        std::vector<Line> lines;
+        std::vector<Box> boxes;
+        std::vector<Point> points;
 
 };
 
