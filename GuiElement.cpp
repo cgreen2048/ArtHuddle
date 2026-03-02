@@ -1,16 +1,15 @@
-#include "Factory.hpp"
+#include "GuiElement.hpp"
 
-GuiElement* factory(guiElement e)
-{
-	switch (e)
-	{
-    case guiElement::POINT:
-        return new Point{};
-	case guiElement::LINE:
-		return new Line{};
-	case guiElement::BOX:
-		return new Box{};
-	}
-	return nullptr;
+GuiElement::GuiElement() {
+    std::cout << "GuiElement constructor\n";
+
 }
-
+GuiElement::~GuiElement() {
+    std::cout << "GuiElement destroyed\n";
+}
+void GuiElement::draw(){
+    std::cout << "Draw\n";
+}
+void GuiElement::setScreen(Screen* target) {
+    this->screen = target;
+}
