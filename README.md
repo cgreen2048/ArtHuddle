@@ -6,6 +6,80 @@
 
 main.cpp is a demonstration program
 
+# Box
+
+## Description
+`Box` is a class used for storing and drawing a filled box to a `Screen` object. It inherits from the `GuiElement` class
+- `vec2 min`: the coordinates of the minimum point of the box
+- `vec2 max`: the coordinates of the maximum point of the box
+- `vec3 color`: the color of the box
+
+## Methods
+
+### `Box()`
+The default constructor. Initializes `min`, `max`, and `color` to zeros
+
+### `Box(vec2 min, vec2 max, vec3 color)`
+The parameterized constructor. Assigns `min`, `max`, and `color` to appropriate attributes in the `Box` class
+
+### `~Box()`
+The default destructor
+
+### `void draw()`
+Method to draw the stored box to a `Screen` object
+- Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
+- Calls the `drawBox` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
+
+
+# Line
+
+## Description
+`Line` is a class used for storing and drawing a line to a `Screen` object. It inherits from the `GuiElement` class
+- `vec2 start`: the coordinates of the starting point of the line
+- `vec2 end`: the coordinates of the ending point of the line
+- `vec3 color`: the color of the line
+
+## Methods
+
+### `Line()`
+The default constructor. Initializes `start`, `end`, and `color` to zeros
+
+### `Line(vec2 start, vec2 end, vec3 color)`
+The parameterized constructor. Assigns `start`, `end`, and `color` to appropriate attributes in the `Line` class
+
+### `~Line()`
+The default destructor
+
+### `void draw()`
+Method to draw the stored line to a `Screen` object
+- Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
+- Calls the `drawBresenhamLine` within the `Screen` class to draw the line to to the screen's `SDL_Surface`
+
+
+# Point
+
+## Description
+`Point` is a class used for storing and drawing a point to a `Screen` object. It inherits from the `GuiElement` class
+- `vec2 coords`: the coordinates of the point
+- `vec3 color`: the color of the box
+
+## Methods
+
+### `Point()`
+The default constructor. Initializes `coords` and `color` to zeros
+
+### `Point(vec2 coords, vec3 color)`
+The parameterized constructor. Assigns `coords` and `color` to appropriate attributes in the `Point` class
+
+### `~Point()`
+The default destructor
+
+### `void draw()`
+Method to draw the stored point to a `Screen` object
+- Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
+- Calls the `colorOnePixel` within the `Screen` class to draw the point to to the screen's `SDL_Surface`
+
+
 # GUIFile
 
 ## Description
