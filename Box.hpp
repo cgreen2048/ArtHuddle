@@ -11,19 +11,9 @@ class Box : public GuiElement {
     
     public:
 		Box();
-        
         Box(vec2, vec2, vec3);
-		// {
-		// 	std::cout << "Box constructor\n";
-		// }
 		~Box();
-		// {
-		// 	std::cout << "Box destroyed\n";
-		// }
 		void draw();
-		// {
-		// 	std::cout << "box!\n";
-		// }
 };
 
 #endif
