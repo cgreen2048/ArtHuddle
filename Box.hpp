@@ -6,7 +6,7 @@
 class Box : public GuiElement {
 	private:
 		vec2 min;
-        vec2 max;
+		vec2 max;
 		vec3 color;
     
     public:

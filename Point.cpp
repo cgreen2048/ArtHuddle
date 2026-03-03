@@ -8,7 +8,6 @@ Point::Point(vec2 coords, vec3 color) {
     std::cout << "Point created\n";
     this->coords = coords;
     this->color = color;
-    std::cout << this->coords[0] << '\n';
 }
 Point::~Point() {
     std::cout << "Point destroyed\n";

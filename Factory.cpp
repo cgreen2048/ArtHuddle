@@ -1,7 +1,6 @@
 #include "Factory.hpp"
 
-GuiElement* factory(guiElement e)
-{
+GuiElement* factory(guiElement e) {
 	switch (e) {
 		case guiElement::POINT: {
 			return new Point{};
