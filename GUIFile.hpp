@@ -10,6 +10,10 @@
 #include <algorithm>
 #include "vec2.hpp"
 #include "vec3.hpp"
+#include "GuiElement.hpp"
+#include "Line.hpp"
+#include "Box.hpp"
+#include "Point.hpp"
 
 const std::string LAYOUT_OPEN = "<layout>";
 const std::string LAYOUT_CLOSE = "</layout>";
@@ -42,51 +46,23 @@ const std::vector<std::string> CLOSERS = {LAYOUT_CLOSE, LINE_CLOSE, BOX_CLOSE, P
 class GUIFile {
     public:
         enum class TagType {Vec, IVec};
-
-        struct {
-            vec2 start;
-            vec2 end;
-            vec3 color;
-            
-            TagType startType = TagType::Vec; // <vec2> vs <ivec2>
-            TagType endType = TagType::Vec;
-            TagType colorType = TagType::Vec; // <vec3> vs <ivec3>
-        } typedef Line;
-
-        struct {
-            vec2 min;
-            vec2 max;
-            vec3 color;
-
-            TagType minType = TagType::Vec;
-            TagType maxType = TagType::Vec;
-            TagType colorType = TagType::Vec;
-        } typedef Box;
-
-        struct {
-            vec2 position;
-            vec3 color;
-
-            TagType posType = TagType::Vec;
-            TagType colorType = TagType::Vec;
-        } typedef Point;
-
+        
         GUIFile();
-        const std::vector<Line>& getLines() const;
-        const std::vector<Box>&  getBoxes() const;
-        const std::vector<Point>& getPoints() const;
-        void addLine(const Line& l);
-        void addBox(const Box& b);
-        void addPoint(const Point& p);
-        void readFile(std::string);
-        void writeFile(const std::string& fileName) const;
+        ~GUIFile();
+
+        GUIFile(const GUIFile&) = delete;
+        GUIFile& operator=(const GUIFile&) = delete;
+
+        void addLine(Line* l);
+        void addBox(Box* b);
+        void addPoint(Point* p);
+
+        const std::vector<GuiElement*>& getElements() const;
+
         void clear();
 
     private:
-        std::vector<Line> lines;
-        std::vector<Box> boxes;
-        std::vector<Point> points;
-
+        std::vector<GuiElement*> elements; // GUIFile OWNS these pointers
 };
 
 #endif

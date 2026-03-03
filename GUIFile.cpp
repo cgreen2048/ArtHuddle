@@ -5,6 +5,33 @@ GUIFile::GUIFile() {
     return;
 }
 
+GUIFile::~GUIFile() {
+    clear();
+}
+
+void GUIFile::clear() {
+    for (GuiElement* e : elements) {
+        delete e;
+    }
+    elements.clear();
+}
+
+const std::vector<GuiElement*>& GUIFile::getElements() const {
+    return elements;
+}
+
+void GUIFile::addLine(Line* l) {
+    elements.push_back(l); // implicit upcast Line* -> GuiElement*
+}
+
+void GUIFile::addBox(Box* b) {
+    elements.push_back(b);
+}
+
+void GUIFile::addPoint(Point* p) {
+    elements.push_back(p);
+}
+
 static std::string trim(const std::string& s) {
     size_t first = s.find_first_not_of(" \t\n\r");
     if (first == std::string::npos) {
@@ -15,33 +42,6 @@ static std::string trim(const std::string& s) {
     return s.substr(first, last - first + 1);
 }
 
-const std::vector<GUIFile::Line>& GUIFile::getLines() const {
-    return lines;
-}
-const std::vector<GUIFile::Box>& GUIFile::getBoxes() const { 
-    return boxes; 
-}
-const std::vector<GUIFile::Point>& GUIFile::getPoints() const { 
-    return points; 
-}
-
-void GUIFile::addLine(const Line& l) { 
-    lines.push_back(l); 
-}
-void GUIFile::addBox(const Box& b) { 
-    boxes.push_back(b); 
-}
-void GUIFile::addPoint(const Point& p) { 
-    points.push_back(p); 
-}
-
-void GUIFile::clear() {
-    lines.clear();
-    boxes.clear();
-    points.clear();
-}
-
-
 void GUIFile::readFile(std::string fileName) {
     clear();
     
@@ -51,9 +51,8 @@ void GUIFile::readFile(std::string fileName) {
         return;
     }
 
-    Line  currentLine;
-    Box   currentBox;
-    Point currentPoint;
+    GuiElement* current = nullptr;
+    guiElement currentType;
     bool inLine  = false;
     bool inBox   = false;
     bool inPoint = false;
@@ -254,7 +253,7 @@ void GUIFile::readFile(std::string fileName) {
                 matcher.push(token);
                 if (token == LINE_OPEN) {
                     inLine = true;
-                    currentLine = Line();      // reset it
+                    current = factory(guiElement::LINE) // reset it
                     lineVec2Index = 0;         // first vec2 will be start
                     buildingVec2 = false;
                     buildingIVec2 = false;
@@ -351,15 +350,15 @@ void GUIFile::readFile(std::string fileName) {
                         }
                     else {
                         if (token == LINE_CLOSE) {
-                            lines.push_back(currentLine);
+                            lines.push_back(current);
                             inLine = false;
                         }
                         else if (token == BOX_CLOSE) {
-                            boxes.push_back(currentBox);
+                            boxes.push_back(current);
                             inBox = false;
                         }
                         else if (token == POINT_CLOSE) {
-                            points.push_back(currentPoint);
+                            points.push_back(current);
                             inPoint = false;
                         }
                         else if (token == VEC2_CLOSE) {
