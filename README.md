@@ -451,6 +451,16 @@ Notes:
 
 ---
 
+### `T cross(Tvec2 rhs)`
+
+Computes the cross product between the current vector & the `rhs` vector
+
+Parameters:
+- `rhs` — the other vector
+
+Returns:
+- The scalar cross product as type `T`
+
 ### Comparison Operators
 
 ### `bool operator==(Tvec2 rhs)`
