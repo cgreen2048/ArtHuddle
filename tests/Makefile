@@ -26,6 +26,7 @@ mac:
 	g++ ../Screen.cpp Milestone002Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone002
 	g++ ../Screen.cpp screenDemo.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o screenDemo
 	g++ ../GUIFile.cpp Milestone003Tests.cpp -Wall -o milestone003
+	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Screen.cpp Milestone004Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone004
 
 clean:
 	rm a.out
@@ -33,5 +34,6 @@ clean:
 	rm milestone002
 	rm screenDemo
 	rm milestone003
+	rm milestone004
 
 
