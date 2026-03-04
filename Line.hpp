@@ -13,17 +13,11 @@ class Line : public GuiElement {
 		Line();
     
         Line(vec2, vec2, vec3);
-		// {
-		// 	std::cout << "Line constructor\n";
-		// }
+		
 		~Line();
-		// {
-		// 	std::cout << "Line destroyed\n";
-		// }
+		
 		void draw();
-		// {
-		// 	std::cout << "line!\n";
-		// }
+		
 };
 
 #endif

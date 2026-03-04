@@ -12,17 +12,11 @@ class Point : public GuiElement {
 		Point();
 
         Point(vec2, vec3);
-		// {
-		// 	std::cout << "Point created\n";
-		// }
+		
 		~Point();
-		// {
-		// 	std::cout << "Point destroyed\n";
-		// }
+		
 		void draw();
-		// {
-		// 	std::cout << "point!\n";
-		// }
+		
 };
 
 #endif
