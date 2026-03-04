@@ -5,13 +5,13 @@
 
 class Line : public GuiElement {
 	private:
-		vec2 start;
-        vec2 end;
-		vec3 color;
+		ivec2 start;
+		ivec2 end;
+		ivec3 color;
 
     public:
 		Line();
-        Line(vec2, vec2, vec3);
+        Line(ivec2, ivec2, ivec3);
 		~Line();
 		void draw();
 };

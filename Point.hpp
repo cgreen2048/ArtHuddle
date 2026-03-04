@@ -5,12 +5,12 @@
 
 class Point : public GuiElement {
 	private:
-		vec2 coords;
-		vec3 color;
+		ivec2 coords;
+		ivec3 color;
 	
 	public:
 		Point();
-        Point(vec2, vec3);
+        Point(ivec2, ivec3);
 		~Point();
 		void draw();
 };

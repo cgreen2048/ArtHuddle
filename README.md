@@ -10,9 +10,9 @@ main.cpp is a demonstration program
 
 ## Description
 `Box` is a class used for storing and drawing a filled box to a `Screen` object. It inherits from the `GuiElement` class
-- `vec2 min`: the coordinates of the minimum point of the box
-- `vec2 max`: the coordinates of the maximum point of the box
-- `vec3 color`: the color of the box
+- `ivec2 min`: the coordinates of the minimum point of the box
+- `ivec2 max`: the coordinates of the maximum point of the box
+- `ivec3 color`: the color of the box
 
 ## Methods
 
@@ -35,9 +35,9 @@ Method to draw the stored box to a `Screen` object
 
 ## Description
 `Line` is a class used for storing and drawing a line to a `Screen` object. It inherits from the `GuiElement` class
-- `vec2 start`: the coordinates of the starting point of the line
-- `vec2 end`: the coordinates of the ending point of the line
-- `vec3 color`: the color of the line
+- `ivec2 start`: the coordinates of the starting point of the line
+- `ivec2 end`: the coordinates of the ending point of the line
+- `ivec3 color`: the color of the line
 
 ## Methods
 
@@ -60,8 +60,8 @@ Method to draw the stored line to a `Screen` object
 
 ## Description
 `Point` is a class used for storing and drawing a point to a `Screen` object. It inherits from the `GuiElement` class
-- `vec2 coords`: the coordinates of the point
-- `vec3 color`: the color of the box
+- `ivec2 coords`: the coordinates of the point
+- `ivec3 color`: the color of the box
 
 ## Methods
 

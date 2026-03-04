@@ -5,13 +5,13 @@
 
 class Box : public GuiElement {
 	private:
-		vec2 min;
-		vec2 max;
-		vec3 color;
+		ivec2 min;
+		ivec2 max;
+		ivec3 color;
     
     public:
 		Box();
-        Box(vec2, vec2, vec3);
+        Box(ivec2, ivec2, ivec3);
 		~Box();
 		void draw();
 };

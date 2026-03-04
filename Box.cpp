@@ -1,8 +1,8 @@
 #include "Box.hpp"
 
-Box::Box() : min({0.0f, 0.0f}), max({0.0f, 0.0f}), color({0.0f, 0.0f, 0.0f}) {}
+Box::Box() : min({0, 0}), max({0, 0}), color({0, 0, 0}) {}
 
-Box::Box(vec2 min, vec2 max, vec3 color) {
+Box::Box(ivec2 min, ivec2 max, ivec3 color) {
     this->min = min;
     this->max = max;
     this->color = color;

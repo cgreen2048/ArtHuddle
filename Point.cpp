@@ -1,8 +1,8 @@
 #include "Point.hpp"
 
-Point::Point() : coords({0.0f, 0.0f}), color({0.0f, 0.0f, 0.0f}) {}
+Point::Point() : coords({0, 0}), color({0, 0, 0}) {}
 
-Point::Point(vec2 coords, vec3 color) {
+Point::Point(ivec2 coords, ivec3 color) {
     this->coords = coords;
     this->color = color;
 }
