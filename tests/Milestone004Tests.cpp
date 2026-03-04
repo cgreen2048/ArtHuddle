@@ -80,10 +80,9 @@ int drawTriangleTests(Screen screen) {
     if (
         !screen.pointInTriangle(pointA, pointB, pointC, pointInside)
         || screen.pointInTriangle(pointA, pointB, pointC, pointOutside)
-        || screen.pointInTriangle(pointA, pointB, pointC, pointOnBorder)
-        || screen.pointInTriangle(pointA, pointB, pointC, pointOnCorner)
+        || !screen.pointInTriangle(pointA, pointB, pointC, pointOnBorder)
+        || !screen.pointInTriangle(pointA, pointB, pointC, pointOnCorner)
     ) {
-        std::cout << "something failed\n";
         failure = 1;
     }
 
