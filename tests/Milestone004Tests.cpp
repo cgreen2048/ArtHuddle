@@ -8,9 +8,9 @@
 const int X = 960;
 const int Y = 540;
 
-int pointTests(Screen, SDL_Window*);
-int lineTests(Screen, SDL_Window*);
-int boxTests(Screen, SDL_Window*);
+int pointTests(std::vector<GuiElement*>*, Screen, SDL_Window*);
+int lineTests(std::vector<GuiElement*>*, Screen, SDL_Window*);
+int boxTests(std::vector<GuiElement*>*, Screen, SDL_Window*);
 void getPixelColor(SDL_Surface*, ivec2, uint8_t&, uint8_t&, uint8_t&);
 
 int main() {
@@ -18,29 +18,55 @@ int main() {
     int failure = 0;
     Screen screen = Screen(X, Y);
     SDL_Window *window = SDL_CreateWindow("Hello Window", X, Y, 0);
+    std::vector<GuiElement*> *elements{nullptr};
     
-    if (pointTests(screen, window)) {
+    if (pointTests(elements, screen, window)) {
         failure = 1;
     }
-    if (lineTests(screen, window)) {
+    if (lineTests(elements, screen, window)) {
         failure = 1;
     }
-    if (boxTests(screen, window)) {
+    if (boxTests(elements, screen, window)) {
         failure = 1;
     }
 
     if (failure) {
         std::cout << "IMPLEMENTATION(S) FAILED, REVIEW TESTS\n";
     }
+    else {
+        std::cout << "all tests passed\n";
+    }
     SDL_DestroyWindow(window);
     SDL_Quit();
     return failure;
 }
 
-int pointTests(Screen screen, SDL_Window* window) {
+int pointTests(std::vector<GuiElement*> *elements, Screen screen, SDL_Window* window) {
     int failure = 0;
     std::cout << "Testing Point class\n";
     GuiElement *point = new Point(ivec2(40, 500), ivec3(200, 200, 200));
+    // elements.push_back(factory(guiElement::Point));
+
+    Point *test = new Point(ivec2(40, 500), ivec3(200, 200, 200));
+    Point *dup = new Point(ivec2(40, 500), ivec3(200, 200, 200));
+    Point *copy{test};
+
+    if (*test != *dup) {
+        std::cout << "point inequality FAILED!\n";
+        failure = 1;
+    }
+    else {
+        std::cout << "point inequality working\n";
+    }
+    
+    if (*test != *copy) {
+        std::cout << "point copy constructor FAILED!\n";
+        failure = 1;
+    }
+    else {
+        std::cout << "point copy constructor working\n";
+    }
+
     point->setScreen(&screen);
     point->draw();
 
@@ -72,13 +98,37 @@ int pointTests(Screen screen, SDL_Window* window) {
     if (failure) {
         std::cout << "point tests FAILED\n";
     }
+    else {
+        std::cout << "point tests passed\n";
+    }
     return failure;
 }
 
-int lineTests(Screen screen, SDL_Window* window) {
+int lineTests(std::vector<GuiElement*> *elements, Screen screen, SDL_Window* window) {
     int failure = 0;
     std::cout << "Testing Line class\n";
     GuiElement *line = new Line(ivec2(250, 300), ivec2(450, 500), ivec3(200, 200, 200));
+
+    Line *test = new Line(ivec2(250, 300), ivec2(450, 500), ivec3(200, 200, 200));
+    Line *dup = new Line(ivec2(250, 300), ivec2(450, 500), ivec3(200, 200, 200));
+    Line *copy{test};
+
+    if (*test != *dup) {
+        std::cout << "line inequality FAILED!\n";
+        failure = 1;
+    }
+    else {
+        std::cout << "line inequality working\n";
+    }
+    
+    if (*test != *copy) {
+        std::cout << "line copy constructor FAILED!\n";
+        failure = 1;
+    }
+    else {
+        std::cout << "line copy constructor working\n";
+    }
+
     line->setScreen(&screen);
     line->draw();
 
@@ -114,13 +164,37 @@ int lineTests(Screen screen, SDL_Window* window) {
     if (failure) {
         std::cout << "line tests FAILED\n";
     }
+    else {
+        std::cout << "line tests passed\n";
+    }
     return failure;
 }
 
-int boxTests(Screen screen, SDL_Window* window) {
+int boxTests(std::vector<GuiElement*> *elements, Screen screen, SDL_Window* window) {
     int failure = 0;
     std::cout << "Testing Box class\n";
     GuiElement *box = new Box(ivec2(40, 50), ivec2(240, 450), ivec3(200, 200, 0));
+    
+    Box *test = new Box(ivec2(40, 50), ivec2(240, 450), ivec3(200, 200, 0));
+    Box *dup = new Box(ivec2(40, 50), ivec2(240, 450), ivec3(200, 200, 0));
+    Box *copy{test};
+
+    if (*test != *dup) {
+        std::cout << "box inequality FAILED!\n";
+        failure = 1;
+    }
+    else {
+        std::cout << "box inequality working\n";
+    }
+
+    if (*test != *copy) {
+        std::cout << "box copy constructor FAILED!\n";
+        failure = 1;
+    }
+    else {
+        std::cout << "box copy constructor working\n";
+    }
+    
     box->setScreen(&screen);
     box->draw();
 
@@ -172,6 +246,9 @@ int boxTests(Screen screen, SDL_Window* window) {
     }
     if (failure) {
         std::cout << "box tests FAILED\n";
+    }
+    else {
+        std::cout << "box tests passed\n";
     }
     return failure;
 }

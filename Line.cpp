@@ -8,6 +8,30 @@ Line::Line(ivec2 start, ivec2 end, ivec3 color) {
     this->color = color;
 }
 
+Line::Line(const Line& cp) : Line() {
+    this->start = cp.start;
+    this->end = cp.end;
+    this->color = cp.color;
+}
+
+Line& Line::operator=(const Line& cp) {
+    this->start = cp.start;
+    this->end = cp.end;
+    this->color = cp.color;
+    return *this;
+}
+
+bool Line::operator==(Line rhs) {
+    if ((this->start != rhs.start) || (this->end != rhs.end) || (this->color != rhs.color)) {
+        return false;
+    }
+    return true;
+}
+
+bool Line::operator!=(Line rhs) {
+    return !(*this == rhs);
+}
+
 Line::~Line() {}
 
 void Line::draw() {

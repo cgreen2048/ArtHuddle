@@ -12,6 +12,10 @@ class Line : public GuiElement {
     public:
 		Line();
         Line(ivec2, ivec2, ivec3);
+		Line(const Line&);
+        Line& operator=(const Line&);
+		bool operator==(Line);
+        bool operator!=(Line);
 		~Line();
 		void draw();
 };

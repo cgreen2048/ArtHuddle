@@ -12,6 +12,10 @@ class Box : public GuiElement {
     public:
 		Box();
         Box(ivec2, ivec2, ivec3);
+		Box(const Box&);
+        Box& operator=(const Box&);
+		bool operator==(Box);
+        bool operator!=(Box);
 		~Box();
 		void draw();
 };

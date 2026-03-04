@@ -11,6 +11,10 @@ class Point : public GuiElement {
 	public:
 		Point();
         Point(ivec2, ivec3);
+		Point(const Point&);
+        Point& operator=(const Point&);
+		bool operator==(Point);
+        bool operator!=(Point);
 		~Point();
 		void draw();
 };
