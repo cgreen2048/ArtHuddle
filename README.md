@@ -6,6 +6,31 @@
 
 main.cpp is a demonstration program
 
+# Triangle
+
+## Description
+`Triangle` is a class used for storing and drawing a filled triangle to a `Screen` object. It inherits from the `GuiElement` class
+- `ivec2 a`: the coordinates of the first point of the triangle
+- `ivec2 b`: the coordinates of the second point of the triangle
+- `ivec2 c`: the coordinates of the third point of the triangle
+- `ivec3 color`: the color of the triangle
+
+## Methods
+
+### `Triangle()`
+The default constructor. Initializes `a`, `b`, `c`, and `color` to zeros
+
+### `Triangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 color)`
+The parameterized constructor. Assigns `pointA` to `a`, `pointB` to `b`, `pointC` to `c`, and `color` to `color
+
+### `~Triangle()`
+The default destructor
+
+### `void draw()`
+Method to draw the stored triangle to a `Screen` object
+- Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
+- Calls the `drawTriangle` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
+
 # Box
 
 ## Description
@@ -316,12 +341,23 @@ Colors target pixel in object's SDL_Surface
 - Uses a 3D mathematical vector object to hold target pixel's color value in RGB format (clamped between 0 and 255)
 - Uses `SDL_MapRGBA` to convert the color to the pixel
 
-### `drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors`
+### `drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors)`
 Draws a box on the target Screen object's SDL_Surface
 - Uses 2D mathematical vectors to store the minimum and maximum coordinates for the box
 - Clamps minimum and maximum X and Y values between 0 and the Screen object's height/width values
 - Uses 3D mathematical vector to store the target color for the box
 - Calls `colorOnePixel` for each coordinate in the bounds of the box in a double nested for loop
+
+### `pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 pointP)`
+Determines if `pointP` is within the bounds of the triangle established by `pointA`, `pointB`, and `pointC`
+- Calculates the cross products AP x AB, BP x BC, & CP x CA
+- If no conflicting signs exist between these three cross products, `point` is inside the triangle, else it is not
+
+### `drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 color)`
+Draws a triangle on the target Screen object's SDL_Surface
+- Computes a bounding box around the triangle using the min and max of the corners' x & y values
+- Iterates over all points in the box & uses pointInTriangle to determine if the current point is in the triangle
+- Calls `colorOnePixel` for each coordinate in the bounds of the triangle 
 
 ### `drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color)`
 Draws a line to the Target Screen object's SDL_Surface using the Bresenham algorithm

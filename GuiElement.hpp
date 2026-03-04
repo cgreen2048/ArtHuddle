@@ -26,6 +26,8 @@ class GuiElement {
 		// 	std::cout << "Draw\n";
 		// }
 		void setScreen(Screen*);
+
+		Screen* getScreen();
 };
 
 

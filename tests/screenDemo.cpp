@@ -48,6 +48,7 @@ void screenDemo(Screen screen, SDL_Window *window) {
 		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(0, Y - 1), ivec3(90, 150, 50));
 		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(X - 1, Y - 1), ivec3(90, 150, 50));
 		screen.drawTriangle(ivec2(X/4, Y/4), ivec2(X/4, Y/2), ivec2((3*X) / 4, Y/3), ivec3(100, 150, 50));
+		screen.drawTriangle(ivec2(0, 0), ivec2(0, Y), ivec2(X,Y), ivec3(100, 150, 50));
 
 		screen.blitTo(SDL_GetWindowSurface(window));
 		SDL_UpdateWindowSurface(window);
