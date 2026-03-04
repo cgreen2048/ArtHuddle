@@ -127,6 +127,24 @@ void Screen::drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color) {
     }     
 }
 
+bool Screen::pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 pointP) {
+    ivec2 ap = pointP - pointA;
+    ivec2 ab = pointB - pointA;
+    ivec2 bp = pointP - pointB;
+    ivec2 bc = pointC - pointB;
+    ivec2 cp = pointP - pointC;
+    ivec2 ca = pointA - pointC;
+
+    int crossApAb = ap.cross(ab);
+    int crossBpBc = bp.cross(bc);
+    int crossCpCa = cp.cross(ca);
+
+    bool hasPositive = crossApAb > 0 || crossBpBc > 0 || crossCpCa > 0;
+    bool hasNegative = crossApAb < 0 || crossBpBc < 0 || crossCpCa < 0;
+
+    return !(hasPositive && hasNegative);
+}
+
 SDL_Surface* Screen::getSurface() {
     return this->surface;
 }

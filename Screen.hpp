@@ -22,9 +22,12 @@ class Screen {
         ~Screen();
         Screen& operator=(const Screen&);
         bool operator==(const Screen);
+
         bool surfaceEqual(const SDL_Surface*);
         void blitTo(SDL_Surface*) const;
         void drawBresenhamLine(ivec2, ivec2, ivec3);
+        bool pointInTriangle(ivec2, ivec2, ivec2, ivec2);
+
         SDL_Surface* getSurface();
         uint32_t getWidth();
         uint32_t getHeight();
@@ -71,6 +74,10 @@ class Screen {
                 }
             }
         }
+
+        
+
+
 
 };
 
