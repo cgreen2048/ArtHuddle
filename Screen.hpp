@@ -27,6 +27,7 @@ class Screen {
         void blitTo(SDL_Surface*) const;
         void drawBresenhamLine(ivec2, ivec2, ivec3);
         bool pointInTriangle(ivec2, ivec2, ivec2, ivec2);
+        void drawTriangle(ivec2, ivec2, ivec2, ivec3);
 
         SDL_Surface* getSurface();
         uint32_t getWidth();
@@ -74,11 +75,6 @@ class Screen {
                 }
             }
         }
-
-        
-
-
-
 };
 
 #endif
