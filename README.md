@@ -22,6 +22,20 @@ The default constructor. Initializes `min`, `max`, and `color` to zeros
 ### `Box(vec2 min, vec2 max, vec3 color)`
 The parameterized constructor. Assigns `min`, `max`, and `color` to appropriate attributes in the `Box` class
 
+### `Box(const Box& cp)`
+Copy constructor. Copies `min`, `max`, and `color` from `cp` to target
+
+### `Box& operator=(const Box& cp)`
+Assignment operator. Assigns `min`, `max`, and `color` from `cp` to target and returns target
+
+### `bool operator==(Box rhs)`
+Equality operator. Compares `min`, `max`, and `color` attributes between target and rhs
+- Returns false if any attribute does not equal its counterpart
+- Returns true if all attributes match their counterparts
+
+### `bool operator!=(Box rhs)`
+Inequality operator. Returns the NOT of the equality operator
+
 ### `~Box()`
 The default destructor
 
@@ -47,6 +61,20 @@ The default constructor. Initializes `start`, `end`, and `color` to zeros
 ### `Line(vec2 start, vec2 end, vec3 color)`
 The parameterized constructor. Assigns `start`, `end`, and `color` to appropriate attributes in the `Line` class
 
+### `Line(const Line& cp)`
+Copy constructor. Copies `start`, `end`, and `color` from `cp` to target
+
+### `Line& operator=(const Line& cp)`
+Assignment operator. Assigns `start`, `end`, and `color` from `cp` to target and returns target
+
+### `bool operator==(Line rhs)`
+Equality operator. Compares `start`, `end`, and `color` attributes between target and rhs
+- Returns false if any attribute does not equal its counterpart
+- Returns true if all attributes match their counterparts
+
+### `bool operator!=(Line rhs)`
+Inequality operator. Returns the NOT of the equality operator
+
 ### `~Line()`
 The default destructor
 
@@ -70,6 +98,20 @@ The default constructor. Initializes `coords` and `color` to zeros
 
 ### `Point(vec2 coords, vec3 color)`
 The parameterized constructor. Assigns `coords` and `color` to appropriate attributes in the `Point` class
+
+### `Point(const Point& cp)`
+Copy constructor. Copies `coords` and `color` from `cp` to target
+
+### `Point& operator=(const Point& cp)`
+Assignment operator. Assigns `coords` and `color` from `cp` to target and returns target
+
+### `bool operator==(Point rhs)`
+Equality operator. Compares `coords` and `color` attributes between target and rhs
+- Returns false if any attribute does not equal its counterpart
+- Returns true if all attributes match their counterparts
+
+### `bool operator!=(Point rhs)`
+Inequality operator. Returns the NOT of the equality operator
 
 ### `~Point()`
 The default destructor
