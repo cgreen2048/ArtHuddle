@@ -36,7 +36,4 @@ Line::~Line() {}
 
 void Line::draw() {
     this->screen->drawBresenhamLine(this->start, this->end, this->color);
-    // this->screen->drawBresenhamLine(ivec2(static_cast<int>(this->start.x), static_cast<int>(this->start.y)), 
-    //                                 ivec2(static_cast<int>(this->end.x), static_cast<int>(this->end.y)),
-    //                                 ivec3(static_cast<int>(this->color.x), static_cast<int>(this->color.y), static_cast<int>(this->color.z)));
 }
