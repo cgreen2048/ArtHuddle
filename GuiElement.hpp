@@ -14,17 +14,11 @@ class GuiElement {
 		Screen* screen;
 	public:
 		GuiElement();
-		// {
-		// 	std::cout << "GuiElement constructor\n";
-		// }
+		
 		virtual ~GuiElement();
-		// {
-		// 	std::cout << "GuiElement destroyed\n";
-		// }
+		
 		virtual void draw();
-		// {
-		// 	std::cout << "Draw\n";
-		// }
+		
 		void setScreen(Screen*);
 
 		Screen* getScreen();
