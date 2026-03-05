@@ -114,10 +114,6 @@ int pointTests(std::vector<GuiElement*>& elements, Screen screen, SDL_Window* wi
                     quit = true;
                     break;
                 }
-                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-                    quit = true;
-                    break;
-                }
 			}
 		}
     }
@@ -279,20 +275,6 @@ int boxTests(std::vector<GuiElement*>& elements, Screen screen, SDL_Window* wind
     return failure;
 }
 
-void getPixelColor(SDL_Surface* surface, ivec2 coords, uint8_t& r, uint8_t& g, uint8_t& b) {
-    uint8_t* pixelPtr = static_cast<uint8_t*>(surface->pixels);
-    uint8_t* pixel = pixelPtr 
-        + static_cast<int>(coords.x) * sizeof(uint32_t) 
-        + static_cast<int>(coords.y) * surface->pitch;
-    uint32_t pixel32 = *reinterpret_cast<uint32_t*>(pixel);
-    const SDL_PixelFormatDetails *details =  SDL_GetPixelFormatDetails(surface->format);
-
-    uint8_t a;
-    SDL_GetRGBA(pixel32, details, NULL, &r, &g, &b, &a);
-    return failure;
-}
-
-
 int drawTriangleTests(Screen screen) {
     int failure = 0;
 
@@ -315,4 +297,16 @@ int drawTriangleTests(Screen screen) {
     }
 
     return failure;
+}
+
+void getPixelColor(SDL_Surface* surface, ivec2 coords, uint8_t& r, uint8_t& g, uint8_t& b) {
+    uint8_t* pixelPtr = static_cast<uint8_t*>(surface->pixels);
+    uint8_t* pixel = pixelPtr 
+        + static_cast<int>(coords.x) * sizeof(uint32_t) 
+        + static_cast<int>(coords.y) * surface->pitch;
+    uint32_t pixel32 = *reinterpret_cast<uint32_t*>(pixel);
+    const SDL_PixelFormatDetails *details =  SDL_GetPixelFormatDetails(surface->format);
+
+    uint8_t a;
+    SDL_GetRGBA(pixel32, details, NULL, &r, &g, &b, &a);
 }
