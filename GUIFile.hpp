@@ -11,6 +11,7 @@
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "GuiElement.hpp"
+#include "Factory.hpp"
 #include "Line.hpp"
 #include "Box.hpp"
 #include "Point.hpp"
@@ -59,6 +60,8 @@ class GUIFile {
         void addPoint(Point* p);
 
         const std::vector<GuiElement*>& getElements() const;
+        void readFile(std::string fileName);
+        void writeFile(const std::string& fileName) const;
 
         void clear();
 

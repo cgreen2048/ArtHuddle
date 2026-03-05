@@ -54,7 +54,7 @@ void Box::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
-void Box::writeXml(std::ofstream& out) const {
+void Box::writeXml(std::ostream& out) const {
     out << "  <box>\n";
 
     if (minType == TagType::IVec) {
@@ -77,5 +77,5 @@ void Box::writeXml(std::ofstream& out) const {
         writeVec3(out, toVec3(color));
     }
 
-    out <<box "  </box>\n";
+    out << "  </box>\n";
 }

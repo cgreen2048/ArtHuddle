@@ -1,57 +1,57 @@
 <layout>
   <line>
     <vec2>
-        <x>1.1</x>
-        <y>2.2</y>
+        <x>1</x>
+        <y>2</y>
     </vec2>
     <vec2>
-        <x>3.3</x>
-        <y>4.4</y>
+        <x>3</x>
+        <y>4</y>
     </vec2>
-    <ivec3>
+    <vec3>
         <x>10</x>
         <y>20</y>
         <z>30</z>
-    </ivec3>
+    </vec3>
   </line>
   <line>
     <vec2>
-        <x>5.5</x>
-        <y>6.6</y>
+        <x>6</x>
+        <y>7</y>
     </vec2>
     <vec2>
-        <x>7.7</x>
-        <y>8.8</y>
+        <x>8</x>
+        <y>9</y>
     </vec2>
-    <ivec3>
+    <vec3>
         <x>40</x>
         <y>50</y>
         <z>60</z>
-    </ivec3>
+    </vec3>
   </line>
   <line>
     <vec2>
-        <x>9.9</x>
-        <y>10.01</y>
+        <x>10</x>
+        <y>10</y>
     </vec2>
     <vec2>
-        <x>11.11</x>
-        <y>12.12</y>
+        <x>11</x>
+        <y>12</y>
     </vec2>
-    <ivec3>
+    <vec3>
         <x>70</x>
         <y>80</y>
         <z>90</z>
-    </ivec3>
+    </vec3>
   </line>
   <box>
     <vec2>
-        <x>100.1</x>
-        <y>200.2</y>
+        <x>100</x>
+        <y>200</y>
     </vec2>
     <vec2>
-        <x>300.3</x>
-        <y>400.4</y>
+        <x>300</x>
+        <y>400</y>
     </vec2>
     <vec3>
         <x>1</x>
@@ -61,12 +61,12 @@
   </box>
   <box>
     <vec2>
-        <x>500.5</x>
-        <y>600.6</y>
+        <x>501</x>
+        <y>601</y>
     </vec2>
     <vec2>
-        <x>700.7</x>
-        <y>800.8</y>
+        <x>701</x>
+        <y>801</y>
     </vec2>
     <vec3>
         <x>4</x>
@@ -75,26 +75,26 @@
     </vec3>
   </box>
   <point>
-    <ivec2>
+    <vec2>
         <x>13</x>
         <y>14</y>
-    </ivec2>
-    <ivec3>
+    </vec2>
+    <vec3>
         <x>101</x>
         <y>102</y>
         <z>103</z>
-    </ivec3>
+    </vec3>
   </point>
   <point>
-    <ivec2>
+    <vec2>
         <x>15</x>
         <y>16</y>
-    </ivec2>
-    <ivec3>
+    </vec2>
+    <vec3>
         <x>104</x>
         <y>105</y>
         <z>106</z>
-    </ivec3>
+    </vec3>
   </point>
   <point>
     <vec2>

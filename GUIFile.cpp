@@ -74,7 +74,6 @@ void GUIFile::readFile(std::string fileName) {
 
     GuiElement* current = nullptr;
     guiElement currentType = guiElement::POINT; // any default
-    // bool inElement = false;
 
 
     vec2 currentVec2;
@@ -428,6 +427,10 @@ void GUIFile::readFile(std::string fileName) {
                             current = nullptr;
                         }
                         else if (token == VEC2_CLOSE) {
+                             if (!current) { 
+                                std::cerr << "Malformed XML\n"; 
+                                return; 
+                            }
                             if (!capturedX || !capturedY) { 
                                 std::cerr << "Malformed XML\n"; 
                                 if (current) { 
@@ -466,6 +469,10 @@ void GUIFile::readFile(std::string fileName) {
                             }
                         }
                         else if (token == IVEC2_CLOSE) {
+                            if (!current) { 
+                                std::cerr << "Malformed XML\n"; 
+                                return; 
+                            }
                             if (!capturedX || !capturedY) { 
                                 std::cerr << "Malformed XML\n"; 
                                 if (current) { 
@@ -504,6 +511,10 @@ void GUIFile::readFile(std::string fileName) {
                             }
                         }
                         else if (token == VEC3_CLOSE) {
+                            if (!current) { 
+                                std::cerr << "Malformed XML\n"; 
+                                return; 
+                            }
                             if (!capturedX || !capturedY || !capturedZ) { 
                                 std::cerr << "Malformed XML\n"; 
                                 if (current) { 
@@ -525,6 +536,10 @@ void GUIFile::readFile(std::string fileName) {
                             }
                         }
                         else if (token == IVEC3_CLOSE) {
+                            if (!current) { 
+                                std::cerr << "Malformed XML\n"; 
+                                return; 
+                            }
                             if (!capturedX || !capturedY || !capturedZ) { 
                                 std::cerr << "Malformed XML\n"; 
                                 if (current) { 

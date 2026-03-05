@@ -26,7 +26,7 @@ class Line : public GuiElement {
 		void setStart(const ivec2& v, TagType t);
 		void setEnd(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);
-		void writeXml(std::ofstream& out) const;
+		void writeXml(std::ostream& out) const;
 };
 
 #endif

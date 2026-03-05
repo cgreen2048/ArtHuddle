@@ -16,7 +16,7 @@ class GuiElement {
 		
 		virtual void draw();
 
-		virtual void writeXml(std::ofstream& out) const;
+		virtual void writeXml(std::ostream& out) const;
 		
 		void setScreen(Screen*);
 };

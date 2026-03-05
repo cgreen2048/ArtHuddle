@@ -46,7 +46,7 @@ void Point::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
-void Point::writeXml(std::ofstream& out) const {
+void Point::writeXml(std::ostream& out) const {
     out << "  <point>\n";
 
     if (coordsType == TagType::IVec) {

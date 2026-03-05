@@ -3,8 +3,7 @@
 #include <ostream>
 #include "vec2.hpp"
 #include "vec3.hpp"
-#include "ivec2.hpp"
-#include "ivec3.hpp"
+
 
 inline vec2 toVec2(const ivec2& v) {
     return vec2(static_cast<float>(v.x), static_cast<float>(v.y));

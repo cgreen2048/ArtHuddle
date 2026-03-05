@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-#include "Line.hpp"
-
-Line::Line() : start({0.0f, 0.0f}), end({0.0f, 0.0f}), color({0.0f, 0.0f, 0.0f}) {
-    
-}
-Line::Line(vec2 start, vec2 end, vec3 color) {
-    this->start = start;
-    this->end = end;
-    this->color = color;
-    
-}
-Line::~Line() {
-    
-}
-void Line::draw() {
-    
-    this->screen->drawBresenhamLine(ivec2(static_cast<int>(this->start.x), static_cast<int>(this->start.y)), 
-                                    ivec2(static_cast<int>(this->end.x), static_cast<int>(this->end.y)),
-                                    ivec3(static_cast<int>(this->color.x), static_cast<int>(this->color.y), static_cast<int>(this->color.z)));
-=======
 #include "Line.hpp"
 #include "XmlWriteHelpers.hpp"
 
@@ -75,7 +54,7 @@ void Line::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
-void Line::writeXml(std::ofstream& out) const {
+void Line::writeXml(std::ostream& out) const {
     out << "  <line>\n";
 
     if (startType == TagType::IVec) {
@@ -99,5 +78,4 @@ void Line::writeXml(std::ofstream& out) const {
     }
 
     out << "  </line>\n";
->>>>>>> 5c5799f (Finished XML parser. Refactoring Unit Tests.)
 }
