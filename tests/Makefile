@@ -16,7 +16,7 @@ test:
 	g++ ../Screen.cpp screenDemo.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o screenDemo
 	g++ ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Line.cpp ../Box.cpp ../Point.cpp ../Screen.cpp Milestone003Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone003
-  g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Screen.cpp Milestone004Tests.cpp \
+	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Screen.cpp Milestone004Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone004
 
 studentMachine:
@@ -26,8 +26,8 @@ studentMachine:
 	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
 	$(CXX) Milestone003Tests.cpp ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Line.cpp ../Box.cpp ../Point.cpp ../Screen.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone003
-  $(CXX) ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Screen.cpp Milestone004Tests.cpp \
-    $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone004
+	$(CXX) ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Screen.cpp Milestone004Tests.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone004
 	
 
 mac:
@@ -35,8 +35,9 @@ mac:
 	g++ ../Matrix.cpp Milestone001Tests.cpp -Wall -o milestone001
 	g++ ../Screen.cpp Milestone002Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone002
 	g++ ../Screen.cpp screenDemo.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o screenDemo
-	g++ ../GUIFile.cpp Milestone003Tests.cpp -Wall -o milestone003
-	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Screen.cpp Milestone004Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone004
+	g++ ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Line.cpp ../Box.cpp ../Point.cpp ../Screen.cpp Milestone003Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone003
+	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Screen.cpp ../Triangle.cpp Milestone004Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone004
+
 
 clean:
 	rm a.out
