@@ -10,13 +10,9 @@ class Point : public GuiElement {
 	
 	public:
 		Point();
-
         Point(vec2, vec3);
-		
 		~Point();
-		
 		void draw();
-		
 };
 
 #endif

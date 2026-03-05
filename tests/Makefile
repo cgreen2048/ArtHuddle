@@ -11,7 +11,12 @@ test:
 	g++ ../Matrix.cpp Milestone001Tests.cpp -o milestone001
 	g++ ../Screen.cpp Milestone002Tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone002
 	g++ ../Screen.cpp screenDemo.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o screenDemo
-	g++ ../Matrix.cpp Milestone001Tests.cpp -o milestone003
+	g++ ../GUIFile.cpp  Milestone003Tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone003
+	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Screen.cpp Milestone004Tests.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone004
+
+	
+	
 
 studentMachine:
 	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS)
@@ -19,6 +24,7 @@ studentMachine:
 	$(CXX) ../Screen.cpp Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) -o milestone002
 	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) -o screenDemo
 	$(CXX) ../GUIFile.cpp Milestone003Tests.cpp -Wall -o milestone003
+	$(CXX) ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Screen.cpp Milestone004Tests.cpp $(CXXFLAGS) $(LDFLAGS) -o milestone004
 
 mac:
 	g++ tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall
@@ -26,7 +32,7 @@ mac:
 	g++ ../Screen.cpp Milestone002Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone002
 	g++ ../Screen.cpp screenDemo.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o screenDemo
 	g++ ../GUIFile.cpp Milestone003Tests.cpp -Wall -o milestone003
-	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Screen.cpp Milestone004Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone004
+	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Screen.cpp Milestone004Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone004
 
 clean:
 	rm a.out

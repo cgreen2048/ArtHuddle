@@ -11,13 +11,9 @@ class Line : public GuiElement {
 
     public:
 		Line();
-    
         Line(vec2, vec2, vec3);
-		
 		~Line();
-		
 		void draw();
-		
 };
 
 #endif

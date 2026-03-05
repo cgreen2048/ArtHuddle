@@ -20,6 +20,8 @@ class GuiElement {
 		virtual void draw();
 		
 		void setScreen(Screen*);
+
+		Screen* getScreen();
 };
 
 

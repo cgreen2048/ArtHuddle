@@ -11,13 +11,9 @@ class Box : public GuiElement {
     
     public:
 		Box();
-        
         Box(vec2, vec2, vec3);
-		
 		~Box();
-		
 		void draw();
-		
 };
 
 #endif
