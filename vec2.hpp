@@ -43,6 +43,9 @@ class Tvec2 {
             T magnitude = this->mag();
             return Tvec2{this->x / magnitude, this->y / magnitude};
         }
+        T cross(Tvec2 rhs) {
+            return x * rhs.y - y * rhs.x;
+        }
         bool operator==(Tvec2 rhs) {    // equality
             if ((this->x == rhs.x) && (this->y == rhs.y)) {
                 return true;

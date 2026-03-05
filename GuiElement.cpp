@@ -15,3 +15,6 @@ void GuiElement::writeXml(std::ostream& out) const{
 void GuiElement::setScreen(Screen* target) {
     this->screen = target;
 }
+Screen* GuiElement::getScreen() {
+    return this->screen;
+}

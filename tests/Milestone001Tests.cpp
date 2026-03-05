@@ -112,6 +112,16 @@ int vec2_tester() {
         failure = 1;
     }
 
+    float expected6 = 0.0;
+    float result6 = test.cross(test);
+    if (expected6 == result6) {
+        std::cout << "cross product function working\n";
+    }
+    else {
+        std::cout << "cross product function FAILED!\n";
+        failure = 1;
+    }
+
     std::cout << "printing vector by using [] operator: (" << test[0] << ", " << test[1] << ")\n";
 
     test+= test;
