@@ -11,7 +11,10 @@ test:
 	g++ ../Matrix.cpp Milestone001Tests.cpp -o milestone001
 	g++ ../Screen.cpp Milestone002Tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone002
 	g++ ../Screen.cpp screenDemo.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o screenDemo
-	g++ ../Matrix.cpp Milestone001Tests.cpp -o milestone003
+	g++ ../GUIFile.cpp  Milestone003Tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone003
+	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Screen.cpp Milestone004Tests.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone004
+
 	
 	
 
