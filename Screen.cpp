@@ -127,6 +127,49 @@ void Screen::drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color) {
     }     
 }
 
+bool Screen::pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 pointP) {
+    ivec2 ap = pointP - pointA;
+    ivec2 ab = pointB - pointA;
+    ivec2 bp = pointP - pointB;
+    ivec2 bc = pointC - pointB;
+    ivec2 cp = pointP - pointC;
+    ivec2 ca = pointA - pointC;
+
+    int crossApAb = ap.cross(ab);
+    int crossBpBc = bp.cross(bc);
+    int crossCpCa = cp.cross(ca);
+
+    bool hasPositive = crossApAb > 0 || crossBpBc > 0 || crossCpCa > 0;
+    bool hasNegative = crossApAb < 0 || crossBpBc < 0 || crossCpCa < 0;
+
+    return !(hasPositive && hasNegative);
+}
+
+void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors) {
+    int screenXEnd = static_cast<int>(this->width - 1);
+    int screenYEnd = static_cast<int>(this->height - 1);
+    
+    int minX = std::clamp(std::min({pointA.x, pointB.x, pointC.x}), 0, screenXEnd);
+    int maxX = std::clamp(std::max({pointA.x, pointB.x, pointC.x}), 0, screenXEnd);
+    int minY = std::clamp(std::min({pointA.y, pointB.y, pointC.y}), 0, screenYEnd);
+    int maxY = std::clamp(std::max({pointA.y, pointB.y, pointC.y}), 0, screenYEnd);
+
+    ivec3 clampedColor = ivec3(
+        std::clamp(colors.x, MIN_COLOR_VALUE, MAX_COLOR_VALUE),
+        std::clamp(colors.y, MIN_COLOR_VALUE, MAX_COLOR_VALUE),
+        std::clamp(colors.z, MIN_COLOR_VALUE, MAX_COLOR_VALUE)
+    );
+
+    for (int i = minX; i <= maxX; ++i) {
+        for (int j = minY; j <= maxY; ++j) {
+            ivec2 point = ivec2{i,j};
+            if (this->pointInTriangle(pointA, pointB, pointC, point)) {
+                this->colorOnePixel(point, clampedColor);
+            }
+        }
+    }
+}
+
 SDL_Surface* Screen::getSurface() {
     return this->surface;
 }

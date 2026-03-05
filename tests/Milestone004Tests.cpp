@@ -5,6 +5,7 @@
 #include "../Point.hpp"
 #include "../Line.hpp"
 #include "../Box.hpp"
+#include "../Triangle.hpp"
 
 const int X = 960;
 const int Y = 540;
@@ -12,6 +13,7 @@ const int Y = 540;
 int pointTests(std::vector<GuiElement*>&, Screen, SDL_Window*);
 int lineTests(std::vector<GuiElement*>&, Screen, SDL_Window*);
 int boxTests(std::vector<GuiElement*>&, Screen, SDL_Window*);
+int drawTriangleTests(Screen);
 void getPixelColor(SDL_Surface*, ivec2, uint8_t&, uint8_t&, uint8_t&);
 
 int main() {
@@ -20,6 +22,10 @@ int main() {
     Screen screen = Screen(X, Y);
     SDL_Window *window = SDL_CreateWindow("Hello Window", X, Y, 0);
     std::vector<GuiElement*> elements{nullptr};
+    GuiElement *triangle = new Triangle(ivec2(50,50), ivec2(120,200), ivec2(100, 50), ivec3(100,100,100));
+    triangle->setScreen(&screen);
+    triangle->draw();
+    failure = drawTriangleTests(screen);
     
     if (pointTests(elements, screen, window)) {
         failure = 1;
@@ -100,6 +106,10 @@ int pointTests(std::vector<GuiElement*>& elements, Screen screen, SDL_Window* wi
 	while (!quit) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+                    quit = true;
+                    break;
+                }
                 case SDL_EVENT_QUIT: {
                     quit = true;
                     break;
@@ -279,4 +289,30 @@ void getPixelColor(SDL_Surface* surface, ivec2 coords, uint8_t& r, uint8_t& g, u
 
     uint8_t a;
     SDL_GetRGBA(pixel32, details, NULL, &r, &g, &b, &a);
+    return failure;
+}
+
+
+int drawTriangleTests(Screen screen) {
+    int failure = 0;
+
+    ivec2 pointA{50,50};
+    ivec2 pointB{120,200};
+    ivec2 pointC{100, 50};
+
+    ivec2 pointInside{90, 100};
+    ivec2 pointOutside{50, 200};
+    ivec2 pointOnBorder{75, 50};
+    ivec2 pointOnCorner{50,50};
+
+    if (
+        !screen.pointInTriangle(pointA, pointB, pointC, pointInside)
+        || screen.pointInTriangle(pointA, pointB, pointC, pointOutside)
+        || !screen.pointInTriangle(pointA, pointB, pointC, pointOnBorder)
+        || !screen.pointInTriangle(pointA, pointB, pointC, pointOnCorner)
+    ) {
+        failure = 1;
+    }
+
+    return failure;
 }
