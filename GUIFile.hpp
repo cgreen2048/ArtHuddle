@@ -14,6 +14,7 @@
 #include "Line.hpp"
 #include "Box.hpp"
 #include "Point.hpp"
+#include <cmath>
 
 const std::string LAYOUT_OPEN = "<layout>";
 const std::string LAYOUT_CLOSE = "</layout>";
