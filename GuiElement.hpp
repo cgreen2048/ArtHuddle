@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Screen.hpp"
 
-enum class guiElement {POINT, LINE, BOX};
+enum class guiElement {POINT, LINE, BOX, TRIANGLE};
 
 class GuiElement {
 	protected:

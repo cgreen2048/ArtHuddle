@@ -11,6 +11,9 @@ GuiElement* factory(guiElement e) {
 		case guiElement::BOX: {
 			return new Box{};
 		}
+		case guiElement::TRIANGLE: {
+			return new Triangle{};
+		}
 	}
 	return nullptr;
 }

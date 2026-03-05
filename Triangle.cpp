@@ -1,4 +1,5 @@
 #include "Triangle.hpp"
+#include "XmlWriteHelpers.hpp"
 
 Triangle::Triangle() : a(ivec2{0, 0}), b(ivec2{0,0}), c(ivec2{0,0}), color(ivec3{0,0,0}) {}
 
@@ -15,4 +16,57 @@ void Triangle::draw() {
     if (this->screen != nullptr) {
         this->screen->drawTriangle(this->a, this->b, this->c, this->color);
     }
+}
+
+void Triangle::setA(const ivec2& v, TagType t){
+    this->a = v;
+    this->aType = t;
+}
+
+void Triangle::setB(const ivec2& v, TagType t){
+    this->b = v;
+    this->bType = t;
+}
+
+void Triangle::setC(const ivec2& v, TagType t){
+    this->c = v;
+    this->cType = t;
+}
+
+void Triangle::setColor(const ivec3& v, TagType t){
+    this->color = v;
+    this->colorType = t;
+}
+
+void Triangle::writeXml(std::ostream& out) const {
+    out << "  <triangle>\n";
+
+    if (aType == TagType::IVec) {
+        writeIVec2(out, a);
+    } else {
+        writeVec2(out, toVec2(a));
+    }
+
+    if (bType == TagType::IVec) {
+        writeIVec2(out, b);
+    }
+    else {
+        writeVec2(out, toVec2(b));
+    }
+
+    if (cType == TagType::IVec) {
+        writeIVec2(out, c);
+    }
+    else {
+        writeVec2(out, toVec2(c));
+    }
+
+    if (colorType == TagType::IVec) {
+        writeIVec3(out, color);
+    }
+    else {
+        writeVec3(out, toVec3(color));
+    }
+
+    out << "  </triangle>\n";
 }
