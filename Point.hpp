@@ -4,9 +4,13 @@
 #include "GuiElement.hpp"
 
 class Point : public GuiElement {
+	public:
+		enum class TagType { Vec, IVec };
 	private:
 		ivec2 coords;
 		ivec3 color;
+		TagType coordsType = TagType::Vec;
+		TagType colorType = TagType::Vec;
 	
 	public:
 		Point();
@@ -17,6 +21,9 @@ class Point : public GuiElement {
 		bool operator!=(Point);
 		~Point();
 		void draw();
+		void setCoords(const ivec2& v, TagType t);
+		void setColor(const ivec3& v, TagType t);
+		void writeXml(std::ostream& out) const;
 };
 
 #endif

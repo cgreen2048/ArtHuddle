@@ -1,8 +1,56 @@
 #include "GUIFile.hpp"
 
 
+
 GUIFile::GUIFile() {
     return;
+}
+
+GUIFile::~GUIFile() {
+    clear();
+}
+
+void GUIFile::clear() {
+    for (GuiElement* e : elements) {
+        delete e;
+    }
+    elements.clear();
+}
+
+const std::vector<GuiElement*>& GUIFile::getElements() const {
+    return elements;
+}
+
+void GUIFile::addLine(Line* l) {
+    elements.push_back(l); // implicit upcast Line* -> GuiElement*
+}
+
+void GUIFile::addBox(Box* b) {
+    elements.push_back(b);
+}
+
+void GUIFile::addPoint(Point* p) {
+    elements.push_back(p);
+}
+
+static int toInt(float x) {
+    return static_cast<int>(std::lround(x));
+}
+
+static ivec2 toIVec2(const vec2& v) {
+    return ivec2(toInt(v.x), toInt(v.y));
+}
+
+static ivec3 toIVec3(const vec3& v) {
+    return ivec3(toInt(v.x), toInt(v.y), toInt(v.z));
+}
+
+static vec2 toVec2(const ivec2& v) {
+    return vec2(static_cast<float>(v.x), static_cast<float>(v.y));
+}
+
+static vec3 toVec3(const ivec3& v) {
+    return vec3(static_cast<float>(v.x), static_cast<float>(v.y), static_cast<float>(v.z));
 }
 
 static std::string trim(const std::string& s) {
@@ -15,33 +63,6 @@ static std::string trim(const std::string& s) {
     return s.substr(first, last - first + 1);
 }
 
-const std::vector<GUIFile::Line>& GUIFile::getLines() const {
-    return lines;
-}
-const std::vector<GUIFile::Box>& GUIFile::getBoxes() const { 
-    return boxes; 
-}
-const std::vector<GUIFile::Point>& GUIFile::getPoints() const { 
-    return points; 
-}
-
-void GUIFile::addLine(const Line& l) { 
-    lines.push_back(l); 
-}
-void GUIFile::addBox(const Box& b) { 
-    boxes.push_back(b); 
-}
-void GUIFile::addPoint(const Point& p) { 
-    points.push_back(p); 
-}
-
-void GUIFile::clear() {
-    lines.clear();
-    boxes.clear();
-    points.clear();
-}
-
-
 void GUIFile::readFile(std::string fileName) {
     clear();
     
@@ -51,12 +72,9 @@ void GUIFile::readFile(std::string fileName) {
         return;
     }
 
-    Line  currentLine;
-    Box   currentBox;
-    Point currentPoint;
-    bool inLine  = false;
-    bool inBox   = false;
-    bool inPoint = false;
+    GuiElement* current = nullptr;
+    guiElement currentType = guiElement::POINT; // any default
+
 
     vec2 currentVec2;
     ivec2 currentIVec2;
@@ -102,6 +120,10 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else {
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return;
                                 }
                                 break;
@@ -113,12 +135,20 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else {
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return;
                                 }
                                 break;
                             }
                             default: {
                                 std::cerr << "Malformed XML\n";
+                                if (current) { 
+                                    delete current; 
+                                    current = nullptr; 
+                                }
                                 return;
                             }
                         }
@@ -132,6 +162,10 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else { 
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return; 
                                 }
                                 break;
@@ -142,12 +176,20 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else {
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return;
                                 }
                                 break;
 
                             default: {
                                 std::cerr << "Malformed XML\n";
+                                if (current) { 
+                                    delete current; 
+                                    current = nullptr; 
+                                }
                                 return;
                             }
                         }
@@ -161,6 +203,10 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else {
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return;
                                 }
                                 break;
@@ -172,6 +218,10 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else {
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return;
                                 }
                                 break;
@@ -183,12 +233,20 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else {
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return;
                                 }
                                 break;
                             }
                             default: {
                                 std::cerr << "Malformed XML\n";
+                                if (current) { 
+                                    delete current; 
+                                    current = nullptr; 
+                                }
                                 return;
                             }
                         }
@@ -203,6 +261,10 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else {
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return;
                                 }
                                 break;
@@ -214,6 +276,10 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else {
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return;
                                 }
                                 break;
@@ -225,19 +291,26 @@ void GUIFile::readFile(std::string fileName) {
                                 }
                                 else {
                                     std::cerr << "Malformed XML\n";
+                                    if (current) { 
+                                        delete current; 
+                                        current = nullptr; 
+                                    }
                                     return;
                                 }
                                 break;
                             }
                             default: {
                                 std::cerr << "Malformed XML\n";
+                                if (current) { 
+                                    delete current; 
+                                    current = nullptr; 
+                                }
                                 return;
                             }
                         }
                     }
                 }
             
-
             line.erase(0, start);
 
             end = line.find('>');
@@ -253,30 +326,18 @@ void GUIFile::readFile(std::string fileName) {
             if (locator != OPENERS.end()) { 
                 matcher.push(token);
                 if (token == LINE_OPEN) {
-                    inLine = true;
-                    currentLine = Line();      // reset it
-                    lineVec2Index = 0;         // first vec2 will be start
-                    buildingVec2 = false;
-                    buildingIVec2 = false;
-                    buildingVec3 = false;
-                    buildingIVec3 = false;
+                    currentType = guiElement::LINE;
+                    current = factory(currentType);        // returns new Line
+                    lineVec2Index = 0;
                 }
                 else if (token == BOX_OPEN) {
-                    inBox = true;
-                    currentBox = Box();
+                    currentType = guiElement::BOX;
+                    current = factory(currentType);        // returns new Box
                     boxVec2Index = 0;
-                    buildingVec2 = false;
-                    buildingIVec2 = false;
-                    buildingVec3 = false;
-                    buildingIVec3 = false;
                 }
                 else if (token == POINT_OPEN) {
-                    inPoint = true;
-                    currentPoint = Point();
-                    buildingVec2 = false;
-                    buildingIVec2 = false;
-                    buildingVec3 = false;
-                    buildingIVec3 = false;
+                    currentType = guiElement::POINT;
+                    current = factory(currentType);        // returns new Point
                 }
                 else if (token == VEC2_OPEN) {
                     buildingVec2 = true;
@@ -330,7 +391,11 @@ void GUIFile::readFile(std::string fileName) {
                 locator = std::find(CLOSERS.begin(), CLOSERS.end(), token);
                 if (locator != CLOSERS.end()) {
                     if (matcher.empty()) {  // In case XML starts with a closer
-                        std::cerr << "Malformed XML\n"; 
+                        std::cerr << "Malformed XML\n";
+                        if (current) { 
+                            delete current; 
+                            current = nullptr; 
+                        } 
                         return;
                     }
                     std::string top = matcher.top();
@@ -347,126 +412,152 @@ void GUIFile::readFile(std::string fileName) {
                         (token == Z_CLOSE && top != Z_OPEN)) {
                             // bad scenario, malformed
                             std::cerr << "Malformed XML\n";
+                            if (current) { 
+                                delete current; 
+                                current = nullptr; 
+                            }
                             return;
                         }
-                    else {
-                        if (token == LINE_CLOSE) {
-                            lines.push_back(currentLine);
-                            inLine = false;
-                        }
-                        else if (token == BOX_CLOSE) {
-                            boxes.push_back(currentBox);
-                            inBox = false;
-                        }
-                        else if (token == POINT_CLOSE) {
-                            points.push_back(currentPoint);
-                            inPoint = false;
+                        else if (token == LINE_CLOSE || token == BOX_CLOSE || token == POINT_CLOSE) {
+                            if (!current) { 
+                                std::cerr << "Malformed XML\n"; 
+                                return; 
+                            }
+                            elements.push_back(current);
+                            current = nullptr;
                         }
                         else if (token == VEC2_CLOSE) {
-                            if (!capturedX || !capturedY) {
-                                std::cerr << "Malformed XML\n";
-                                return;
+                             if (!current) { 
+                                std::cerr << "Malformed XML\n"; 
+                                return; 
+                            }
+                            if (!capturedX || !capturedY) { 
+                                std::cerr << "Malformed XML\n"; 
+                                if (current) { 
+                                    delete current; 
+                                    current = nullptr; 
+                                }
+                                return; 
                             }
                             buildingVec2 = false;
-                            if (inLine) {
+
+                            ivec2 v = toIVec2(currentVec2);
+
+                            if (currentType == guiElement::LINE) {
+                                auto* l = static_cast<Line*>(current);
                                 if (lineVec2Index == 0) {
-                                    currentLine.start = currentVec2;
-                                    currentLine.startType = TagType::Vec;
+                                    l->setStart(v, Line::TagType::Vec);
                                 }
-                                else if(lineVec2Index == 1) {
-                                    currentLine.end = currentVec2;
-                                    currentLine.endType = TagType::Vec;
+                                else {
+                                    l->setEnd(v, Line::TagType::Vec);
                                 }
-                                lineVec2Index += 1;
+                                lineVec2Index++;
                             }
-                            else if (inBox) {
+                            else if (currentType == guiElement::BOX) {
+                                auto* b = static_cast<Box*>(current);
                                 if (boxVec2Index == 0) {
-                                    currentBox.min = currentVec2;
-                                    currentBox.minType = TagType::Vec;
+                                    b->setMin(v, Box::TagType::Vec);
                                 }
-                                else if (boxVec2Index == 1) {
-                                    currentBox.max = currentVec2;
-                                    currentBox.maxType = TagType::Vec;
+                                else {
+                                    b->setMax(v, Box::TagType::Vec);
                                 }
-                                boxVec2Index += 1;
+                                boxVec2Index++;
                             }
-                            else if (inPoint) {
-                                currentPoint.position = currentVec2;
-                                currentPoint.posType = TagType::Vec;
-                            } 
+                            else if (currentType == guiElement::POINT) {
+                                auto* p = static_cast<Point*>(current);
+                                p->setCoords(v, Point::TagType::Vec);
+                            }
                         }
                         else if (token == IVEC2_CLOSE) {
-                            if (!capturedX || !capturedY) {
-                                std::cerr << "Malformed XML\n";
-                                return;
+                            if (!current) { 
+                                std::cerr << "Malformed XML\n"; 
+                                return; 
+                            }
+                            if (!capturedX || !capturedY) { 
+                                std::cerr << "Malformed XML\n"; 
+                                if (current) { 
+                                    delete current; 
+                                    current = nullptr; 
+                                }
+                                return; 
                             }
                             buildingIVec2 = false;
-                            vec2 converted(static_cast<float>(currentIVec2.x), static_cast<float>(currentIVec2.y));
-                            if (inLine) {
+
+                            ivec2 v = currentIVec2;
+
+                            if (currentType == guiElement::LINE) {
+                                auto* l = static_cast<Line*>(current);
                                 if (lineVec2Index == 0) {
-                                    currentLine.start = converted;
-                                    currentLine.startType = TagType::IVec;
+                                    l->setStart(v, Line::TagType::IVec);
                                 }
-                                else if(lineVec2Index == 1) {
-                                    currentLine.end = converted;
-                                    currentLine.endType = TagType::IVec;
+                                else {
+                                    l->setEnd(v,   Line::TagType::IVec);
                                 }
-                                lineVec2Index += 1;
+                                lineVec2Index++;
                             }
-                            else if (inBox) {
+                            else if (currentType == guiElement::BOX) {
+                                auto* b = static_cast<Box*>(current);
                                 if (boxVec2Index == 0) {
-                                    currentBox.min = converted;
-                                    currentBox.minType = TagType::IVec;
+                                    b->setMin(v, Box::TagType::IVec);
                                 }
-                                else if (boxVec2Index == 1) {
-                                    currentBox.max = converted;
-                                    currentBox.maxType = TagType::IVec;
+                                else {
+                                    b->setMax(v, Box::TagType::IVec);
                                 }
-                                boxVec2Index += 1;
+                                boxVec2Index++;
                             }
-                            else if (inPoint) {
-                                currentPoint.position = converted;
-                                currentPoint.posType = TagType::IVec;
+                            else if (currentType == guiElement::POINT) {
+                                auto* p = static_cast<Point*>(current);
+                                p->setCoords(v, Point::TagType::IVec);
                             }
                         }
                         else if (token == VEC3_CLOSE) {
-                            if (!capturedX || !capturedY || !capturedZ) {
-                                std::cerr << "Malformed XML\n";
-                                return;
+                            if (!current) { 
+                                std::cerr << "Malformed XML\n"; 
+                                return; 
+                            }
+                            if (!capturedX || !capturedY || !capturedZ) { 
+                                std::cerr << "Malformed XML\n"; 
+                                if (current) { 
+                                    delete current; 
+                                    current = nullptr; 
+                                }
+                                return; 
                             }
                             buildingVec3 = false;
-                            if (inLine) {
-                                currentLine.color = currentVec3;
-                                currentLine.colorType = TagType::Vec;
-                            }
-                            else if (inBox) {
-                                currentBox.color = currentVec3;
-                                currentBox.colorType = TagType::Vec;
-                            }
-                            else if(inPoint) {
-                                currentPoint.color = currentVec3;
-                                currentPoint.colorType = TagType::Vec;
+
+                            ivec3 c = toIVec3(currentVec3);
+
+                            if (currentType == guiElement::LINE) {
+                                static_cast<Line*>(current)->setColor(c, Line::TagType::Vec);
+                            } else if (currentType == guiElement::BOX) {
+                                static_cast<Box*>(current)->setColor(c, Box::TagType::Vec);
+                            } else if (currentType == guiElement::POINT) {
+                                static_cast<Point*>(current)->setColor(c, Point::TagType::Vec);
                             }
                         }
                         else if (token == IVEC3_CLOSE) {
-                            if (!capturedX || !capturedY || !capturedZ) {
-                                std::cerr << "Malformed XML\n";
-                                return;
+                            if (!current) { 
+                                std::cerr << "Malformed XML\n"; 
+                                return; 
+                            }
+                            if (!capturedX || !capturedY || !capturedZ) { 
+                                std::cerr << "Malformed XML\n"; 
+                                if (current) { 
+                                    delete current; 
+                                    current = nullptr; 
+                                }
+                                return; 
                             }
                             buildingIVec3 = false;
-                            vec3 converted(static_cast<float>(currentIVec3.x), static_cast<float>(currentIVec3.y),
-                            static_cast<float>(currentIVec3.z));
-                            if (inLine) {
-                                currentLine.color = converted;
-                                currentLine.colorType = TagType::IVec;
-                            }
-                            else if (inBox) {
-                                currentBox.color = converted;
-                                currentBox.colorType = TagType::IVec;
-                            }
-                            else if(inPoint) {
-                                currentPoint.color = converted;
-                                currentPoint.colorType = TagType::IVec;
+
+                            ivec3 c = currentIVec3;
+
+                            if (currentType == guiElement::LINE) {
+                                static_cast<Line*>(current)->setColor(c, Line::TagType::IVec);
+                            } else if (currentType == guiElement::BOX) {
+                                static_cast<Box*>(current)->setColor(c, Box::TagType::IVec);
+                            } else if (currentType == guiElement::POINT) {
+                                static_cast<Point*>(current)->setColor(c, Point::TagType::IVec);
                             }
                         }
                         else if (token == X_CLOSE) {
@@ -479,7 +570,6 @@ void GUIFile::readFile(std::string fileName) {
                             currentCoord = 0;
                         }
                         matcher.pop();
-                    }
                 }
             }
         }
@@ -487,39 +577,6 @@ void GUIFile::readFile(std::string fileName) {
     return;
 }
 
-static int toInt(float x) {
-    return static_cast<int>(std::lround(x));
-}
-
-static void writeVec2(std::ofstream& out, const vec2& v) {
-    out << "    <vec2>\n";
-    out << "        <x>" << v.x  << "</x>\n";
-    out << "        <y>" << v.y  << "</y>\n";
-    out << "    </vec2>\n";
-}
-
-static void writeIVec2(std::ofstream& out, const vec2& v) {
-    out << "    <ivec2>\n";
-    out << "        <x>" << toInt(v.x)  << "</x>\n";
-    out << "        <y>" << toInt(v.y)  << "</y>\n";
-    out << "    </ivec2>\n";
-}
-
-static void writeVec3(std::ofstream& out, const vec3& v) {
-    out << "    <vec3>\n";
-    out << "        <x>" << v.x  << "</x>\n";
-    out << "        <y>" << v.y  << "</y>\n";
-    out << "        <z>" << v.z  << "</z>\n";
-    out << "    </vec3>\n";
-}
-
-static void writeIVec3(std::ofstream& out, const vec3& v) {
-    out << "    <ivec3>\n";
-    out << "        <x>" << toInt(v.x)  << "</x>\n";
-    out << "        <y>" << toInt(v.y)  << "</y>\n";
-    out << "        <z>" << toInt(v.z)  << "</z>\n";
-    out << "    </ivec3>\n";
-}
 
 
 void GUIFile::writeFile(const std::string& fileName) const {
@@ -527,82 +584,10 @@ void GUIFile::writeFile(const std::string& fileName) const {
     if (!out.is_open()) {
         return;
     }
-
+    
     out << "<layout>\n";
-
-    for (const auto& l : lines) {
-        out << "  <line>\n";
-
-        if (l.startType == TagType::IVec){ 
-            writeIVec2(out, l.start);
-        }
-        else {
-            writeVec2(out, l.start);
-        }
-
-        if (l.endType == TagType::IVec) {
-            writeIVec2(out, l.end);
-        }
-        else { 
-            writeVec2(out, l.end);
-        }
-
-        if (l.colorType == TagType::IVec) { 
-            writeIVec3(out, l.color);
-        }
-        else { 
-            writeVec3(out, l.color);
-        }
-
-        out << "  </line>\n";
+    for (auto* e : elements) {
+        e->writeXml(out);
     }
-
-    for (const auto& b : boxes) {
-        out << "  <box>\n";
-
-        if (b.minType == TagType::IVec) {
-            writeIVec2(out, b.min);
-        }
-        else {
-            writeVec2(out, b.min);
-        }
-
-        if (b.maxType == TagType::IVec) {
-            writeIVec2(out, b.max);
-        }
-        else {
-            writeVec2(out, b.max);
-        }
-
-        if (b.colorType == TagType::IVec) { 
-            writeIVec3(out, b.color);
-        }
-        else {
-            writeVec3(out, b.color);
-        }
-
-        out << "  </box>\n";
-    }
-
-    for (const auto& p : points) {
-        out << "  <point>\n";
-
-        if (p.posType == TagType::IVec) {
-            writeIVec2(out, p.position);
-        }
-        else {
-            writeVec2(out, p.position);
-        }
-
-        if (p.colorType == TagType::IVec) {
-            writeIVec3(out, p.color);
-        }
-        else {
-            writeVec3(out, p.color);
-        }
-
-        out << "  </point>\n";
-    }
-
     out << "</layout>\n";
 }

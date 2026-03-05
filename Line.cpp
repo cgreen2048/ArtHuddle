@@ -1,4 +1,5 @@
 #include "Line.hpp"
+#include "XmlWriteHelpers.hpp"
 
 Line::Line() : start({0, 0}), end({0, 0}), color({0, 0, 0}) {}
 
@@ -36,4 +37,45 @@ Line::~Line() {}
 
 void Line::draw() {
     this->screen->drawBresenhamLine(this->start, this->end, this->color);
+}
+
+void Line::setStart(const ivec2& v, TagType t){
+    this->start = v;
+    this->startType = t;
+}
+
+void Line::setEnd(const ivec2& v, TagType t){
+    this->end = v;
+    this->endType = t;
+}
+
+void Line::setColor(const ivec3& v, TagType t){
+    this->color = v;
+    this->colorType = t;
+}
+
+void Line::writeXml(std::ostream& out) const {
+    out << "  <line>\n";
+
+    if (startType == TagType::IVec) {
+        writeIVec2(out, start);
+    } else {
+        writeVec2(out, toVec2(start));
+    }
+
+    if (endType == TagType::IVec) {
+        writeIVec2(out, end);
+    }
+    else {
+        writeVec2(out, toVec2(end));
+    }
+
+    if (colorType == TagType::IVec) {
+        writeIVec3(out, color);
+    }
+    else {
+        writeVec3(out, toVec3(color));
+    }
+
+    out << "  </line>\n";
 }

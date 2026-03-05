@@ -31,13 +31,14 @@ Method to draw the stored triangle to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawTriangle` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
 
+
 # Box
 
 ## Description
 `Box` is a class used for storing and drawing a filled box to a `Screen` object. It inherits from the `GuiElement` class
-- `ivec2 min`: the coordinates of the minimum point of the box
-- `ivec2 max`: the coordinates of the maximum point of the box
-- `ivec3 color`: the color of the box
+- `vec2 min`: the coordinates of the minimum point of the box
+- `vec2 max`: the coordinates of the maximum point of the box
+- `vec3 color`: the color of the box
 
 ## Methods
 
@@ -46,20 +47,6 @@ The default constructor. Initializes `min`, `max`, and `color` to zeros
 
 ### `Box(vec2 min, vec2 max, vec3 color)`
 The parameterized constructor. Assigns `min`, `max`, and `color` to appropriate attributes in the `Box` class
-
-### `Box(const Box& cp)`
-Copy constructor. Copies `min`, `max`, and `color` from `cp` to target
-
-### `Box& operator=(const Box& cp)`
-Assignment operator. Assigns `min`, `max`, and `color` from `cp` to target and returns target
-
-### `bool operator==(Box rhs)`
-Equality operator. Compares `min`, `max`, and `color` attributes between target and rhs
-- Returns false if any attribute does not equal its counterpart
-- Returns true if all attributes match their counterparts
-
-### `bool operator!=(Box rhs)`
-Inequality operator. Returns the NOT of the equality operator
 
 ### `~Box()`
 The default destructor
@@ -74,9 +61,9 @@ Method to draw the stored box to a `Screen` object
 
 ## Description
 `Line` is a class used for storing and drawing a line to a `Screen` object. It inherits from the `GuiElement` class
-- `ivec2 start`: the coordinates of the starting point of the line
-- `ivec2 end`: the coordinates of the ending point of the line
-- `ivec3 color`: the color of the line
+- `vec2 start`: the coordinates of the starting point of the line
+- `vec2 end`: the coordinates of the ending point of the line
+- `vec3 color`: the color of the line
 
 ## Methods
 
@@ -85,20 +72,6 @@ The default constructor. Initializes `start`, `end`, and `color` to zeros
 
 ### `Line(vec2 start, vec2 end, vec3 color)`
 The parameterized constructor. Assigns `start`, `end`, and `color` to appropriate attributes in the `Line` class
-
-### `Line(const Line& cp)`
-Copy constructor. Copies `start`, `end`, and `color` from `cp` to target
-
-### `Line& operator=(const Line& cp)`
-Assignment operator. Assigns `start`, `end`, and `color` from `cp` to target and returns target
-
-### `bool operator==(Line rhs)`
-Equality operator. Compares `start`, `end`, and `color` attributes between target and rhs
-- Returns false if any attribute does not equal its counterpart
-- Returns true if all attributes match their counterparts
-
-### `bool operator!=(Line rhs)`
-Inequality operator. Returns the NOT of the equality operator
 
 ### `~Line()`
 The default destructor
@@ -113,8 +86,8 @@ Method to draw the stored line to a `Screen` object
 
 ## Description
 `Point` is a class used for storing and drawing a point to a `Screen` object. It inherits from the `GuiElement` class
-- `ivec2 coords`: the coordinates of the point
-- `ivec3 color`: the color of the box
+- `vec2 coords`: the coordinates of the point
+- `vec3 color`: the color of the box
 
 ## Methods
 
@@ -123,20 +96,6 @@ The default constructor. Initializes `coords` and `color` to zeros
 
 ### `Point(vec2 coords, vec3 color)`
 The parameterized constructor. Assigns `coords` and `color` to appropriate attributes in the `Point` class
-
-### `Point(const Point& cp)`
-Copy constructor. Copies `coords` and `color` from `cp` to target
-
-### `Point& operator=(const Point& cp)`
-Assignment operator. Assigns `coords` and `color` from `cp` to target and returns target
-
-### `bool operator==(Point rhs)`
-Equality operator. Compares `coords` and `color` attributes between target and rhs
-- Returns false if any attribute does not equal its counterpart
-- Returns true if all attributes match their counterparts
-
-### `bool operator!=(Point rhs)`
-Inequality operator. Returns the NOT of the equality operator
 
 ### `~Point()`
 The default destructor

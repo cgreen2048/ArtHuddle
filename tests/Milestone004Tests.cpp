@@ -10,10 +10,10 @@
 const int X = 960;
 const int Y = 540;
 
-int pointTests(std::vector<GuiElement*>&, Screen, SDL_Window*);
-int lineTests(std::vector<GuiElement*>&, Screen, SDL_Window*);
-int boxTests(std::vector<GuiElement*>&, Screen, SDL_Window*);
-int drawTriangleTests(Screen);
+int pointTests(Screen, SDL_Window*);
+int lineTests(Screen, SDL_Window*);
+int boxTests(Screen, SDL_Window*);
+int drawTriangleTests(Screen, SDL_Window*);
 void getPixelColor(SDL_Surface*, ivec2, uint8_t&, uint8_t&, uint8_t&);
 
 int main() {
@@ -21,19 +21,17 @@ int main() {
     int failure = 0;
     Screen screen = Screen(X, Y);
     SDL_Window *window = SDL_CreateWindow("Hello Window", X, Y, 0);
-    std::vector<GuiElement*> elements{nullptr};
-    GuiElement *triangle = new Triangle(ivec2(50,50), ivec2(120,200), ivec2(100, 50), ivec3(100,100,100));
-    triangle->setScreen(&screen);
-    triangle->draw();
-    failure = drawTriangleTests(screen);
     
-    if (pointTests(elements, screen, window)) {
+    if (pointTests(screen, window)) {
         failure = 1;
     }
-    if (lineTests(elements, screen, window)) {
+    if (lineTests(screen, window)) {
         failure = 1;
     }
-    if (boxTests(elements, screen, window)) {
+    if (boxTests(screen, window)) {
+        failure = 1;
+    }
+    if (drawTriangleTests(screen, window)) {
         failure = 1;
     }
 
@@ -48,26 +46,10 @@ int main() {
     return failure;
 }
 
-int pointTests(std::vector<GuiElement*>& elements, Screen screen, SDL_Window* window) {
+int pointTests(Screen screen, SDL_Window* window) {
     int failure = 0;
     std::cout << "Testing Point class\n";
-    // GuiElement* point = new Point(ivec2(40, 500), ivec3(200, 200, 200));
-    // GuiElement* point = factory(guiElement::POINT, ivec2(40, 500), ivec3(200, 200, 200));
-    // elements.push_back(factory(guiElement::POINT));
-    GuiElement* point = factory(guiElement::POINT);
-    point = &Point(ivec2(40, 500), ivec3(200, 200, 200));
-    elements.push_back(point);
-    // point = Point(ivec2(40, 500), ivec3(200, 200, 200));
-
-    int index = -1;
-    // for (auto itr = elements.begin(); itr != elements.end(); ++itr) {
-    //     std::cout << typeid(itr).name() << ' ';
-    //     if (typeid(itr) == (typeid(Point))) {
-    //         index = elements.end() - itr;
-    //         std::cout << "found\n";
-    //     }
-    // }
-    
+    GuiElement* point = new Point(ivec2(40, 500), ivec3(200, 200, 200));
 
     Point *test = new Point(ivec2(40, 500), ivec3(200, 200, 200));
     Point *dup = new Point(ivec2(40, 500), ivec3(200, 200, 200));
@@ -126,7 +108,7 @@ int pointTests(std::vector<GuiElement*>& elements, Screen screen, SDL_Window* wi
     return failure;
 }
 
-int lineTests(std::vector<GuiElement*>& elements, Screen screen, SDL_Window* window) {
+int lineTests(Screen screen, SDL_Window* window) {
     int failure = 0;
     std::cout << "Testing Line class\n";
     GuiElement *line = new Line(ivec2(250, 300), ivec2(450, 500), ivec3(200, 200, 200));
@@ -192,7 +174,7 @@ int lineTests(std::vector<GuiElement*>& elements, Screen screen, SDL_Window* win
     return failure;
 }
 
-int boxTests(std::vector<GuiElement*>& elements, Screen screen, SDL_Window* window) {
+int boxTests(Screen screen, SDL_Window* window) {
     int failure = 0;
     std::cout << "Testing Box class\n";
     GuiElement *box = new Box(ivec2(40, 50), ivec2(240, 450), ivec3(200, 200, 0));
@@ -275,8 +257,13 @@ int boxTests(std::vector<GuiElement*>& elements, Screen screen, SDL_Window* wind
     return failure;
 }
 
-int drawTriangleTests(Screen screen) {
+int drawTriangleTests(Screen screen, SDL_Window* window) {
     int failure = 0;
+    GuiElement *triangle = new Triangle(ivec2(50,50), ivec2(120,200), ivec2(100, 50), ivec3(100,100,100));
+    triangle->setScreen(&screen);
+    triangle->draw();
+    screen.blitTo(SDL_GetWindowSurface(window));
+    SDL_UpdateWindowSurface(window);
 
     ivec2 pointA{50,50};
     ivec2 pointB{120,200};
@@ -295,7 +282,30 @@ int drawTriangleTests(Screen screen) {
     ) {
         failure = 1;
     }
+    
+    bool quit = false;
+    SDL_Event event;
+	while (!quit) {
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+                case SDL_EVENT_QUIT: {
+                    quit = true;
+                    break;
+                }
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+                    quit = true;
+                    break;
+                }
+			}
+		}
+    }
 
+    if (failure) {
+        std::cout << "triangle tests FAILED\n";
+    }
+    else {
+        std::cout << "triangle tests passed\n";
+    }
     return failure;
 }
 

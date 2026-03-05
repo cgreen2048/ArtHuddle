@@ -1,4 +1,5 @@
 #include "Box.hpp"
+#include "XmlWriteHelpers.hpp"
 
 Box::Box() : min({0, 0}), max({0, 0}), color({0, 0, 0}) {}
 
@@ -36,4 +37,45 @@ Box::~Box() {}
 
 void Box::draw() {
     this->screen->drawBox(this->min, this->max, this->color);
+}
+
+void Box::setMin(const ivec2& v, TagType t){
+    this->min = v;
+    this->minType = t;
+}
+
+void Box::setMax(const ivec2& v, TagType t){
+    this->max = v;
+    this->maxType = t;
+}
+
+void Box::setColor(const ivec3& v, TagType t){
+    this->color = v;
+    this->colorType = t;
+}
+
+void Box::writeXml(std::ostream& out) const {
+    out << "  <box>\n";
+
+    if (minType == TagType::IVec) {
+        writeIVec2(out, min);
+    } else {
+        writeVec2(out, toVec2(min));
+    }
+
+    if (maxType == TagType::IVec) {
+        writeIVec2(out, max);
+    }
+    else {
+        writeVec2(out, toVec2(max));
+    }
+
+    if (colorType == TagType::IVec) {
+        writeIVec3(out, color);
+    }
+    else {
+        writeVec3(out, toVec3(color));
+    }
+
+    out << "  </box>\n";
 }
