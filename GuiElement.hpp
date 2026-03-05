@@ -6,9 +6,6 @@
 
 enum class guiElement {POINT, LINE, BOX};
 
-
-
-
 class GuiElement {
 	protected:
 		Screen* screen;
@@ -18,17 +15,13 @@ class GuiElement {
 		virtual ~GuiElement();
 		
 		virtual void draw();
+
+		virtual void writeXml(std::ostream& out) const;
 		
 		void setScreen(Screen*);
 
 		Screen* getScreen();
 };
-
-
-
-
-
-
 
 
 #endif

@@ -15,9 +15,9 @@ int drawTriangleTests(Screen);
 int main() {
     int failure = 0;
 
-    GuiElement *point = new Point(vec2(40, 500), vec3(200, 200, 200));
-    GuiElement *line = new Line(vec2(250, 300), vec2(450, 500), vec3(200, 200, 200));
-    GuiElement *box = new Box(vec2(40, 50), vec2(240, 450), vec3(200, 200, 0));
+    GuiElement *point = new Point(ivec2(40, 500), ivec3(200, 200, 200));
+    GuiElement *line = new Line(ivec2(250, 300), ivec2(450, 500), ivec3(200, 200, 200));
+    GuiElement *box = new Box(ivec2(40, 50), ivec2(240, 450), ivec3(200, 200, 0));
     GuiElement *triangle = new Triangle(ivec2(50,50), ivec2(120,200), ivec2(100, 50), ivec3(100,100,100));
     Screen screen = Screen(X, Y);
     
