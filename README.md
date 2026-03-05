@@ -6,6 +6,158 @@
 
 main.cpp is a demonstration program
 
+# GuiElement
+
+## Description
+
+`GuiElement` is the **base class for all drawable GUI primitives** in the system.
+
+It defines a common interface used by all graphical objects such as:
+
+- `Point`
+- `Line`
+- `Box`
+- `Triangle`
+
+The class allows these derived types to be handled **polymorphically**, meaning they can be stored and manipulated using a `GuiElement*`.
+
+Each element maintains a pointer to the `Screen` object where it will be rendered.
+
+---
+
+## Internal Data Structures
+
+### `enum class guiElement`
+
+This enumeration identifies the type of GUI element being created.  
+It is primarily used by the **Factory** to determine which object to instantiate.
+
+```cpp
+enum class guiElement { POINT, LINE, BOX, TRIANGLE };
+```
+
+## Data Members
+
+- `Screen* screen`  
+  Pointer to the `Screen` object where the element will be drawn.
+
+---
+
+## Methods
+
+### `GuiElement()`
+
+Default constructor.  
+Initializes the base GUI element.
+
+---
+
+### `~GuiElement()`
+
+Destructor for the base GUI element class.
+
+Derived classes inherit this destructor behavior.
+
+---
+
+### `void draw()`
+
+Virtual draw method intended to be **overridden by derived classes**.
+
+Each derived class implements its own drawing behavior:
+
+| Class | Screen Function Used |
+|------|------|
+| `Point` | `colorOnePixel()` |
+| `Line` | `drawBresenhamLine()` |
+| `Box` | `drawBox()` |
+| `Triangle` | `drawTriangle()` |
+
+---
+
+### `void writeXml(std::ostream& out) const`
+
+Virtual method used for writing the GUI element to an XML layout file.
+
+Derived classes override this method to write their specific geometry and color information.
+
+---
+
+### `void setScreen(Screen* target)`
+
+Associates the GUI element with a target `Screen`.
+
+Parameters:
+
+- `target` — pointer to the `Screen` where the element should draw itself.
+
+---
+
+### `Screen* getScreen()`
+
+Returns the pointer to the `Screen` associated with the GUI element.
+
+Returns:
+
+- `Screen*` pointing to the target screen.
+
+---
+
+# Factory
+
+## Description
+
+The `factory()` function implements a **Factory Design Pattern** used to dynamically create GUI elements.
+
+Instead of directly constructing objects like `new Line` or `new Box`, the program calls the factory and specifies which type of element is needed.
+
+This provides:
+
+- centralized object creation
+- simplified parsing logic
+- polymorphic object handling via `GuiElement*`
+
+The factory returns a pointer to a `GuiElement`, allowing the caller to treat all shapes uniformly.
+
+---
+
+## Function
+
+### `GuiElement* factory(guiElement e)`
+
+Creates a new GUI element based on the `guiElement` enum value.
+
+Parameters:
+
+- `e` — enum specifying which GUI element type to construct.
+
+Returns:
+
+- Pointer to a newly allocated `GuiElement` object.
+- Returns `nullptr` if the enum value does not match any supported element.
+
+---
+
+## Supported Element Types
+
+| Enum Value | Object Created |
+|------|------|
+| `guiElement::POINT` | `Point` |
+| `guiElement::LINE` | `Line` |
+| `guiElement::BOX` | `Box` |
+| `guiElement::TRIANGLE` | `Triangle` |
+
+---
+
+## Example Usage
+
+```cpp
+GuiElement* element = factory(guiElement::LINE);
+
+element->setScreen(screen);
+element->draw();
+```
+
 # Triangle
 
 ## Description
@@ -31,6 +183,23 @@ Method to draw the stored triangle to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawTriangle` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
 
+### `void writeXml(std::ostream& out) const`
+
+Writes the triangle to an XML layout file.
+
+Behavior:
+
+- Writes a `<triangle>` tag to the output stream
+- Writes the three triangle vertices (`a`, `b`, `c`)
+- Each vertex is written as either:
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the triangle color (`color`)
+  - `<vec3>` if `TagType::Vec`
+  - `<ivec3>` if `TagType::IVec`
+- Closes the `<triangle>` tag
+
+This allows the triangle to preserve whether the original data used floating-point (`vec`) or integer (`ivec`) values when writing the layout file.
 
 # Box
 
@@ -56,6 +225,25 @@ Method to draw the stored box to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawBox` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
 
+### `void writeXml(std::ostream& out) const`
+
+Writes the box to an XML layout file.
+
+Behavior:
+
+- Writes a `<box>` tag to the output stream
+- Writes the minimum corner (`min`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the maximum corner (`max`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the box color (`color`)
+  - `<vec3>` if `TagType::Vec`
+  - `<ivec3>` if `TagType::IVec`
+- Closes the `<box>` tag
+
+This ensures the XML output preserves whether integer or floating-point vector tags were used.
 
 # Line
 
@@ -81,6 +269,25 @@ Method to draw the stored line to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawBresenhamLine` within the `Screen` class to draw the line to to the screen's `SDL_Surface`
 
+### `void writeXml(std::ostream& out) const`
+
+Writes the line to an XML layout file.
+
+Behavior:
+
+- Writes a `<line>` tag to the output stream
+- Writes the starting point (`start`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the ending point (`end`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the line color (`color`)
+  - `<vec3>` if `TagType::Vec`
+  - `<ivec3>` if `TagType::IVec`
+- Closes the `<line>` tag
+
+This allows the line to maintain the same vector type used in the original layout file.
 
 # Point
 
@@ -105,74 +312,121 @@ Method to draw the stored point to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `colorOnePixel` within the `Screen` class to draw the point to to the screen's `SDL_Surface`
 
+### `void writeXml(std::ostream& out) const`
+
+Writes the point to an XML layout file.
+
+Behavior:
+
+- Writes a `<point>` tag to the output stream
+- Writes the point position (`coords`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the point color (`color`)
+  - `<vec3>` if `TagType::Vec`
+  - `<ivec3>` if `TagType::IVec`
+- Closes the `<point>` tag
+
+This ensures the XML output preserves whether integer or floating-point vector tags were used in the layout file.
 
 # GUIFile
 
 ## Description
 
-`GUIFile` is a class responsible for reading and writing a simple XML-like layout file that describes graphical primitives.
+`GUIFile` is a class responsible for **reading and writing an XML-like layout file** that describes graphical primitives.
 
-It stores three types of objects:
+Instead of storing separate containers for each shape, this implementation stores a **single polymorphic container**:
 
-- `std::vector<Line> lines`
-- `std::vector<Box> boxes`
-- `std::vector<Point> points`
+- `std::vector<GuiElement*> elements`
 
-Each object stores position data (`vec2` / `ivec2`) and color data (`vec3` / `ivec3`).  
+Each pointer refers to a derived `GuiElement` object (`Line`, `Box`, or `Point`).  
+This allows all shapes to be handled uniformly using polymorphism.
 
-The class supports both floating-point vectors (`<vec2>`, `<vec3>`) and integer vectors (`<ivec2>`, `<ivec3>`), tracking which type was used through the `TagType` enum.
+`GUIFile` **owns all allocated objects** and is responsible for deleting them when clearing the file or destroying the object.
 
----
-
-## Internal Data Structures
-
-### `enum class TagType`
-Indicates whether a vector was parsed/written as:
-- `TagType::Vec` → `<vec2>` or `<vec3>`
-- `TagType::IVec` → `<ivec2>` or `<ivec3>`
+The class supports both floating-point vector tags (`<vec2>`, `<vec3>`) and integer vector tags (`<ivec2>`, `<ivec3>`).  
+When reading, the parser records which tag type was used and stores that information in the element using a `TagType`.  
+When writing, each element's `writeXml()` method outputs the correct tag type.
 
 ---
 
-### `Line`
+# Internal Data Structures
 
-A nested struct inside GUIFile that represents a line segment
+## `std::vector<GuiElement*> elements`
 
-- `vec2 start`
-- `vec2 end`
-- `vec3 color`
-- `TagType startType`
-- `TagType endType`
-- `TagType colorType`
+Stores all graphical elements contained in the layout file.
 
-Used to store both geometric and color information for a line.
+- Each entry is a pointer to a derived `GuiElement`
+- Supported derived types include:
+  - `Line`
+  - `Box`
+  - `Point`
 
----
+Elements are stored **in the order they appear in the file**.
 
-### `Box`
-
-A nested struct inside GUIFile that represents an axis-aligned rectangle.
-
-- `vec2 min`
-- `vec2 max`
-- `vec3 color`
-- `TagType minType`
-- `TagType maxType`
-- `TagType colorType`
+`GUIFile` owns these pointers and deletes them in `clear()` and the destructor.
 
 ---
 
-### `Point`
+## `enum class TagType`
 
-A nested struct inside GUIFile that represents a single point in space.
+Indicates how vector data should be written back to the XML file.
 
-- `vec2 position`
-- `vec3 color`
-- `TagType posType`
-- `TagType colorType`
+| Value | Meaning |
+|------|------|
+| `TagType::Vec` | `<vec2>` / `<vec3>` |
+| `TagType::IVec` | `<ivec2>` / `<ivec3>` |
+
+When parsing the file, this tag type is stored inside the derived objects using setter functions such as:
+
+- `setStart()`
+- `setEnd()`
+- `setMin()`
+- `setMax()`
+- `setCoords()`
+- `setColor()`
+
+This allows `writeXml()` to preserve the original tag type.
 
 ---
 
-## Supported XML Layout Format
+## XML Token Constants
+
+The header defines constant strings representing all valid XML tokens:
+
+### Layout Tags
+- `<layout>`
+- `</layout>`
+
+### Element Tags
+- `<line>`
+- `</line>`
+- `<box>`
+- `</box>`
+- `<point>`
+- `</point>`
+
+### Vector Tags
+- `<vec2>`
+- `<vec3>`
+- `<ivec2>`
+- `<ivec3>`
+
+### Coordinate Tags
+- `<x>`
+- `<y>`
+- `<z>`
+
+Two arrays are used to validate XML structure:
+
+- `OPENERS` → list of all opening tags
+- `CLOSERS` → list of all closing tags
+
+These are used by the parser to verify correct nesting.
+
+---
+
+# Supported XML Layout Format
 
 The layout file must follow this structure:
 
@@ -194,9 +448,13 @@ The layout file must follow this structure:
         </vec3>
     </line>
 
-    <box> ... </box>
+    <box>
+        ...
+    </box>
 
-    <point> ... </point>
+    <point>
+        ...
+    </point>
 </layout>
 ```
 
@@ -208,75 +466,97 @@ Both `<vec*>` and `<ivec*>` variants are supported.
 
 ### `GUIFile()`
 
-Default constructor.  
-Initializes empty vectors of lines, boxes, and points.
+Default constructor.
+
+Initializes an empty container of GUI elements.
 
 ---
 
-### `const std::vector<Line>& getLines() const`
-Returns all stored `Line` objects.
+### `~GUIFile()`
+
+Destructor.
+
+Calls `clear()` to free all owned elements.
 
 ---
 
-### `const std::vector<Box>& getBoxes() const`
-Returns all stored `Box` objects.
+### `const std::vector<GuiElement*>& getElements() const`
+
+Returns the list of stored GUI elements.
+
+Elements are returned as `GuiElement*` so they can be handled polymorphically.
 
 ---
 
-### `const std::vector<Point>& getPoints() const`
-Returns all stored `Point` objects.
+### `void addLine(Line* l)`
+
+Adds a `Line` object to the container.
+
+Implicitly converts `Line*` to `GuiElement*`.
 
 ---
 
-### `void addLine(const Line& l)`
-Appends a `Line` to the internal list.
+### `void addBox(Box* b)`
+
+Adds a `Box` object to the container.
 
 ---
 
-### `void addBox(const Box& b)`
-Appends a `Box` to the internal list.
+### `void addPoint(Point* p)`
 
----
-
-### `void addPoint(const Point& p)`
-Appends a `Point` to the internal list.
+Adds a `Point` object to the container.
 
 ---
 
 ### `void clear()`
-Clears all stored layout data:
-- `lines`
-- `boxes`
-- `points`
 
-Used before loading a new file.
+Deletes all elements and resets the container.
+
+Used when:
+
+- loading a new file
+- destroying the `GUIFile` object
 
 ---
 
-## File Parsing
+# File Parsing
 
 ### `void readFile(std::string fileName)`
 
-Reads a layout file and parses its contents.
+Reads a layout file and constructs GUI elements from it.
 
-### Behavior:
+---
 
-- Opens the file using `std::ifstream`
-- Uses a stack to match opening and closing tags
-- Detects malformed XML structures
-- Builds:
-  - `Line`
-  - `Box`
-  - `Point`
-- Validates:
-  - Proper tag nesting
-  - Required `<x>`, `<y>`, `<z>` values
-  - Matching open/close tag pairs
-- Converts `<ivec*>` values into floating-point equivalents when stored
+## Parsing Behavior
 
-If malformed input is detected:
-- Prints `"Malformed XML"`
-- Immediately exits parsing
+1. Clear any existing elements.
+
+2. Open the file using `std::ifstream`.
+
+3. Use a `std::stack<std::string>` (`matcher`) to enforce correct tag nesting.
+
+4. When encountering an element tag (`<line>`, `<box>`, `<point>`), create a new object using the Factory.
+
+Example:
+
+```cpp
+current = factory(guiElement::LINE);
+```
+---
+## Malformed XML Detection
+
+If malformed XML is detected:
+
+- `"Malformed XML"` is printed
+- the partially constructed object is deleted
+- parsing stops immediately
+
+Malformed conditions include:
+
+- mismatched closing tags
+- missing coordinates
+- repeated coordinate values
+- incorrect nesting
 
 ---
 
@@ -284,25 +564,41 @@ If malformed input is detected:
 
 ### `void writeFile(const std::string& fileName) const`
 
-Writes the current layout data to file in proper XML format.
-
-### Behavior:
-
-- Opens output file
-- Writes root `<layout>` tag
-- Iterates through:
-  - Lines
-  - Boxes
-  - Points
-- Writes each object using the correct tag type:
-  - `<vec2>` vs `<ivec2>`
-  - `<vec3>` vs `<ivec3>`
-- Closes layout properly
-
-Integer vectors are written using rounded float values.
+Writes all stored GUI elements to an XML layout file.
 
 ---
 
+### Writing Behavior
+
+1. Open the output file using `std::ofstream`.
+
+2. Write the root `<layout>` tag.
+
+3. Iterate through all elements:
+
+```cpp
+for (auto* e : elements) {
+    e->writeXml(out);
+}
+```
+4. Each element calls its own `writeXml()` method.
+
+Because `writeXml()` is **virtual**, the correct derived implementation runs automatically.
+
+Each derived class writes:
+
+- its own element tag (`<line>`, `<box>`, `<point>`)
+- vector data (`vec2` / `ivec2`)
+- color data (`vec3` / `ivec3`)
+
+The tag type is determined using the stored `TagType`.
+
+Finally, the layout is closed with:
+
+```xml
+</layout>
+```
+---
 These are static helper utilities used during parsing and writing:
 
 - `trim()` → Removes leading/trailing whitespace
@@ -313,7 +609,6 @@ These are static helper utilities used during parsing and writing:
 - `writeIVec3()`
 
 These functions ensure consistent formatting of XML output.
-
 ---
 
 ## UML Diagram
