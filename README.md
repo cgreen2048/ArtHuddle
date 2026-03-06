@@ -166,6 +166,10 @@ element->draw();
 - `ivec2 b`: the coordinates of the second point of the triangle
 - `ivec2 c`: the coordinates of the third point of the triangle
 - `ivec3 color`: the color of the triangle
+- `TagType aType`: the type of tag for the `a` attribute
+- `TagType bType`: the type of tag for the `b` attribute
+- `TagType cType`: the type of tag for the `c` attribute
+- `TagType colorType`: the type of tag for the `color` attribute
 
 ## Methods
 
@@ -182,6 +186,18 @@ The default destructor
 Method to draw the stored triangle to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawTriangle` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
+
+### `void Triangle::setA(const ivec2& v, TagType t)`
+Method to set the `a` and `aType` attributes of a triangle object
+
+### `void Triangle::setB(const ivec2& v, TagType t)`
+Method to set the `b` and `bType` attributes of a triangle object
+
+### `void Triangle::setC(const ivec2& v, TagType t)`
+Method to set the `c` and `cType` attributes of a triangle object
+
+### `void Triangle::setColor(const ivec3& v, TagType t)`
+Method to set the `color` and `colorType` attributes of a triangle object
 
 ### `void writeXml(std::ostream& out) const`
 
@@ -208,6 +224,9 @@ This allows the triangle to preserve whether the original data used floating-poi
 - `vec2 min`: the coordinates of the minimum point of the box
 - `vec2 max`: the coordinates of the maximum point of the box
 - `vec3 color`: the color of the box
+- `TagType minType`: the type of tag for the `min` attribute
+- `TagType maxType`: the type of tag for the `max` attribute
+- `TagType colorType`: the type of tag for the `color` attribute
 
 ## Methods
 
@@ -224,6 +243,15 @@ The default destructor
 Method to draw the stored box to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawBox` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
+
+### `void Box::setMin(const ivec2& v, TagType t)`
+Method to set the `min` and `minType` attributes of a box object
+
+### `void Box::setB(const ivec2& v, TagType t)`
+Method to set the `max` and `maxType` attributes of a box object
+
+### `void Box::setColor(const ivec3& v, TagType t)`
+Method to set the `color` and `colorType` attributes of a box object
 
 ### `void writeXml(std::ostream& out) const`
 
@@ -252,6 +280,9 @@ This ensures the XML output preserves whether integer or floating-point vector t
 - `vec2 start`: the coordinates of the starting point of the line
 - `vec2 end`: the coordinates of the ending point of the line
 - `vec3 color`: the color of the line
+- `TagType startType`: the type of tag for the `start` attribute
+- `TagType endType`: the type of tag for the `end` attribute
+- `TagType colorType`: the type of tag for the `color` attribute
 
 ## Methods
 
@@ -268,6 +299,15 @@ The default destructor
 Method to draw the stored line to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawBresenhamLine` within the `Screen` class to draw the line to to the screen's `SDL_Surface`
+
+### `void Line::setStart(const ivec2& v, TagType t)`
+Method to set the `start` and `startType` attributes of a line object
+
+### `void Box::setEnd(const ivec2& v, TagType t)`
+Method to set the `end` and `endType` attributes of a line object
+
+### `void Line::setColor(const ivec3& v, TagType t)`
+Method to set the `color` and `colorType` attributes of a line object
 
 ### `void writeXml(std::ostream& out) const`
 
@@ -295,6 +335,8 @@ This allows the line to maintain the same vector type used in the original layou
 `Point` is a class used for storing and drawing a point to a `Screen` object. It inherits from the `GuiElement` class
 - `vec2 coords`: the coordinates of the point
 - `vec3 color`: the color of the box
+- `TagType coordsType`: the type of tag for the `coords` attribute
+- `TagType colorType`: the type of tag for the `color` attribute
 
 ## Methods
 
@@ -311,6 +353,12 @@ The default destructor
 Method to draw the stored point to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `colorOnePixel` within the `Screen` class to draw the point to to the screen's `SDL_Surface`
+
+### `void Point::setCoords(const ivec2& v, TagType t)`
+Method to set the `coords` and `coordsType` attributes of a point object
+
+### `void Point::setColor(const ivec3& v, TagType t)`
+Method to set the `color` and `colorType` attributes of a point object
 
 ### `void writeXml(std::ostream& out) const`
 
