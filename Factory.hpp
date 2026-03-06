@@ -5,6 +5,7 @@
 #include "Point.hpp"
 #include "Line.hpp"
 #include "Box.hpp"
+#include "Triangle.hpp"
 
 extern GuiElement* factory(guiElement);
 
