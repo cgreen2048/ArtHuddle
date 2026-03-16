@@ -7,14 +7,11 @@ int main() {
     
     // x.readFile(name);
 
-    GUIFile::Line myLine = GUIFile::Line{vec2(),vec2(),vec3()};
-    GUIFile::Box myBox = GUIFile::Box{vec2(),vec2(),vec3()};
-    GUIFile::Point myPoint = GUIFile::Point{vec2(),vec3()};
-
     GUIFile gui = GUIFile();
-    gui.addLine(myLine);
-    gui.addBox(myBox);
-    gui.addPoint(myPoint);
+    gui.addLine(new Line{vec2(), vec2(), vec3()});
+    gui.addBox(new Box{vec2(), vec2(), vec3()});
+    gui.addPoint(new Point{vec2(), vec3()});
+    gui.addTriangle(new Triangle{vec2(), vec2(), vec2(), vec3()});
     gui.writeFile("out.xml");
 
 }

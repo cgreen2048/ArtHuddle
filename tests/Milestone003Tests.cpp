@@ -147,10 +147,17 @@ int readTest1() {
     auto* p = new Point();
     p->setCoords(ivec2(480, 270), Point::TagType::IVec); // if the XML uses <ivec2>
     p->setColor(ivec3(67, 200, 142), Point::TagType::IVec); // if <ivec3>
+
+    auto* t = new Triangle();
+    t->setA(ivec2(50, 50), Triangle::TagType::IVec);
+    t->setB(ivec2(120, 200), Triangle::TagType::IVec);
+    t->setC(ivec2(100, 50), Triangle::TagType::IVec);
+    t->setColor(ivec3(100, 100, 100), Triangle::TagType::IVec);
     
     expected.push_back(l);
     expected.push_back(b);
     expected.push_back(p);
+    expected.push_back(t);
     
     GUIFile gui = GUIFile();
     gui.readFile("testFiles/input.xml");
