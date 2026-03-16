@@ -503,6 +503,10 @@ The layout file must follow this structure:
     <point>
         ...
     </point>
+
+    <triangle>
+        ...
+    </triangle>
 </layout>
 ```
 
@@ -554,6 +558,10 @@ Adds a `Box` object to the container.
 
 Adds a `Point` object to the container.
 
+### `void addTriangle(Triangle* t)`
+
+Adds a `Triangle` object to the container.
+
 ---
 
 ### `void clear()`
@@ -583,7 +591,7 @@ Reads a layout file and constructs GUI elements from it.
 
 3. Use a `std::stack<std::string>` (`matcher`) to enforce correct tag nesting.
 
-4. When encountering an element tag (`<line>`, `<box>`, `<point>`), create a new object using the Factory.
+4. When encountering an element tag (`<line>`, `<box>`, `<point>`, `<triangle>`), create a new object using the Factory.
 
 Example:
 
@@ -635,7 +643,7 @@ Because `writeXml()` is **virtual**, the correct derived implementation runs aut
 
 Each derived class writes:
 
-- its own element tag (`<line>`, `<box>`, `<point>`)
+- its own element tag (`<line>`, `<box>`, `<point>`, `<triangle>`)
 - vector data (`vec2` / `ivec2`)
 - color data (`vec3` / `ivec3`)
 
