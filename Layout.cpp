@@ -63,17 +63,17 @@ const std::vector<GuiElement*>& getElements() const {
 }
 
 int Layout::getAbsoluteStartX() {
-    return this->parentStart.x + static_cast<int>(this->startX * (this->parentEnd.x - this->parentStart.x));
+    return this->parentStart.x + static_cast<int>(this->start.x * (this->parentEnd.x - this->parentStart.x));
 }
 
 int Layout::getAbsoluteStartY() {
-    return this->parentStart.y + static_cast<int>(this->startY * (this->parentEnd.y - this->parentStart.y));
+    return this->parentStart.y + static_cast<int>(this->start.y * (this->parentEnd.y - this->parentStart.y));
 }
 
 int Layout::getAbsoluteEndX() {
-    return this->parentStart.x + static_cast<int>(this->endX * (this->parentEnd.x - this->parentStart.x));
+    return this->parentStart.x + static_cast<int>(this->end.x * (this->parentEnd.x - this->parentStart.x));
 }
 
 int Layout::getAbsoluteEndY() {
-    return this->parentStart.y + static_cast<int>(this->endY * (this->parentEnd.y - this->parentStart.y));
+    return this->parentStart.y + static_cast<int>(this->end.y * (this->parentEnd.y - this->parentStart.y));
 }

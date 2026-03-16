@@ -13,6 +13,8 @@ class Layout : public GuiElement {
         vec2 end;
         ivec2 parentStart;
         ivec2 parentEnd;
+        bool hasParentStart = false;
+        bool hasParentEnd = false;
         std::vector<GuiElement*> elements;
         bool active;
     public:
@@ -22,8 +24,6 @@ class Layout : public GuiElement {
         void setEnd(const vec2& end);
         void setParentStart(const ivec2& start);
         void setParentEnd(const ivec2& end);
-        void setEndX(float eX);
-        void setEndY(float eY);
         void setActive(bool value);
         bool isActive();
         void addElement(GuiElement *element);
