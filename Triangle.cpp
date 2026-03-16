@@ -12,6 +12,40 @@ Triangle::Triangle(ivec2 a, ivec2 b, ivec2 c, ivec3 color) {
 
 Triangle::~Triangle() {}
 
+Triangle::Triangle(const Triangle& cp) : Triangle() {
+    this->a = cp.a;
+    this->b = cp.b;
+    this->c = cp.c;
+    this->color = cp.color;
+    this->aType = cp.aType;
+    this->bType = cp.bType;
+    this->cType = cp.cType;
+    this->colorType = cp.colorType;
+}
+
+Triangle& Triangle::operator=(const Triangle& cp) {
+    this->a = cp.a;
+    this->b = cp.b;
+    this->c = cp.c;
+    this->color = cp.color;
+    this->aType = cp.aType;
+    this->bType = cp.bType;
+    this->cType = cp.cType;
+    this->colorType = cp.colorType;
+    return *this;
+}
+
+bool Triangle::operator==(Triangle rhs) {
+    if ((this->a != rhs.a) || (this->b != rhs.b) || (this->c != rhs.c) || (this->color != rhs.color)) {
+        return false;
+    }
+    return true;
+}
+
+bool Triangle::operator!=(Triangle rhs) {
+    return !(*this == rhs);
+}
+
 void Triangle::draw() {
     if (this->screen != nullptr) {
         this->screen->drawTriangle(this->a, this->b, this->c, this->color);

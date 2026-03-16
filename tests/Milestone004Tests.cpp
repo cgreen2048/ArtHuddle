@@ -13,7 +13,7 @@ const int Y = 540;
 int pointTests(Screen, SDL_Window*);
 int lineTests(Screen, SDL_Window*);
 int boxTests(Screen, SDL_Window*);
-int drawTriangleTests(Screen, SDL_Window*);
+int triangleTests(Screen, SDL_Window*);
 void getPixelColor(SDL_Surface*, ivec2, uint8_t&, uint8_t&, uint8_t&);
 
 int main() {
@@ -31,7 +31,7 @@ int main() {
     if (boxTests(screen, window)) {
         failure = 1;
     }
-    if (drawTriangleTests(screen, window)) {
+    if (triangleTests(screen, window)) {
         failure = 1;
     }
 
@@ -257,9 +257,39 @@ int boxTests(Screen screen, SDL_Window* window) {
     return failure;
 }
 
-int drawTriangleTests(Screen screen, SDL_Window* window) {
+int triangleTests(Screen screen, SDL_Window* window) {
     int failure = 0;
     GuiElement *triangle = new Triangle(ivec2(50,50), ivec2(120,200), ivec2(100, 50), ivec3(100,100,100));
+
+    Triangle *test = new Triangle(ivec2(50,50), ivec2(120,200), ivec2(100, 50), ivec3(100,100,100));
+    Triangle *copy{test};
+    Triangle *equal = new Triangle();
+    equal = copy;
+
+    if (*test == *copy) {
+        std::cout << "triangle copy constructor passed\n";
+    }
+    else {
+        std::cout << "triangle copy constructor failed\n";
+        failure = 1;
+    }
+
+    if (*test == *equal) {
+        std::cout << "triangle equality operator passed\n";
+    }
+    else {
+        std::cout << "triangle equality operator failed\n";
+        failure = 1;
+    }
+
+    if (*test != *equal) {
+        std::cout << "triangle inequality FAILED!\n";
+        failure = 1;
+    }
+    else {
+        std::cout << "triangle inequality working\n";
+    }
+
     triangle->setScreen(&screen);
     triangle->draw();
     screen.blitTo(SDL_GetWindowSurface(window));

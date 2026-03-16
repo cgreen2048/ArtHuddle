@@ -30,14 +30,33 @@
     </vec3>
   </box>
   <point>
-    <vec2>
+    <ivec2>
         <x>480</x>
         <y>270</y>
-    </vec2>
-    <vec3>
+    </ivec2>
+    <ivec3>
         <x>67</x>
         <y>200</y>
         <z>142</z>
-    </vec3>
+    </ivec3>
   </point>
+  <triangle>
+    <ivec2>
+        <x>100</x>
+        <y>100</y>
+    </ivec2>
+    <ivec2>
+        <x>150</x>
+        <y>100</y>
+    </ivec2>
+    <ivec2>
+        <x>125</x>
+        <y>150</y>
+    </ivec2>
+    <ivec3>
+        <x>255</x>
+        <y>0</y>
+        <z>0</z>
+    </ivec3>
+  </triangle>
 </layout>

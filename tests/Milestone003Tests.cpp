@@ -122,7 +122,18 @@ int elementsComparison(const std::vector<GuiElement*>& actual, const std::vector
             }
         }
 
+        // ---- Triangle ----
+        else if (auto* aTriangle = dynamic_cast<Triangle*>(a)) {
+            auto* eTriangle = dynamic_cast<Triangle*>(e);
+            if (!eTriangle) {
+                return 1;
+            }
+            if (*aTriangle != *eTriangle) {
+                return 1;
+            }
+        }
     }
+
 
     return 0;
 }
@@ -147,10 +158,17 @@ int readTest1() {
     auto* p = new Point();
     p->setCoords(ivec2(480, 270), Point::TagType::IVec); // if the XML uses <ivec2>
     p->setColor(ivec3(67, 200, 142), Point::TagType::IVec); // if <ivec3>
+
+    auto* t = new Triangle();
+    t->setA(ivec2(100, 100), Triangle::TagType::IVec);
+    t->setB(ivec2(150, 100), Triangle::TagType::IVec);
+    t->setC(ivec2(125, 150), Triangle::TagType::IVec);
+    t->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
     
     expected.push_back(l);
     expected.push_back(b);
     expected.push_back(p);
+    expected.push_back(t);
     
     GUIFile gui = GUIFile();
     gui.readFile("testFiles/input.xml");
@@ -310,16 +328,23 @@ int writeTest1() {
     auto* p = new Point();
     p->setCoords(ivec2(480, 270), Point::TagType::IVec);
     p->setColor(ivec3(67, 200, 142), Point::TagType::IVec); 
+
+    auto* t = new Triangle();
+    t->setA(ivec2(100, 100), Triangle::TagType::IVec);
+    t->setB(ivec2(150, 100), Triangle::TagType::IVec);
+    t->setC(ivec2(125, 150), Triangle::TagType::IVec);
+    t->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
     
     expected.push_back(l);
     expected.push_back(b);
     expected.push_back(p);
-
+    expected.push_back(t);
 
     GUIFile gui = GUIFile();
     gui.addLine(new Line(*l));
     gui.addBox(new Box(*b));
     gui.addPoint(new Point(*p));
+    gui.addTriangle(new Triangle(*t));
     gui.writeFile("testFiles/output.xml");
     
     gui.readFile("testFiles/output.xml");
@@ -401,7 +426,7 @@ int writeTest3() {
     auto* b2 = new Box();
     b2->setMin(toIVec2(500.5f, 600.6f), Box::TagType::Vec);
     b2->setMax(toIVec2(700.7f, 800.8f), Box::TagType::Vec);
-    b2->setColor(toIVec3(4.0, 5.0, 6.0), Box::TagType::Vec);
+    b2->setColor(ivec3(4, 5, 6), Box::TagType::IVec);
     expected.push_back(b2);
     gui.addBox(new Box(*b2));
 
@@ -428,6 +453,22 @@ int writeTest3() {
     p4->setColor(ivec3(110, 111, 112), Point::TagType::IVec);
     expected.push_back(p4);
     gui.addPoint(new Point(*p4));
+
+    auto* t1 = new Triangle();
+    t1->setA(ivec2(100, 100), Triangle::TagType::IVec);
+    t1->setB(ivec2(150, 100), Triangle::TagType::IVec);
+    t1->setC(ivec2(125, 150), Triangle::TagType::IVec);
+    t1->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
+    expected.push_back(t1);
+    gui.addTriangle(new Triangle(*t1));
+
+    auto* t2 = new Triangle();
+    t2->setA(ivec2(100, 100), Triangle::TagType::IVec);
+    t2->setB(ivec2(150, 100), Triangle::TagType::IVec);
+    t2->setC(ivec2(125, 150), Triangle::TagType::IVec);
+    t2->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
+    expected.push_back(t2);
+    gui.addTriangle(new Triangle(*t2));
 
     
     gui.writeFile("testFiles/multipleSurfaceObjects.xml");

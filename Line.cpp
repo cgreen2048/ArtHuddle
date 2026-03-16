@@ -13,12 +13,18 @@ Line::Line(const Line& cp) : Line() {
     this->start = cp.start;
     this->end = cp.end;
     this->color = cp.color;
+    this->startType = cp.startType;
+    this->endType = cp.endType;
+    this->colorType = cp.colorType;
 }
 
 Line& Line::operator=(const Line& cp) {
     this->start = cp.start;
     this->end = cp.end;
     this->color = cp.color;
+    this->startType = cp.startType;
+    this->endType = cp.endType;
+    this->colorType = cp.colorType;
     return *this;
 }
 

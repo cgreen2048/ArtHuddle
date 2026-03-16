@@ -33,6 +33,10 @@ void GUIFile::addPoint(Point* p) {
     elements.push_back(p);
 }
 
+void GUIFile::addTriangle(Triangle* t) {
+    elements.push_back(t);
+}
+
 static int toInt(float x) {
     return static_cast<int>(std::lround(x));
 }
@@ -94,6 +98,7 @@ void GUIFile::readFile(std::string fileName) {
 
     int lineVec2Index = 0;
     int boxVec2Index = 0;
+    int triangleVec2Index = 0;
 
     std::stack<std::string> matcher;
     std::string line;
@@ -339,6 +344,11 @@ void GUIFile::readFile(std::string fileName) {
                     currentType = guiElement::POINT;
                     current = factory(currentType);        // returns new Point
                 }
+                else if (token == TRIANGLE_OPEN) {
+                    currentType = guiElement::TRIANGLE;
+                    current = factory(currentType);        // returns new Triangle
+                    triangleVec2Index = 0;
+                }
                 else if (token == VEC2_OPEN) {
                     buildingVec2 = true;
                     buildingIVec2 = false;
@@ -403,6 +413,7 @@ void GUIFile::readFile(std::string fileName) {
                         (token == LINE_CLOSE && top != LINE_OPEN) ||
                         (token == BOX_CLOSE && top != BOX_OPEN) ||
                         (token == POINT_CLOSE && top != POINT_OPEN) ||
+                        (token == TRIANGLE_CLOSE && top != TRIANGLE_OPEN) ||
                         (token == VEC2_CLOSE && top != VEC2_OPEN) ||
                         (token == VEC3_CLOSE && top != VEC3_OPEN) ||
                         (token == IVEC2_CLOSE && top != IVEC2_OPEN) ||
@@ -418,7 +429,7 @@ void GUIFile::readFile(std::string fileName) {
                             }
                             return;
                         }
-                        else if (token == LINE_CLOSE || token == BOX_CLOSE || token == POINT_CLOSE) {
+                        else if (token == LINE_CLOSE || token == BOX_CLOSE || token == POINT_CLOSE || token == TRIANGLE_CLOSE) {
                             if (!current) { 
                                 std::cerr << "Malformed XML\n"; 
                                 return; 
@@ -467,6 +478,19 @@ void GUIFile::readFile(std::string fileName) {
                                 auto* p = static_cast<Point*>(current);
                                 p->setCoords(v, Point::TagType::Vec);
                             }
+                            else if (currentType == guiElement::TRIANGLE) {
+                                auto *t = static_cast<Triangle*>(current);
+                                if (triangleVec2Index == 0) {
+                                    t->setA(v, Triangle::TagType::Vec);
+                                }
+                                else if (triangleVec2Index == 1) {
+                                    t->setB(v, Triangle::TagType::Vec);
+                                }
+                                else {
+                                    t->setC(v, Triangle::TagType::Vec);
+                                }
+                                triangleVec2Index++;
+                            }
                         }
                         else if (token == IVEC2_CLOSE) {
                             if (!current) { 
@@ -491,7 +515,7 @@ void GUIFile::readFile(std::string fileName) {
                                     l->setStart(v, Line::TagType::IVec);
                                 }
                                 else {
-                                    l->setEnd(v,   Line::TagType::IVec);
+                                    l->setEnd(v, Line::TagType::IVec);
                                 }
                                 lineVec2Index++;
                             }
@@ -508,6 +532,19 @@ void GUIFile::readFile(std::string fileName) {
                             else if (currentType == guiElement::POINT) {
                                 auto* p = static_cast<Point*>(current);
                                 p->setCoords(v, Point::TagType::IVec);
+                            }
+                            else if (currentType == guiElement::TRIANGLE) {
+                                auto *t = static_cast<Triangle*>(current);
+                                if (triangleVec2Index == 0) {
+                                    t->setA(v, Triangle::TagType::IVec);
+                                }
+                                else if (triangleVec2Index == 1) {
+                                    t->setB(v, Triangle::TagType::IVec);
+                                }
+                                else {
+                                    t->setC(v, Triangle::TagType::IVec);
+                                }
+                                triangleVec2Index++;
                             }
                         }
                         else if (token == VEC3_CLOSE) {
@@ -533,6 +570,8 @@ void GUIFile::readFile(std::string fileName) {
                                 static_cast<Box*>(current)->setColor(c, Box::TagType::Vec);
                             } else if (currentType == guiElement::POINT) {
                                 static_cast<Point*>(current)->setColor(c, Point::TagType::Vec);
+                            } else if (currentType == guiElement::TRIANGLE) {
+                                static_cast<Triangle*>(current)->setColor(c, Triangle::TagType::Vec);
                             }
                         }
                         else if (token == IVEC3_CLOSE) {
@@ -558,6 +597,8 @@ void GUIFile::readFile(std::string fileName) {
                                 static_cast<Box*>(current)->setColor(c, Box::TagType::IVec);
                             } else if (currentType == guiElement::POINT) {
                                 static_cast<Point*>(current)->setColor(c, Point::TagType::IVec);
+                            } else if (currentType == guiElement::TRIANGLE) {
+                                static_cast<Triangle*>(current)->setColor(c, Triangle::TagType::IVec);
                             }
                         }
                         else if (token == X_CLOSE) {

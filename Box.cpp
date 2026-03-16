@@ -13,12 +13,18 @@ Box::Box(const Box& cp) : Box() {
     this->min = cp.min;
     this->max = cp.max;
     this->color = cp.color;
+    this->minType = cp.minType;
+    this->maxType = cp.maxType;
+    this->colorType = cp.colorType;
 }
 
 Box& Box::operator=(const Box& cp) {
     this->min = cp.min;
     this->max = cp.max;
     this->color = cp.color;
+    this->minType = cp.minType;
+    this->maxType = cp.maxType;
+    this->colorType = cp.colorType;
     return *this;
 }
 
