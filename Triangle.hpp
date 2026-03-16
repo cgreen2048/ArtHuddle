@@ -24,6 +24,7 @@ class Triangle : public GuiElement {
         Triangle(const Triangle&);
         Triangle& operator=(const Triangle&);
         bool operator==(Triangle);
+        bool operator!=(Triangle);
         ~Triangle();
         void draw();
         void setA(const ivec2& v, TagType t);

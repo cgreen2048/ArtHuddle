@@ -4,18 +4,22 @@
 Point::Point() : coords({0, 0}), color({0, 0, 0}) {}
 
 Point::Point(ivec2 coords, ivec3 color) {
-    this->coords = coords;
+    this->coords = coords; 
     this->color = color;
 }
 
 Point::Point(const Point& cp) : Point() {
     this->coords = cp.coords;
     this->color = cp.color;
+    this->coordsType = cp.coordsType;
+    this->colorType = cp.colorType;
 }
 
 Point& Point::operator=(const Point& cp) {
     this->coords = cp.coords;
     this->color = cp.color;
+    this->coordsType = cp.coordsType;
+    this->colorType = cp.colorType;
     return *this;
 }
 

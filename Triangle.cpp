@@ -17,6 +17,10 @@ Triangle::Triangle(const Triangle& cp) : Triangle() {
     this->b = cp.b;
     this->c = cp.c;
     this->color = cp.color;
+    this->aType = cp.aType;
+    this->bType = cp.bType;
+    this->cType = cp.cType;
+    this->colorType = cp.colorType;
 }
 
 Triangle& Triangle::operator=(const Triangle& cp) {
@@ -24,6 +28,10 @@ Triangle& Triangle::operator=(const Triangle& cp) {
     this->b = cp.b;
     this->c = cp.c;
     this->color = cp.color;
+    this->aType = cp.aType;
+    this->bType = cp.bType;
+    this->cType = cp.cType;
+    this->colorType = cp.colorType;
     return *this;
 }
 
@@ -32,6 +40,10 @@ bool Triangle::operator==(Triangle rhs) {
         return false;
     }
     return true;
+}
+
+bool Triangle::operator!=(Triangle rhs) {
+    return !(*this == rhs);
 }
 
 void Triangle::draw() {

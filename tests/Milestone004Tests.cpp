@@ -282,6 +282,14 @@ int triangleTests(Screen screen, SDL_Window* window) {
         failure = 1;
     }
 
+    if (*test != *equal) {
+        std::cout << "triangle inequality FAILED!\n";
+        failure = 1;
+    }
+    else {
+        std::cout << "triangle inequality working\n";
+    }
+
     triangle->setScreen(&screen);
     triangle->draw();
     screen.blitTo(SDL_GetWindowSurface(window));
