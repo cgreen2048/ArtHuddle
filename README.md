@@ -717,6 +717,12 @@ Draws a line to the Target Screen object's SDL_Surface using the Bresenham algor
 - Will only draw on pixels that exist in the surface
 - Calls colorOnePixel for each pixel that exists on the line
 
+### `clear(ivec3 color)`
+Clears the Target Screen object's `SDL_Surface` by filling the entire surface with the given color
+- Uses `drawBox` to draw a filled rectangle from `(0, 0)` to `(width, height)`
+- Overwrites all previously drawn pixels in the surface
+- Intended to be called at the start of each frame before drawing new elements
+
 ### `SDL_Surface* getSurface()`
 Returns the surface for comparisons
 
