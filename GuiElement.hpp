@@ -9,6 +9,8 @@ enum class guiElement {POINT, LINE, BOX, TRIANGLE};
 class GuiElement {
 	protected:
 		Screen* screen;
+		ivec2 parentStart;
+		ivec2 parentEnd;
 	public:
 		GuiElement();
 		
@@ -19,6 +21,10 @@ class GuiElement {
 		virtual void writeXml(std::ostream& out) const;
 		
 		void setScreen(Screen*);
+
+		virtual void setParentStart(const ivec2& start);
+
+        virtual void setParentEnd(const ivec2& end);
 
 		Screen* getScreen();
 };
