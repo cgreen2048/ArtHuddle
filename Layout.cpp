@@ -15,12 +15,12 @@ void Layout::setEnd(const vec2& end) {
 }
 
 void Layout::setParentStart(const ivec2& start) {
-    this->parentStart = start;
+    GuiElement::setParentStart(start);
     this->hasParentStart = true;
 }
 
 void Layout::setParentEnd(const ivec2& end) {
-    this->parentEnd = end;
+    GuiElement::setParentStart(start);
     this->hasParentEnd = true;
 }
 

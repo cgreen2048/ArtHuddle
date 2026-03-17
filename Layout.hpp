@@ -11,8 +11,6 @@ class Layout : public GuiElement {
     private:
         vec2 start;
         vec2 end;
-        ivec2 parentStart;
-        ivec2 parentEnd;
         bool hasParentStart = false;
         bool hasParentEnd = false;
         std::vector<GuiElement*> elements;

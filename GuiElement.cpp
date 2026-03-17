@@ -15,6 +15,12 @@ void GuiElement::writeXml(std::ostream& out) const{
 void GuiElement::setScreen(Screen* target) {
     this->screen = target;
 }
+void GuiElement::setParentStart(const ivec2& start) {
+    this->parentStart = start;
+}
+void GuiElement::setParentEnd(const ivec2& end) {
+    this->parentEnd = end;
+}
 Screen* GuiElement::getScreen() {
     return this->screen;
 }
