@@ -1,11 +1,13 @@
-// #include "../vec2.hpp"
-// #include "../vec3.hpp"
-// #include "../GUIFile.hpp"
-// #include "../Line.hpp"
-// #include "../Box.hpp"
-// #include "../Point.hpp"
-// #include "../Factory.hpp"
-// #include "../GuiElement.hpp"
+#include "../vec2.hpp"
+#include "../vec3.hpp"
+#include "../GUIFile.hpp"
+#include "../Line.hpp"
+#include "../Box.hpp"
+#include "../Point.hpp"
+#include "../Factory.hpp"
+#include "../GuiElement.hpp"
+#include "../GuiElement.hpp"
+#include "../Layout.hpp"
 
 // int readTest1();
 // int readTest2();
@@ -22,7 +24,9 @@
 // void deleteAll(std::vector<GuiElement*>& v);
 
 
-// int main() {
+int main() {
+    return 0;
+}
 //     int failure = 0;
 
 //     if (readTest1()) {
