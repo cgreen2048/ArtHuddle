@@ -14,6 +14,7 @@ main.cpp is a demonstration program
 
 It defines a common interface used by all graphical objects such as:
 
+- `Layout`
 - `Point`
 - `Line`
 - `Box`
@@ -33,7 +34,7 @@ This enumeration identifies the type of GUI element being created.
 It is primarily used by the **Factory** to determine which object to instantiate.
 
 ```cpp
-enum class guiElement { POINT, LINE, BOX, TRIANGLE };
+enum class guiElement { LAYOUOT, POINT, LINE, BOX, TRIANGLE };
 ```
 
 ## Data Members
@@ -42,10 +43,10 @@ enum class guiElement { POINT, LINE, BOX, TRIANGLE };
   Pointer to the `Screen` object where the element will be drawn.
 
 - `ivec2 parentStart`
-  `ivec2` that stores the starting coordinates of the parent Layout
+  `ivec2` that stores the starting coordinates of the parent `GuiElement` (usually `Layout`)
 
 - `ivec2 parentEnd`
-  `ivec2` that stores the ending coordinates of the parent Layout
+  `ivec2` that stores the ending coordinates of the parent `GuiElement` (usually `Layout`)
 
 ---
 
@@ -78,6 +79,8 @@ Each derived class implements its own drawing behavior:
 | `Line` | `drawBresenhamLine()` |
 | `Box` | `drawBox()` |
 | `Triangle` | `drawTriangle()` |
+
+In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will call `draw()` on all children of that parent
 
 ---
 
@@ -172,6 +175,7 @@ Returns:
 
 | Enum Value | Object Created |
 |------|------|
+| `guiElement::LAYOUT` | `Layout` |
 | `guiElement::POINT` | `Point` |
 | `guiElement::LINE` | `Line` |
 | `guiElement::BOX` | `Box` |
@@ -187,6 +191,68 @@ GuiElement* element = factory(guiElement::LINE);
 element->setScreen(screen);
 element->draw();
 ```
+# Layout
+
+## Description
+`Layout` is the primary "parent-type" `GuiElement` that functions to nest elements within certain bounds. It inherits from the `GuiElement` class to not only align itself according to its parent's bounds, but also align its children according to its own bounds.
+- `vec2 start`: The percentage of the `Layout`'s parent bounds to start this `Layout` at for `x` and `y` respectively
+- `vec2 end`: The percentage of the `Layout`'s parent bounds to end this `Layout` at for `x` and `y` respectively
+- `bool hasParentStart`: Boolean to check if the parent bounds have been set yet so that the `Layout` cannot draw otherwise
+- `bool hasParentEnd`: Similar to `hasParentStart` but for ending coordinates too to ensure that all bounds are satisfied
+- `std::vector<GuiElement*> elements`: Contains all elements nested within this `Layout`
+- `bool active`: Display the `Layout` or not based on the boolean parameter
+
+
+## Methods
+
+### `Layout()`
+The default constructor, which only initializes `active` to false for other data to be set at a later time
+
+### `~Layout`
+The default destructor. Destroys not only the `Layout` but also all of the children that the `Layout` owns in `elements`
+
+### `void setStart(const vec2& start)`
+Sets the `start` to the starting percentage values for this `Layout`
+
+### `void setStart(const vec2& start)`
+Sets the `end` to the ending percentage values for this `Layout`
+
+### `void setParentStart(const ivec2& start)`
+Sets the parent starting coordinates as in `GuiElement` but overloaded to also set `hasParentStart` to `true` to signal that a starting bound has been added
+
+### `void setParentEnd(const ivec2& end)`
+Sets the parent ending coordinates as in `GuiElement` but overloaded to also set `hasParentEnd` to `true` to signal that an ending bound has been added
+
+### `void setActive(bool value)`
+Sets `active` to `value`, toggling the `Layout` active (able to be drawn) or not
+
+### `void isActive()`
+Getter method for `active` to check if the `Layout` can be drawn
+
+### `void addElement(GuiElement *element)`
+Adds `element` to `elements` as a child of this `Layout` and sets `element->parentStart` to the absolute starting position of this `Layout`, `element->parentEnd` to the absolute ending position of this `Layout`,
+and `element->screen` to this `Layout`'s screen
+
+### `void draw()`
+If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `draw()` functions, drawing every child element
+
+### `void writeXml(std::ostream& out)`
+Similar to `draw()` except writing to an XML by calling each child `GuiElement*`'s `writeXml()` function
+
+### `const std::vector<GuiElement*>& getElements() const`
+Returns a reference to `Layout`'s `elements` vector
+
+### `int getAbsoluteStartX`
+Returns the absolute starting x position of this Layout
+
+### `int getAbsoluteStartY`
+Returns the absolute starting y position of this Layout
+
+### `int getAbsoluteEndX`
+Returns the absolute ending x position of this Layout
+
+### `int getAbsoluteEndY`
+Returns the absolute ending y position of this Layout
 
 # Triangle
 

@@ -3,7 +3,10 @@
 Layout::Layout() : active{false} {}
 
 Layout::~Layout() {
-    // maybe delete all elements in elements? Instead of making GuiFile handle it
+    for (GuiElement *el : this->elements) {
+        delete el;
+    }
+    this->elements.clear()
 }
 
 void Layout::setStart(const vec2& start) {
@@ -34,6 +37,7 @@ bool Layout::isActive() {
 
 void Layout::addElement(GuiElement *element) {
     this->elements.push_back(element);
+    element->setScreen(this->screen);
     element->setParentStart(ivec2{this->getAbsoluteStartX(), this->getAbsoluteStartY()});
     element->setParentEnd(ivec2{this->getAbsoluteEndX(), this->getAbsoluteEndY()});
 }
