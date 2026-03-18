@@ -26,7 +26,7 @@ class Box : public GuiElement {
 		void setMin(const ivec2& v, TagType t);
 		void setMax(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);
-		void writeXml(std::ostream& out) const;
+		void writeXml(std::ostream& out, int depth) const;
 };
 
 #endif

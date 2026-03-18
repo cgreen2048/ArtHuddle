@@ -18,6 +18,8 @@ class Layout : public GuiElement {
     public:
         Layout();
         ~Layout();
+        vec2 getStart() const;
+        vec2 getEnd() const;
         void setStart(const vec2& start);
         void setEnd(const vec2& end);
         void setParentStart(const ivec2& start);
@@ -26,10 +28,12 @@ class Layout : public GuiElement {
         bool isActive();
         void addElement(GuiElement *element);
         void draw();
-        void writeXml(std::ostream& out) const;
+        void writeXml(std::ostream& out, int depth = 0) const;
         const std::vector<GuiElement*>& getElements() const;
         int getAbsoluteStartX();
         int getAbsoluteStartY();
         int getAbsoluteEndX();
         int getAbsoluteEndY();
 };
+
+#endif

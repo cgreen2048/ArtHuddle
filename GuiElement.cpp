@@ -9,7 +9,7 @@ GuiElement::~GuiElement() {
 void GuiElement::draw(){
     
 }
-void GuiElement::writeXml(std::ostream& out) const{
+void GuiElement::writeXml(std::ostream& out, int depth) const{
 
 }
 void GuiElement::setScreen(Screen* target) {

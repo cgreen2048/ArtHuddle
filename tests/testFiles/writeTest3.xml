@@ -1,0 +1,36 @@
+<layout sX="0" sY="0" eX="1" eY="1">
+  <layout sX="0.25" sY="0.25" eX="0.75" eY="0.75">
+    <point>
+    <ivec2>
+        <x>13</x>
+        <y>14</y>
+    </ivec2>
+    <ivec3>
+        <x>101</x>
+        <y>102</y>
+        <z>103</z>
+    </ivec3>
+    </point>
+    <layout sX="0.5" sY="0.5" eX="1" eY="1">
+      <triangle>
+    <ivec2>
+        <x>100</x>
+        <y>100</y>
+    </ivec2>
+    <ivec2>
+        <x>150</x>
+        <y>100</y>
+    </ivec2>
+    <ivec2>
+        <x>125</x>
+        <y>150</y>
+    </ivec2>
+    <ivec3>
+        <x>255</x>
+        <y>0</y>
+        <z>0</z>
+    </ivec3>
+      </triangle>
+    </layout>
+  </layout>
+</layout>

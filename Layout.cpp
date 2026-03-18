@@ -3,7 +3,22 @@
 Layout::Layout() : active{false} {}
 
 Layout::~Layout() {
-    // maybe delete all elements in elements? Instead of making GuiFile handle it
+    for (GuiElement* e : elements) {
+        delete e;
+    }
+    elements.clear();
+}
+
+vec2 Layout::getStart() const {
+    return start;
+}
+
+vec2 Layout::getEnd() const {
+    return end;
+}
+
+const std::vector<GuiElement*>& Layout::getElements() const {
+    return elements;
 }
 
 void Layout::setStart(const vec2& start) {
@@ -20,7 +35,7 @@ void Layout::setParentStart(const ivec2& start) {
 }
 
 void Layout::setParentEnd(const ivec2& end) {
-    GuiElement::setParentStart(start);
+    GuiElement::setParentEnd(end);
     this->hasParentEnd = true;
 }
 
@@ -48,19 +63,26 @@ void Layout::draw() {
     }
 }
 
-void writeXml(std::ostream& out) const {
-    out << LAYOUT_OPEN << "\n";
+static std::string indent(int depth) {
+    return std::string(depth * 2, ' ');  // 2 spaces per level
+}
 
-    for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
-        (*start)->writeXml(out);
+void Layout::writeXml(std::ostream& out, int depth) const {
+    std::string pad = indent(depth);
+
+    out << pad << "<layout "
+        << "sX=\"" << start.x << "\" "
+        << "sY=\"" << start.y << "\" "
+        << "eX=\"" << end.x << "\" "
+        << "eY=\"" << end.y << "\">\n";
+
+    for (GuiElement* e : elements) {
+        e->writeXml(out, depth + 1);  // increase depth
     }
 
-    out << LAYOUT_CLOSE << "\n";
+    out << pad << "</layout>\n";
 }
 
-const std::vector<GuiElement*>& getElements() const {
-    return this->elements;
-}
 
 int Layout::getAbsoluteStartX() {
     return this->parentStart.x + static_cast<int>(this->start.x * (this->parentEnd.x - this->parentStart.x));

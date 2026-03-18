@@ -60,9 +60,10 @@ void Line::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
-void Line::writeXml(std::ostream& out) const {
-    out << "  <line>\n";
+void Line::writeXml(std::ostream& out, int depth) const {
+    std::string pad = std::string(depth * 2, ' ');
 
+    out << pad << "<line>\n";
     if (startType == TagType::IVec) {
         writeIVec2(out, start);
     } else {
@@ -82,6 +83,5 @@ void Line::writeXml(std::ostream& out) const {
     else {
         writeVec3(out, toVec3(color));
     }
-
-    out << "  </line>\n";
+    out << pad << "</line>\n";
 }
