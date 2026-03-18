@@ -170,6 +170,10 @@ void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors
     }
 }
 
+void Screen::clear(ivec3 color) {
+    this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), color);
+}
+
 SDL_Surface* Screen::getSurface() {
     return this->surface;
 }
