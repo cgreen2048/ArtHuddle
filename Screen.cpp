@@ -10,7 +10,7 @@ Screen::Screen(uint32_t w, uint32_t h) : Screen() {
         std::cerr << SDL_GetError();
         return;
     }
-    this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), ivec3(0, 0, 0));
+    this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), ivec3(0, 0, 0), ivec2(0, 0), ivec2(this->width, this->height));
 }
 
 Screen::Screen(const Screen& cp) : Screen() {
@@ -89,7 +89,7 @@ void Screen::blitTo(SDL_Surface* target) const {
     }
 }
 
-void Screen::drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color) {
+void Screen::drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color, ivec2 parentStart, ivec2 parentEnd) {
     int x0 = start.x;
     int y0 = start.y;
     int x1 = end.x;
@@ -106,7 +106,7 @@ void Screen::drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color) {
     
     while (true) {
         if ((x0 >= 0) && (x0 < this->width) && (y0 >= 0) && (y0 < this->height)) {
-            colorOnePixel(ivec2(x0, y0),color);
+            colorOnePixel(ivec2(x0, y0), color, parentStart, parentEnd);
         }
 
         if (x0 == x1 && y0 == y1) {
@@ -145,7 +145,7 @@ bool Screen::pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 poi
     return !(hasPositive && hasNegative);
 }
 
-void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors) {
+void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd) {
     int screenXEnd = static_cast<int>(this->width - 1);
     int screenYEnd = static_cast<int>(this->height - 1);
     
@@ -164,14 +164,14 @@ void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors
         for (int j = minY; j <= maxY; ++j) {
             ivec2 point = ivec2{i,j};
             if (this->pointInTriangle(pointA, pointB, pointC, point)) {
-                this->colorOnePixel(point, clampedColor);
+                this->colorOnePixel(point, clampedColor, parentStart, parentEnd);
             }
         }
     }
 }
 
 void Screen::clear(ivec3 color) {
-    this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), color);
+    this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), color, ivec2(0, 0), ivec2(this->width, this->height));
 }
 
 SDL_Surface* Screen::getSurface() {

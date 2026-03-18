@@ -10,7 +10,8 @@
 const int X = 960;
 const int Y = 540;
 
-int clearTests(Screen screen, SDL_Window* window);
+int clearTests(Screen, SDL_Window*);
+int boundsTests(Screen, SDL_Window*);
 void getPixelColor(SDL_Surface*, ivec2, uint8_t&, uint8_t&, uint8_t&);
 
 
@@ -21,6 +22,9 @@ int main() {
     SDL_Window *window = SDL_CreateWindow("Hello Window", X, Y, 0);
     
     if (clearTests(screen, window)) {
+        failure = 1;
+    }
+    if (boundsTests(screen, window)) {
         failure = 1;
     }
     if (failure) {
@@ -42,7 +46,7 @@ int clearTests(Screen screen, SDL_Window* window) {
     uint8_t r, g, b;
 
     // Draw something first
-    screen.drawBox(ivec2(10, 10), ivec2(100, 100), ivec3(200, 50, 25));
+    screen.drawBox(ivec2(10, 10), ivec2(100, 100), ivec3(200, 50, 25), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
 
     // Confirm shape pixel was drawn correctly
     getPixelColor(screen.getSurface(), ivec2(50, 50), r, g, b);
@@ -74,6 +78,117 @@ int clearTests(Screen screen, SDL_Window* window) {
     else {
         std::cout << "clear tests passed\n";
     }
+
+    return failure;
+}
+
+int boundsTests(Screen screen, SDL_Window* window) {
+    int failure = 0;
+
+    GuiElement *triangle = new Triangle(ivec2(50,50), ivec2(120,200), ivec2(100, 50), ivec3(100,100,100));
+    triangle->setParentStart(ivec2(0, 0));
+    triangle->setParentEnd(ivec2(150, 140));
+    triangle->setScreen(&screen);
+
+    bool quit = false;
+    SDL_Event event;
+	while (!quit) {
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+                    quit = true;
+                    break;
+                }
+                case SDL_EVENT_QUIT: {
+                    quit = true;
+                    break;
+                }
+			}
+            screen.clear(ivec3(255,255,255));
+            triangle->draw();
+            screen.blitTo(SDL_GetWindowSurface(window));
+            SDL_UpdateWindowSurface(window);
+		}
+    }
+
+    GuiElement *box = new Box(ivec2(50,50), ivec2(120,200), ivec3(100,100,100));
+    box->setParentStart(ivec2(0, 0));
+    box->setParentEnd(ivec2(150, 100));
+    box->setScreen(&screen);
+    quit = 0;
+    while (!quit) {
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+                    quit = true;
+                    break;
+                }
+                case SDL_EVENT_QUIT: {
+                    quit = true;
+                    break;
+                }
+			}
+            screen.clear(ivec3(255,255,255));
+            box->draw();
+            screen.blitTo(SDL_GetWindowSurface(window));
+            SDL_UpdateWindowSurface(window);
+		}
+    }
+
+    GuiElement *line = new Line(ivec2(50,50), ivec2(120,200), ivec3(100,100,100));
+    line->setParentStart(ivec2(0, 0));
+    line->setParentEnd(ivec2(60, 60));
+    line->setScreen(&screen);
+    quit = 0;
+    while (!quit) {
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+                    quit = true;
+                    break;
+                }
+                case SDL_EVENT_QUIT: {
+                    quit = true;
+                    break;
+                }
+			}
+            screen.clear(ivec3(255,255,255));
+            line->draw();
+            screen.blitTo(SDL_GetWindowSurface(window));
+            SDL_UpdateWindowSurface(window);
+		}
+    }
+
+    GuiElement *point = new Point(ivec2(50,50), ivec3(100,100,100));
+    point->setParentStart(ivec2(75, 75));
+    point->setParentEnd(ivec2(150, 100));
+    point->setScreen(&screen);
+    quit = 0;
+    while (!quit) {
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+                    quit = true;
+                    break;
+                }
+                case SDL_EVENT_QUIT: {
+                    quit = true;
+                    break;
+                }
+			}
+            screen.clear(ivec3(255,255,255));
+            point->draw();
+            screen.blitTo(SDL_GetWindowSurface(window));
+            SDL_UpdateWindowSurface(window);
+		}
+    }
+
+    if (failure) {
+        std::cout << "bounds tests FAILED\n";
+    }
+    else {
+        std::cout << "bounds tests passed\n";
+    }    
 
     return failure;
 }

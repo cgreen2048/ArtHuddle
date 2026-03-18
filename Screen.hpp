@@ -25,9 +25,9 @@ class Screen {
 
         bool surfaceEqual(const SDL_Surface*);
         void blitTo(SDL_Surface*) const;
-        void drawBresenhamLine(ivec2, ivec2, ivec3);
+        void drawBresenhamLine(ivec2, ivec2, ivec3, ivec2, ivec2);
         bool pointInTriangle(ivec2, ivec2, ivec2, ivec2);
-        void drawTriangle(ivec2, ivec2, ivec2, ivec3);
+        void drawTriangle(ivec2, ivec2, ivec2, ivec3, ivec2, ivec2);
         void clear(ivec3);
 
         SDL_Surface* getSurface();
@@ -36,9 +36,13 @@ class Screen {
 
 
         template<typename T1, typename T2>
-        void colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors) {
+        void colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors, ivec2 parentStart, ivec2 parentEnd) {
             if ((coords.x < 0) || (coords.x > this->width - 1) || (coords.y < 0) || (coords.y > this->height - 1)) {
-                std::cerr << "Point is out of bounds\n";
+                // std::cerr << "Point is out of bounds\n";
+                return;
+            }
+            if ((coords.x < parentStart.x) || (coords.x >= parentEnd.x) || (coords.y < parentStart.y) || (coords.y >= parentEnd.y)) {
+                // std::cerr << "Point is out of bounds\n";
                 return;
             }
             uint8_t* pixelPtr = static_cast<uint8_t*>(this->surface->pixels);
@@ -60,7 +64,7 @@ class Screen {
         }
 
         template<typename T1, typename T2>
-        void drawBox(Tvec2<T1> min, Tvec2<T1> max, Tvec3<T2> colors) {        
+        void drawBox(Tvec2<T1> min, Tvec2<T1> max, Tvec3<T2> colors, ivec2 parentStart, ivec2 parentEnd) {        
             int minX = std::clamp(static_cast<int>(std::min(min.x, max.x)), 0, static_cast<int>(this->width-1));
             int maxX = std::clamp(static_cast<int>(std::max(min.x, max.x)), 0, static_cast<int>(this->width-1));
             int minY = std::clamp(static_cast<int>(std::min(min.y, max.y)), 0, static_cast<int>(this->height-1));
@@ -73,7 +77,7 @@ class Screen {
 
             for (int i = minX; i <= maxX; ++i) {
                 for (int j = minY; j <= maxY; ++j) {
-                    this->colorOnePixel(ivec2{i,j}, clampedColor);
+                    this->colorOnePixel(ivec2{i,j}, clampedColor, parentStart, parentEnd);
                 }
             }
         }

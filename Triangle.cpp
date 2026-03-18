@@ -48,7 +48,7 @@ bool Triangle::operator!=(Triangle rhs) {
 
 void Triangle::draw() {
     if (this->screen != nullptr) {
-        this->screen->drawTriangle(this->a, this->b, this->c, this->color);
+        this->screen->drawTriangle(this->a, this->b, this->c, this->color, this->getParentStart(), this->getParentEnd());
     }
 }
 
@@ -104,3 +104,4 @@ void Triangle::writeXml(std::ostream& out) const {
 
     out << "  </triangle>\n";
 }
+

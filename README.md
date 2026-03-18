@@ -41,6 +41,12 @@ enum class guiElement { POINT, LINE, BOX, TRIANGLE };
 - `Screen* screen`  
   Pointer to the `Screen` object where the element will be drawn.
 
+- `ivec2 parentStart`
+  `ivec2` that stores the starting coordinates of the parent Layout
+
+- `ivec2 parentEnd`
+  `ivec2` that stores the ending coordinates of the parent Layout
+
 ---
 
 ## Methods
@@ -100,6 +106,30 @@ Returns the pointer to the `Screen` associated with the GUI element.
 Returns:
 
 - `Screen*` pointing to the target screen.
+
+---
+
+### `void GuiElement::setParentStart(const ivec2& start)`
+
+Sets the `parentStart` data for the current `GuiElement` object
+
+---
+
+### `void GuiElement::setParentEnd(const ivec2& end)`
+
+Sets the `parentEnd` data for the current `GuiElement` object
+
+---
+
+### `ivec2 GuiElement::getParentStart()`
+
+Returns the `parentStart` data for the current `GuiElement` object in `ivec2` format
+
+---
+
+### `ivec2 GuiElement::getParentEnd()`
+
+Returns the `parentEnd` data for the current `GuiElement` object in `ivec2` format
 
 ---
 
@@ -687,35 +717,36 @@ Blits the current Screen object to the target surface
 - Verifies target surface exists
 - Uses `SDL_BlitSurface` to blit between surfaces
 
-### `colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors)`
+### `colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors, ivec2 parentStart, ivec2 parentEnd)`
 Colors target pixel in object's SDL_Surface
 - Uses a 2D mathematical vector object to hold target pixel's X and Y components
 - Uses a 3D mathematical vector object to hold target pixel's color value in RGB format (clamped between 0 and 255)
 - Uses `SDL_MapRGBA` to convert the color to the pixel
+- Will only draw if the pixel falls within the bounds of the Screen as well as the `parentStart` and `parentEnd` coordinates passed from a drawable object's `Layout` object
 
-### `drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors)`
+### `drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors, ivec2 parentStart, ivec2 parentEnd)`
 Draws a box on the target Screen object's SDL_Surface
 - Uses 2D mathematical vectors to store the minimum and maximum coordinates for the box
 - Clamps minimum and maximum X and Y values between 0 and the Screen object's height/width values
 - Uses 3D mathematical vector to store the target color for the box
-- Calls `colorOnePixel` for each coordinate in the bounds of the box in a double nested for loop
+- Calls `colorOnePixel` for each coordinate in the bounds of the box in a double nested for loop as long as the coordinate falls within the `parentStart` and `parentEnd` coordinates passed from the Box's `Layout` object
 
 ### `pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 pointP)`
 Determines if `pointP` is within the bounds of the triangle established by `pointA`, `pointB`, and `pointC`
 - Calculates the cross products AP x AB, BP x BC, & CP x CA
 - If no conflicting signs exist between these three cross products, `point` is inside the triangle, else it is not
 
-### `drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 color)`
+### `drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
 Draws a triangle on the target Screen object's SDL_Surface
 - Computes a bounding box around the triangle using the min and max of the corners' x & y values
 - Iterates over all points in the box & uses pointInTriangle to determine if the current point is in the triangle
 - Calls `colorOnePixel` for each coordinate in the bounds of the triangle 
 
-### `drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color)`
+### `drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
 Draws a line to the Target Screen object's SDL_Surface using the Bresenham algorithm
 - Uses 2D mathematical vectors to store the start and end points of the line
 - Will only draw on pixels that exist in the surface
-- Calls colorOnePixel for each pixel that exists on the line
+- Calls `colorOnePixel` for each pixel that exists on the line
 
 ### `clear(ivec3 color)`
 Clears the Target Screen object's `SDL_Surface` by filling the entire surface with the given color
