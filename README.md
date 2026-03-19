@@ -483,62 +483,69 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ## Description
 
-`GUIFile` is a class responsible for **reading and writing an XML-like layout file** that describes graphical primitives.
+`GUIFile` is responsible for **reading and writing an XML-based layout file** that describes a hierarchy of GUI elements.
 
-Instead of storing separate containers for each shape, this implementation stores a **single polymorphic container**:
+---
 
-- `std::vector<GuiElement*> elements`
+## Key Update
 
-Each pointer refers to a derived `GuiElement` object (`Line`, `Box`, or `Point`).  
-This allows all shapes to be handled uniformly using polymorphism.
+Instead of storing elements in a flat container:
 
-`GUIFile` **owns all allocated objects** and is responsible for deleting them when clearing the file or destroying the object.
+```cpp
+std::vector<GuiElement*> elements;
+```
+the system now uses a hierarchical structure:
+```cpp
+Layout* rootLayout;
+```
+
+## Core Concept
+
+### Layout Tree Structure
+
+The GUI is represented as a tree:
+```
+Layout (root)
+├── Layout
+│   ├── Line
+│   └── Box
+├── Triangle
+└── Point
+```
+
+- Every node is a `GuiElement`
+- `Layout` nodes can contain children
+- Leaf nodes are drawable primitives (`Line`, `Box`, `Point`, `Triangle`)
+
+---
+
+## Data Members
+
+### `Layout* rootLayout`
+
+- Pointer to the root layout of the GUI
+- Owns the entire hierarchy
+- All elements are stored within this layout tree
+- `GUIFile` is responsible for deleting it
+
+---
+
+## Memory Management
+
+### Key Idea
+
+Ownership is hierarchical:
+
+- `GUIFile` owns `rootLayout`
+- `Layout` owns all of its child elements
+
+Deleting the root layout recursively deletes the entire GUI structure.
+
 
 The class supports both floating-point vector tags (`<vec2>`, `<vec3>`) and integer vector tags (`<ivec2>`, `<ivec3>`).  
 When reading, the parser records which tag type was used and stores that information in the element using a `TagType`.  
 When writing, each element's `writeXml()` method outputs the correct tag type.
 
----
-
-# Internal Data Structures
-
-## `std::vector<GuiElement*> elements`
-
-Stores all graphical elements contained in the layout file.
-
-- Each entry is a pointer to a derived `GuiElement`
-- Supported derived types include:
-  - `Line`
-  - `Box`
-  - `Point`
-
-Elements are stored **in the order they appear in the file**.
-
-`GUIFile` owns these pointers and deletes them in `clear()` and the destructor.
-
----
-
-## `enum class TagType`
-
-Indicates how vector data should be written back to the XML file.
-
-| Value | Meaning |
-|------|------|
-| `TagType::Vec` | `<vec2>` / `<vec3>` |
-| `TagType::IVec` | `<ivec2>` / `<ivec3>` |
-
-When parsing the file, this tag type is stored inside the derived objects using setter functions such as:
-
-- `setStart()`
-- `setEnd()`
-- `setMin()`
-- `setMax()`
-- `setCoords()`
-- `setColor()`
-
-This allows `writeXml()` to preserve the original tag type.
-
----
 
 ## XML Token Constants
 
@@ -578,33 +585,30 @@ These are used by the parser to verify correct nesting.
 
 # Supported XML Layout Format
 
-The layout file must follow this structure:
+### Layout Tag
+
+Layouts include bounds as attributes:
+
 
 ```xml
-<layout>
-    <line>
-        <vec2>
-            <x>...</x>
-            <y>...</y>
-        </vec2>
-        <vec2>
-            <x>...</x>
-            <y>...</y>
-        </vec2>
-        <vec3>
-            <x>...</x>
-            <y>...</y>
-            <z>...</z>
-        </vec3>
-    </line>
-
-    <box>
-        ...
-    </box>
-
-    <point>
-        ...
-    </point>
+<layout sX="0" sY="0" eX="1" eY="1">
+    <layout sX="0.1" sY="0.1" eX="0.5" eY="0.5">
+        <line>
+            <vec2>
+                <x>10</x>
+                <y>20</y>
+            </vec2>
+            <vec2>
+                <x>40</x>
+                <y>60</y>
+            </vec2>
+            <vec3>
+                <x>255</x>
+                <y>0</y>
+                <z>0</z>
+            </vec3>
+        </line>
+    </layout>
 
     <triangle>
         ...
@@ -622,7 +626,7 @@ Both `<vec*>` and `<ivec*>` variants are supported.
 
 Default constructor.
 
-Initializes an empty container of GUI elements.
+- Initializes `rootLayout` to `nullptr`
 
 ---
 
@@ -630,144 +634,178 @@ Initializes an empty container of GUI elements.
 
 Destructor.
 
-Calls `clear()` to free all owned elements.
-
----
-
-### `const std::vector<GuiElement*>& getElements() const`
-
-Returns the list of stored GUI elements.
-
-Elements are returned as `GuiElement*` so they can be handled polymorphically.
-
----
-
-### `void addLine(Line* l)`
-
-Adds a `Line` object to the container.
-
-Implicitly converts `Line*` to `GuiElement*`.
-
----
-
-### `void addBox(Box* b)`
-
-Adds a `Box` object to the container.
-
----
-
-### `void addPoint(Point* p)`
-
-Adds a `Point` object to the container.
-
-### `void addTriangle(Triangle* t)`
-
-Adds a `Triangle` object to the container.
+- Calls `clear()` to free all owned memory
 
 ---
 
 ### `void clear()`
 
-Deletes all elements and resets the container.
+Deletes the entire layout tree.
 
-Used when:
+```cpp
+if (rootLayout != nullptr) {
+    delete rootLayout;
+    rootLayout = nullptr;
+}
+```
 
-- loading a new file
-- destroying the `GUIFile` object
+### `Layout* getRootLayout() const`
+
+Returns the pointer to the root layout.
+
+---
+
+### `void setRootLayout(Layout* root)`
+
+Sets a new root layout.
+
+- Deletes the existing layout if one exists  
+- Transfers ownership of `root` to `GUIFile`  
 
 ---
 
 # File Parsing
 
-### `void readFile(std::string fileName)`
+### `void readFile(const std::string& fileName)`
 
-Reads a layout file and constructs GUI elements from it.
+Reads an XML file and constructs the layout tree.
 
----
+#### Behavior
 
-## Parsing Behavior
-
-1. Clear any existing elements.
-
-2. Open the file using `std::ifstream`.
-
-3. Use a `std::stack<std::string>` (`matcher`) to enforce correct tag nesting.
-
-4. When encountering an element tag (`<line>`, `<box>`, `<point>`, `<triangle>`), create a new object using the Factory.
-
-Example:
-
-```cpp
-current = factory(guiElement::LINE);
-```
----
-## Malformed XML Detection
-
-If malformed XML is detected:
-
-- `"Malformed XML"` is printed
-- the partially constructed object is deleted
-- parsing stops immediately
-
-Malformed conditions include:
-
-- mismatched closing tags
-- missing coordinates
-- repeated coordinate values
-- incorrect nesting
+- Clears existing data  
+- Opens the file  
+- Reads the first tag  
+- Verifies it is a valid `<layout ...>` tag  
+- Calls the internal recursive parser  
+- Stores the result in `rootLayout`  
 
 ---
-
-## File Writing
 
 ### `void writeFile(const std::string& fileName) const`
 
-Writes all stored GUI elements to an XML layout file.
+Writes the layout tree to an XML file.
 
----
+#### Behavior
 
-### Writing Behavior
-
-1. Open the output file using `std::ofstream`.
-
-2. Write the root `<layout>` tag.
-
-3. Iterate through all elements:
+- Opens the output file  
+- Verifies `rootLayout` exists  
+- Calls:
 
 ```cpp
-for (auto* e : elements) {
-    e->writeXml(out);
-}
+rootLayout->writeXml(out);
 ```
-4. Each element calls its own `writeXml()` method.
+The layout recursively writes all children
 
-Because `writeXml()` is **virtual**, the correct derived implementation runs automatically.
-
-Each derived class writes:
-
-- its own element tag (`<line>`, `<box>`, `<point>`, `<triangle>`)
-- vector data (`vec2` / `ivec2`)
-- color data (`vec3` / `ivec3`)
-
-The tag type is determined using the stored `TagType`.
-
-Finally, the layout is closed with:
-
-```xml
-</layout>
-```
 ---
-These are static helper utilities used during parsing and writing:
+## Internal Helper Functions
 
-- `trim()` → Removes leading/trailing whitespace
-- `toInt()` → Rounds float and converts to int
-- `writeVec2()`
-- `writeIVec2()`
-- `writeVec3()`
-- `writeIVec3()`
+These functions are internal to `GUIFile.cpp` and are not part of the public interface.
 
-These functions ensure consistent formatting of XML output.
+They implement the parsing logic used by `readFile()`.
+
 ---
+
+### `Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenTag)`
+
+Parses a `<layout ...>` tag and its contents.
+
+#### Purpose
+
+- Creates a `Layout`  
+- Reads layout attributes:
+  - `sX`, `sY`  
+  - `eX`, `eY`  
+- Recursively parses:
+  - child layouts  
+  - child elements  
+- Returns the completed layout subtree
+
+#### Additional Parsing Details
+
+- Uses helper functions (`parseVec2`, `parseIVec2`, `parseVec3`, `parseIVec3`) to read vector data  
+- These helpers ensure all required components (`x`, `y`, `z`) are present  
+- If any component is missing or malformed, parsing fails immediately  
+
+#### Why recursion is used
+
+Layouts can contain other layouts, forming a tree structure.  
+A recursive function naturally mirrors this structure.
+
+---
+
+### `GuiElement* parseElement(std::ifstream& inFile, const std::string& elementOpenTag)`
+
+Parses a drawable GUI element.
+
+#### Supported types
+
+- `Point`  
+- `Line`  
+- `Box`  
+- `Triangle`  
+
+#### Behavior
+- Determines type from opening tag
+- Uses the Factory to create the object
+- Parses coordinate and color data
+- Stores tag type (vec vs ivec)
+- Uses vector parsing helpers
+- Preserves original tag types for XML output
+- Returns a GuiElement*
+---
+
+## Error Handling
+
+If malformed XML is detected:
+
+- `"Malformed XML"` is printed  
+- Partially created objects are deleted  
+- Parsing stops immediately  
+
+### Examples of malformed XML
+
+- Missing layout attributes  
+- Mismatched tags  
+- Missing coordinates  
+- Invalid nesting  
+- Missing vector components  
+- Unexpected tags  
+
+---
+
+## Internal Parsing Utilities
+
+Used during parsing:
+
+- `trim()` → removes whitespace  
+- `getNextTag()` → reads next XML tag  
+- `getNextPayload()` → reads text between tags  
+- `getFloatAttribute()` → extracts layout attributes  
+- `isLayoutOpen()` / `isLayoutClose()` → layout tag checks  
+- `isElementOpen()` → element detection  
+- `isMatchingElementClose()` → validates closing tags
+- `determineGuiElementOpenerType()` → maps XML tags to `guiElement` enum  
+- `parseVec2()` → parses `<vec2>` data and validates structure  
+- `parseIVec2()` → parses `<ivec2>` integer vector data  
+- `parseVec3()` → parses `<vec3>` data with x, y, z components  
+- `parseIVec3()` → parses `<ivec3>` integer vector data    
+
+---
+
+## Type Conversion Helpers
+
+Used to convert between float and integer vector types:
+
+- `toIVec2(const vec2&)`  
+- `toIVec3(const vec3&)`  
+- `toVec2(const ivec2&)`  
+- `toVec3(const ivec3&)`  
+- `toInt(float)`  
+
+These ensure the correct internal representation while preserving original XML tag types.
+
+---
+
 
 ## UML Diagram
 ![UML Diagram](images/Milestone003_UML.png)

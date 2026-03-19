@@ -104,7 +104,7 @@ static bool isElementOpen(const std::string& tag) {
            tag == TRIANGLE_OPEN;
 }
 
-static guiElement determineType(const std::string& tag) {
+static guiElement determineGuiElementOpenerType(const std::string& tag) {
     if (tag == POINT_OPEN) {
         return guiElement::POINT;
     }
@@ -334,7 +334,7 @@ static bool parseIVec3(std::ifstream& inFile, ivec3& result) {
 }
 
 static GuiElement* parseElement(std::ifstream& inFile, const std::string& elementOpenTag) {
-    guiElement type = determineType(elementOpenTag);
+    guiElement type = determineGuiElementOpenerType(elementOpenTag);
     GuiElement* current = factory(type);
 
     if (!current) {
@@ -517,7 +517,7 @@ static Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenT
     layout->setStart(vec2(sX, sY));
     layout->setEnd(vec2(eX, eY));
 
-    // Optional: parse active if your XML supports it
+    
     layout->setActive(true);
 
     while (true) {
