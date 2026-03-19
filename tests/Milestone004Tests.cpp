@@ -71,6 +71,8 @@ int pointTests(Screen screen, SDL_Window* window) {
         std::cout << "point copy constructor working\n";
     }
 
+    point->setParentStart(ivec2(0, 0));
+    point->setParentEnd(ivec2(screen.getWidth(), screen.getHeight()));
     point->setScreen(&screen);
     point->draw();
 
@@ -133,6 +135,8 @@ int lineTests(Screen screen, SDL_Window* window) {
         std::cout << "line copy constructor working\n";
     }
 
+    line->setParentStart(ivec2(0, 0));
+    line->setParentEnd(ivec2(screen.getWidth(), screen.getHeight()));
     line->setScreen(&screen);
     line->draw();
 
@@ -199,6 +203,8 @@ int boxTests(Screen screen, SDL_Window* window) {
         std::cout << "box copy constructor working\n";
     }
     
+    box->setParentStart(ivec2(0, 0));
+    box->setParentEnd(ivec2(screen.getWidth(), screen.getHeight()));
     box->setScreen(&screen);
     box->draw();
 
@@ -290,6 +296,8 @@ int triangleTests(Screen screen, SDL_Window* window) {
         std::cout << "triangle inequality working\n";
     }
 
+    triangle->setParentStart(ivec2(0, 0));
+    triangle->setParentEnd(ivec2(screen.getWidth(), screen.getHeight()));
     triangle->setScreen(&screen);
     triangle->draw();
     screen.blitTo(SDL_GetWindowSurface(window));

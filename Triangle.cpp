@@ -48,7 +48,7 @@ bool Triangle::operator!=(Triangle rhs) {
 
 void Triangle::draw() {
     if (this->screen != nullptr) {
-        this->screen->drawTriangle(this->a, this->b, this->c, this->color);
+        this->screen->drawTriangle(this->a, this->b, this->c, this->color, this->getParentStart(), this->getParentEnd());
     }
 }
 
@@ -72,9 +72,10 @@ void Triangle::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
-void Triangle::writeXml(std::ostream& out) const {
-    out << "  <triangle>\n";
+void Triangle::writeXml(std::ostream& out, int depth) const {
+    std::string pad = std::string(depth * 2, ' ');
 
+    out << pad << "<triangle>\n";
     if (aType == TagType::IVec) {
         writeIVec2(out, a);
     } else {
@@ -101,6 +102,5 @@ void Triangle::writeXml(std::ostream& out) const {
     else {
         writeVec3(out, toVec3(color));
     }
-
-    out << "  </triangle>\n";
+    out << pad <<"</triangle>\n";
 }

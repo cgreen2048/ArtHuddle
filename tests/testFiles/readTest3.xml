@@ -1,0 +1,13 @@
+<layout sX="0.0" sY="0.0" eX="1.0">
+  <point>
+    <ivec2>
+      <x>1</x>
+      <y>2</y>
+    </ivec2>
+    <ivec3>
+      <x>3</x>
+      <y>4</y>
+      <z>5</z>
+    </ivec3>
+  </point>
+</layout>

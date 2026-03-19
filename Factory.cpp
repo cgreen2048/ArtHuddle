@@ -2,6 +2,9 @@
 
 GuiElement* factory(guiElement e) {
 	switch (e) {
+		case guiElement::LAYOUT: {
+			return new Layout{};
+		}
 		case guiElement::POINT: {
 			return new Point{};
 		}

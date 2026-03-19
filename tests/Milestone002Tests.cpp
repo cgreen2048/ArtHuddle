@@ -137,28 +137,28 @@ int drawBresenhamLineTest(Screen screen, SDL_Window *window) {
     
     uint8_t r1,g1,b1,r2,g2,b2;
 
-    screen.drawBresenhamLine(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27));
+    screen.drawBresenhamLine(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
     getPixelColor(screen.getSurface(), ivec2((3*X)/4, (3*Y)/4), r1, g1, b1);
     getPixelColor(screen.getSurface(), ivec2(X/4, Y/4), r2, g2, b2);
     if (r1 != 160 || g1 != 75 || b1 != 27 || r2 != 160 || g2 != 75 || b2 != 27) {
         failure = 1;
     }
 
-    screen.drawBresenhamLine(ivec2(-X, -Y), ivec2(X*2, Y*2), ivec3(-34, 276, 0));
+    screen.drawBresenhamLine(ivec2(-X, -Y), ivec2(X*2, Y*2), ivec3(-34, 276, 0), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
     getPixelColor(screen.getSurface(), ivec2(0,0), r1,g1,b1);
     getPixelColor(screen.getSurface(), ivec2(X-1, Y-1), r2,g2,b2);
     if (r1 != 0 || g1 != 255 || b1 != 0 || r2 != 0 || g2 != 255 || b2 != 0) {
         failure = 1;
     }
 
-    screen.drawBresenhamLine(ivec2(0, Y-1), ivec2(X*2, 0), ivec3(-34, 276, 0));
+    screen.drawBresenhamLine(ivec2(0, Y-1), ivec2(X*2, 0), ivec3(-34, 276, 0), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
     getPixelColor(screen.getSurface(), ivec2(0,Y-1), r1,g1,b1);
     getPixelColor(screen.getSurface(), ivec2(X-1, Y/2), r2,g2,b2);
     if (r1 != 0 || g1 != 255 || b1 != 0 || r2 != 0 || g2 != 255 || b2 != 0) {  
         failure = 1;
     }
 
-    screen.drawBresenhamLine(ivec2(0, Y-1), ivec2(X/2, Y/2), ivec3(-34, 276, 0));
+    screen.drawBresenhamLine(ivec2(0, Y-1), ivec2(X/2, Y/2), ivec3(-34, 276, 0), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
     getPixelColor(screen.getSurface(), ivec2(0, Y-1), r1,g1,b1);
     getPixelColor(screen.getSurface(), ivec2(X/2, Y/2), r2,g2,b2);
     if (r1 != 0 || g1 != 255 || b1 != 0 || r2 != 0 || g2 != 255 || b2 != 0) {
@@ -194,21 +194,21 @@ int colorOnePixelTest(Screen screen, SDL_Window *window) {
     
     uint8_t r, g, b;
 
-    screen.colorOnePixel(ivec2((3*X)/4, (3*Y)/4), ivec3(160, 75, 27));
+    screen.colorOnePixel(ivec2((3*X)/4, (3*Y)/4), ivec3(160, 75, 27), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
     getPixelColor(screen.getSurface(), ivec2((3*X)/4, (3*Y)/4), r, g, b);
     if (r != 160 || g != 75 || b != 27) {
         failure = 1;
     }
 
-    screen.colorOnePixel(ivec2(-X, -Y), ivec3(-34, 276, 0));
+    screen.colorOnePixel(ivec2(-X, -Y), ivec3(-34, 276, 0), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
 
-    screen.colorOnePixel(vec2(0, 0), vec3(-34, 276, 0));
+    screen.colorOnePixel(vec2(0, 0), vec3(-34, 276, 0), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
     getPixelColor(screen.getSurface(), ivec2(0,0), r, g, b);
     if (r != 0 || g != 255 || b != 0) {
         failure = 1;
     }
 
-    screen.colorOnePixel(ivec2(50, 150), ivec3(-34, 276, 0));
+    screen.colorOnePixel(ivec2(50, 150), ivec3(-34, 276, 0), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
     getPixelColor(screen.getSurface(), ivec2(50,150), r, g, b);
     if (r != 0 || g != 255 || b != 0) {
         failure = 1;
@@ -245,7 +245,7 @@ int drawBoxTest(Screen screen, SDL_Window *window) {
     int boxXMax = (3*X)/4;
     int boxYMin = Y/4;
     int boxYMax = (3*Y)/4;
-    screen.drawBox(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27));
+    screen.drawBox(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
     screen.blitTo(SDL_GetWindowSurface(window));
     SDL_UpdateWindowSurface(window);
 

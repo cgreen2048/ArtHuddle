@@ -14,6 +14,7 @@ main.cpp is a demonstration program
 
 It defines a common interface used by all graphical objects such as:
 
+- `Layout`
 - `Point`
 - `Line`
 - `Box`
@@ -33,13 +34,19 @@ This enumeration identifies the type of GUI element being created.
 It is primarily used by the **Factory** to determine which object to instantiate.
 
 ```cpp
-enum class guiElement { POINT, LINE, BOX, TRIANGLE };
+enum class guiElement { LAYOUOT, POINT, LINE, BOX, TRIANGLE };
 ```
 
 ## Data Members
 
 - `Screen* screen`  
   Pointer to the `Screen` object where the element will be drawn.
+
+- `ivec2 parentStart`
+  `ivec2` that stores the starting coordinates of the parent `GuiElement` (usually `Layout`)
+
+- `ivec2 parentEnd`
+  `ivec2` that stores the ending coordinates of the parent `GuiElement` (usually `Layout`)
 
 ---
 
@@ -73,6 +80,8 @@ Each derived class implements its own drawing behavior:
 | `Box` | `drawBox()` |
 | `Triangle` | `drawTriangle()` |
 
+In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will call `draw()` on all children of that parent
+
 ---
 
 ### `void writeXml(std::ostream& out) const`
@@ -100,6 +109,30 @@ Returns the pointer to the `Screen` associated with the GUI element.
 Returns:
 
 - `Screen*` pointing to the target screen.
+
+---
+
+### `void GuiElement::setParentStart(const ivec2& start)`
+
+Sets the `parentStart` data for the current `GuiElement` object
+
+---
+
+### `void GuiElement::setParentEnd(const ivec2& end)`
+
+Sets the `parentEnd` data for the current `GuiElement` object
+
+---
+
+### `ivec2 GuiElement::getParentStart()`
+
+Returns the `parentStart` data for the current `GuiElement` object in `ivec2` format
+
+---
+
+### `ivec2 GuiElement::getParentEnd()`
+
+Returns the `parentEnd` data for the current `GuiElement` object in `ivec2` format
 
 ---
 
@@ -142,6 +175,7 @@ Returns:
 
 | Enum Value | Object Created |
 |------|------|
+| `guiElement::LAYOUT` | `Layout` |
 | `guiElement::POINT` | `Point` |
 | `guiElement::LINE` | `Line` |
 | `guiElement::BOX` | `Box` |
@@ -157,6 +191,74 @@ GuiElement* element = factory(guiElement::LINE);
 element->setScreen(screen);
 element->draw();
 ```
+# Layout
+
+## Description
+`Layout` is the primary "parent-type" `GuiElement` that functions to nest elements within certain bounds. It inherits from the `GuiElement` class to not only align itself according to its parent's bounds, but also align its children according to its own bounds.
+- `vec2 start`: The percentage of the `Layout`'s parent bounds to start this `Layout` at for `x` and `y` respectively
+- `vec2 end`: The percentage of the `Layout`'s parent bounds to end this `Layout` at for `x` and `y` respectively
+- `bool hasParentStart`: Boolean to check if the parent bounds have been set yet so that the `Layout` cannot draw otherwise
+- `bool hasParentEnd`: Similar to `hasParentStart` but for ending coordinates too to ensure that all bounds are satisfied
+- `std::vector<GuiElement*> elements`: Contains all elements nested within this `Layout`
+- `bool active`: Display the `Layout` or not based on the boolean parameter
+
+
+## Methods
+
+### `Layout()`
+The default constructor, which only initializes `active` to false for other data to be set at a later time
+
+### `~Layout`
+The default destructor. Destroys not only the `Layout` but also all of the children that the `Layout` owns in `elements`
+
+### `void setStart(const vec2& start)`
+Sets the `start` to the starting percentage values for this `Layout`
+
+### `void setStart(const vec2& start)`
+Sets the `end` to the ending percentage values for this `Layout`
+
+### `void setParentStart(const ivec2& start)`
+Sets the parent starting coordinates as in `GuiElement` but overloaded to also set `hasParentStart` to `true` to signal that a starting bound has been added
+
+### `void setParentEnd(const ivec2& end)`
+Sets the parent ending coordinates as in `GuiElement` but overloaded to also set `hasParentEnd` to `true` to signal that an ending bound has been added
+
+### `void setActive(bool value)`
+Sets `active` to `value`, toggling the `Layout` active (able to be drawn) or not
+
+### `void isActive()`
+Getter method for `active` to check if the `Layout` can be drawn
+
+### `void addElement(GuiElement *element)`
+Adds `element` to `elements` as a child of this `Layout` and sets `element->parentStart` to the absolute starting position of this `Layout`, `element->parentEnd` to the absolute ending position of this `Layout`,
+and `element->screen` to this `Layout`'s screen
+
+### `void draw()`
+If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `draw()` functions, drawing every child element
+
+### `void writeXml(std::ostream& out)`
+Similar to `draw()` except first printing the proper `<layout>` tag with parameters and then writing to an XML by calling each child `GuiElement*`'s `writeXml()` function. I
+
+### `vec2 getStart()`
+Returns starting coordinate percentages from `this->start`
+
+### `vec2 getEnd()`
+Returns ending coordinate percentages from `this->end`
+
+### `const std::vector<GuiElement*>& getElements() const`
+Returns a reference to `Layout`'s `elements` vector
+
+### `int getAbsoluteStartX`
+Returns the absolute starting x position of this Layout
+
+### `int getAbsoluteStartY`
+Returns the absolute starting y position of this Layout
+
+### `int getAbsoluteEndX`
+Returns the absolute ending x position of this Layout
+
+### `int getAbsoluteEndY`
+Returns the absolute ending y position of this Layout
 
 # Triangle
 
@@ -381,62 +483,69 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ## Description
 
-`GUIFile` is a class responsible for **reading and writing an XML-like layout file** that describes graphical primitives.
+`GUIFile` is responsible for **reading and writing an XML-based layout file** that describes a hierarchy of GUI elements.
 
-Instead of storing separate containers for each shape, this implementation stores a **single polymorphic container**:
+---
 
-- `std::vector<GuiElement*> elements`
+## Key Update
 
-Each pointer refers to a derived `GuiElement` object (`Line`, `Box`, or `Point`).  
-This allows all shapes to be handled uniformly using polymorphism.
+Instead of storing elements in a flat container:
 
-`GUIFile` **owns all allocated objects** and is responsible for deleting them when clearing the file or destroying the object.
+```cpp
+std::vector<GuiElement*> elements;
+```
+the system now uses a hierarchical structure:
+```cpp
+Layout* rootLayout;
+```
+
+## Core Concept
+
+### Layout Tree Structure
+
+The GUI is represented as a tree:
+```
+Layout (root)
+├── Layout
+│   ├── Line
+│   └── Box
+├── Triangle
+└── Point
+```
+
+- Every node is a `GuiElement`
+- `Layout` nodes can contain children
+- Leaf nodes are drawable primitives (`Line`, `Box`, `Point`, `Triangle`)
+
+---
+
+## Data Members
+
+### `Layout* rootLayout`
+
+- Pointer to the root layout of the GUI
+- Owns the entire hierarchy
+- All elements are stored within this layout tree
+- `GUIFile` is responsible for deleting it
+
+---
+
+## Memory Management
+
+### Key Idea
+
+Ownership is hierarchical:
+
+- `GUIFile` owns `rootLayout`
+- `Layout` owns all of its child elements
+
+Deleting the root layout recursively deletes the entire GUI structure.
+
 
 The class supports both floating-point vector tags (`<vec2>`, `<vec3>`) and integer vector tags (`<ivec2>`, `<ivec3>`).  
 When reading, the parser records which tag type was used and stores that information in the element using a `TagType`.  
 When writing, each element's `writeXml()` method outputs the correct tag type.
 
----
-
-# Internal Data Structures
-
-## `std::vector<GuiElement*> elements`
-
-Stores all graphical elements contained in the layout file.
-
-- Each entry is a pointer to a derived `GuiElement`
-- Supported derived types include:
-  - `Line`
-  - `Box`
-  - `Point`
-
-Elements are stored **in the order they appear in the file**.
-
-`GUIFile` owns these pointers and deletes them in `clear()` and the destructor.
-
----
-
-## `enum class TagType`
-
-Indicates how vector data should be written back to the XML file.
-
-| Value | Meaning |
-|------|------|
-| `TagType::Vec` | `<vec2>` / `<vec3>` |
-| `TagType::IVec` | `<ivec2>` / `<ivec3>` |
-
-When parsing the file, this tag type is stored inside the derived objects using setter functions such as:
-
-- `setStart()`
-- `setEnd()`
-- `setMin()`
-- `setMax()`
-- `setCoords()`
-- `setColor()`
-
-This allows `writeXml()` to preserve the original tag type.
-
----
 
 ## XML Token Constants
 
@@ -476,33 +585,30 @@ These are used by the parser to verify correct nesting.
 
 # Supported XML Layout Format
 
-The layout file must follow this structure:
+### Layout Tag
+
+Layouts include bounds as attributes:
+
 
 ```xml
-<layout>
-    <line>
-        <vec2>
-            <x>...</x>
-            <y>...</y>
-        </vec2>
-        <vec2>
-            <x>...</x>
-            <y>...</y>
-        </vec2>
-        <vec3>
-            <x>...</x>
-            <y>...</y>
-            <z>...</z>
-        </vec3>
-    </line>
-
-    <box>
-        ...
-    </box>
-
-    <point>
-        ...
-    </point>
+<layout sX="0" sY="0" eX="1" eY="1">
+    <layout sX="0.1" sY="0.1" eX="0.5" eY="0.5">
+        <line>
+            <vec2>
+                <x>10</x>
+                <y>20</y>
+            </vec2>
+            <vec2>
+                <x>40</x>
+                <y>60</y>
+            </vec2>
+            <vec3>
+                <x>255</x>
+                <y>0</y>
+                <z>0</z>
+            </vec3>
+        </line>
+    </layout>
 
     <triangle>
         ...
@@ -520,7 +626,7 @@ Both `<vec*>` and `<ivec*>` variants are supported.
 
 Default constructor.
 
-Initializes an empty container of GUI elements.
+- Initializes `rootLayout` to `nullptr`
 
 ---
 
@@ -528,144 +634,178 @@ Initializes an empty container of GUI elements.
 
 Destructor.
 
-Calls `clear()` to free all owned elements.
-
----
-
-### `const std::vector<GuiElement*>& getElements() const`
-
-Returns the list of stored GUI elements.
-
-Elements are returned as `GuiElement*` so they can be handled polymorphically.
-
----
-
-### `void addLine(Line* l)`
-
-Adds a `Line` object to the container.
-
-Implicitly converts `Line*` to `GuiElement*`.
-
----
-
-### `void addBox(Box* b)`
-
-Adds a `Box` object to the container.
-
----
-
-### `void addPoint(Point* p)`
-
-Adds a `Point` object to the container.
-
-### `void addTriangle(Triangle* t)`
-
-Adds a `Triangle` object to the container.
+- Calls `clear()` to free all owned memory
 
 ---
 
 ### `void clear()`
 
-Deletes all elements and resets the container.
+Deletes the entire layout tree.
 
-Used when:
+```cpp
+if (rootLayout != nullptr) {
+    delete rootLayout;
+    rootLayout = nullptr;
+}
+```
 
-- loading a new file
-- destroying the `GUIFile` object
+### `Layout* getRootLayout() const`
+
+Returns the pointer to the root layout.
+
+---
+
+### `void setRootLayout(Layout* root)`
+
+Sets a new root layout.
+
+- Deletes the existing layout if one exists  
+- Transfers ownership of `root` to `GUIFile`  
 
 ---
 
 # File Parsing
 
-### `void readFile(std::string fileName)`
+### `void readFile(const std::string& fileName)`
 
-Reads a layout file and constructs GUI elements from it.
+Reads an XML file and constructs the layout tree.
 
----
+#### Behavior
 
-## Parsing Behavior
-
-1. Clear any existing elements.
-
-2. Open the file using `std::ifstream`.
-
-3. Use a `std::stack<std::string>` (`matcher`) to enforce correct tag nesting.
-
-4. When encountering an element tag (`<line>`, `<box>`, `<point>`, `<triangle>`), create a new object using the Factory.
-
-Example:
-
-```cpp
-current = factory(guiElement::LINE);
-```
----
-## Malformed XML Detection
-
-If malformed XML is detected:
-
-- `"Malformed XML"` is printed
-- the partially constructed object is deleted
-- parsing stops immediately
-
-Malformed conditions include:
-
-- mismatched closing tags
-- missing coordinates
-- repeated coordinate values
-- incorrect nesting
+- Clears existing data  
+- Opens the file  
+- Reads the first tag  
+- Verifies it is a valid `<layout ...>` tag  
+- Calls the internal recursive parser  
+- Stores the result in `rootLayout`  
 
 ---
-
-## File Writing
 
 ### `void writeFile(const std::string& fileName) const`
 
-Writes all stored GUI elements to an XML layout file.
+Writes the layout tree to an XML file.
 
----
+#### Behavior
 
-### Writing Behavior
-
-1. Open the output file using `std::ofstream`.
-
-2. Write the root `<layout>` tag.
-
-3. Iterate through all elements:
+- Opens the output file  
+- Verifies `rootLayout` exists  
+- Calls:
 
 ```cpp
-for (auto* e : elements) {
-    e->writeXml(out);
-}
+rootLayout->writeXml(out);
 ```
-4. Each element calls its own `writeXml()` method.
+The layout recursively writes all children
 
-Because `writeXml()` is **virtual**, the correct derived implementation runs automatically.
-
-Each derived class writes:
-
-- its own element tag (`<line>`, `<box>`, `<point>`, `<triangle>`)
-- vector data (`vec2` / `ivec2`)
-- color data (`vec3` / `ivec3`)
-
-The tag type is determined using the stored `TagType`.
-
-Finally, the layout is closed with:
-
-```xml
-</layout>
-```
 ---
-These are static helper utilities used during parsing and writing:
+## Internal Helper Functions
 
-- `trim()` → Removes leading/trailing whitespace
-- `toInt()` → Rounds float and converts to int
-- `writeVec2()`
-- `writeIVec2()`
-- `writeVec3()`
-- `writeIVec3()`
+These functions are internal to `GUIFile.cpp` and are not part of the public interface.
 
-These functions ensure consistent formatting of XML output.
+They implement the parsing logic used by `readFile()`.
+
 ---
+
+### `Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenTag)`
+
+Parses a `<layout ...>` tag and its contents.
+
+#### Purpose
+
+- Creates a `Layout`  
+- Reads layout attributes:
+  - `sX`, `sY`  
+  - `eX`, `eY`  
+- Recursively parses:
+  - child layouts  
+  - child elements  
+- Returns the completed layout subtree
+
+#### Additional Parsing Details
+
+- Uses helper functions (`parseVec2`, `parseIVec2`, `parseVec3`, `parseIVec3`) to read vector data  
+- These helpers ensure all required components (`x`, `y`, `z`) are present  
+- If any component is missing or malformed, parsing fails immediately  
+
+#### Why recursion is used
+
+Layouts can contain other layouts, forming a tree structure.  
+A recursive function naturally mirrors this structure.
+
+---
+
+### `GuiElement* parseElement(std::ifstream& inFile, const std::string& elementOpenTag)`
+
+Parses a drawable GUI element.
+
+#### Supported types
+
+- `Point`  
+- `Line`  
+- `Box`  
+- `Triangle`  
+
+#### Behavior
+- Determines type from opening tag
+- Uses the Factory to create the object
+- Parses coordinate and color data
+- Stores tag type (vec vs ivec)
+- Uses vector parsing helpers
+- Preserves original tag types for XML output
+- Returns a GuiElement*
+---
+
+## Error Handling
+
+If malformed XML is detected:
+
+- `"Malformed XML"` is printed  
+- Partially created objects are deleted  
+- Parsing stops immediately  
+
+### Examples of malformed XML
+
+- Missing layout attributes  
+- Mismatched tags  
+- Missing coordinates  
+- Invalid nesting  
+- Missing vector components  
+- Unexpected tags  
+
+---
+
+## Internal Parsing Utilities
+
+Used during parsing:
+
+- `trim()` → removes whitespace  
+- `getNextTag()` → reads next XML tag  
+- `getNextPayload()` → reads text between tags  
+- `getFloatAttribute()` → extracts layout attributes  
+- `isLayoutOpen()` / `isLayoutClose()` → layout tag checks  
+- `isElementOpen()` → element detection  
+- `isMatchingElementClose()` → validates closing tags
+- `determineGuiElementOpenerType()` → maps XML tags to `guiElement` enum  
+- `parseVec2()` → parses `<vec2>` data and validates structure  
+- `parseIVec2()` → parses `<ivec2>` integer vector data  
+- `parseVec3()` → parses `<vec3>` data with x, y, z components  
+- `parseIVec3()` → parses `<ivec3>` integer vector data    
+
+---
+
+## Type Conversion Helpers
+
+Used to convert between float and integer vector types:
+
+- `toIVec2(const vec2&)`  
+- `toIVec3(const vec3&)`  
+- `toVec2(const ivec2&)`  
+- `toVec3(const ivec3&)`  
+- `toInt(float)`  
+
+These ensure the correct internal representation while preserving original XML tag types.
+
+---
+
 
 ## UML Diagram
 ![UML Diagram](images/Milestone003_UML.png)
@@ -687,35 +827,36 @@ Blits the current Screen object to the target surface
 - Verifies target surface exists
 - Uses `SDL_BlitSurface` to blit between surfaces
 
-### `colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors)`
+### `colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors, ivec2 parentStart, ivec2 parentEnd)`
 Colors target pixel in object's SDL_Surface
 - Uses a 2D mathematical vector object to hold target pixel's X and Y components
 - Uses a 3D mathematical vector object to hold target pixel's color value in RGB format (clamped between 0 and 255)
 - Uses `SDL_MapRGBA` to convert the color to the pixel
+- Will only draw if the pixel falls within the bounds of the Screen as well as the `parentStart` and `parentEnd` coordinates passed from a drawable object's `Layout` object
 
-### `drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors)`
+### `drawBox(Tvec2<T1> min, Tvec2<T2> max, Tvec3<T3> colors, ivec2 parentStart, ivec2 parentEnd)`
 Draws a box on the target Screen object's SDL_Surface
 - Uses 2D mathematical vectors to store the minimum and maximum coordinates for the box
 - Clamps minimum and maximum X and Y values between 0 and the Screen object's height/width values
 - Uses 3D mathematical vector to store the target color for the box
-- Calls `colorOnePixel` for each coordinate in the bounds of the box in a double nested for loop
+- Calls `colorOnePixel` for each coordinate in the bounds of the box in a double nested for loop as long as the coordinate falls within the `parentStart` and `parentEnd` coordinates passed from the Box's `Layout` object
 
 ### `pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 pointP)`
 Determines if `pointP` is within the bounds of the triangle established by `pointA`, `pointB`, and `pointC`
 - Calculates the cross products AP x AB, BP x BC, & CP x CA
 - If no conflicting signs exist between these three cross products, `point` is inside the triangle, else it is not
 
-### `drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 color)`
+### `drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
 Draws a triangle on the target Screen object's SDL_Surface
 - Computes a bounding box around the triangle using the min and max of the corners' x & y values
 - Iterates over all points in the box & uses pointInTriangle to determine if the current point is in the triangle
 - Calls `colorOnePixel` for each coordinate in the bounds of the triangle 
 
-### `drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color)`
+### `drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
 Draws a line to the Target Screen object's SDL_Surface using the Bresenham algorithm
 - Uses 2D mathematical vectors to store the start and end points of the line
 - Will only draw on pixels that exist in the surface
-- Calls colorOnePixel for each pixel that exists on the line
+- Calls `colorOnePixel` for each pixel that exists on the line
 
 ### `clear(ivec3 color)`
 Clears the Target Screen object's `SDL_Surface` by filling the entire surface with the given color

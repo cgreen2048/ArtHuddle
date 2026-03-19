@@ -11,31 +11,13 @@ GUIFile::~GUIFile() {
 }
 
 void GUIFile::clear() {
-    for (GuiElement* e : elements) {
-        delete e;
+    if (rootLayout != nullptr) {
+        delete rootLayout;
+        rootLayout = nullptr;
     }
-    elements.clear();
 }
 
-const std::vector<GuiElement*>& GUIFile::getElements() const {
-    return elements;
-}
 
-void GUIFile::addLine(Line* l) {
-    elements.push_back(l); // implicit upcast Line* -> GuiElement*
-}
-
-void GUIFile::addBox(Box* b) {
-    elements.push_back(b);
-}
-
-void GUIFile::addPoint(Point* p) {
-    elements.push_back(p);
-}
-
-void GUIFile::addTriangle(Triangle* t) {
-    elements.push_back(t);
-}
 
 static int toInt(float x) {
     return static_cast<int>(std::lround(x));
@@ -67,556 +49,545 @@ static std::string trim(const std::string& s) {
     return s.substr(first, last - first + 1);
 }
 
-void GUIFile::readFile(std::string fileName) {
-    clear();
-    
-    std::ifstream inFile{fileName};
-    if (!inFile.is_open()) {
-        std::cerr << "Error opening file\n";
-        return;
+static std::string getNextTag(std::ifstream& inFile) {
+    char ch;
+    std::string tag;
+
+    while (inFile.get(ch)) {
+        if (ch == '<') {
+            tag += ch;
+            break;
+        }
     }
 
-    GuiElement* current = nullptr;
-    guiElement currentType = guiElement::POINT; // any default
+    if (tag.empty()) {
+        return "";
+    }
 
+    while (inFile.get(ch)) {
+        tag += ch;
+        if (ch == '>') {
+            break;
+        }
+    }
 
-    vec2 currentVec2;
-    ivec2 currentIVec2;
-    vec3 currentVec3;
-    ivec3 currentIVec3;
+    return tag;
+}
 
-    bool buildingVec2 = false;
-    bool buildingIVec2 = false;
-    bool buildingVec3 = false;
-    bool buildingIVec3 = false;
+static std::string getNextPayload(std::ifstream& inFile) {
+    std::string payload;
+    char ch;
 
-    bool capturedX = false;
-    bool capturedY = false;
-    bool capturedZ = false;
+    while (inFile.get(ch)) {
+        if (ch == '<') {
+            inFile.unget();  // put back '<'
+            break;
+        }
+        payload += ch;
+    }
 
-    char currentCoord = 0;   // 0 means “not capturing”
+    return trim(payload);
+}
+
+static bool isLayoutOpen(const std::string& tag) {
+    return tag.rfind("<layout", 0) == 0 && tag != "</layout>";
+}
+
+static bool isLayoutClose(const std::string& tag) {
+    return tag == "</layout>";
+}
+
+static bool isElementOpen(const std::string& tag) {
+    return tag == POINT_OPEN ||
+           tag == LINE_OPEN ||
+           tag == BOX_OPEN ||
+           tag == TRIANGLE_OPEN;
+}
+
+static guiElement determineGuiElementOpenerType(const std::string& tag) {
+    if (tag == POINT_OPEN) {
+        return guiElement::POINT;
+    }
+    if (tag == LINE_OPEN) {
+        return guiElement::LINE;
+    }
+    if (tag == BOX_OPEN) {
+        return guiElement::BOX;
+    }
+    if (tag == TRIANGLE_OPEN) {
+        return guiElement::TRIANGLE;
+    }
+    std::cerr << "Malformed XML\n";
+    return guiElement::UNKNOWN;
+}
+
+static bool isMatchingElementClose(const std::string& tag, guiElement type) {
+    if (type == guiElement::POINT) {
+        return tag == POINT_CLOSE;
+    }
+    if (type == guiElement::LINE) {
+        return tag == LINE_CLOSE;
+    }
+    if (type == guiElement::BOX) {
+        return tag == BOX_CLOSE;
+    }
+    if (type == guiElement::TRIANGLE) {
+        return tag == TRIANGLE_CLOSE;
+    }
+    return false;
+}
+
+static bool getFloatAttribute(const std::string& tag,
+                                const std::string& attrName,
+                                float& value) {
+    std::string key = attrName + "=\"";
+    size_t start = tag.find(key);
+
+    if (start == std::string::npos) {
+        std::cerr << "Malformed XML\n";
+        return false;
+    }
+
+    start += key.size();
+    size_t end = tag.find('"', start);
+
+    if (end == std::string::npos) {
+        std::cerr << "Malformed XML\n";
+        return false;
+    }
+
+    value = std::stof(tag.substr(start, end - start));
+    return true;
+}
+
+static bool parseVec2(std::ifstream& inFile, vec2& result) {
+    bool hasX = false, hasY = false;
+
+    while (true) {
+        std::string tag = getNextTag(inFile);
+
+        if (tag == VEC2_CLOSE) {
+            if (!hasX || !hasY) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            return true;
+        }
+
+        if (tag == X_OPEN) {
+            std::string val = getNextPayload(inFile);
+            result.x = std::stof(val);
+
+            if (getNextTag(inFile) != X_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+
+            hasX = true;
+        }
+        else if (tag == Y_OPEN) {
+            std::string val = getNextPayload(inFile);
+            result.y = std::stof(val);
+
+            if (getNextTag(inFile) != Y_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+
+            hasY = true;
+        }
+        else {
+            std::cerr << "Malformed XML\n";
+            return false;
+        }
+    }
+}
+
+static bool parseIVec2(std::ifstream& inFile, ivec2& result) {
+    bool hasX = false, hasY = false;
+
+    while (true) {
+        std::string tag = getNextTag(inFile);
+
+        if (tag == IVEC2_CLOSE) {
+            if (!hasX || !hasY) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            return true;
+        }
+
+        if (tag == X_OPEN) {
+            result.x = std::stoi(getNextPayload(inFile));
+
+            if (getNextTag(inFile) != X_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+
+            hasX = true;
+        }
+        else if (tag == Y_OPEN) {
+            result.y = std::stoi(getNextPayload(inFile));
+
+            if (getNextTag(inFile) != Y_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+
+            hasY = true;
+        }
+        else {
+            std::cerr << "Malformed XML\n";
+            return false;
+        }
+    }
+}
+
+static bool parseVec3(std::ifstream& inFile, vec3& result) {
+    bool hasX = false, hasY = false, hasZ = false;
+
+    while (true) {
+        std::string tag = getNextTag(inFile);
+
+        if (tag == VEC3_CLOSE) {
+            if (!hasX || !hasY || !hasZ) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            return true;
+        }
+
+        if (tag == X_OPEN) {
+            result.x = std::stof(getNextPayload(inFile));
+            if (getNextTag(inFile) != X_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            hasX = true;
+        }
+        else if (tag == Y_OPEN) {
+            result.y = std::stof(getNextPayload(inFile));
+            if (getNextTag(inFile) != Y_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            hasY = true;
+        }
+        else if (tag == Z_OPEN) {
+            result.z = std::stof(getNextPayload(inFile));
+            if (getNextTag(inFile) != Z_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            hasZ = true;
+        }
+        else {
+            std::cerr << "Malformed XML\n";
+            return false;
+        }
+    }
+}
+
+static bool parseIVec3(std::ifstream& inFile, ivec3& result) {
+    bool hasX = false, hasY = false, hasZ = false;
+
+    while (true) {
+        std::string tag = getNextTag(inFile);
+
+        if (tag == IVEC3_CLOSE) {
+            if (!hasX || !hasY || !hasZ) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            return true;
+        }
+
+        if (tag == X_OPEN) {
+            result.x = std::stoi(getNextPayload(inFile));
+            if (getNextTag(inFile) != X_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            hasX = true;
+        }
+        else if (tag == Y_OPEN) {
+            result.y = std::stoi(getNextPayload(inFile));
+            if (getNextTag(inFile) != Y_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            hasY = true;
+        }
+        else if (tag == Z_OPEN) {
+            result.z = std::stoi(getNextPayload(inFile));
+            if (getNextTag(inFile) != Z_CLOSE) {
+                std::cerr << "Malformed XML\n";
+                return false;
+            }
+            hasZ = true;
+        }
+        else {
+            std::cerr << "Malformed XML\n";
+            return false;
+        }
+    }
+}
+
+static GuiElement* parseElement(std::ifstream& inFile, const std::string& elementOpenTag) {
+    guiElement type = determineGuiElementOpenerType(elementOpenTag);
+    GuiElement* current = factory(type);
+
+    if (!current) {
+        std::cerr << "Malformed XML\n";
+        return nullptr;
+    }
 
     int lineVec2Index = 0;
     int boxVec2Index = 0;
     int triangleVec2Index = 0;
 
-    std::stack<std::string> matcher;
-    std::string line;
-    size_t start = 0;
-    size_t end = 0;
-    while(std::getline(inFile, line)) {
-        while (1) {
-            start = line.find('<');
-            if (start == std::string::npos) {
-                break;
+    while (true) {
+        std::string tag = getNextTag(inFile);
+
+        if (tag.empty()) {
+            std::cerr << "Malformed XML\n";
+            delete current;
+            return nullptr;
+        }
+
+        if (isMatchingElementClose(tag, type)) {
+            return current;
+        }
+
+        if (tag == VEC2_OPEN) {
+            vec2 temp;
+            if (!parseVec2(inFile, temp)) {
+                delete current;
+                return nullptr;
             }
-            std::string payload = line.substr(0, start);
-            payload = trim(payload);
 
-            if (!payload.empty() && currentCoord != 0 && (buildingVec2 || buildingIVec2 
-                || buildingVec3 || buildingIVec3)) {
-                    float value = std::stof(payload);
-                    if (buildingVec2) {
-                        switch (currentCoord) {
-                            case 'x': {
-                                if (!capturedX) {
-                                    currentVec2.x = value;
-                                    capturedX = true;
-                                }
-                                else {
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return;
-                                }
-                                break;
-                            }
-                            case 'y': {
-                                if (!capturedY) {
-                                    currentVec2.y = value;
-                                    capturedY = true;
-                                }
-                                else {
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return;
-                                }
-                                break;
-                            }
-                            default: {
-                                std::cerr << "Malformed XML\n";
-                                if (current) { 
-                                    delete current; 
-                                    current = nullptr; 
-                                }
-                                return;
-                            }
-                        }
-                    }
-                    else if (buildingIVec2) {
-                        int value = std::stoi(payload);
-                        switch (currentCoord) {
-                            case 'x':
-                                if (!capturedX) { 
-                                    currentIVec2.x = value; capturedX = true; 
-                                }
-                                else { 
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return; 
-                                }
-                                break;
+            ivec2 v = toIVec2(temp);
 
-                            case 'y':
-                                if (!capturedY) { 
-                                    currentIVec2.y = value; capturedY = true; 
-                                }
-                                else {
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return;
-                                }
-                                break;
-
-                            default: {
-                                std::cerr << "Malformed XML\n";
-                                if (current) { 
-                                    delete current; 
-                                    current = nullptr; 
-                                }
-                                return;
-                            }
-                        }
-                    }
-                    else if (buildingVec3) {
-                        switch (currentCoord) {
-                            case 'x': {
-                                if (!capturedX) {
-                                    currentVec3.x = value;
-                                    capturedX = true;
-                                }
-                                else {
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return;
-                                }
-                                break;
-                            }
-                            case 'y': {
-                                if (!capturedY) {
-                                    currentVec3.y = value;
-                                    capturedY = true;
-                                }
-                                else {
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return;
-                                }
-                                break;
-                            }
-                            case 'z': {
-                                if (!capturedZ) {
-                                    currentVec3.z = value;
-                                    capturedZ = true;
-                                }
-                                else {
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return;
-                                }
-                                break;
-                            }
-                            default: {
-                                std::cerr << "Malformed XML\n";
-                                if (current) { 
-                                    delete current; 
-                                    current = nullptr; 
-                                }
-                                return;
-                            }
-                        }
-                    }
-                    else if (buildingIVec3) {
-                        int value = std::stoi(payload);
-                        switch (currentCoord) {
-                            case 'x': {
-                                if (!capturedX) {
-                                    currentIVec3.x = value;
-                                    capturedX = true;
-                                }
-                                else {
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return;
-                                }
-                                break;
-                            }
-                            case 'y': {
-                                if (!capturedY) {
-                                    currentIVec3.y = value;
-                                    capturedY = true;
-                                }
-                                else {
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return;
-                                }
-                                break;
-                            }
-                            case 'z': {
-                                if (!capturedZ) {
-                                    currentIVec3.z = value;
-                                    capturedZ = true;
-                                }
-                                else {
-                                    std::cerr << "Malformed XML\n";
-                                    if (current) { 
-                                        delete current; 
-                                        current = nullptr; 
-                                    }
-                                    return;
-                                }
-                                break;
-                            }
-                            default: {
-                                std::cerr << "Malformed XML\n";
-                                if (current) { 
-                                    delete current; 
-                                    current = nullptr; 
-                                }
-                                return;
-                            }
-                        }
-                    }
+            if (type == guiElement::LINE) {
+                Line* l = static_cast<Line*>(current);
+                if (lineVec2Index == 0) {
+                    l->setStart(v, Line::TagType::Vec);
                 }
-            
-            line.erase(0, start);
-
-            end = line.find('>');
-            if (end == std::string::npos) {
-                break;
+                else {
+                    l->setEnd(v, Line::TagType::Vec);
+                }
+                lineVec2Index++;
             }
-            
-
-            std::string token = line.substr(0, end + 1);
-            line.erase(0, end + 1);
-
-            auto locator = std::find(OPENERS.begin(), OPENERS.end(), token);
-            if (locator != OPENERS.end()) { 
-                matcher.push(token);
-                if (token == LINE_OPEN) {
-                    currentType = guiElement::LINE;
-                    current = factory(currentType);        // returns new Line
-                    lineVec2Index = 0;
+            else if (type == guiElement::BOX) {
+                Box* b = static_cast<Box*>(current);
+                if (boxVec2Index == 0) {
+                    b->setMin(v, Box::TagType::Vec);
                 }
-                else if (token == BOX_OPEN) {
-                    currentType = guiElement::BOX;
-                    current = factory(currentType);        // returns new Box
-                    boxVec2Index = 0;
+                else {
+                    b->setMax(v, Box::TagType::Vec);
                 }
-                else if (token == POINT_OPEN) {
-                    currentType = guiElement::POINT;
-                    current = factory(currentType);        // returns new Point
+                boxVec2Index++;
+            }
+            else if (type == guiElement::POINT) {
+                Point* p = static_cast<Point*>(current);
+                p->setCoords(v, Point::TagType::Vec);
+            }
+            else if (type == guiElement::TRIANGLE) {
+                Triangle* t = static_cast<Triangle*>(current);
+                if (triangleVec2Index == 0) {
+                    t->setA(v, Triangle::TagType::Vec);
                 }
-                else if (token == TRIANGLE_OPEN) {
-                    currentType = guiElement::TRIANGLE;
-                    current = factory(currentType);        // returns new Triangle
-                    triangleVec2Index = 0;
+                else if (triangleVec2Index == 1) {
+                    t->setB(v, Triangle::TagType::Vec);
                 }
-                else if (token == VEC2_OPEN) {
-                    buildingVec2 = true;
-                    buildingIVec2 = false;
-                    capturedX = false;
-                    capturedY = false;
-                    currentVec2 = vec2();
-                    buildingVec3 = false;
-                    buildingIVec3 = false;
+                else {
+                    t->setC(v, Triangle::TagType::Vec);
                 }
-                 else if (token == IVEC2_OPEN) {
-                    buildingIVec2 = true;
-                    buildingVec2 = false;
-                    capturedX = false;
-                    capturedY = false;
-                    currentIVec2 = ivec2();
-                    buildingIVec3 = false;
-                    buildingVec3 = false;
-                }
-                else if (token == VEC3_OPEN) {
-                    buildingVec3 = true;
-                    buildingIVec3 = false;
-                    capturedX = false;
-                    capturedY = false;
-                    capturedZ = false;
-                    currentVec3 = vec3();
-                    buildingVec2 = false;
-                    buildingIVec2 = false;
-                }
-                else if (token == IVEC3_OPEN) {
-                    buildingIVec3 = true;
-                    buildingVec3 = false;
-                    capturedX = false;
-                    capturedY = false;
-                    capturedZ = false;
-                    currentIVec3 = ivec3();
-                    buildingIVec2 = false;
-                    buildingVec2 = false;
-                }
-                else if (token == X_OPEN) {
-                   currentCoord = 'x';
-                }
-                else if (token == Y_OPEN) {
-                   currentCoord = 'y';
-                }
-                else if (token == Z_OPEN) {
-                   currentCoord = 'z';
-                }
-            }     
-            else {
-                locator = std::find(CLOSERS.begin(), CLOSERS.end(), token);
-                if (locator != CLOSERS.end()) {
-                    if (matcher.empty()) {  // In case XML starts with a closer
-                        std::cerr << "Malformed XML\n";
-                        if (current) { 
-                            delete current; 
-                            current = nullptr; 
-                        } 
-                        return;
-                    }
-                    std::string top = matcher.top();
-                    if ((token == LAYOUT_CLOSE && top != LAYOUT_OPEN) ||
-                        (token == LINE_CLOSE && top != LINE_OPEN) ||
-                        (token == BOX_CLOSE && top != BOX_OPEN) ||
-                        (token == POINT_CLOSE && top != POINT_OPEN) ||
-                        (token == TRIANGLE_CLOSE && top != TRIANGLE_OPEN) ||
-                        (token == VEC2_CLOSE && top != VEC2_OPEN) ||
-                        (token == VEC3_CLOSE && top != VEC3_OPEN) ||
-                        (token == IVEC2_CLOSE && top != IVEC2_OPEN) ||
-                        (token == IVEC3_CLOSE && top != IVEC3_OPEN) ||
-                        (token == X_CLOSE && top != X_OPEN) ||
-                        (token == Y_CLOSE && top != Y_OPEN) ||
-                        (token == Z_CLOSE && top != Z_OPEN)) {
-                            // bad scenario, malformed
-                            std::cerr << "Malformed XML\n";
-                            if (current) { 
-                                delete current; 
-                                current = nullptr; 
-                            }
-                            return;
-                        }
-                        else if (token == LINE_CLOSE || token == BOX_CLOSE || token == POINT_CLOSE || token == TRIANGLE_CLOSE) {
-                            if (!current) { 
-                                std::cerr << "Malformed XML\n"; 
-                                return; 
-                            }
-                            elements.push_back(current);
-                            current = nullptr;
-                        }
-                        else if (token == VEC2_CLOSE) {
-                             if (!current) { 
-                                std::cerr << "Malformed XML\n"; 
-                                return; 
-                            }
-                            if (!capturedX || !capturedY) { 
-                                std::cerr << "Malformed XML\n"; 
-                                if (current) { 
-                                    delete current; 
-                                    current = nullptr; 
-                                }
-                                return; 
-                            }
-                            buildingVec2 = false;
-
-                            ivec2 v = toIVec2(currentVec2);
-
-                            if (currentType == guiElement::LINE) {
-                                auto* l = static_cast<Line*>(current);
-                                if (lineVec2Index == 0) {
-                                    l->setStart(v, Line::TagType::Vec);
-                                }
-                                else {
-                                    l->setEnd(v, Line::TagType::Vec);
-                                }
-                                lineVec2Index++;
-                            }
-                            else if (currentType == guiElement::BOX) {
-                                auto* b = static_cast<Box*>(current);
-                                if (boxVec2Index == 0) {
-                                    b->setMin(v, Box::TagType::Vec);
-                                }
-                                else {
-                                    b->setMax(v, Box::TagType::Vec);
-                                }
-                                boxVec2Index++;
-                            }
-                            else if (currentType == guiElement::POINT) {
-                                auto* p = static_cast<Point*>(current);
-                                p->setCoords(v, Point::TagType::Vec);
-                            }
-                            else if (currentType == guiElement::TRIANGLE) {
-                                auto *t = static_cast<Triangle*>(current);
-                                if (triangleVec2Index == 0) {
-                                    t->setA(v, Triangle::TagType::Vec);
-                                }
-                                else if (triangleVec2Index == 1) {
-                                    t->setB(v, Triangle::TagType::Vec);
-                                }
-                                else {
-                                    t->setC(v, Triangle::TagType::Vec);
-                                }
-                                triangleVec2Index++;
-                            }
-                        }
-                        else if (token == IVEC2_CLOSE) {
-                            if (!current) { 
-                                std::cerr << "Malformed XML\n"; 
-                                return; 
-                            }
-                            if (!capturedX || !capturedY) { 
-                                std::cerr << "Malformed XML\n"; 
-                                if (current) { 
-                                    delete current; 
-                                    current = nullptr; 
-                                }
-                                return; 
-                            }
-                            buildingIVec2 = false;
-
-                            ivec2 v = currentIVec2;
-
-                            if (currentType == guiElement::LINE) {
-                                auto* l = static_cast<Line*>(current);
-                                if (lineVec2Index == 0) {
-                                    l->setStart(v, Line::TagType::IVec);
-                                }
-                                else {
-                                    l->setEnd(v, Line::TagType::IVec);
-                                }
-                                lineVec2Index++;
-                            }
-                            else if (currentType == guiElement::BOX) {
-                                auto* b = static_cast<Box*>(current);
-                                if (boxVec2Index == 0) {
-                                    b->setMin(v, Box::TagType::IVec);
-                                }
-                                else {
-                                    b->setMax(v, Box::TagType::IVec);
-                                }
-                                boxVec2Index++;
-                            }
-                            else if (currentType == guiElement::POINT) {
-                                auto* p = static_cast<Point*>(current);
-                                p->setCoords(v, Point::TagType::IVec);
-                            }
-                            else if (currentType == guiElement::TRIANGLE) {
-                                auto *t = static_cast<Triangle*>(current);
-                                if (triangleVec2Index == 0) {
-                                    t->setA(v, Triangle::TagType::IVec);
-                                }
-                                else if (triangleVec2Index == 1) {
-                                    t->setB(v, Triangle::TagType::IVec);
-                                }
-                                else {
-                                    t->setC(v, Triangle::TagType::IVec);
-                                }
-                                triangleVec2Index++;
-                            }
-                        }
-                        else if (token == VEC3_CLOSE) {
-                            if (!current) { 
-                                std::cerr << "Malformed XML\n"; 
-                                return; 
-                            }
-                            if (!capturedX || !capturedY || !capturedZ) { 
-                                std::cerr << "Malformed XML\n"; 
-                                if (current) { 
-                                    delete current; 
-                                    current = nullptr; 
-                                }
-                                return; 
-                            }
-                            buildingVec3 = false;
-
-                            ivec3 c = toIVec3(currentVec3);
-
-                            if (currentType == guiElement::LINE) {
-                                static_cast<Line*>(current)->setColor(c, Line::TagType::Vec);
-                            } else if (currentType == guiElement::BOX) {
-                                static_cast<Box*>(current)->setColor(c, Box::TagType::Vec);
-                            } else if (currentType == guiElement::POINT) {
-                                static_cast<Point*>(current)->setColor(c, Point::TagType::Vec);
-                            } else if (currentType == guiElement::TRIANGLE) {
-                                static_cast<Triangle*>(current)->setColor(c, Triangle::TagType::Vec);
-                            }
-                        }
-                        else if (token == IVEC3_CLOSE) {
-                            if (!current) { 
-                                std::cerr << "Malformed XML\n"; 
-                                return; 
-                            }
-                            if (!capturedX || !capturedY || !capturedZ) { 
-                                std::cerr << "Malformed XML\n"; 
-                                if (current) { 
-                                    delete current; 
-                                    current = nullptr; 
-                                }
-                                return; 
-                            }
-                            buildingIVec3 = false;
-
-                            ivec3 c = currentIVec3;
-
-                            if (currentType == guiElement::LINE) {
-                                static_cast<Line*>(current)->setColor(c, Line::TagType::IVec);
-                            } else if (currentType == guiElement::BOX) {
-                                static_cast<Box*>(current)->setColor(c, Box::TagType::IVec);
-                            } else if (currentType == guiElement::POINT) {
-                                static_cast<Point*>(current)->setColor(c, Point::TagType::IVec);
-                            } else if (currentType == guiElement::TRIANGLE) {
-                                static_cast<Triangle*>(current)->setColor(c, Triangle::TagType::IVec);
-                            }
-                        }
-                        else if (token == X_CLOSE) {
-                            currentCoord = 0;
-                        }
-                        else if (token == Y_CLOSE) {
-                            currentCoord = 0;
-                        }
-                        else if (token == Z_CLOSE) {
-                            currentCoord = 0;
-                        }
-                        matcher.pop();
-                }
+                triangleVec2Index++;
             }
         }
+        else if (tag == IVEC2_OPEN) {
+            ivec2 v;
+            if (!parseIVec2(inFile, v)) {
+                delete current;
+                return nullptr;
+            }
+
+            if (type == guiElement::LINE) {
+                Line* l = static_cast<Line*>(current);
+                if (lineVec2Index == 0) {
+                    l->setStart(v, Line::TagType::IVec);
+                }
+                else {
+                    l->setEnd(v, Line::TagType::IVec);
+                }
+                lineVec2Index++;
+            }
+            else if (type == guiElement::BOX) {
+                Box* b = static_cast<Box*>(current);
+                if (boxVec2Index == 0) {
+                    b->setMin(v, Box::TagType::IVec);
+                }
+                else {
+                    b->setMax(v, Box::TagType::IVec);
+                }
+                boxVec2Index++;
+            }
+            else if (type == guiElement::POINT) {
+                Point* p = static_cast<Point*>(current);
+                p->setCoords(v, Point::TagType::IVec);
+            }
+            else if (type == guiElement::TRIANGLE) {
+                Triangle* t = static_cast<Triangle*>(current);
+                if (triangleVec2Index == 0) {
+                    t->setA(v, Triangle::TagType::IVec);
+                }
+                else if (triangleVec2Index == 1) {
+                    t->setB(v, Triangle::TagType::IVec);
+                }
+                else {
+                    t->setC(v, Triangle::TagType::IVec);
+                }
+                triangleVec2Index++;
+            }
+        }
+        else if (tag == VEC3_OPEN) {
+            vec3 temp;
+            if (!parseVec3(inFile, temp)) {
+                delete current;
+                return nullptr;
+            }
+
+            ivec3 c = toIVec3(temp);
+
+            if (type == guiElement::LINE) {
+                static_cast<Line*>(current)->setColor(c, Line::TagType::Vec);
+            }
+            else if (type == guiElement::BOX) {
+                static_cast<Box*>(current)->setColor(c, Box::TagType::Vec);
+            }
+            else if (type == guiElement::POINT) {
+                static_cast<Point*>(current)->setColor(c, Point::TagType::Vec);
+            }
+            else if (type == guiElement::TRIANGLE) {
+                static_cast<Triangle*>(current)->setColor(c, Triangle::TagType::Vec);
+            }
+        }
+        else if (tag == IVEC3_OPEN) {
+            ivec3 c;
+            if (!parseIVec3(inFile, c)) {
+                delete current;
+                return nullptr;
+            }
+
+            if (type == guiElement::LINE) {
+                static_cast<Line*>(current)->setColor(c, Line::TagType::IVec);
+            }
+            else if (type == guiElement::BOX) {
+                static_cast<Box*>(current)->setColor(c, Box::TagType::IVec);
+            }
+            else if (type == guiElement::POINT) {
+                static_cast<Point*>(current)->setColor(c, Point::TagType::IVec);
+            }
+            else if (type == guiElement::TRIANGLE) {
+                static_cast<Triangle*>(current)->setColor(c, Triangle::TagType::IVec);
+            }
+        }
+        else {
+            std::cerr << "Malformed XML\n";
+            delete current;
+            return nullptr;
+        }
     }
-    return;
 }
+
+static Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenTag) {
+    Layout* layout = new Layout();
+
+    float sX, sY, eX, eY;
+
+    if (!getFloatAttribute(layoutOpenTag, "sX", sX) ||
+        !getFloatAttribute(layoutOpenTag, "sY", sY) ||
+        !getFloatAttribute(layoutOpenTag, "eX", eX) ||
+        !getFloatAttribute(layoutOpenTag, "eY", eY)) {
+        delete layout;
+        return nullptr;
+    }
+
+    layout->setStart(vec2(sX, sY));
+    layout->setEnd(vec2(eX, eY));
+
+    
+    layout->setActive(true);
+
+    while (true) {
+        std::string tag = getNextTag(inFile);
+
+        if (tag.empty()) {
+            std::cerr << "Malformed XML\n";
+            delete layout;
+            return nullptr;
+        }
+
+        if (isLayoutClose(tag)) {
+            return layout;
+        }
+
+        if (isLayoutOpen(tag)) {
+            Layout* childLayout = parseLayout(inFile, tag);
+            if (!childLayout) {
+                delete layout;
+                return nullptr;
+            }
+            layout->addElement(childLayout);
+        }
+        else if (isElementOpen(tag)) {
+            GuiElement* child = parseElement(inFile, tag);
+            if (!child) {
+                delete layout;
+                return nullptr;
+            }
+            layout->addElement(child);
+        }
+        else {
+            std::cerr << "Malformed XML\n";
+            delete layout;
+            return nullptr;
+        }
+    }
+}
+
+Layout* GUIFile::getRootLayout() const {
+    return rootLayout;
+}
+
+void GUIFile::setRootLayout(Layout* root) {
+    if (rootLayout != nullptr) {
+        delete rootLayout;
+    }
+    rootLayout = root;
+}
+
+void GUIFile::readFile(const std::string& fileName) {
+    clear();
+
+    std::ifstream inFile(fileName);
+    if (!inFile.is_open()) {
+        std::cerr << "Error opening file\n";
+        return;
+    }
+
+    std::string firstTag = getNextTag(inFile);
+
+    if (!isLayoutOpen(firstTag)) {
+        std::cerr << "Malformed XML\n";
+        return;
+    }
+
+    rootLayout = parseLayout(inFile, firstTag);
+}
+
 
 
 
@@ -626,9 +597,9 @@ void GUIFile::writeFile(const std::string& fileName) const {
         return;
     }
     
-    out << "<layout>\n";
-    for (auto* e : elements) {
-        e->writeXml(out);
+    if (!rootLayout) {
+        std::cerr << "No layout to write\n";
+        return;
     }
-    out << "</layout>\n";
+    rootLayout->writeXml(out);
 }

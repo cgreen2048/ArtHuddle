@@ -37,7 +37,7 @@ bool Point::operator!=(Point rhs) {
 Point::~Point() {}
 
 void Point::draw() {
-    this->screen->colorOnePixel(this->coords, this->color);
+    this->screen->colorOnePixel(this->coords, this->color, this->getParentStart(), this->getParentEnd());
 }
 
 void Point::setCoords(const ivec2& v, TagType t){
@@ -50,9 +50,10 @@ void Point::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
-void Point::writeXml(std::ostream& out) const {
-    out << "  <point>\n";
+void Point::writeXml(std::ostream& out, int depth) const {
+    std::string pad = std::string(depth * 2, ' ');
 
+    out << pad << "<point>\n";
     if (coordsType == TagType::IVec) {
         writeIVec2(out, coords);
     } else {
@@ -65,6 +66,5 @@ void Point::writeXml(std::ostream& out) const {
     else {
         writeVec3(out, toVec3(color));
     }
-
-    out << "  </point>\n";
+    out << pad << "</point>\n";
 }

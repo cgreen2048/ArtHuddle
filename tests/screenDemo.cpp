@@ -45,15 +45,15 @@ void screenDemo(Screen screen, SDL_Window *window) {
 
 		screen.clear(ivec3(255,255,255));
 
-		screen.drawBox(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27));
-		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(0, 0), ivec3(90, 150, 50));
-		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(X - 1, 0), ivec3(90, 150, 50));
-		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(0, Y - 1), ivec3(90, 150, 50));
+		screen.drawBox(ivec2((3*X)/4, (3*Y)/4), ivec2(X/4, Y/4), ivec3(160, 75, 27), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
+		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(0, 0), ivec3(90, 150, 50), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
+		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(X - 1, 0), ivec3(90, 150, 50), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
+		screen.drawBresenhamLine(ivec2(X/2, Y/2), ivec2(0, Y - 1), ivec3(90, 150, 50), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
 
 		// Animates drawing a line across the screen.
-		screen.drawBresenhamLine(ivec2(X/2+offset, Y/2), ivec2(X - 1+offset, Y - 1), ivec3(255, 0, 0));
-		screen.drawTriangle(ivec2(X/4, Y/4), ivec2(X/4, Y/2), ivec2((3*X) / 4, Y/3), ivec3(100, 150, 50));
-		screen.drawTriangle(ivec2(0, 0), ivec2(0, Y), ivec2(X,Y), ivec3(100, 150, 50));
+		screen.drawBresenhamLine(ivec2(X/2+offset, Y/2), ivec2(X - 1+offset, Y - 1), ivec3(255, 0, 0), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
+		screen.drawTriangle(ivec2(X/4, Y/4), ivec2(X/4, Y/2), ivec2((3*X) / 4, Y/3), ivec3(100, 150, 50), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
+		screen.drawTriangle(ivec2(0, 0), ivec2(0, Y), ivec2(X,Y), ivec3(100, 150, 50), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
 
 		screen.blitTo(SDL_GetWindowSurface(window));
 		SDL_UpdateWindowSurface(window);

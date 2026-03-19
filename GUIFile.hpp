@@ -15,6 +15,7 @@
 #include "Line.hpp"
 #include "Box.hpp"
 #include "Point.hpp"
+#include "Layout.hpp"
 #include <cmath>
 
 const std::string LAYOUT_OPEN = "<layout>";
@@ -48,28 +49,23 @@ const std::vector<std::string> CLOSERS = {LAYOUT_CLOSE, LINE_CLOSE, BOX_CLOSE, P
 
 
 class GUIFile {
+    private:
+        Layout* rootLayout = nullptr;
+
     public:
-        enum class TagType {Vec, IVec};
-        
         GUIFile();
         ~GUIFile();
 
         GUIFile(const GUIFile&) = delete;
         GUIFile& operator=(const GUIFile&) = delete;
 
-        void addLine(Line* l);
-        void addBox(Box* b);
-        void addPoint(Point* p);
-        void addTriangle(Triangle* t);
-
-        const std::vector<GuiElement*>& getElements() const;
-        void readFile(std::string fileName);
+        Layout* getRootLayout() const;
+        void setRootLayout(Layout* root);
+        void readFile(const std::string& fileName);
         void writeFile(const std::string& fileName) const;
 
         void clear();
 
-    private:
-        std::vector<GuiElement*> elements; // GUIFile OWNS these pointers
 };
 
 #endif
