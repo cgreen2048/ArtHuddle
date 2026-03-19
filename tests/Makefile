@@ -36,6 +36,8 @@ studentMachine:
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005LayoutTests
 	$(CXX) ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005
+	$(CXX) ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDemo
 	
 
 mac:

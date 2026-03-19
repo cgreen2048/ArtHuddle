@@ -1,4 +1,5 @@
 #include "Layout.hpp"
+#include <iostream>
 
 Layout::Layout() : active{false} {}
 
@@ -44,6 +45,8 @@ void Layout::addElement(GuiElement *element) {
 
 void Layout::draw() {
     if (!this->active || !this->hasParentStart || !this->hasParentEnd) {
+        std::cerr << "Layout is inactive or does not have parent starting or ending coordinates\n";
+        std::cout << this->active << " " << this->hasParentStart << " " << this->hasParentEnd << "\n";
         return;
     }
 
