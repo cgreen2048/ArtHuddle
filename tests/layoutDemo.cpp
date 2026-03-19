@@ -59,11 +59,14 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     layout->setParentStart(ivec2{0,0});
     layout->setParentEnd(ivec2{X,Y});
 
+    ivec2 triangleA{100, 100};
+    ivec2 triangleB{150, 100};
+    ivec2 triangleC{125, 150};
 
     Triangle* tri = dynamic_cast<Triangle*>(factory(guiElement::TRIANGLE));
-    tri->setA(ivec2(100, 100), Triangle::TagType::IVec);
-    tri->setB(ivec2(150, 100), Triangle::TagType::IVec);
-    tri->setC(ivec2(125, 150), Triangle::TagType::IVec);
+    tri->setA(triangleA, Triangle::TagType::IVec);
+    tri->setB(triangleB, Triangle::TagType::IVec);
+    tri->setC(triangleC, Triangle::TagType::IVec);
     tri->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
     layout->addElement(tri);
 
@@ -124,7 +127,7 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
         SDL_GetMouseState(&mouseX, &mouseY);
         x = static_cast<int>(mouseX);
         y = static_cast<int>(mouseY);
-        bool inside = screen->pointInTriangle(tri->getA(), tri->getB(), tri->getC(), ivec2(x, y));
+        bool inside = screen->pointInTriangle(triangleA, triangleB, triangleC, ivec2(x, y));
         std::cout << inside << '\n';
         if (inside) {
             nestedLayout->setActive(true);
