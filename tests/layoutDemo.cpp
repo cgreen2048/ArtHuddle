@@ -49,10 +49,12 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     bool end = false;
     int failure = 0;
     SDL_Event event;
+    float mouseX, mouseY;
+    int x, y;
 
     Layout* layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT));
     layout->setScreen(screen);
-    layout->setStart(vec2{0.0,0.0});
+    layout->setStart(vec2{0.1,0.1});
     layout->setEnd(vec2{1.0, 1.0});
     layout->setParentStart(ivec2{0,0});
     layout->setParentEnd(ivec2{X,Y});
@@ -89,7 +91,7 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     nestedLayout->addElement(nestedLayoutHorizontalBorder);
 
     Box* nestedBox = dynamic_cast<Box*>(factory(guiElement::BOX));
-    nestedBox->setMin(ivec2(800,400), Box::TagType::IVec);
+    nestedBox->setMin(ivec2(800,200), Box::TagType::IVec);      // intentionally cut off the top end of the box to show relative pos
     nestedBox->setMax(ivec2(900,500), Box::TagType::IVec);
     nestedBox->setColor(ivec3(255, 0, 0), Box::TagType::IVec);
     nestedLayout->addElement(nestedBox);
@@ -107,7 +109,6 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     nestedLine->setColor(ivec3(132, 231, 52), Line::TagType::IVec);
     nestedLayout->addElement(nestedLine);
 
-    nestedLayout->setActive(true);
     layout->setActive(true);
 
     while (!end) {
@@ -118,6 +119,18 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
                     break;
                 }
             }
+        }
+
+        SDL_GetMouseState(&mouseX, &mouseY);
+        x = static_cast<int>(mouseX);
+        y = static_cast<int>(mouseY);
+        bool inside = screen->pointInTriangle(tri->getA(), tri->getB(), tri->getC(), ivec2(x, y));
+        std::cout << inside << '\n';
+        if (inside) {
+            nestedLayout->setActive(true);
+        }
+        else {
+            nestedLayout->setActive(false);
         }
 
         screen->clear(ivec3(255,255,255));
