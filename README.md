@@ -6,6 +6,8 @@
 
 main.cpp is a demonstration program
 
+---
+
 # GuiElement
 
 ## Description
@@ -29,7 +31,6 @@ Each element maintains a pointer to the `Screen` object where it will be rendere
 ## Internal Data Structures
 
 ### `enum class guiElement`
-
 This enumeration identifies the type of GUI element being created.  
 It is primarily used by the **Factory** to determine which object to instantiate.
 
@@ -37,40 +38,36 @@ It is primarily used by the **Factory** to determine which object to instantiate
 enum class guiElement { LAYOUOT, POINT, LINE, BOX, TRIANGLE };
 ```
 
+---
+
 ## Data Members
 
 - `Screen* screen`  
-  Pointer to the `Screen` object where the element will be drawn.
+Pointer to the `Screen` object where the element will be drawn.
 
 - `ivec2 parentStart`
-  `ivec2` that stores the starting coordinates of the parent `GuiElement` (usually `Layout`)
+`ivec2` that stores the starting coordinates of the parent `GuiElement` (usually `Layout`)
 
 - `ivec2 parentEnd`
-  `ivec2` that stores the ending coordinates of the parent `GuiElement` (usually `Layout`)
+`ivec2` that stores the ending coordinates of the parent `GuiElement` (usually `Layout`)
 
 ---
 
 ## Methods
 
 ### `GuiElement()`
-
-Default constructor.  
-Initializes the base GUI element.
+Default constructor. Initializes the base GUI element.
 
 ---
 
 ### `~GuiElement()`
-
 Destructor for the base GUI element class.
-
 Derived classes inherit this destructor behavior.
 
 ---
 
 ### `void draw()`
-
 Virtual draw method intended to be **overridden by derived classes**.
-
 Each derived class implements its own drawing behavior:
 
 | Class | Screen Function Used |
@@ -85,53 +82,43 @@ In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will c
 ---
 
 ### `void writeXml(std::ostream& out) const`
-
 Virtual method used for writing the GUI element to an XML layout file.
-
 Derived classes override this method to write their specific geometry and color information.
 
 ---
 
 ### `void setScreen(Screen* target)`
-
 Associates the GUI element with a target `Screen`.
 
 Parameters:
-
 - `target` — pointer to the `Screen` where the element should draw itself.
 
 ---
 
 ### `Screen* getScreen()`
-
 Returns the pointer to the `Screen` associated with the GUI element.
 
 Returns:
-
 - `Screen*` pointing to the target screen.
 
 ---
 
 ### `void GuiElement::setParentStart(const ivec2& start)`
-
 Sets the `parentStart` data for the current `GuiElement` object
 
 ---
 
 ### `void GuiElement::setParentEnd(const ivec2& end)`
-
 Sets the `parentEnd` data for the current `GuiElement` object
 
 ---
 
 ### `ivec2 GuiElement::getParentStart()`
-
 Returns the `parentStart` data for the current `GuiElement` object in `ivec2` format
 
 ---
 
 ### `ivec2 GuiElement::getParentEnd()`
-
 Returns the `parentEnd` data for the current `GuiElement` object in `ivec2` format
 
 ---
@@ -145,7 +132,6 @@ The `factory()` function implements a **Factory Design Pattern** used to dynamic
 Instead of directly constructing objects like `new Line` or `new Box`, the program calls the factory and specifies which type of element is needed.
 
 This provides:
-
 - centralized object creation
 - simplified parsing logic
 - polymorphic object handling via `GuiElement*`
@@ -157,15 +143,12 @@ The factory returns a pointer to a `GuiElement`, allowing the caller to treat al
 ## Function
 
 ### `GuiElement* factory(guiElement e)`
-
 Creates a new GUI element based on the `guiElement` enum value.
 
 Parameters:
-
 - `e` — enum specifying which GUI element type to construct.
 
 Returns:
-
 - Pointer to a newly allocated `GuiElement` object.
 - Returns `nullptr` if the enum value does not match any supported element.
 
@@ -191,6 +174,9 @@ GuiElement* element = factory(guiElement::LINE);
 element->setScreen(screen);
 element->draw();
 ```
+
+---
+
 # Layout
 
 ## Description
@@ -202,63 +188,104 @@ element->draw();
 - `std::vector<GuiElement*> elements`: Contains all elements nested within this `Layout`
 - `bool active`: Display the `Layout` or not based on the boolean parameter
 
+---
 
 ## Methods
 
 ### `Layout()`
 The default constructor, which only initializes `active` to false for other data to be set at a later time
 
+---
+
 ### `~Layout`
 The default destructor. Destroys not only the `Layout` but also all of the children that the `Layout` owns in `elements`
+
+---
 
 ### `void setStart(const vec2& start)`
 Sets the `start` to the starting percentage values for this `Layout`
 
+---
+
 ### `void setStart(const vec2& start)`
 Sets the `end` to the ending percentage values for this `Layout`
+
+---
 
 ### `void setParentStart(const ivec2& start)`
 Sets the parent starting coordinates as in `GuiElement` but overloaded to also set `hasParentStart` to `true` to signal that a starting bound has been added
 
+---
+
 ### `void setParentEnd(const ivec2& end)`
 Sets the parent ending coordinates as in `GuiElement` but overloaded to also set `hasParentEnd` to `true` to signal that an ending bound has been added
+
+---
 
 ### `void setActive(bool value)`
 Sets `active` to `value`, toggling the `Layout` active (able to be drawn) or not
 
+--
+
 ### `void isActive()`
 Getter method for `active` to check if the `Layout` can be drawn
 
+---
+
 ### `void addElement(GuiElement *element)`
-Adds `element` to `elements` as a child of this `Layout` and sets `element->parentStart` to the absolute starting position of this `Layout`, `element->parentEnd` to the absolute ending position of this `Layout`,
-and `element->screen` to this `Layout`'s screen
+Adds `element` to `elements` as a child of this `Layout` and sets `element->parentStart` to the absolute starting position of this `Layout`, `element->parentEnd` to the absolute ending position of this `Layout`, and `element->screen` to this `Layout`'s screen
+
+---
 
 ### `void draw()`
 If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `draw()` functions, drawing every child element
 
+---
+
 ### `void writeXml(std::ostream& out)`
-Similar to `draw()` except first printing the proper `<layout>` tag with parameters and then writing to an XML by calling each child `GuiElement*`'s `writeXml()` function. I
+Similar to `draw()` except first printing the proper `<layout>` tag with parameters and then writing to an XML by calling each child `GuiElement*`'s `writeXml()` function.
+
+---
 
 ### `vec2 getStart()`
 Returns starting coordinate percentages from `this->start`
 
+---
+
 ### `vec2 getEnd()`
 Returns ending coordinate percentages from `this->end`
+
+---
 
 ### `const std::vector<GuiElement*>& getElements() const`
 Returns a reference to `Layout`'s `elements` vector
 
+---
+
 ### `int getAbsoluteStartX`
-Returns the absolute starting x position of this Layout
+Returns the absolute starting **x** position of this `Layout`
+
+---
 
 ### `int getAbsoluteStartY`
-Returns the absolute starting y position of this Layout
+Returns the absolute starting **y** position of this `Layout`
+
+---
 
 ### `int getAbsoluteEndX`
-Returns the absolute ending x position of this Layout
+Returns the absolute ending **x** position of this `Layout`
+
+---
 
 ### `int getAbsoluteEndY`
-Returns the absolute ending y position of this Layout
+Returns the absolute ending **y** position of this `Layout`
+
+---
+
+## UML Diagram
+![UML Diagram](images/Milestone005_UML.png)
+
+---
 
 # Triangle
 
@@ -273,40 +300,76 @@ Returns the absolute ending y position of this Layout
 - `TagType cType`: the type of tag for the `c` attribute
 - `TagType colorType`: the type of tag for the `color` attribute
 
+---
+
 ## Methods
 
 ### `Triangle()`
 The default constructor. Initializes `a`, `b`, `c`, and `color` to zeros
 
+---
+
 ### `Triangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 color)`
 The parameterized constructor. Assigns `pointA` to `a`, `pointB` to `b`, `pointC` to `c`, and `color` to `color
 
+---
+
+### `Triangle(const Triangle& cp)`
+Copy assignment operator. Takes attributes from `cp` and creates a new `Triangle`
+
+---
+
+### `Triangle& operator=(const Triangle& cp)`
+Assignment operator. Sets the current `Triangle`'s attributes equal to corresponding attributes from `cp`
+
+---
+
+### `bool operator==(Triangle rhs)`
+Equality operator. Returns false if attributes from current `Triangle` do not match attributes for `rhs`
+
+---
+
+### `bool operator!=(Triangle rhs)`
+Inequlity operator. Returns the inverse of the equality operator
+
+---
+
 ### `~Triangle()`
 The default destructor
+
+---
 
 ### `void draw()`
 Method to draw the stored triangle to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawTriangle` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
 
-### `void Triangle::setA(const ivec2& v, TagType t)`
-Method to set the `a` and `aType` attributes of a triangle object
+---
 
-### `void Triangle::setB(const ivec2& v, TagType t)`
-Method to set the `b` and `bType` attributes of a triangle object
+### `void setA(const ivec2& v, TagType t)`
+Method to set the `a` and `aType` attributes of a `Triangle` object
 
-### `void Triangle::setC(const ivec2& v, TagType t)`
-Method to set the `c` and `cType` attributes of a triangle object
+---
 
-### `void Triangle::setColor(const ivec3& v, TagType t)`
-Method to set the `color` and `colorType` attributes of a triangle object
+### `void setB(const ivec2& v, TagType t)`
+Method to set the `b` and `bType` attributes of a `Triangle` object
+
+---
+
+### `void setC(const ivec2& v, TagType t)`
+Method to set the `c` and `cType` attributes of a `Triangle` object
+
+---
+
+### `void setColor(const ivec3& v, TagType t)`
+Method to set the `color` and `colorType` attributes of a `Triangle` object
+
+---
 
 ### `void writeXml(std::ostream& out) const`
-
 Writes the triangle to an XML layout file.
 
 Behavior:
-
 - Writes a `<triangle>` tag to the output stream
 - Writes the three triangle vertices (`a`, `b`, `c`)
 - Each vertex is written as either:
@@ -319,6 +382,8 @@ Behavior:
 
 This allows the triangle to preserve whether the original data used floating-point (`vec`) or integer (`ivec`) values when writing the layout file.
 
+---
+
 # Box
 
 ## Description
@@ -330,37 +395,71 @@ This allows the triangle to preserve whether the original data used floating-poi
 - `TagType maxType`: the type of tag for the `max` attribute
 - `TagType colorType`: the type of tag for the `color` attribute
 
+---
+
 ## Methods
 
 ### `Box()`
 The default constructor. Initializes `min`, `max`, and `color` to zeros
 
+---
+
 ### `Box(vec2 min, vec2 max, vec3 color)`
 The parameterized constructor. Assigns `min`, `max`, and `color` to appropriate attributes in the `Box` class
 
+---
+
+### `Box(const Box& cp)`
+Copy assignment operator. Takes attributes from `cp` and creates a new `Box`
+
+---
+
+### `Box& operator=(const Box& cp)`
+Assignment operator. Sets the current `Box`'s attributes equal to corresponding attributes from `cp`
+
+---
+
+### `bool operator==(Box rhs)`
+Equality operator. Returns false if attributes from current `Box` do not match attributes for `rhs`
+
+---
+
+### `bool operator!=(Box rhs)`
+Inequlity operator. Returns the inverse of the equality operator
+
+---
+
 ### `~Box()`
 The default destructor
+
+---
 
 ### `void draw()`
 Method to draw the stored box to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawBox` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
 
-### `void Box::setMin(const ivec2& v, TagType t)`
-Method to set the `min` and `minType` attributes of a box object
+---
 
-### `void Box::setB(const ivec2& v, TagType t)`
-Method to set the `max` and `maxType` attributes of a box object
+### `void setMin(const ivec2& v, TagType t)`
+Method to set the `min` and `minType` attributes of a `Box` object
 
-### `void Box::setColor(const ivec3& v, TagType t)`
-Method to set the `color` and `colorType` attributes of a box object
+---
+
+### `void setB(const ivec2& v, TagType t)`
+Method to set the `max` and `maxType` attributes of a `Box` object
+
+---
+
+### `void setColor(const ivec3& v, TagType t)`
+Method to set the `color` and `colorType` attributes of a `Box` object
+
+---
 
 ### `void writeXml(std::ostream& out) const`
-
 Writes the box to an XML layout file.
 
 Behavior:
-
 - Writes a `<box>` tag to the output stream
 - Writes the minimum corner (`min`)
   - `<vec2>` if the stored `TagType` is `TagType::Vec`
@@ -375,6 +474,8 @@ Behavior:
 
 This ensures the XML output preserves whether integer or floating-point vector tags were used.
 
+---
+
 # Line
 
 ## Description
@@ -386,37 +487,71 @@ This ensures the XML output preserves whether integer or floating-point vector t
 - `TagType endType`: the type of tag for the `end` attribute
 - `TagType colorType`: the type of tag for the `color` attribute
 
+---
+
 ## Methods
 
 ### `Line()`
 The default constructor. Initializes `start`, `end`, and `color` to zeros
 
+---
+
 ### `Line(vec2 start, vec2 end, vec3 color)`
 The parameterized constructor. Assigns `start`, `end`, and `color` to appropriate attributes in the `Line` class
 
+---
+
+### `Line(const Line& cp)`
+Copy assignment operator. Takes attributes from `cp` and creates a new `Line`
+
+---
+
+### `Line& operator=(const Line& cp)`
+Assignment operator. Sets the current `Line`'s attributes equal to corresponding attributes from `cp`
+
+---
+
+### `bool operator==(Line rhs)`
+Equality operator. Returns false if attributes from current `Line` do not match attributes for `rhs`
+
+---
+
+### `bool operator!=(Line rhs)`
+Inequlity operator. Returns the inverse of the equality operator
+
+---
+
 ### `~Line()`
 The default destructor
+
+---
 
 ### `void draw()`
 Method to draw the stored line to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawBresenhamLine` within the `Screen` class to draw the line to to the screen's `SDL_Surface`
 
-### `void Line::setStart(const ivec2& v, TagType t)`
-Method to set the `start` and `startType` attributes of a line object
+---
 
-### `void Box::setEnd(const ivec2& v, TagType t)`
-Method to set the `end` and `endType` attributes of a line object
+### `void setStart(const ivec2& v, TagType t)`
+Method to set the `start` and `startType` attributes of a `Line` object
 
-### `void Line::setColor(const ivec3& v, TagType t)`
-Method to set the `color` and `colorType` attributes of a line object
+---
+
+### `void setEnd(const ivec2& v, TagType t)`
+Method to set the `end` and `endType` attributes of a `Line` object
+
+---
+
+### `void setColor(const ivec3& v, TagType t)`
+Method to set the `color` and `colorType` attributes of a `Line` object
+
+---
 
 ### `void writeXml(std::ostream& out) const`
-
 Writes the line to an XML layout file.
 
 Behavior:
-
 - Writes a `<line>` tag to the output stream
 - Writes the starting point (`start`)
   - `<vec2>` if the stored `TagType` is `TagType::Vec`
@@ -431,6 +566,8 @@ Behavior:
 
 This allows the line to maintain the same vector type used in the original layout file.
 
+---
+
 # Point
 
 ## Description
@@ -440,34 +577,66 @@ This allows the line to maintain the same vector type used in the original layou
 - `TagType coordsType`: the type of tag for the `coords` attribute
 - `TagType colorType`: the type of tag for the `color` attribute
 
+---
+
 ## Methods
 
 ### `Point()`
 The default constructor. Initializes `coords` and `color` to zeros
 
+---
+
 ### `Point(vec2 coords, vec3 color)`
 The parameterized constructor. Assigns `coords` and `color` to appropriate attributes in the `Point` class
 
+---
+
+### `Point(const Point& cp)`
+Copy assignment operator. Takes attributes from `cp` and creates a new `Point`
+
+---
+
+### `Point& operator=(const Point& cp)`
+Assignment operator. Sets the current `Point`'s attributes equal to corresponding attributes from `cp`
+
+---
+
+### `bool operator==(Point rhs)`
+Equality operator. Returns false if attributes from current `Point` do not match attributes for `rhs`
+
+---
+
+### `bool operator!=(Line rhs)`
+Inequlity operator. Returns the inverse of the equality operator
+
+---
+
 ### `~Point()`
 The default destructor
+
+---
 
 ### `void draw()`
 Method to draw the stored point to a `Screen` object
 - Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `colorOnePixel` within the `Screen` class to draw the point to to the screen's `SDL_Surface`
 
-### `void Point::setCoords(const ivec2& v, TagType t)`
+---
+
+### `void setCoords(const ivec2& v, TagType t)`
 Method to set the `coords` and `coordsType` attributes of a point object
 
-### `void Point::setColor(const ivec3& v, TagType t)`
+---
+
+### `void setColor(const ivec3& v, TagType t)`
 Method to set the `color` and `colorType` attributes of a point object
 
-### `void writeXml(std::ostream& out) const`
+---
 
+### `void writeXml(std::ostream& out) const`
 Writes the point to an XML layout file.
 
 Behavior:
-
 - Writes a `<point>` tag to the output stream
 - Writes the point position (`coords`)
   - `<vec2>` if the stored `TagType` is `TagType::Vec`
@@ -478,6 +647,8 @@ Behavior:
 - Closes the `<point>` tag
 
 This ensures the XML output preserves whether integer or floating-point vector tags were used in the layout file.
+
+---
 
 # GUIFile
 
@@ -498,6 +669,8 @@ the system now uses a hierarchical structure:
 ```cpp
 Layout* rootLayout;
 ```
+
+---
 
 ## Core Concept
 
@@ -541,11 +714,11 @@ Ownership is hierarchical:
 
 Deleting the root layout recursively deletes the entire GUI structure.
 
-
 The class supports both floating-point vector tags (`<vec2>`, `<vec3>`) and integer vector tags (`<ivec2>`, `<ivec3>`).  
 When reading, the parser records which tag type was used and stores that information in the element using a `TagType`.  
 When writing, each element's `writeXml()` method outputs the correct tag type.
 
+---
 
 ## XML Token Constants
 
@@ -555,6 +728,8 @@ The header defines constant strings representing all valid XML tokens:
 - `<layout>`
 - `</layout>`
 
+---
+
 ### Element Tags
 - `<line>`
 - `</line>`
@@ -563,11 +738,15 @@ The header defines constant strings representing all valid XML tokens:
 - `<point>`
 - `</point>`
 
+---
+
 ### Vector Tags
 - `<vec2>`
 - `<vec3>`
 - `<ivec2>`
 - `<ivec3>`
+
+---
 
 ### Coordinate Tags
 - `<x>`
@@ -588,7 +767,6 @@ These are used by the parser to verify correct nesting.
 ### Layout Tag
 
 Layouts include bounds as attributes:
-
 
 ```xml
 <layout sX="0" sY="0" eX="1" eY="1">
@@ -623,23 +801,18 @@ Both `<vec*>` and `<ivec*>` variants are supported.
 ## Public Methods
 
 ### `GUIFile()`
-
 Default constructor.
-
 - Initializes `rootLayout` to `nullptr`
 
 ---
 
 ### `~GUIFile()`
-
 Destructor.
-
 - Calls `clear()` to free all owned memory
 
 ---
 
 ### `void clear()`
-
 Deletes the entire layout tree.
 
 ```cpp
@@ -649,16 +822,15 @@ if (rootLayout != nullptr) {
 }
 ```
 
-### `Layout* getRootLayout() const`
+---
 
+### `Layout* getRootLayout() const`
 Returns the pointer to the root layout.
 
 ---
 
 ### `void setRootLayout(Layout* root)`
-
 Sets a new root layout.
-
 - Deletes the existing layout if one exists  
 - Transfers ownership of `root` to `GUIFile`  
 
@@ -667,11 +839,11 @@ Sets a new root layout.
 # File Parsing
 
 ### `void readFile(const std::string& fileName)`
-
 Reads an XML file and constructs the layout tree.
 
-#### Behavior
+---
 
+#### Behavior
 - Clears existing data  
 - Opens the file  
 - Reads the first tag  
@@ -682,11 +854,11 @@ Reads an XML file and constructs the layout tree.
 ---
 
 ### `void writeFile(const std::string& fileName) const`
-
 Writes the layout tree to an XML file.
 
-#### Behavior
+---
 
+#### Behavior
 - Opens the output file  
 - Verifies `rootLayout` exists  
 - Calls:
@@ -697,16 +869,15 @@ rootLayout->writeXml(out);
 The layout recursively writes all children
 
 ---
+
 ## Internal Helper Functions
 
 These functions are internal to `GUIFile.cpp` and are not part of the public interface.
-
 They implement the parsing logic used by `readFile()`.
 
 ---
 
 ### `Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenTag)`
-
 Parses a `<layout ...>` tag and its contents.
 
 #### Purpose
@@ -734,7 +905,6 @@ A recursive function naturally mirrors this structure.
 ---
 
 ### `GuiElement* parseElement(std::ifstream& inFile, const std::string& elementOpenTag)`
-
 Parses a drawable GUI element.
 
 #### Supported types
@@ -752,6 +922,7 @@ Parses a drawable GUI element.
 - Uses vector parsing helpers
 - Preserves original tag types for XML output
 - Returns a GuiElement*
+
 ---
 
 ## Error Handling
@@ -805,7 +976,6 @@ Used to convert between float and integer vector types:
 These ensure the correct internal representation while preserving original XML tag types.
 
 ---
-
 
 ## UML Diagram
 ![UML Diagram](images/Milestone003_UML.png)
@@ -902,6 +1072,7 @@ Compares two Screen objects
 ### `~Screen()`
 Destructor method. Checks if Screen object has a valid SDL_Surface before calling `SDL_DestroySurface`
 
+---
 
 # Matrix
 
@@ -913,23 +1084,33 @@ Destructor method. Checks if Screen object has a valid SDL_Surface before callin
 - `x[a][c]` is defined to be a float
     - *Note: Bracket access is not a public method
 
+---
+
 ## Methods
 
 ### `Matrix()`
 Matrix constructor. Initializes all elements to 0 using list initialization
 
+---
+
 ### `Matrix(float _data[MATRIX_MAX][MATRIX_MAX])`
 Creates a new Matrix object with floats stored in 2D _data array
 - Uses a nested for loop to assign corresponding elements from `_data` to `components` array
+
+---
 
 ### `Matrix(const Matrix& cp)`
 Copy constructor. Places values in `components` with values from Matrix `cp`
 - Uses a nested for loop to assign corresponding elements from `cp.components` to `components`
 
+---
+
 ### `Matrix& operator=(const Matrix& cp)`
 Replaces values in target Matrix's `components` with values from `cp.components`
 - If target Matrix and Matrix cp are equal, this function immediately returns
 - Uses a nested for loop to assign corresponding elements from `cp.components` to `components`
+
+---
 
 ### `bool operator==(Matrix rhs)`
 Checks Matrices for equality
@@ -937,10 +1118,14 @@ Checks Matrices for equality
 - Returns false immediately if any values do not match between Matrices
 - Returns true if nested for loops cycle through entire Matrix
 
+---
+
 ### `bool operator!=(Matrix rhs)`
 Returns the inverse of operator==
 - Negates operator== in implementation
 - Refer to operator== documentation for description of funtionality
+
+---
 
 ### `Matrix operator*(Matrix rhs)`
 Performs matrix multiplication with the target matrix on the left hand side and Matrix rhs on the right hand side, returning a Matrix
@@ -948,9 +1133,13 @@ Performs matrix multiplication with the target matrix on the left hand side and 
 - Performs dot product between each row and column according to the steps of matrix multiplication
 - Creates a temporary 2D array of floats before returning a Matrix
 
+---
+
 ### `Matrix transpose()`
 Returns the transpose of target Matrix as a Matrix
 - Creates a temporary 2D array of floats before returning a Matrix
+
+---
 
 # vec2
 
@@ -966,14 +1155,14 @@ Returns the transpose of target Matrix as a Matrix
 - `x` component (`int`)
 - `y` component (`int`)
 
+---
+
 ## Methods
 
 ### Constructors
 
 ### `Tvec2()`
-
 Default constructor. Initializes both components to zero and binds `x` and `y` as references to the underlying `components` array.
-
 - Initializes `components` to `{0, 0}`
 - Sets `x` to alias `components[0]`
 - Sets `y` to alias `components[1]`
@@ -981,9 +1170,7 @@ Default constructor. Initializes both components to zero and binds `x` and `y` a
 ---
 
 ### `Tvec2(const Tvec2& cp)`
-
 Copy constructor. Creates a new vector with the same component values as `cp`.
-
 - Uses constructor delegation to run the default constructor first
 - Copies `cp.x` and `cp.y` into this vector
 
@@ -993,9 +1180,7 @@ Parameters:
 ---
 
 ### `Tvec2(T _x, T _y)`
-
 Value constructor. Creates a new vector with the given `x` and `y` component values.
-
 - Uses constructor delegation to run the default constructor first
 - Assigns `_x` to `x` and `_y` to `y`
 
@@ -1008,9 +1193,7 @@ Parameters:
 ### Assignment
 
 ### `Tvec2& operator=(const Tvec2& cp)`
-
 Copy assignment operator. Replaces this vector’s component values with `cp`’s component values.
-
 - Self-assignment safe (checks `this == &cp`)
 - Copies `cp.x` and `cp.y`
 - Returns `*this` to allow chaining
@@ -1026,9 +1209,7 @@ Returns:
 ### Vector Math
 
 ### `T dot(Tvec2 rhs)`
-
 Computes the dot product between this vector and `rhs`.
-
 Parameters:
 - `rhs` — the other vector
 
@@ -1038,9 +1219,7 @@ Returns:
 ---
 
 ### `T mag()`
-
 Computes the Euclidean magnitude (length) of the vector.
-
 
 Returns:
 - The magnitude as type `T`
@@ -1048,9 +1227,7 @@ Returns:
 ---
 
 ### `Tvec2 unit()`
-
 Returns the unit (normalized) vector pointing in the same direction as this vector.
-
 
 Returns:
 - A new `Tvec2` with components `(x / mag(), y / mag())`
@@ -1061,19 +1238,18 @@ Notes:
 ---
 
 ### `T cross(Tvec2 rhs)`
-
 Computes the cross product between the current vector & the `rhs` vector
-
 Parameters:
 - `rhs` — the other vector
 
 Returns:
 - The scalar cross product as type `T`
 
+---
+
 ### Comparison Operators
 
 ### `bool operator==(Tvec2 rhs)`
-
 Checks component-wise equality with `rhs`.
 
 Returns:
@@ -1082,7 +1258,6 @@ Returns:
 ---
 
 ### `bool operator!=(Tvec2 rhs)`
-
 Checks component-wise inequality with `rhs`.
 
 Returns:
@@ -1093,9 +1268,7 @@ Returns:
 ### Element Access
 
 ### `T& operator[](int index)`
-
 Provides mutable access to a vector component using array-style indexing.
-
 - `index == 0` accesses `x`
 - `index == 1` accesses `y`
 
@@ -1114,7 +1287,6 @@ Notes:
 ### Arithmetic Operators
 
 ### `Tvec2& operator+=(Tvec2 rhs)`
-
 Adds `rhs` to this vector (component-wise) and returns the modified vector.
 
 Parameters:
@@ -1126,7 +1298,6 @@ Returns:
 ---
 
 ### `Tvec2 operator+(Tvec2 rhs)`
-
 Returns the component-wise sum of this vector and `rhs`.
 
 Parameters:
@@ -1138,7 +1309,6 @@ Returns:
 ---
 
 ### `Tvec2& operator*=(T scalar)`
-
 Multiplies this vector by a scalar and returns the modified vector.
 
 Parameters:
@@ -1150,7 +1320,6 @@ Returns:
 ---
 
 ### `Tvec2 operator*(T scalar)`
-
 Returns the result of scalar multiplication.
 
 Parameters:
@@ -1162,7 +1331,6 @@ Returns:
 ---
 
 ### `Tvec2& operator-=(Tvec2 rhs)`
-
 Subtracts `rhs` from this vector (component-wise) and returns the modified vector.
 
 Parameters:
@@ -1174,7 +1342,6 @@ Returns:
 ---
 
 ### `Tvec2 operator-(Tvec2 rhs)`
-
 Returns the component-wise difference of this vector and `rhs`.
 
 Parameters:
@@ -1186,18 +1353,14 @@ Returns:
 ---
 
 ### Template Specializations (`T = int`)
-
 The following member functions are explicitly specialized for `Tvec2<int>` (i.e., `ivec2`) to preserve integer return types while performing floating-point calculations internally.
 
 ---
 
 ### `int mag()`  *(specialization for `ivec2`)*
-
 Computes the Euclidean magnitude of the integer vector and returns the result rounded to the nearest integer.
 
-
 Implementation details:
-
 - Computes the magnitude using `std::sqrt`
 - Rounds the result using `std::round`
 - Casts the result to `int` using `static_cast<int>`
@@ -1211,11 +1374,9 @@ Notes:
 ---
 
 ### `ivec2 unit()`  *(specialization for `ivec2`)*
-
 Returns the unit vector of an integer vector with each component rounded to the nearest integer.
 
 Implementation details:
-
 - Computes the integer magnitude using the specialized `mag()`
 - Divides each component by the magnitude
 - Rounds each result using `std::round`
@@ -1228,7 +1389,7 @@ Notes:
 - If the magnitude is zero, this results in division by zero (undefined behavior).
 - Because integer vectors cannot exactly represent most normalized vectors, rounding is required.
 
-
+---
 
 # vec3
 
@@ -1247,6 +1408,8 @@ with
 - `y`: `components[1]` (`int&`)
 - `z`: `components[2]` (`int&`)
 
+---
+
 ## Methods
 
 ### return identifier(parameter list)
@@ -1254,60 +1417,94 @@ with
 ### `Tvec3()`
 Initializes components to [0,0,0] & binds `x`, `y`, & `z` as references to the underlying `components` array.
 
+---
+
 ### `Tvec3(const Tvec3& cp)`
 Creates a new Tvec3 with the same component values as `cp` via copying `cp.x` to `x` & `cp.y` to `y`
+
+---
 
 ### `Tvec3(T _x, T _y, T_z)`
 Creates a new Tvec3 with component values [`_x`, `_y`, `_z`]
 
+---
+
 ### `Tvec3& operator=(const Tvec3& cp)`
 Replaces the current vector's components with `cp`'s components
+
+---
 
 ### `T dot(Tvec3 rhs)`
 Computes the dot product of the current vector with `rhs`
 
+---
+
 ### `T mag()`
 Computes the magnitude of the current vector
+
+---
 
 ### `Tvec3 unit()`
 Constructs a unit vector from the current vector, returning this unit vector
 
+---
+
 ### `Tvec3 cross(Tvec3 rhs)`
-Computes the cross product between the current vector and `rhs`, returning a new `Tvec3` 
-whose components correspond to the cross product's output
+Computes the cross product between the current vector and `rhs`, returning a new `Tvec3` whose components correspond to the cross product's output
+
+---
 
 ### `bool operator==(Tvec3 rhs)`
 Checks if each component of the current vector is equal to each component of `rhs` respectively, returning true if so or false if not
 
+---
+
 ### `bool operator!=(Tvec3 rhs)`
 Checks if any component of the current vector is equal to the respective component of `rhs`, returning true if so or false if not
+
+---
 
 ### `T& operator[](int index)`
 Allows for random indexing of `components` by returning a reference to the value in `components` at `index`
 
+---
+
 ### `Tvec3& operator+=(const Tvec3& rhs)` 
 Adds `rhs.x`, `rhs.y`, & `rhs.z` to current vector's `x`, `y`, & `z` respectively, returning a reference to the current vector
 
+---
+
 ### `Tvec3 operator+(const Tvec3& rhs)` 
-Completes the same computation as the `+=` overload but returns a copy of
-the current vector after addition without changing the current vector's values
+Completes the same computation as the `+=` overload but returns a copy of the current vector after addition without changing the current vector's values
+
+---
 
 ### `Tvec3& operator*=(T scalar)` 
 Multiplies the current vector's `x`, `y`, & `z`, each by `scalar`, returning a reference to the current vector
 
+---
+
 ### `Tvec3 operator*(const Tvec3& rhs)` 
-Completes the same computation as the `*=` overload but returns a copy of
-the current vector after scalar multiplication without changing the current vector's values
+Completes the same computation as the `*=` overload but returns a copy of the current vector after scalar multiplication without changing the current vector's values
+
+---
 
 ### `Tvec3& operator-=(const Tvec3& rhs)` 
 Subtracts `rhs.x`, `rhs.y`, & `rhs.z` from current vector's `x`, `y`, & `z` respectively, returning a reference to the current vector
 
+---
+
 ### `Tvec3 operator-(const Tvec3& rhs)` 
-Completes the same computation as the `-=` overload but returns a copy of
-the current vector after subtraction without changing the current vector's values
+Completes the same computation as the `-=` overload but returns a copy of the current vector after subtraction without changing the current vector's values
+
+---
 
 ### `int ivec3::mag()`
 Specialized version of the `mag()` function for the `ivec3` class that rounds the magnitude to the nearest integer then casts it as an integer
 
+---
+
 ### `ivec3 ivec3::unit()`
 Specialized version of the `unit()` function for the `ivec3` class that rounds each component of the computed unit vector to the nearest integer and then casts each as an `int`
+
+---
