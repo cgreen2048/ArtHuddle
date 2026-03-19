@@ -9,18 +9,6 @@ Layout::~Layout() {
     this->elements.clear();
 }
 
-vec2 Layout::getStart() const {
-    return start;
-}
-
-vec2 Layout::getEnd() const {
-    return end;
-}
-
-const std::vector<GuiElement*>& Layout::getElements() const {
-    return elements;
-}
-
 void Layout::setStart(const vec2& start) {
     this->start = start;
 }
@@ -82,6 +70,18 @@ void Layout::writeXml(std::ostream& out, int depth) const {
     }
 
     out << pad << "</layout>\n";
+}
+
+vec2 Layout::getStart() const {
+    return start;
+}
+
+vec2 Layout::getEnd() const {
+    return end;
+}
+
+const std::vector<GuiElement*>& Layout::getElements() const {
+    return elements;
 }
 
 

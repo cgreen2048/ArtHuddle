@@ -83,11 +83,5 @@ void Line::writeXml(std::ostream& out, int depth) const {
     else {
         writeVec3(out, toVec3(color));
     }
-<<<<<<< HEAD
-
-    out << "  </line>\n";
-}
-=======
     out << pad << "</line>\n";
 }
->>>>>>> a556ad6343e1d2cfa995734b140134a730742100

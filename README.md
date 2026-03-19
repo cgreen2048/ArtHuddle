@@ -237,7 +237,13 @@ and `element->screen` to this `Layout`'s screen
 If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `draw()` functions, drawing every child element
 
 ### `void writeXml(std::ostream& out)`
-Similar to `draw()` except writing to an XML by calling each child `GuiElement*`'s `writeXml()` function
+Similar to `draw()` except first printing the proper `<layout>` tag with parameters and then writing to an XML by calling each child `GuiElement*`'s `writeXml()` function. I
+
+### `vec2 getStart()`
+Returns starting coordinate percentages from `this->start`
+
+### `vec2 getEnd()`
+Returns ending coordinate percentages from `this->end`
 
 ### `const std::vector<GuiElement*>& getElements() const`
 Returns a reference to `Layout`'s `elements` vector
