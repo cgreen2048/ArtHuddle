@@ -16,7 +16,7 @@ test:
 	g++ ../Screen.cpp screenDemo.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o screenDemo
 	g++ ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Line.cpp ../Box.cpp ../Point.cpp ../Screen.cpp Milestone003Tests.cpp ../Triangle.cpp ../Layout.cpp  \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone003
-	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone004Tests.cpp ../Layout.cpp \
+	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone004Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone004
 	g++ ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005LayoutTests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone005LayoutTests

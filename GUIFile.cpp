@@ -118,6 +118,7 @@ static guiElement determineGuiElementOpenerType(const std::string& tag) {
         return guiElement::TRIANGLE;
     }
     std::cerr << "Malformed XML\n";
+    return guiElement::UNKNOWN;
 }
 
 static bool isMatchingElementClose(const std::string& tag, guiElement type) {
