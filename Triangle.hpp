@@ -32,6 +32,9 @@ class Triangle : public GuiElement {
         void setC(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);
 		void writeXml(std::ostream& out, int depth) const;
+        ivec2 getA();
+        ivec2 getB();
+        ivec2 getC();
 };
 
 #endif

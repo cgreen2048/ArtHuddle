@@ -22,9 +22,9 @@ class GuiElement {
 		
 		void setScreen(Screen*);
 
-		void setParentStart(const ivec2& start);
+		virtual void setParentStart(const ivec2& start);
 
-        void setParentEnd(const ivec2& end);
+        virtual void setParentEnd(const ivec2& end);
 
 		ivec2 getParentStart();
 

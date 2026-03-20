@@ -1,4 +1,5 @@
 #include "Layout.hpp"
+#include <iostream>
 
 Layout::Layout() : active{false} {}
 

@@ -104,3 +104,15 @@ void Triangle::writeXml(std::ostream& out, int depth) const {
     }
     out << pad <<"</triangle>\n";
 }
+
+ivec2 Triangle::getA() {
+    return this->a;
+}
+
+ivec2 Triangle::getB() {
+    return this->b;
+}
+
+ivec2 Triangle::getC() {
+    return this->c;
+}
