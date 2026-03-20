@@ -16,6 +16,9 @@ int readTest2();
 int readTest3();
 int readTest4();
 int readTest5();
+int readTest6();
+int readTest7();
+int readTest8();
 int writeTest1();
 int writeTest2();
 int writeTest3();
@@ -43,6 +46,15 @@ int main() {
         failure = 1;
     }
     if (readTest5()) {
+        failure = 1;
+    }
+    if(readTest6()){
+        failure = 1;
+    }
+    if(readTest7()){
+        failure = 1;
+    }
+    if(readTest8()){
         failure = 1;
     }
     if (writeTest1()) {
@@ -277,6 +289,8 @@ int readTest3() {
     return failure;
 }
 
+
+
 int readTest4() {
     int failure = 0;
 
@@ -330,6 +344,73 @@ int readTest5() {
     return failure;
 }
 
+int readTest6() {
+    int failure = 0;
+
+    GUIFile gui;
+    gui.readFile("testFiles/badInput.xml");
+
+
+    if (gui.getRootLayout() != nullptr) {
+        failure = 1;
+    }
+
+    if (failure) {
+        std::cout << "reading test 6 (invalid input file) FAILED\n";
+    }
+    else {
+        std::cout << "reading test 6 (invalid input file) passed\n";
+    }
+
+    return failure;
+}
+
+int readTest7() {
+    int failure = 0;
+
+    GUIFile gui;
+    gui.readFile("testFiles/readTest7.xml");
+
+
+    if (gui.getRootLayout() != nullptr) {
+        failure = 1;
+    }
+
+    if (failure) {
+        std::cout << "reading test 7 (malformed vector) FAILED\n";
+    }
+    else {
+        std::cout << "reading test 7 (malformed vector) passed\n";
+    }
+
+    return failure;
+}
+
+int readTest8() {
+    int failure = 0;
+
+    GUIFile gui;
+    gui.readFile("testFiles/readTest8.xml");
+
+
+    if (gui.getRootLayout() != nullptr) {
+        failure = 1;
+    }
+
+    if (failure) {
+        std::cout << "reading test 8 (empty xml) FAILED\n";
+    }
+    else {
+        std::cout << "reading test 8 (empty xml) passed\n";
+    }
+
+    return failure;
+}
+
+
+
+
+
 int writeTest1() {
     int failure = 0;
 
@@ -380,7 +461,13 @@ int writeTest1() {
 
     delete expectedRoot;
 
-    std::cout << (failure ? "writing test 1 (write then read) FAILED\n" : "writing test 1 (write then read) passed\n");
+    if (failure) {
+        std::cout << "writing test 1 (write then read) FAILED\n";
+    }
+    else {
+        std::cout << "writing test 1 (write then read) passed\n";
+    }
+
     return failure;
 }
 
@@ -407,7 +494,13 @@ int writeTest2() {
         failure = 1;
     }
 
-    std::cout << (failure ? "writing test 2 (empty tag) FAILED\n" : "writing test 2 (empty tag) passed\n");
+    if (failure) {
+        std::cout << "writing test 2 (empty tag) FAILED\n";
+    }
+    else {
+        std::cout << "writing test 2 (empty tag) passed\n";
+    }
+
     return failure;
 }
 
@@ -486,6 +579,12 @@ int writeTest3() {
 
     delete expectedRoot;
 
-    std::cout << (failure ? "writing test 3 (deep nested layouts) FAILED\n" : "writing test 3 (deep nested layouts) passed\n");
+    if (failure) {
+        std::cout << "writing test 3 (deep nested layouts) FAILED\n";
+    }
+    else {
+        std::cout << "writing test 3 (deep nested layouts) passed\n";
+    }
+
     return failure;
 }
