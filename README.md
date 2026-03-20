@@ -301,6 +301,21 @@ Method to set the `c` and `cType` attributes of a triangle object
 ### `void Triangle::setColor(const ivec3& v, TagType t)`
 Method to set the `color` and `colorType` attributes of a triangle object
 
+### `getA()`
+Returns the `a` attribute of the triangle
+
+---
+
+### `getB()`
+Returns the `b` attribute of the triangle
+
+---
+
+### `getC()`
+Returns the `c` attribute of the triangle
+
+---
+
 ### `void writeXml(std::ostream& out) const`
 
 Writes the triangle to an XML layout file.

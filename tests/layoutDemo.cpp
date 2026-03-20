@@ -128,7 +128,6 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
         x = static_cast<int>(mouseX);
         y = static_cast<int>(mouseY);
         bool inside = screen->pointInTriangle(triangleA, triangleB, triangleC, ivec2(x, y));
-        std::cout << inside << '\n';
         if (inside) {
             nestedLayout->setActive(true);
         }
