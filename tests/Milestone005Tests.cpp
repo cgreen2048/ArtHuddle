@@ -88,7 +88,6 @@ int boundsTests(Screen screen, SDL_Window* window) {
     GuiElement *triangle = new Triangle(ivec2(50,50), ivec2(120,200), ivec2(100, 50), ivec3(100,100,100));
     triangle->setParentStart(ivec2(0, 0));
     triangle->setParentEnd(ivec2(150, 140));
-    triangle->setScreen(&screen);
 
     bool quit = false;
     SDL_Event event;
@@ -105,7 +104,7 @@ int boundsTests(Screen screen, SDL_Window* window) {
                 }
 			}
             screen.clear(ivec3(255,255,255));
-            triangle->draw();
+            triangle->draw(&screen);
             screen.blitTo(SDL_GetWindowSurface(window));
             SDL_UpdateWindowSurface(window);
 		}
@@ -114,7 +113,6 @@ int boundsTests(Screen screen, SDL_Window* window) {
     GuiElement *box = new Box(ivec2(50,50), ivec2(120,200), ivec3(100,100,100));
     box->setParentStart(ivec2(0, 0));
     box->setParentEnd(ivec2(150, 100));
-    box->setScreen(&screen);
     quit = 0;
     while (!quit) {
 		while (SDL_PollEvent(&event)) {
@@ -129,7 +127,7 @@ int boundsTests(Screen screen, SDL_Window* window) {
                 }
 			}
             screen.clear(ivec3(255,255,255));
-            box->draw();
+            box->draw(&screen);
             screen.blitTo(SDL_GetWindowSurface(window));
             SDL_UpdateWindowSurface(window);
 		}
@@ -138,7 +136,6 @@ int boundsTests(Screen screen, SDL_Window* window) {
     GuiElement *line = new Line(ivec2(50,50), ivec2(120,200), ivec3(100,100,100));
     line->setParentStart(ivec2(0, 0));
     line->setParentEnd(ivec2(60, 60));
-    line->setScreen(&screen);
     quit = 0;
     while (!quit) {
 		while (SDL_PollEvent(&event)) {
@@ -153,7 +150,7 @@ int boundsTests(Screen screen, SDL_Window* window) {
                 }
 			}
             screen.clear(ivec3(255,255,255));
-            line->draw();
+            line->draw(&screen);
             screen.blitTo(SDL_GetWindowSurface(window));
             SDL_UpdateWindowSurface(window);
 		}
@@ -162,7 +159,6 @@ int boundsTests(Screen screen, SDL_Window* window) {
     GuiElement *point = new Point(ivec2(50,50), ivec3(100,100,100));
     point->setParentStart(ivec2(75, 75));
     point->setParentEnd(ivec2(150, 100));
-    point->setScreen(&screen);
     quit = 0;
     while (!quit) {
 		while (SDL_PollEvent(&event)) {
@@ -177,7 +173,7 @@ int boundsTests(Screen screen, SDL_Window* window) {
                 }
 			}
             screen.clear(ivec3(255,255,255));
-            point->draw();
+            point->draw(&screen);
             screen.blitTo(SDL_GetWindowSurface(window));
             SDL_UpdateWindowSurface(window);
 		}

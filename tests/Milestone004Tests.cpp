@@ -73,8 +73,7 @@ int pointTests(Screen screen, SDL_Window* window) {
 
     point->setParentStart(ivec2(0, 0));
     point->setParentEnd(ivec2(screen.getWidth(), screen.getHeight()));
-    point->setScreen(&screen);
-    point->draw();
+    point->draw(&screen);
 
     screen.blitTo(SDL_GetWindowSurface(window));
     SDL_UpdateWindowSurface(window);
@@ -137,8 +136,7 @@ int lineTests(Screen screen, SDL_Window* window) {
 
     line->setParentStart(ivec2(0, 0));
     line->setParentEnd(ivec2(screen.getWidth(), screen.getHeight()));
-    line->setScreen(&screen);
-    line->draw();
+    line->draw(&screen);
 
     screen.blitTo(SDL_GetWindowSurface(window));
     SDL_UpdateWindowSurface(window);
@@ -205,8 +203,7 @@ int boxTests(Screen screen, SDL_Window* window) {
     
     box->setParentStart(ivec2(0, 0));
     box->setParentEnd(ivec2(screen.getWidth(), screen.getHeight()));
-    box->setScreen(&screen);
-    box->draw();
+    box->draw(&screen);
 
     screen.blitTo(SDL_GetWindowSurface(window));
     SDL_UpdateWindowSurface(window);
@@ -298,8 +295,7 @@ int triangleTests(Screen screen, SDL_Window* window) {
 
     triangle->setParentStart(ivec2(0, 0));
     triangle->setParentEnd(ivec2(screen.getWidth(), screen.getHeight()));
-    triangle->setScreen(&screen);
-    triangle->draw();
+    triangle->draw(&screen);
     screen.blitTo(SDL_GetWindowSurface(window));
     SDL_UpdateWindowSurface(window);
 

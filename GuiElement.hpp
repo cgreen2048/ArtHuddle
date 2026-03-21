@@ -8,7 +8,6 @@ enum class guiElement {UNKNOWN, LAYOUT, POINT, LINE, BOX, TRIANGLE};
 
 class GuiElement {
 	protected:
-		Screen* screen;
 		ivec2 parentStart;
 		ivec2 parentEnd;
 	public:
@@ -16,11 +15,9 @@ class GuiElement {
 		
 		virtual ~GuiElement();
 		
-		virtual void draw();
+		virtual void draw(Screen*);
 
 		virtual void writeXml(std::ostream& out, int depth) const;
-		
-		void setScreen(Screen*);
 
 		virtual void setParentStart(const ivec2& start);
 
@@ -29,8 +26,6 @@ class GuiElement {
 		ivec2 getParentStart();
 
         ivec2 getParentEnd();
-
-		Screen* getScreen();
 };
 
 

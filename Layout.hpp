@@ -27,7 +27,7 @@ class Layout : public GuiElement {
         void setActive(bool value);
         bool isActive();
         void addElement(GuiElement *element);
-        void draw();
+        void draw(Screen *screen);
         void writeXml(std::ostream& out, int depth = 0) const;
         const std::vector<GuiElement*>& getElements() const;
         int getAbsoluteStartX();

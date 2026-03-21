@@ -6,17 +6,11 @@ GuiElement::GuiElement() {
 GuiElement::~GuiElement() {
     
 }
-void GuiElement::draw(){
+void GuiElement::draw(Screen *screen){
     
 }
 void GuiElement::writeXml(std::ostream& out, int depth) const{
 
-}
-void GuiElement::setScreen(Screen* target) {
-    this->screen = target;
-}
-Screen* GuiElement::getScreen() {
-    return this->screen;
 }
 void GuiElement::setParentStart(const ivec2& start) {
     this->parentStart = start;

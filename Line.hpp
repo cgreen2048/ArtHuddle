@@ -16,13 +16,13 @@ class Line : public GuiElement {
 
 	public:
 		Line();
-		Line(ivec2, ivec2, ivec3);
-		Line(const Line&);
-		Line& operator=(const Line&);
-		bool operator==(Line);
-		bool operator!=(Line);
+		Line(ivec2 start, ivec2 end, ivec3 color);
+		Line(const Line& cp);
+		Line& operator=(const Line& cp);
+		bool operator==(Line rhs);
+		bool operator!=(Line rhs);
 		~Line();
-		void draw();
+		void draw(Screen *screen);
 		void setStart(const ivec2& v, TagType t);
 		void setEnd(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);

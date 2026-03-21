@@ -15,11 +15,11 @@ class Matrix {
     public:
         Matrix();    
         Matrix(float[MATRIX_MAX][MATRIX_MAX]);
-        Matrix(const Matrix&);
-        Matrix& operator=(const Matrix&);
-        bool operator==(Matrix);
-        bool operator!=(Matrix);
-        Matrix operator*(Matrix);
+        Matrix(const Matrix& cp);
+        Matrix& operator=(const Matrix& cp);
+        bool operator==(Matrix rhs);
+        bool operator!=(Matrix rhs);
+        Matrix operator*(Matrix rhs);
         Matrix transpose();
 };
 

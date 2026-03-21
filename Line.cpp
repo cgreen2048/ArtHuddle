@@ -41,8 +41,8 @@ bool Line::operator!=(Line rhs) {
 
 Line::~Line() {}
 
-void Line::draw() {
-    this->screen->drawBresenhamLine(this->start, this->end, this->color, this->getParentStart(), this->getParentEnd());
+void Line::draw(Screen *screen) {
+    screen->drawBresenhamLine(this->start, this->end, this->color, this->getParentStart(), this->getParentEnd());
 }
 
 void Line::setStart(const ivec2& v, TagType t){

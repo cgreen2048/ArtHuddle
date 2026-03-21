@@ -20,13 +20,13 @@ class Triangle : public GuiElement {
     
     public:
         Triangle();
-        Triangle(ivec2, ivec2, ivec2, ivec3);
-        Triangle(const Triangle&);
-        Triangle& operator=(const Triangle&);
-        bool operator==(Triangle);
-        bool operator!=(Triangle);
+        Triangle(ivec2 a, ivec2 b, ivec2 c, ivec3 color);
+        Triangle(const Triangle& cp);
+        Triangle& operator=(const Triangle& cp);
+        bool operator==(Triangle rhs);
+        bool operator!=(Triangle rhs);
         ~Triangle();
-        void draw();
+        void draw(Screen *screen);
         void setA(const ivec2& v, TagType t);
 		void setB(const ivec2& v, TagType t);
         void setC(const ivec2& v, TagType t);

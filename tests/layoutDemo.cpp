@@ -53,7 +53,6 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     int x, y;
 
     Layout* layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT));
-    layout->setScreen(screen);
     layout->setStart(vec2{0.1,0.1});
     layout->setEnd(vec2{1.0, 1.0});
     layout->setParentStart(ivec2{0,0});
@@ -137,7 +136,7 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
 
         screen->clear(ivec3(255,255,255));
 
-        layout->draw();
+        layout->draw(screen);
         screen->blitTo(SDL_GetWindowSurface(window));
 		SDL_UpdateWindowSurface(window);
     }

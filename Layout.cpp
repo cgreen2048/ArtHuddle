@@ -38,18 +38,17 @@ bool Layout::isActive() {
 
 void Layout::addElement(GuiElement *element) {
     this->elements.push_back(element);
-    element->setScreen(this->screen);
     element->setParentStart(ivec2{this->getAbsoluteStartX(), this->getAbsoluteStartY()});
     element->setParentEnd(ivec2{this->getAbsoluteEndX(), this->getAbsoluteEndY()});
 }
 
-void Layout::draw() {
+void Layout::draw(Screen *screen) {
     if (!this->active || !this->hasParentStart || !this->hasParentEnd) {
         return;
     }
 
     for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
-        (*start)->draw();
+        (*start)->draw(screen);
     }
 }
 
