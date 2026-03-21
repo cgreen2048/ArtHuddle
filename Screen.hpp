@@ -17,18 +17,18 @@ class Screen {
         
     public:
         Screen();
-        Screen(uint32_t, uint32_t);
-        Screen(const Screen&);
+        Screen(uint32_t w, uint32_t h);
+        Screen(const Screen& cp);
         ~Screen();
-        Screen& operator=(const Screen&);
-        bool operator==(const Screen);
+        Screen& operator=(const Screen& cp);
+        bool operator==(const Screen rhs);
 
-        bool surfaceEqual(const SDL_Surface*);
-        void blitTo(SDL_Surface*) const;
-        void drawBresenhamLine(ivec2, ivec2, ivec3, ivec2, ivec2);
-        bool pointInTriangle(ivec2, ivec2, ivec2, ivec2);
-        void drawTriangle(ivec2, ivec2, ivec2, ivec3, ivec2, ivec2);
-        void clear(ivec3);
+        bool surfaceEqual(const SDL_Surface* rhs);
+        void blitTo(SDL_Surface* target) const;
+        void drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color, ivec2 parentStart, ivec2 parentEnd);
+        bool pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 pointP);
+        void drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd);
+        void clear(ivec3 color);
 
         SDL_Surface* getSurface();
         uint32_t getWidth();

@@ -81,7 +81,7 @@ Derived classes inherit this destructor behavior.
 
 ---
 
-### `void draw()`
+### `void draw(Screen *screen)`
 Virtual draw method intended to be **overridden by derived classes**.
 Each derived class implements its own drawing behavior:
 
@@ -99,17 +99,6 @@ In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will c
 ### `void writeXml(std::ostream& out) const`
 Virtual method used for writing the GUI element to an XML layout file.
 Derived classes override this method to write their specific geometry and color information.
-
----
-
-### `void setScreen(Screen* target)`
-Sets GuiElement's `screen` to `target`.
-
-
----
-
-### `Screen* getScreen()`
-Returns the pointer to the `Screen` associated with the GUI element.
 
 ---
 
@@ -175,9 +164,7 @@ Creates a new GUI element based on the `guiElement` enum value.
 
 ```cpp
 GuiElement* element = factory(guiElement::LINE);
-
-element->setScreen(screen);
-element->draw();
+element->draw(&screen);
 ```
 
 ---
@@ -238,11 +225,11 @@ Getter method for `active` to check if the `Layout` can be drawn
 ---
 
 ### `void addElement(GuiElement *element)`
-Adds `element` to `elements` as a child of this `Layout` and sets `element->parentStart` to the absolute starting position of this `Layout`, `element->parentEnd` to the absolute ending position of this `Layout`, and `element->screen` to this `Layout`'s screen
+Adds `element` to `elements` as a child of this `Layout` and sets `element->parentStart` to the absolute starting position of this `Layout` and `element->parentEnd` to the absolute ending position of this `Layout`
 
 ---
 
-### `void draw()`
+### `void draw(Screen *screen)`
 If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `draw()` functions, drawing every child element
 
 ---
@@ -344,9 +331,8 @@ The default destructor
 
 ---
 
-### `void draw()`
+### `void draw(Screen *screen)`
 Method to draw the stored triangle to a `Screen` object
-- Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawTriangle` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
 
 ---
@@ -454,9 +440,8 @@ The default destructor
 
 ---
 
-### `void draw()`
+### `void draw(Screen *screen)`
 Method to draw the stored box to a `Screen` object
-- Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawBox` within the `Screen` class to draw the box to to the screen's `SDL_Surface`
 
 ---
@@ -546,9 +531,8 @@ The default destructor
 
 ---
 
-### `void draw()`
+### `void draw(Screen *screen)`
 Method to draw the stored line to a `Screen` object
-- Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `drawBresenhamLine` within the `Screen` class to draw the line to to the screen's `SDL_Surface`
 
 ---
@@ -636,9 +620,8 @@ The default destructor
 
 ---
 
-### `void draw()`
+### `void draw(Screen *screen)`
 Method to draw the stored point to a `Screen` object
-- Accesses `screen` attribute (inherited from the `GuiElement` class) storing a pointer to a `Screen` object
 - Calls the `colorOnePixel` within the `Screen` class to draw the point to to the screen's `SDL_Surface`
 
 ---

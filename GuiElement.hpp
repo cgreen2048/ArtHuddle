@@ -14,8 +14,6 @@ class GuiElement {
 		GuiElement();
 		
 		virtual ~GuiElement();
-
-		virtual void create();
 		
 		virtual void draw(Screen*);
 

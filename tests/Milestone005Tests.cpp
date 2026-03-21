@@ -173,7 +173,7 @@ int boundsTests(Screen screen, SDL_Window* window) {
                 }
 			}
             screen.clear(ivec3(255,255,255));
-            point->draw(screen&);
+            point->draw(&screen);
             screen.blitTo(SDL_GetWindowSurface(window));
             SDL_UpdateWindowSurface(window);
 		}
