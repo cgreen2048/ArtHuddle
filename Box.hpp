@@ -16,13 +16,13 @@ class Box : public GuiElement {
 
 	public:
 		Box();
-		Box(ivec2, ivec2, ivec3);
-		Box(const Box&);
-		Box& operator=(const Box&);
-		bool operator==(Box);
-		bool operator!=(Box);
+		Box(ivec2 min, ivec2 max, ivec3 color);
+		Box(const Box& cp);
+		Box& operator=(const Box& rhs);
+		bool operator==(Box rhs);
+		bool operator!=(Box rhs);
 		~Box();
-		void draw();
+		void draw(Screen *screen);
 		void setMin(const ivec2& v, TagType t);
 		void setMax(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);

@@ -46,8 +46,8 @@ bool Box::operator!=(Box rhs) {
 
 Box::~Box() {}
 
-void Box::draw() {
-    this->screen->drawBox(this->min, this->max, this->color, this->getParentStart(), this->getParentEnd());
+void Box::draw(Screen *screen) {
+    screen->drawBox(this->min, this->max, this->color, this->getParentStart(), this->getParentEnd());
 }
 
 void Box::setMin(const ivec2& v, TagType t){

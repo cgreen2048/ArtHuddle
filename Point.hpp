@@ -14,13 +14,13 @@ class Point : public GuiElement {
 	
 	public:
 		Point();
-		Point(ivec2, ivec3);
-		Point(const Point&);
-		Point& operator=(const Point&);
-		bool operator==(Point);
-		bool operator!=(Point);
+		Point(ivec2 coords, ivec3 color);
+		Point(const Point& cp);
+		Point& operator=(const Point& cp);
+		bool operator==(Point rhs);
+		bool operator!=(Point rhs);
 		~Point();
-		void draw();
+		void draw(Screen *screen);
 		void setCoords(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);
 		void writeXml(std::ostream& out, int depth) const;

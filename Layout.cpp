@@ -43,13 +43,13 @@ void Layout::addElement(GuiElement *element) {
     element->setParentEnd(ivec2{this->getAbsoluteEndX(), this->getAbsoluteEndY()});
 }
 
-void Layout::draw() {
+void Layout::draw(Screen *screen) {
     if (!this->active || !this->hasParentStart || !this->hasParentEnd) {
         return;
     }
 
     for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
-        (*start)->draw();
+        (*start)->draw(screen);
     }
 }
 

@@ -46,10 +46,8 @@ bool Triangle::operator!=(Triangle rhs) {
     return !(*this == rhs);
 }
 
-void Triangle::draw() {
-    if (this->screen != nullptr) {
-        this->screen->drawTriangle(this->a, this->b, this->c, this->color, this->getParentStart(), this->getParentEnd());
-    }
+void Triangle::draw(Screen *screen) {
+    screen->drawTriangle(this->a, this->b, this->c, this->color, this->getParentStart(), this->getParentEnd());
 }
 
 void Triangle::setA(const ivec2& v, TagType t){
