@@ -14,7 +14,7 @@ class Button : public Box {
     public:
         Button() = default;
         Button(const Button& cp) = default;
-        Button(ivec2 min, ivec2 max, ivec3 color, std::function<void()>& callback);
+        Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, std::string text);
         ~Button() = default;
         Button& operator=(const Button& rhs) = default;
 
