@@ -3,6 +3,7 @@
 
 #include "Box.hpp"
 #include <string>
+#include <functional>
 
 
 class Button : public Box {
