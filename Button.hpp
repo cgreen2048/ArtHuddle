@@ -15,8 +15,10 @@ class Button : public Box {
         Button(const Button& cp) = default;
         Button(ivec2 min, ivec2 max, ivec3 color, std::function<void()>& callback);
         ~Button() = default;
-        operator(const Button& rhs) = default;
+        Button& operator=(const Button& rhs) = default;
 
         bool resolveEvent(const Event& event);
         void writeXml(std::ostream& out, int depth) const;
-}
+};
+
+#endif
