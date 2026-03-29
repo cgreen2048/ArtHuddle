@@ -15,8 +15,9 @@ class Event {
         Event(EventType t);
         Event(const Event& cp);
         Event& operator=(const Event& rhs);
-        ~Event();
+        virtual ~Event();
 
         EventType getType() const;
-        virtual bool resolveEvent() = 0;
 };
+
+#endif
