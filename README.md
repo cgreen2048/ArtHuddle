@@ -115,6 +115,16 @@ Sets the `parentEnd` data for the current `GuiElement` object
 
 ---
 
+### `virtual bool GuiElement::resolveEvent(Event* e)`
+Handles an incoming event for the current `GuiElement` object
+
+Returns:
+
+- `true` if the element handles and consumes the event
+- `false` if the element does not handle the event and propagation should continue
+
+---
+
 ### `void setName(const std::string& n)`
 Sets the `name` data for the current `GuiElement` object
 
@@ -229,7 +239,7 @@ Sets the parent ending coordinates as in `GuiElement` but overloaded to also set
 ### `void setActive(bool value)`
 Sets `active` to `value`, toggling the `Layout` active (able to be drawn) or not
 
---
+---
 
 ### `void isActive()`
 Getter method for `active` to check if the `Layout` can be drawn
@@ -248,6 +258,19 @@ If the `Layout` is active and contains both starting and ending parent bounds, i
 
 ### `void writeXml(std::ostream& out)`
 Similar to `draw()` except first printing the proper `<layout>` tag with parameters and then writing to an XML by calling each child `GuiElement*`'s `writeXml()` function.
+
+---
+
+### `bool resolveEvent(Event* e)`
+Handles and propagates an event through this Layout’s hierarchy
+- Checks for `SHOW` event to update current Layout state
+- If `active == false`, stops immediately and returns `false`
+- Otherwise, iterates through all child elements:
+  - Calls `child->resolveEvent(e)`
+  - Stops early if a child returns `true`
+- Returns:
+  - `true` → event was handled by a child  
+  - `false` → event was not handled  
 
 ---
 
@@ -665,388 +688,7 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ---
 
-# GUIFile
-
-## Description
-
-`GUIFile` is responsible for **reading and writing an XML-based layout file** that describes a hierarchy of GUI elements.
-
-Instead of storing elements in a flat container:
-
-```cpp
-std::vector<GuiElement*> elements;
-```
-the system now uses a hierarchical structure:
-```cpp
-Layout* rootLayout;
-```
-
----
-
-### Layout Tree Structure
-
-The GUI is represented as a tree:
-```
-Layout (root)
-├── Layout
-│   ├── Line
-│   └── Box
-├── Triangle
-└── Point
-```
-
-- Every node is a `GuiElement`
-- `Layout` nodes can contain children
-- Leaf nodes are drawable primitives (`Line`, `Box`, `Point`, `Triangle`)
-- We use recursive functions to mirror this hierarchy as `Layout`s can contain child `Layout`s
-
----
-
-## Data Members
-
-### `Layout* rootLayout`
-
-- Pointer to the root layout of the GUI
-- Owns the entire hierarchy
-- All elements are stored within this layout tree
-- `GUIFile` is responsible for deleting it
-
----
-
-### Memory Management
-
-Ownership is hierarchical:
-
-- `GUIFile` owns `rootLayout`
-- `Layout` owns all of its child elements
-
-Deleting the root layout recursively deletes the entire GUI structure.
-
-The class supports both floating-point vector tags (`<vec2>`, `<vec3>`) and integer vector tags (`<ivec2>`, `<ivec3>`).  
-When reading, the parser records which tag type was used and stores that information in the element using a `TagType`.  
-When writing, each element's `writeXml()` method outputs the correct tag type.
-
-
----
-
-## XML Token Constants
-
-The header defines constant strings representing all valid XML tokens:
-
-### Layout Tags
-- `<layout>`
-- `</layout>`
-
----
-
-### Element Tags
-- `<line>`
-- `</line>`
-- `<box>`
-- `</box>`
-- `<point>`
-- `</point>`
-
----
-
-### Vector Tags
-- `<vec2>`
-- `<vec3>`
-- `<ivec2>`
-- `<ivec3>`
-
----
-
-### Coordinate Tags
-- `<x>`
-- `<y>`
-- `<z>`
-
-Two arrays are used to validate XML structure:
-
-- `OPENERS` → list of all opening tags
-- `CLOSERS` → list of all closing tags
-
-These are used by the parser to verify correct nesting.
-
----
-
-## Supported XML Layout Format
-
-```xml
-<layout name="Layout1" sX="0" sY="0" eX="1" eY="1">
-    <layout name="Layout2" sX="0.1" sY="0.1" eX="0.5" eY="0.5">
-        <line name="">
-            <vec2>
-                <x>10</x>
-                <y>20</y>
-            </vec2>
-            <vec2>
-                <x>40</x>
-                <y>60</y>
-            </vec2>
-            <vec3>
-                <x>255</x>
-                <y>0</y>
-                <z>0</z>
-            </vec3>
-        </line>
-    </layout>
-
-    <triangle name="">
-        ...
-    </triangle>
-</layout>
-```
-
-- Layouts include bounds as attributes:
-- Both `<vec*>` and `<ivec*>` variants are supported.
-
----
-
-## Public Methods
-
-### `GUIFile()`
-Default constructor.
-- Initializes `rootLayout` to `nullptr`
-
----
-
-### `~GUIFile()`
-Destructor.
-- Calls `clear()` to free all owned memory
-
----
-
-### `void clear()`
-Deletes the entire layout tree.
-
-```cpp
-if (rootLayout != nullptr) {
-    delete rootLayout;
-    rootLayout = nullptr;
-}
-```
-
----
-
-### `Layout* getRootLayout() const`
-Returns the pointer to the root layout.
-
----
-
-### `void setRootLayout(Layout* root)`
-Sets a new root layout.
-- Deletes the existing layout if one exists  
-- Transfers ownership of `root` to `GUIFile`  
-
----
-
-### `void readFile(const std::string& fileName)`
-Reads an XML file and constructs the layout tree.
-- Clears existing data  
-- Opens the file  
-- Reads the first tag  
-- Verifies it is a valid `<layout ...>` tag  
-- Calls the internal recursive parser  
-- Stores the result in `rootLayout`  
-
----
-
-### `void writeFile(const std::string& fileName) const`
-Writes the layout tree to an XML file.
-- Opens the output file  
-- Verifies `rootLayout` exists  
-- Calls:
-
-```cpp
-rootLayout->writeXml(out);
-```
-The layout recursively writes all children
-
----
-
-## Internal Helper Functions
-
-These functions are internal to `GUIFile.cpp` and are not part of the public interface.
-They implement the parsing logic used by `readFile()`.
-
----
-
-### `Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenTag)`
-Parses a `<layout ...>` tag and its contents.
-- Creates a `Layout`  
-- Reads layout attributes:
-  - `sX`, `sY`  
-  - `eX`, `eY`  
-- Recursively parses:
-  - child layouts  
-  - child elements  
-- Returns the completed layout subtree
-
-#### Additional Parsing Details
-
-- Uses helper functions (`parseVec2`, `parseIVec2`, `parseVec3`, `parseIVec3`) to read vector data  
-- These helpers ensure all required components (`x`, `y`, `z`) are present  
-- If any component is missing or malformed, parsing fails immediately  
-
----
-
-### `GuiElement* parseElement(std::ifstream& inFile, const std::string& elementOpenTag)`
-Parses a drawable GUI element.
-Supports:
-- `Point`  
-- `Line`  
-- `Box`  
-- `Triangle`  
-
-Behavior:
-- Determines type from opening tag
-- Uses the Factory to create the object
-- Extracts and sets the element `name` attribute
-- Parses coordinate and color data
-- Stores tag type (vec vs ivec)
-- Uses vector parsing helpers
-- Preserves original tag types for XML output
-- Returns a `GuiElement*`
-
----
-
-## Attribute Parsing Helpers
-
-These functions extract attribute values from XML tags.
-
----
-
-### `bool getStringAttribute(const std::string& tag, const std::string& attrName, std::string& value)`
-
-Extracts a string attribute from a tag.
-
-#### Steps:
-
-* Builds a search key:
-
-  ```cpp
-  attrName + "=\""
-  ```
-* Finds the start of the attribute inside the tag
-* Locates the closing `"`
-* Extracts the substring between them
-
-#### Returns:
-
-* `true` → attribute found and successfully parsed
-* `false` → attribute not found or malformed
-
-
----
-
-### `bool setNameFromTag(const std::string& tag, GuiElement* element)`
-
-Extracts and assigns the `name` attribute to a `GuiElement`.
-
-#### Steps:
-
-* Calls:
-
-  ```cpp
-  getStringAttribute(tag, "name", name)
-  ```
-* If successful:
-
-  ```cpp
-  element->setName(name);
-  ```
-* Returns success/failure
-
-#### Purpose:
-
-* Avoids repeating name-parsing logic across multiple element types
-* Centralizes enforcement of the required `name` attribute
-
----
-
-### `bool getFloatAttribute(const std::string& tag, const std::string& attrName, float& value)`
-
-Extracts a floating-point attribute from a tag.
-
-#### Steps:
-
-* Calls `getStringAttribute(...)` to retrieve the value as a string
-* Converts it using:
-
-  ```cpp
-  std::stof(strValue);
-  ```
-
-#### Returns:
-
-* `true` → attribute exists and conversion succeeded
-* `false` → attribute missing or invalid
-
-#### Used for:
-
-* Layout attributes:
-
-  * `sX`, `sY`
-  * `eX`, `eY`
-
-
-## Error Handling
-
-If malformed XML is detected:
-
-- `"Malformed XML"` is printed  
-- Partially created objects are deleted  
-- Parsing stops immediately  
-
-### Examples of malformed XML
-
-- Missing layout attributes  
-- Mismatched tags  
-- Missing coordinates  
-- Invalid nesting  
-- Missing vector components  
-- Unexpected tags  
-
----
-
-
-
-## Internal Parsing Utilities
-
-Used during parsing:
-
-- `trim()` → removes whitespace  
-- `getNextTag()` → reads next XML tag  
-- `getNextPayload()` → reads text between tags  
-- `getFloatAttribute()` → extracts float attributes
-- `getStringAttribute()` → extracts string attributes
-- `setNameFromTag()` → assigns element names  
-- `isLayoutOpen()` / `isLayoutClose()` → layout tag checks  
-- `isElementOpen()` → element detection  
-- `isMatchingElementClose()` → validates closing tags
-- `determineGuiElementOpenerType()` → maps XML tags to `guiElement` enum  
-- `parseVec2()` → parses `<vec2>` data and validates structure  
-- `parseIVec2()` → parses `<ivec2>` integer vector data  
-- `parseVec3()` → parses `<vec3>` data with x, y, z components  
-- `parseIVec3()` → parses `<ivec3>` integer vector data    
-
----
-
-## Type Conversion Helpers
-
-Used to convert between float and integer vector types:
-
-- `toIVec2(const vec2&)`  
-- `toIVec3(const vec3&)`  
-- `toVec2(const ivec2&)`  
-- `toVec3(const ivec3&)`  
-- `toInt(float)`  
-
-These ensure the correct internal representation while preserving original XML tag types.
-
----
+ 
 
 ## UML Diagram
 ![UML Diagram](images/Milestone003_UML.png)

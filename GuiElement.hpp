@@ -25,7 +25,7 @@ class GuiElement {
 
         virtual void setParentEnd(const ivec2& end);
 
-		virtual bool resolveEvent(Event* e);
+		virtual bool resolveEvent(Event*);
 
 		void setName(const std::string& n);
 
