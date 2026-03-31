@@ -73,32 +73,32 @@ void Triangle::setColor(const ivec3& v, TagType t){
 void Triangle::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 
-    out << pad << "<triangle>\n";
+    out << pad << "<triangle " << "name=\"" << name << "\">\n";
     if (aType == TagType::IVec) {
-        writeIVec2(out, a);
+        writeIVec2(out, a, pad);
     } else {
-        writeVec2(out, toVec2(a));
+        writeVec2(out, toVec2(a), pad);
     }
 
     if (bType == TagType::IVec) {
-        writeIVec2(out, b);
+        writeIVec2(out, b, pad);
     }
     else {
-        writeVec2(out, toVec2(b));
+        writeVec2(out, toVec2(b), pad);
     }
 
     if (cType == TagType::IVec) {
-        writeIVec2(out, c);
+        writeIVec2(out, c, pad);
     }
     else {
-        writeVec2(out, toVec2(c));
+        writeVec2(out, toVec2(c), pad);
     }
 
     if (colorType == TagType::IVec) {
-        writeIVec3(out, color);
+        writeIVec3(out, color, pad);
     }
     else {
-        writeVec3(out, toVec3(color));
+        writeVec3(out, toVec3(color), pad);
     }
     out << pad <<"</triangle>\n";
 }

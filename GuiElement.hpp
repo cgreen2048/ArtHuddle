@@ -10,6 +10,7 @@ class GuiElement {
 	protected:
 		ivec2 parentStart;
 		ivec2 parentEnd;
+		std::string name = "";
 	public:
 		GuiElement();
 		
@@ -23,9 +24,13 @@ class GuiElement {
 
         virtual void setParentEnd(const ivec2& end);
 
+		void setName(const std::string& n);
+
 		ivec2 getParentStart();
 
         ivec2 getParentEnd();
+
+		const std::string& getName() const;
 };
 
 

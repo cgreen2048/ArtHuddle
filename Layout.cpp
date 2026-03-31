@@ -10,6 +10,7 @@ Layout::~Layout() {
     this->elements.clear();
 }
 
+
 void Layout::setStart(const vec2& start) {
     this->start = start;
 }
@@ -60,6 +61,7 @@ void Layout::writeXml(std::ostream& out, int depth) const {
     std::string pad = indent(depth);
 
     out << pad << "<layout "
+        << "name=\"" << name << "\" "
         << "sX=\"" << start.x << "\" "
         << "sY=\"" << start.y << "\" "
         << "eX=\"" << end.x << "\" "
@@ -79,6 +81,7 @@ vec2 Layout::getStart() const {
 vec2 Layout::getEnd() const {
     return end;
 }
+
 
 const std::vector<GuiElement*>& Layout::getElements() const {
     return elements;

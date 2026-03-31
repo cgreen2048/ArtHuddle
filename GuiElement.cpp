@@ -18,9 +18,15 @@ void GuiElement::setParentStart(const ivec2& start) {
 void GuiElement::setParentEnd(const ivec2& end) {
     this->parentEnd = end;
 }
+void GuiElement::setName(const std::string& n){
+    this->name = n;
+}
 ivec2 GuiElement::getParentStart() {
     return this->parentStart;
 }
 ivec2 GuiElement::getParentEnd() {
     return this->parentEnd;
+}
+const std::string& GuiElement::getName() const {
+    return name;
 }

@@ -53,18 +53,18 @@ void Point::setColor(const ivec3& v, TagType t){
 void Point::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 
-    out << pad << "<point>\n";
+    out << pad << "<point " << "name=\"" << name << "\">\n";
     if (coordsType == TagType::IVec) {
-        writeIVec2(out, coords);
+        writeIVec2(out, coords, pad);
     } else {
-        writeVec2(out, toVec2(coords));
+        writeVec2(out, toVec2(coords), pad);
     }
 
     if (colorType == TagType::IVec) {
-        writeIVec3(out, color);
+        writeIVec3(out, color, pad);
     }
     else {
-        writeVec3(out, toVec3(color));
+        writeVec3(out, toVec3(color), pad);
     }
     out << pad << "</point>\n";
 }

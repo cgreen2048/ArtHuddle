@@ -1,5 +1,5 @@
-<layout sX="0.0" sY="0.0" eX="1.0" eY="1.0">
-  <line>
+<layout name="Line-Box-Point-Layout" sX="0.0" sY="0.0" eX="1.0" eY="1.0">
+  <line name="">
     <vec2>
       <x>50.5</x>
       <y>902.47</y>
@@ -15,7 +15,7 @@
     </vec3>
   </line>
 
-  <box>
+  <box name="">
     <vec2>
       <x>250.3</x>
       <y>122.5</y>
@@ -31,7 +31,7 @@
     </vec3>
   </box>
 
-  <point>
+  <point name="" >
     <ivec2>
       <x>480</x>
       <y>270</y>
@@ -43,7 +43,7 @@
     </ivec3>
   </point>
 
-  <triangle>
+  <triangle name="">
     <ivec2>
       <x>100</x>
       <y>100</y>

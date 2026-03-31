@@ -1,6 +1,6 @@
-<layout sX="0.0"    sY="0.0" eX="1.0"    eY="1.0">
+<layout name="layout1" sX="0.0"    sY="0.0" eX="1.0"    eY="1.0">
 
-      <line>
+      <line name="">
             <vec2>
                   <x>1.1</x>
                   <y>2.2</y>
@@ -16,8 +16,8 @@
             </ivec3>
       </line>
 
-      <layout sX="0.10" sY="0.20" eX="0.90" eY="0.95">
-            <point>
+      <layout name="" sX="0.10" sY="0.20" eX="0.90" eY="0.95">
+            <point name="">
                   <ivec2>
                         <x>13</x>
                         <y>14</y>
