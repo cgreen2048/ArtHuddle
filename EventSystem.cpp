@@ -18,3 +18,21 @@ std::unique_ptr<Event> EventSystem::poll() {
     eventQueue.pop();
     return e;
 }
+
+void EventSystem::processEvents(Layout *root){
+    while(!eventQueue.empty()){
+        std::unique_ptr<Event> e = poll();
+
+        if (!e) {
+            break;
+        }
+
+        if(e->getType() == EventType::SOUND){
+            // SoundEvent* sound = static_cast<SoundEvent*>(e.get()); // Sound class need to be implemented.
+            // play sound.
+        }
+        else{
+            root->resolveEvent(e.get());
+        }
+    }
+}

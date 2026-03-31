@@ -4,6 +4,7 @@
 #include "Event.hpp"
 #include <queue>
 #include <memory>
+#include <Layout.hpp>
 
 class EventSystem{
     public:
@@ -12,6 +13,7 @@ class EventSystem{
         EventSystem(const EventSystem&) = delete;
         EventSystem& operator=(const EventSystem&) = delete;
         std::unique_ptr<Event> poll();
+        void processEvents(Layout *rootlayout);
 
     private:
         EventSystem();
