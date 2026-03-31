@@ -68,25 +68,25 @@ void Box::setColor(const ivec3& v, TagType t){
 void Box::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 
-    out << pad << "<box>\n";
+    out << pad << "<box " << "name=\"" << name << "\">\n";
     if (minType == TagType::IVec) {
-        writeIVec2(out, min);
+        writeIVec2(out, min, pad);
     } else {
-        writeVec2(out, toVec2(min));
+        writeVec2(out, toVec2(min), pad);
     }
 
     if (maxType == TagType::IVec) {
-        writeIVec2(out, max);
+        writeIVec2(out, max, pad);
     }
     else {
-        writeVec2(out, toVec2(max));
+        writeVec2(out, toVec2(max), pad);
     }
 
     if (colorType == TagType::IVec) {
-        writeIVec3(out, color);
+        writeIVec3(out, color, pad);
     }
     else {
-        writeVec3(out, toVec3(color));
+        writeVec3(out, toVec3(color), pad);
     }
     out << pad << "</box>\n";
 }

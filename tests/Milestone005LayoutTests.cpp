@@ -154,6 +154,10 @@ int layoutComparison(Layout* actual, Layout* expected) {
         return 1;
     }
 
+    if (actual->getName() != expected->getName()) {
+        return 1;
+    }
+
     const std::vector<GuiElement*>& actualChildren = actual->getElements();
     const std::vector<GuiElement*>& expectedChildren = expected->getElements();
 
@@ -191,6 +195,7 @@ int readTest1() {
     expectedRoot->setStart(vec2(0.0f, 0.0f));
     expectedRoot->setEnd(vec2(1.0f, 1.0f));
     expectedRoot->setActive(true);
+    expectedRoot->setName("Line-Box-Point-Layout");
 
     Line* l = new Line();
     l->setStart(toIVec2(50.5f, 902.47f), Line::TagType::Vec);
@@ -236,6 +241,8 @@ int readTest2() {
     expectedRoot->setStart(vec2(0.0f, 0.0f));
     expectedRoot->setEnd(vec2(1.0f, 1.0f));
     expectedRoot->setActive(true);
+    expectedRoot->setName("Layout1");
+
 
     Triangle* t = new Triangle();
     t->setA(ivec2(100, 100), Triangle::TagType::IVec);
@@ -312,6 +319,7 @@ int readTest5() {
     expectedRoot->setStart(vec2(0.0f, 0.0f));
     expectedRoot->setEnd(vec2(1.0f, 1.0f));
     expectedRoot->setActive(true);
+    expectedRoot->setName("layout1");
 
     Line* l = new Line();
     l->setStart(toIVec2(1.1f, 2.2f), Line::TagType::Vec);

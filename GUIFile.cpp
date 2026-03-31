@@ -98,25 +98,26 @@ static bool isLayoutClose(const std::string& tag) {
 }
 
 static bool isElementOpen(const std::string& tag) {
-    return tag == POINT_OPEN ||
-           tag == LINE_OPEN ||
-           tag == BOX_OPEN ||
-           tag == TRIANGLE_OPEN;
+    return tag.rfind("<point", 0) == 0 ||
+           tag.rfind("<line", 0) == 0 ||
+           tag.rfind("<box", 0) == 0 ||
+           tag.rfind("<triangle", 0) == 0;
 }
 
 static guiElement determineGuiElementOpenerType(const std::string& tag) {
-    if (tag == POINT_OPEN) {
+    if (tag.rfind("<point", 0) == 0) {
         return guiElement::POINT;
     }
-    if (tag == LINE_OPEN) {
+    if (tag.rfind("<line", 0) == 0) {
         return guiElement::LINE;
     }
-    if (tag == BOX_OPEN) {
+    if (tag.rfind("<box", 0) == 0) {
         return guiElement::BOX;
     }
-    if (tag == TRIANGLE_OPEN) {
+    if (tag.rfind("<triangle", 0) == 0) {
         return guiElement::TRIANGLE;
     }
+
     std::cerr << "Malformed XML\n";
     return guiElement::UNKNOWN;
 }
@@ -137,14 +138,13 @@ static bool isMatchingElementClose(const std::string& tag, guiElement type) {
     return false;
 }
 
-static bool getFloatAttribute(const std::string& tag,
-                                const std::string& attrName,
-                                float& value) {
+static bool getStringAttribute(const std::string& tag,
+                               const std::string& attrName,
+                               std::string& value) {
     std::string key = attrName + "=\"";
     size_t start = tag.find(key);
 
     if (start == std::string::npos) {
-        std::cerr << "Malformed XML\n";
         return false;
     }
 
@@ -156,7 +156,32 @@ static bool getFloatAttribute(const std::string& tag,
         return false;
     }
 
-    value = std::stof(tag.substr(start, end - start));
+    value = tag.substr(start, end - start);
+    return true;
+}
+
+static bool setNameFromTag(const std::string& tag, GuiElement* element) {
+    std::string name;
+
+    if (!getStringAttribute(tag, "name", name)) {
+        return false;
+    }
+
+    element->setName(name);
+    return true;
+}
+
+static bool getFloatAttribute(const std::string& tag,
+                                const std::string& attrName,
+                                float& value) {
+    std::string strValue;
+    
+    if (!getStringAttribute(tag, attrName, strValue)){
+        return false;
+    }
+
+
+    value = std::stof(strValue);
     return true;
 }
 
@@ -339,7 +364,12 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
     GuiElement* current = factory(type);
 
     if (!current) {
-        std::cerr << "Malformed XML\n";
+        delete current;
+        return nullptr;
+    }
+
+    if(!setNameFromTag(elementOpenTag, current)){
+        delete current;
         return nullptr;
     }
 
@@ -504,6 +534,11 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
 
 static Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenTag) {
     Layout* layout = new Layout();
+
+    if(!setNameFromTag(layoutOpenTag, layout)){
+        delete layout;
+        return nullptr;
+    }
 
     float sX, sY, eX, eY;
 
