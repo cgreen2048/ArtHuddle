@@ -17,6 +17,7 @@ class Layout : public GuiElement {
         bool active;
     public:
         Layout();
+        Layout(ElementParameters ep);
         ~Layout();
         vec2 getStart() const;
         vec2 getEnd() const;

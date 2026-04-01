@@ -204,9 +204,15 @@ int readTest1() {
     b->setColor(ivec3(212, 22, 124), Box::TagType::Vec);
     expectedRoot->addElement(b);
 
-    Point* p = new Point();
-    p->setCoords(ivec2(480, 270), Point::TagType::IVec);
-    p->setColor(ivec3(67, 200, 142), Point::TagType::IVec);
+    ElementParameters pointParam;
+    pointParam.point1 = ivec2(480, 270);
+    pointParam.color = ivec3(67, 200, 142);
+    pointParam.point1Type = TagType::IVec;
+    pointParam.colorType = TagType::IVec;
+    Point* p = new Point(pointParam);
+    // Point* p = new Point();
+    // p->setCoords(ivec2(480, 270), Point::TagType::IVec);
+    // p->setColor(ivec3(67, 200, 142), Point::TagType::IVec);
     expectedRoot->addElement(p);
 
     Triangle* t = new Triangle();
@@ -249,9 +255,15 @@ int readTest2() {
     nested->setEnd(vec2(0.75f, 0.75f));
     nested->setActive(true);
 
-    Point* p = new Point();
-    p->setCoords(ivec2(480, 270), Point::TagType::IVec);
-    p->setColor(ivec3(67, 200, 142), Point::TagType::IVec);
+    ElementParameters pParam;
+    pParam.point1 = ivec2(480, 270);
+    pParam.color = ivec3(67, 200, 142);
+    pParam.point1Type = TagType::IVec;
+    pParam.colorType = TagType::IVec;
+    Point* p = new Point(pParam);
+    // Point* p = new Point();
+    // p->setCoords(ivec2(480, 270), Point::TagType::IVec);
+    // p->setColor(ivec3(67, 200, 142), Point::TagType::IVec);
     nested->addElement(p);
 
     Box* b = new Box();
@@ -324,9 +336,15 @@ int readTest5() {
     nested->setEnd(vec2(0.90f, 0.95f));
     nested->setActive(true);
 
-    Point* p = new Point();
-    p->setCoords(ivec2(13, 14), Point::TagType::IVec);
-    p->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
+    ElementParameters pParam;
+    pParam.point1 = ivec2(13, 14);
+    pParam.color = ivec3(101, 102, 103);
+    pParam.point1Type = TagType::IVec;
+    pParam.colorType = TagType::IVec;
+    Point* p = new Point(pParam);
+    // Point* p = new Point();
+    // p->setCoords(ivec2(13, 14), Point::TagType::IVec);
+    // p->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
     nested->addElement(p);
 
     expectedRoot->addElement(nested);
@@ -519,9 +537,15 @@ int writeTest3() {
     nested1->setEnd(vec2(0.75f, 0.75f));
     nested1->setActive(true);
 
-    Point* p1 = new Point();
-    p1->setCoords(ivec2(13, 14), Point::TagType::IVec);
-    p1->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
+    ElementParameters p1Param;
+    p1Param.point1 = ivec2(13, 14);
+    p1Param.color = ivec3(101, 102, 103);
+    p1Param.point1Type = TagType::IVec;
+    p1Param.colorType = TagType::IVec;
+    Point* p1 = new Point(p1Param);
+    // Point* p1 = new Point();
+    // p1->setCoords(ivec2(13, 14), Point::TagType::IVec);
+    // p1->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
     nested1->addElement(p1);
 
     Layout* nested2 = new Layout();
@@ -550,9 +574,15 @@ int writeTest3() {
     expectedNested1->setEnd(vec2(0.75f, 0.75f));
     expectedNested1->setActive(true);
 
-    Point* expectedPoint = new Point();
-    expectedPoint->setCoords(ivec2(13, 14), Point::TagType::IVec);
-    expectedPoint->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
+    ElementParameters pointParam;
+    pointParam.point1 = ivec2(13, 14);
+    pointParam.color = ivec3(101, 102, 103);
+    pointParam.point1Type = TagType::IVec;
+    pointParam.colorType = TagType::IVec;
+    Point* expectedPoint = new Point(pointParam);
+    // Point* expectedPoint = new Point();
+    // expectedPoint->setCoords(ivec2(13, 14), Point::TagType::IVec);
+    // expectedPoint->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
     expectedNested1->addElement(expectedPoint);
 
     Layout* expectedNested2 = new Layout();

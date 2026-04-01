@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "Screen.hpp"
+#include "ElementParameters.hpp"
 
 enum class guiElement {UNKNOWN, LAYOUT, POINT, LINE, BOX, TRIANGLE};
 

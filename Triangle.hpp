@@ -6,8 +6,8 @@
 #include "vec3.hpp"
 
 class Triangle : public GuiElement {
-   public:
-		enum class TagType { Vec, IVec }; 
+//    public:
+// 		enum class TagType { Vec, IVec };
     private:
         ivec2 a;
         ivec2 b;
@@ -21,6 +21,7 @@ class Triangle : public GuiElement {
     public:
         Triangle();
         Triangle(ivec2 a, ivec2 b, ivec2 c, ivec3 color);
+        Triangle(ElementParameters ep);
         Triangle(const Triangle& cp);
         Triangle& operator=(const Triangle& cp);
         bool operator==(Triangle rhs);

@@ -10,6 +10,18 @@ Triangle::Triangle(ivec2 a, ivec2 b, ivec2 c, ivec3 color) {
     this->color = color;
 }
 
+Triangle::Triangle(ElementParameters ep) {
+    this->a = ep.point1;
+    this->b = ep.point2;
+    this->c = ep.point3;
+    this->color = ep.color;
+    this->aType = ep.point1Type;
+    this->bType = ep.point2Type;
+    this->cType = ep.point2Type;
+    this->colorType = ep.colorType;
+    this->name = ep.name;
+}
+
 Triangle::~Triangle() {}
 
 Triangle::Triangle(const Triangle& cp) : Triangle() {
@@ -21,6 +33,7 @@ Triangle::Triangle(const Triangle& cp) : Triangle() {
     this->bType = cp.bType;
     this->cType = cp.cType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
 }
 
 Triangle& Triangle::operator=(const Triangle& cp) {
@@ -32,6 +45,7 @@ Triangle& Triangle::operator=(const Triangle& cp) {
     this->bType = cp.bType;
     this->cType = cp.cType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
     return *this;
 }
 

@@ -4,8 +4,8 @@
 #include "GuiElement.hpp"
 
 class Line : public GuiElement {
-	public:
-		enum class TagType { Vec, IVec };
+	// public:
+	// 	enum class TagType { Vec, IVec };
 	private:
 		ivec2 start;
 		ivec2 end;
@@ -17,6 +17,7 @@ class Line : public GuiElement {
 	public:
 		Line();
 		Line(ivec2 start, ivec2 end, ivec3 color);
+		Line(ElementParameters ep);
 		Line(const Line& cp);
 		Line& operator=(const Line& cp);
 		bool operator==(Line rhs);

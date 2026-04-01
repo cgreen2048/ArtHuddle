@@ -9,6 +9,16 @@ Line::Line(ivec2 start, ivec2 end, ivec3 color) {
     this->color = color;
 }
 
+Line::Line(ElementParameters ep) {
+    this->start = ep.point1;
+    this->end = ep.point2;
+    this->color = ep.color;
+    this->startType = ep.point1Type;
+    this->endType = ep.point2Type;
+    this->colorType = ep.colorType;
+    this->name = ep.name;
+}
+
 Line::Line(const Line& cp) : Line() {
     this->start = cp.start;
     this->end = cp.end;
@@ -16,6 +26,7 @@ Line::Line(const Line& cp) : Line() {
     this->startType = cp.startType;
     this->endType = cp.endType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
 }
 
 Line& Line::operator=(const Line& cp) {
@@ -25,6 +36,7 @@ Line& Line::operator=(const Line& cp) {
     this->startType = cp.startType;
     this->endType = cp.endType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
     return *this;
 }
 

@@ -8,11 +8,20 @@ Point::Point(ivec2 coords, ivec3 color) {
     this->color = color;
 }
 
+Point::Point(ElementParameters ep) {
+    this->coords = ep.point1;
+    this->color = ep.color;
+    this->coordsType = ep.point1Type;
+    this->colorType = ep.colorType;
+    this->name = ep.name;
+}
+
 Point::Point(const Point& cp) : Point() {
     this->coords = cp.coords;
     this->color = cp.color;
     this->coordsType = cp.coordsType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
 }
 
 Point& Point::operator=(const Point& cp) {
@@ -20,6 +29,7 @@ Point& Point::operator=(const Point& cp) {
     this->color = cp.color;
     this->coordsType = cp.coordsType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
     return *this;
 }
 

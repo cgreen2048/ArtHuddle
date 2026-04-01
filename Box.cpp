@@ -14,6 +14,16 @@ Box::Box(ivec2 min, ivec2 max, ivec3 color) {
     this->color = color;
 }
 
+Box::Box(ElementParameters ep) {
+    this->min = ep.point1;
+    this->max = ep.point2;
+    this->color = ep.color;
+    this->minType = ep.point1Type;
+    this->maxType = ep.point2Type;
+    this->colorType = ep.colorType;
+    this->name = ep.name;
+}
+
 Box::Box(const Box& cp) : Box() {
     this->min = cp.min;
     this->max = cp.max;
@@ -21,6 +31,7 @@ Box::Box(const Box& cp) : Box() {
     this->minType = cp.minType;
     this->maxType = cp.maxType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
 }
 
 Box& Box::operator=(const Box& cp) {
@@ -30,6 +41,7 @@ Box& Box::operator=(const Box& cp) {
     this->minType = cp.minType;
     this->maxType = cp.maxType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
     return *this;
 }
 

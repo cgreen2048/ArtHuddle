@@ -17,6 +17,7 @@
 #include "Point.hpp"
 #include "Layout.hpp"
 #include <cmath>
+#include "ElementParameters.hpp"
 
 const std::string LAYOUT_OPEN = "<layout>";
 const std::string LAYOUT_CLOSE = "</layout>";

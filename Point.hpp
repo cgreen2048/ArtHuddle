@@ -4,8 +4,8 @@
 #include "GuiElement.hpp"
 
 class Point : public GuiElement {
-	public:
-		enum class TagType { Vec, IVec };
+	// public:
+	// 	enum class TagType { Vec, IVec };
 	private:
 		ivec2 coords;
 		ivec3 color;
@@ -15,6 +15,7 @@ class Point : public GuiElement {
 	public:
 		Point();
 		Point(ivec2 coords, ivec3 color);
+		Point(ElementParameters ep);
 		Point(const Point& cp);
 		Point& operator=(const Point& cp);
 		bool operator==(Point rhs);

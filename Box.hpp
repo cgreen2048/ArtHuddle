@@ -4,8 +4,8 @@
 #include "GuiElement.hpp"
 
 class Box : public GuiElement {
-	public:
-		enum class TagType { Vec, IVec };
+	// public:
+	// 	enum class TagType { Vec, IVec };
 	private:
 		ivec2 min;
 		ivec2 max;
@@ -17,6 +17,7 @@ class Box : public GuiElement {
 	public:
 		Box();
 		Box(ivec2 min, ivec2 max, ivec3 color);
+		Box(ElementParameters ep);
 		Box(const Box& cp);
 		Box& operator=(const Box& rhs);
 		bool operator==(Box rhs);

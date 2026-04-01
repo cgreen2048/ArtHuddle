@@ -3,6 +3,15 @@
 
 Layout::Layout() : active{false} {}
 
+Layout::Layout(ElementParameters ep) {
+    this->start = ep.layoutStart;
+    this->end = ep.layoutEnd;
+    this->active = ep.active;
+    for (int i = 0; i < ep.elements.size(); ++i) {
+        this->addElement(ep.elements[i]);
+    }
+}
+
 Layout::~Layout() {
     for (GuiElement *el : this->elements) {
         delete el;
