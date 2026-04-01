@@ -1,6 +1,8 @@
 # SP26_Team02
 
 # Quick Links to Classes
+- [Sound Class](#sound)
+- [SoundState Struct](#soundstate-struct)
 - [SoundPlayer Class](#soundplayer)
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
@@ -24,6 +26,96 @@ main.cpp is a demonstration program
 
 ---
 
+# Sound
+
+## Description
+A helper class for `SoundPlayer`. Used to store the data loaded from a WAV file for retrieval at a later time
+
+---
+
+## Data Members
+
+### `std::string filePath`
+The file path of the audio
+
+---
+
+### `Uint8* audioBuffer`
+The audio's buffer data, created when the WAV file is loaded in
+
+---
+
+### `Uint32 audioLength`
+The length of the object's `buffer` attributes in bytes
+
+---
+
+## Methods
+
+### `Sound(Uint8* bufferData, Uint32 soundLength, std::string soundName)`
+Class constructor. Sets `audioBuffer` to `bufferData`, `audioLength` to `soundLength`, and `filePath` to `soundName` 
+
+---
+
+### `~Sound()`
+Default destructor
+
+---
+
+### `std::string getName()`
+Returns the `filePath` attribute of this audio
+
+---
+
+### `Uint8* getBuffer()`
+Returns the `buffer` attribute of this object, representing the audio's buffer data
+
+---
+
+### `Uint32 getLength()`
+Returns the `length` attribute of this object, representing the length of the object's `buffer` attributes in bytes
+
+---
+
+# SoundState (struct)
+
+## Description
+A helper struct used to store WAV data in an easily modifiable format for audio playback. Used in `SoundPlayer`
+
+---
+
+## Data Members
+
+### `std::string filePath`
+The file path of an audio file. Retrieved to verify if an audio file is in `playback` of a `SoundPlayer`
+
+---
+
+### `Uint8* buffer`
+The buffer data of an audio file
+
+---
+
+### `Uint32 audioLength`
+The length of an audio file's buffer data in bytes
+
+---
+
+### `Uint8* bufferStart`
+A copy of `buffer`. Used to reset the struct if an audio is set to loop
+
+---
+
+### `Uint32 originalLength`
+A copy of `audioLength`. Used to reset the struct if an audio is set to loop
+
+---
+
+### `bool loop`
+Sets whether an audio will loop or not. Loops when set to true
+
+---
+
 # SoundPlayer
 
 ## Description
@@ -40,14 +132,20 @@ A pointer to the stream object created by `SDL_OpenAudioDeviceStream()`
 - Opened according to the formatting in `spec`
 - Uses `streamLoader()` as the callback for playback
 
+---
+
 ### `SDL_AudioSpec spec`
 The specification for the audio stream
 - Used to create the audio stream
 - Used to convert WAV data to the same format as the stream
 - Set to `SDL_AUDIO_F32` formatting, single channel, and 44.1 kHz frequency
 
+---
+
 ### `std::vector<Sound> soundBank`
-Storage for all loaded sounds. Stores `Sound` objects. Accessed when a sound is loaded or requested for playbaqck
+Storage for all loaded sounds. Stores `Sound` objects. Accessed when a sound is loaded or requested for playback
+
+---
 
 ### `std::vector<SoundState> playback`
 The playback queue for the callback function. `SoundState` objects are cleared from the vector when their data has been exhausted or reset to the beginning if the sound is set to loop
@@ -60,19 +158,27 @@ The playback queue for the callback function. `SoundState` objects are cleared f
 Class constructor. Sets the specifications for audio playback, opens a new audio stream and begins playback
 - Reports errors in stream creation or resuming playback
 
+---
+
 ### `~SoundPlayer()`
 Class destructor. Pauses playback, clears the soundbank and playback queue, and destroys the audio stream
 - Reports errors in pausing playback
 
+---
+
 ### `void togglePlayback()`
 Toggles audio playback. Pauses if the stream is playing audio and resumes if the stream is paused
 - Reports errors in pausing or resuming playback
+
+---
 
 ### `bool loadSound(std::string filePath)`
 Loads the desired file into the sound bank. Files must exist and be in WAV format
 - Uses `SDL_LoadWAV()` and report errors
 - Converts the loaded data to the formatting in the `spec` attribute using `SDL_ConvertAudioSamples()` and reports errors
 - Creates a new `Sound` object and pushes it to `soundBank`
+
+---
 
 ### `bool playSound(std::string filePath, bool loop)`
 Pushes the desired file into `playback` as a `SoundState` struct. User can set a sound to loop using the `loop` argument
@@ -81,15 +187,28 @@ Pushes the desired file into `playback` as a `SoundState` struct. User can set a
   - If not, `loadSound()` is called
   - Reports any errors in loading or playing sounds
 
-### `bool stopSound(std::string filePath)`
+---
 
+### `bool stopSound(std::string filePath)`
+Removes the requested audio from the `playback` queue. If the audio is not in `playback` then a corresponding message is shown
+
+---
 
 ### `std::vector<Sound> getSoundBank()`
 Returns the sound bank of `Sound` objects.
 - Can be used to check what sounds exist at a given time
 
-### `static void streamLoader(void* userData, SDL_AudioStream* stream, int amount, int x)`
+---
 
+### `static void streamLoader(void* userData, SDL_AudioStream* stream, int amount, int x)`
+The callback function for audio playback. Takes in `userData` as a reference to the `SoundPlayer` object and `stream` for the corresponding stream. Creates and deletes a mix array on each call
+- `amount` represents the amount of data the stream needs
+- `x` is unused, but required for compilation
+- Iterates through `playback` and takes the minimum between the amount of data left in the audio and `amount`
+  - If an audio is exhausted:
+    - If `loop` is true, the audio is reset to the beginning of its buffer
+    - If `loop` is false, the audio is cleared from `playback`
+- Uses `SDL_MixAudio()` and `SDL_PutAudioStreamData()` to build and supply the mix array for the stream
 
 ---
 
