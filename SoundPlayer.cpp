@@ -1,19 +1,11 @@
 #include "SoundPlayer.hpp"
 
 SoundPlayer::SoundPlayer() {
-    this->stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL, SoundPlayer::streamLoader, this);
+    this->spec.format = SDL_AUDIO_F32;
+    this->spec.channels = 1;
+    this->spec.freq = 44100;
+    this->stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &this->spec, SoundPlayer::streamLoader, this);
     if (!(this->stream)) {
-        std::cerr << SDL_GetError();
-    }
-
-    SDL_AudioDeviceID device = SDL_GetAudioStreamDevice(this->stream);
-    if (device == 0) {
-        std::cerr << SDL_GetError();
-    }
-
-    int sampleFrames;
-    bool formatSuccess = SDL_GetAudioDeviceFormat(device, &this->spec, &sampleFrames);
-    if (!formatSuccess) {
         std::cerr << SDL_GetError();
     }
 
@@ -38,31 +30,36 @@ void SoundPlayer::togglePlayback() {
     if (isPaused) {
         bool unpause = SDL_ResumeAudioStreamDevice(this->stream);
         if (!unpause) {
-            std::cerr << SDL_GetError();
+            std::cerr << SDL_GetError() << '\n';
         }
     }
     else {
         bool pause = SDL_PauseAudioStreamDevice(this->stream);
         if (!pause) {
-            std::cerr << SDL_GetError();
+            std::cerr << SDL_GetError() << '\n';
         }
     }
 }
 
 bool SoundPlayer::loadSound(std::string filePath) {
+    for (Sound itr : this->soundBank) {
+        if (itr.getName() == filePath) {
+            return true;
+        }
+    }
     Uint8* audioBuf;
     Uint32 audioLen;
     SDL_AudioSpec fileSpec;
     bool loaded = SDL_LoadWAV(filePath.c_str(), &fileSpec, &audioBuf, &audioLen);
     if (!loaded) {
-        std::cerr << SDL_GetError();
+        std::cerr << SDL_GetError() << '\n';
         return false;
     }
     
     int convertedLength = 0;
     bool convert = SDL_ConvertAudioSamples(&fileSpec, audioBuf, audioLen, &this->spec, &audioBuf, &convertedLength);
     if (!convert) {
-        std::cerr << SDL_GetError();
+        std::cerr << SDL_GetError() << '\n';
         return false;
     }
     audioLen = static_cast<Uint32>(convertedLength);

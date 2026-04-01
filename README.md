@@ -1,6 +1,7 @@
 # SP26_Team02
 
 # Quick Links to Classes
+- [SoundPlayer Class](#soundplayer)
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
 - [Layout Class](#layout)
@@ -20,6 +21,75 @@
 ## Description
 
 main.cpp is a demonstration program
+
+---
+
+# SoundPlayer
+
+## Description
+`SoundPlayer` serves to handle the loading, conversion, and playback of WAV files in 44.1 kHz, monoaural, float 32-bit format
+- Supports WAV files exclusively
+- Loads file data into `Sound` objects for storage and `SoundState` structs for playback
+
+---
+
+## Data Members
+
+### `SDL_AudioStream* stream`
+A pointer to the stream object created by `SDL_OpenAudioDeviceStream()`
+- Opened according to the formatting in `spec`
+- Uses `streamLoader()` as the callback for playback
+
+### `SDL_AudioSpec spec`
+The specification for the audio stream
+- Used to create the audio stream
+- Used to convert WAV data to the same format as the stream
+- Set to `SDL_AUDIO_F32` formatting, single channel, and 44.1 kHz frequency
+
+### `std::vector<Sound> soundBank`
+Storage for all loaded sounds. Stores `Sound` objects. Accessed when a sound is loaded or requested for playbaqck
+
+### `std::vector<SoundState> playback`
+The playback queue for the callback function. `SoundState` objects are cleared from the vector when their data has been exhausted or reset to the beginning if the sound is set to loop
+
+---
+
+## Methods
+
+### `SoundPlayer()`
+Class constructor. Sets the specifications for audio playback, opens a new audio stream and begins playback
+- Reports errors in stream creation or resuming playback
+
+### `~SoundPlayer()`
+Class destructor. Pauses playback, clears the soundbank and playback queue, and destroys the audio stream
+- Reports errors in pausing playback
+
+### `void togglePlayback()`
+Toggles audio playback. Pauses if the stream is playing audio and resumes if the stream is paused
+- Reports errors in pausing or resuming playback
+
+### `bool loadSound(std::string filePath)`
+Loads the desired file into the sound bank. Files must exist and be in WAV format
+- Uses `SDL_LoadWAV()` and report errors
+- Converts the loaded data to the formatting in the `spec` attribute using `SDL_ConvertAudioSamples()` and reports errors
+- Creates a new `Sound` object and pushes it to `soundBank`
+
+### `bool playSound(std::string filePath, bool loop)`
+Pushes the desired file into `playback` as a `SoundState` struct. User can set a sound to loop using the `loop` argument
+- Checks if the file exists in `soundBank`
+  - If it does, the data is loaded into a `SoundState` struct
+  - If not, `loadSound()` is called
+  - Reports any errors in loading or playing sounds
+
+### `bool stopSound(std::string filePath)`
+
+
+### `std::vector<Sound> getSoundBank()`
+Returns the sound bank of `Sound` objects.
+- Can be used to check what sounds exist at a given time
+
+### `static void streamLoader(void* userData, SDL_AudioStream* stream, int amount, int x)`
+
 
 ---
 
@@ -57,16 +127,16 @@ enum class guiElement { LAYOUOT, POINT, LINE, BOX, TRIANGLE };
 
 ## Data Members
 
-- `Screen* screen`  
+### `Screen* screen`  
 Pointer to the `Screen` object where the element will be drawn.
 
-- `ivec2 parentStart`
+### `ivec2 parentStart`
 `ivec2` that stores the starting coordinates of the parent `GuiElement` (usually `Layout`)
 
-- `ivec2 parentEnd`
+### `ivec2 parentEnd`
 `ivec2` that stores the ending coordinates of the parent `GuiElement` (usually `Layout`)
 
-- `std::string name`
+### `std::string name`
 `string` that stores the name of the `GuiElement`
 
 ---
@@ -132,6 +202,7 @@ Returns the `parentEnd` data for the current `GuiElement` object in `ivec2` form
 
 ### `const std::string& getName() const`
 Returns the `name` data for the current `GuiElement` object
+
 ---
 
 # Factory
