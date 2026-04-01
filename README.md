@@ -66,6 +66,9 @@ Pointer to the `Screen` object where the element will be drawn.
 - `ivec2 parentEnd`
 `ivec2` that stores the ending coordinates of the parent `GuiElement` (usually `Layout`)
 
+- `std::string name`
+`string` that stores the name of the `GuiElement`
+
 ---
 
 ## Methods
@@ -112,6 +115,11 @@ Sets the `parentEnd` data for the current `GuiElement` object
 
 ---
 
+### `void setName(const std::string& n)`
+Sets the `name` data for the current `GuiElement` object
+
+---
+
 ### `ivec2 GuiElement::getParentStart()`
 Returns the `parentStart` data for the current `GuiElement` object in `ivec2` format
 
@@ -120,6 +128,10 @@ Returns the `parentStart` data for the current `GuiElement` object in `ivec2` fo
 ### `ivec2 GuiElement::getParentEnd()`
 Returns the `parentEnd` data for the current `GuiElement` object in `ivec2` format
 
+---
+
+### `const std::string& getName() const`
+Returns the `name` data for the current `GuiElement` object
 ---
 
 # Factory
@@ -376,7 +388,7 @@ Returns the `c` attribute of the triangle
 Writes the triangle to an XML layout file.
 
 Behavior:
-- Writes a `<triangle>` tag to the output stream
+- Writes a `<triangle>` tag with the name parameter to the output stream
 - Writes the three triangle vertices (`a`, `b`, `c`)
 - Each vertex is written as either:
   - `<vec2>` if the stored `TagType` is `TagType::Vec`
@@ -465,7 +477,7 @@ Method to set the `color` and `colorType` attributes of a `Box` object
 Writes the box to an XML layout file.
 
 Behavior:
-- Writes a `<box>` tag to the output stream
+- Writes a `<box>` tag with the name parameter to the output stream
 - Writes the minimum corner (`min`)
   - `<vec2>` if the stored `TagType` is `TagType::Vec`
   - `<ivec2>` if the stored `TagType` is `TagType::IVec`
@@ -556,7 +568,7 @@ Method to set the `color` and `colorType` attributes of a `Line` object
 Writes the line to an XML layout file.
 
 Behavior:
-- Writes a `<line>` tag to the output stream
+- Writes a `<line>` tag with the name parameter to the output stream
 - Writes the starting point (`start`)
   - `<vec2>` if the stored `TagType` is `TagType::Vec`
   - `<ivec2>` if the stored `TagType` is `TagType::IVec`
@@ -640,7 +652,7 @@ Method to set the `color` and `colorType` attributes of a point object
 Writes the point to an XML layout file.
 
 Behavior:
-- Writes a `<point>` tag to the output stream
+- Writes a `<point>` tag with the name parameter to the output stream
 - Writes the point position (`coords`)
   - `<vec2>` if the stored `TagType` is `TagType::Vec`
   - `<ivec2>` if the stored `TagType` is `TagType::IVec`
@@ -762,9 +774,9 @@ These are used by the parser to verify correct nesting.
 ## Supported XML Layout Format
 
 ```xml
-<layout sX="0" sY="0" eX="1" eY="1">
-    <layout sX="0.1" sY="0.1" eX="0.5" eY="0.5">
-        <line>
+<layout name="Layout1" sX="0" sY="0" eX="1" eY="1">
+    <layout name="Layout2" sX="0.1" sY="0.1" eX="0.5" eY="0.5">
+        <line name="">
             <vec2>
                 <x>10</x>
                 <y>20</y>
@@ -781,7 +793,7 @@ These are used by the parser to verify correct nesting.
         </line>
     </layout>
 
-    <triangle>
+    <triangle name="">
         ...
     </triangle>
 </layout>
@@ -891,13 +903,94 @@ Supports:
 Behavior:
 - Determines type from opening tag
 - Uses the Factory to create the object
+- Extracts and sets the element `name` attribute
 - Parses coordinate and color data
 - Stores tag type (vec vs ivec)
 - Uses vector parsing helpers
 - Preserves original tag types for XML output
-- Returns a GuiElement*
+- Returns a `GuiElement*`
 
 ---
+
+## Attribute Parsing Helpers
+
+These functions extract attribute values from XML tags.
+
+---
+
+### `bool getStringAttribute(const std::string& tag, const std::string& attrName, std::string& value)`
+
+Extracts a string attribute from a tag.
+
+#### Steps:
+
+* Builds a search key:
+
+  ```cpp
+  attrName + "=\""
+  ```
+* Finds the start of the attribute inside the tag
+* Locates the closing `"`
+* Extracts the substring between them
+
+#### Returns:
+
+* `true` → attribute found and successfully parsed
+* `false` → attribute not found or malformed
+
+
+---
+
+### `bool setNameFromTag(const std::string& tag, GuiElement* element)`
+
+Extracts and assigns the `name` attribute to a `GuiElement`.
+
+#### Steps:
+
+* Calls:
+
+  ```cpp
+  getStringAttribute(tag, "name", name)
+  ```
+* If successful:
+
+  ```cpp
+  element->setName(name);
+  ```
+* Returns success/failure
+
+#### Purpose:
+
+* Avoids repeating name-parsing logic across multiple element types
+* Centralizes enforcement of the required `name` attribute
+
+---
+
+### `bool getFloatAttribute(const std::string& tag, const std::string& attrName, float& value)`
+
+Extracts a floating-point attribute from a tag.
+
+#### Steps:
+
+* Calls `getStringAttribute(...)` to retrieve the value as a string
+* Converts it using:
+
+  ```cpp
+  std::stof(strValue);
+  ```
+
+#### Returns:
+
+* `true` → attribute exists and conversion succeeded
+* `false` → attribute missing or invalid
+
+#### Used for:
+
+* Layout attributes:
+
+  * `sX`, `sY`
+  * `eX`, `eY`
+
 
 ## Error Handling
 
@@ -918,6 +1011,8 @@ If malformed XML is detected:
 
 ---
 
+
+
 ## Internal Parsing Utilities
 
 Used during parsing:
@@ -925,7 +1020,9 @@ Used during parsing:
 - `trim()` → removes whitespace  
 - `getNextTag()` → reads next XML tag  
 - `getNextPayload()` → reads text between tags  
-- `getFloatAttribute()` → extracts layout attributes  
+- `getFloatAttribute()` → extracts float attributes
+- `getStringAttribute()` → extracts string attributes
+- `setNameFromTag()` → assigns element names  
 - `isLayoutOpen()` / `isLayoutClose()` → layout tag checks  
 - `isElementOpen()` → element detection  
 - `isMatchingElementClose()` → validates closing tags

@@ -1,5 +1,5 @@
-<layout sX="0.0" sY="0.0" eX="1.0" eY="1.0">
-  <triangle>
+<layout name="Layout1" sX="0.0" sY="0.0" eX="1.0" eY="1.0">
+  <triangle name="">
     <ivec2>
       <x>100</x>
       <y>100</y>
@@ -19,8 +19,8 @@
     </ivec3>
   </triangle>
 
-  <layout sX="0.25" sY="0.25" eX="0.75" eY="0.75">
-    <point>
+  <layout name="" sX="0.25" sY="0.25" eX="0.75" eY="0.75">
+    <point name="">
       <ivec2>
         <x>480</x>
         <y>270</y>
@@ -32,7 +32,7 @@
       </ivec3>
     </point>
 
-    <box>
+    <box name="">
       <vec2>
         <x>250.3</x>
         <y>122.5</y>
