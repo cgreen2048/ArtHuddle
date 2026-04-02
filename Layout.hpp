@@ -7,6 +7,7 @@
 #include "GuiElement.hpp"
 #include "vec2.hpp"
 
+
 class Layout : public GuiElement {
     private:
         vec2 start;
@@ -30,6 +31,7 @@ class Layout : public GuiElement {
         void addElement(GuiElement *element);
         void draw(Screen *screen);
         void writeXml(std::ostream& out, int depth = 0) const;
+        bool resolveEvent(Event* e);
         const std::vector<GuiElement*>& getElements() const;
         int getAbsoluteStartX();
         int getAbsoluteStartY();

@@ -12,6 +12,7 @@
 - [Box Class](#box)
 - [Line Class](#line)
 - [Point Class](#point)
+- [EventSystem Clas](#eventsystem)
 - [GuiFile XML Parser](#guifile)
 - [Screen Class](#screen)
 - [Matrix Class](#matrix)
@@ -27,6 +28,7 @@ main.cpp is a demonstration program
 
 ---
 
+<<<<<<< HEAD
 # Sound
 
 ## Description
@@ -332,6 +334,8 @@ The relative ending position of a `Layout` object
 - Initialized to `vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest())`
 
 ---
+=======
+>>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 # GuiElement
 
@@ -422,6 +426,16 @@ Sets the `parentStart` data for the current `GuiElement` object
 
 ### `virtual void GuiElement::setParentEnd(const ivec2& end)`
 Sets the `parentEnd` data for the current `GuiElement` object
+
+---
+
+### `virtual bool GuiElement::resolveEvent(Event* e)`
+Handles an incoming event for the current `GuiElement` object
+
+Returns:
+
+- `true` if the element handles and consumes the event
+- `false` if the element does not handle the event and propagation should continue
 
 ---
 
@@ -557,7 +571,7 @@ Sets the parent ending coordinates as in `GuiElement` but overloaded to also set
 ### `void setActive(bool value)`
 Sets `active` to `value`, toggling the `Layout` active (able to be drawn) or not
 
---
+---
 
 ### `void isActive()`
 Getter method for `active` to check if the `Layout` can be drawn
@@ -576,6 +590,19 @@ If the `Layout` is active and contains both starting and ending parent bounds, i
 
 ### `void writeXml(std::ostream& out)`
 Similar to `draw()` except first printing the proper `<layout>` tag with parameters and then writing to an XML by calling each child `GuiElement*`'s `writeXml()` function.
+
+---
+
+### `bool resolveEvent(Event* e)`
+Handles and propagates an event through this Layout’s hierarchy
+- Checks for `SHOW` event to update current Layout state
+- If `active == false`, stops immediately and returns `false`
+- Otherwise, iterates through all child elements:
+  - Calls `child->resolveEvent(e)`
+  - Stops early if a child returns `true`
+- Returns:
+  - `true` → event was handled by a child  
+  - `false` → event was not handled  
 
 ---
 
@@ -1052,6 +1079,7 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ---
 
+<<<<<<< HEAD
 ### `bool isValid(ElementParameters ep)`
 Checks whether `ep.point1` has been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` has not been set
@@ -1060,16 +1088,132 @@ Checks whether `ep.point1` has been initialized and whether `ep.color` is comple
 ---
 
 # GUIFile
+=======
+# EventSystem
+>>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 ## Description
 
-`GUIFile` is responsible for **reading and writing an XML-based layout file** that describes a hierarchy of GUI elements.
+`EventSystem` is a **centralized event manager** responsible for:
 
-Instead of storing elements in a flat container:
+- Storing events in a queue  
+- Providing controlled access to events  
+- Propagating events through the GUI hierarchy  
+
+It follows the **Singleton Design Pattern**, ensuring only one global instance exists during the program’s lifetime.
+
+This system enables **event-driven programming**, where events are created, queued, and then dispatched to GUI elements for handling.
+
+---
+
+## Core Responsibilities
+
+- Queue incoming events (`push`)
+- Retrieve events in FIFO order (`poll`)
+- Process and dispatch events to the GUI (`processEvents`)
+- Maintain a single global instance (`getInstance`)
+
+---
+
+## Internal Data Structures
+
+### `std::queue<std::unique_ptr<Event>> eventQueue`
+
+- Stores events in **FIFO (First-In, First-Out)** order  
+- Uses `std::unique_ptr<Event>` to enforce **exclusive ownership**
+- Ensures safe memory management (RAII)
+
+---
+
+## Design Patterns Used
+
+### Singleton Pattern
+
+- Only one `EventSystem` instance exists
+- Constructor is private
+- Copy/assignment disabled
+- Accessed via `getInstance()`
+
+### Event Queue Pattern
+
+- Events are buffered before processing
+- Decouples **event producers** from **event consumers**
+
+---
+
+## Methods
+
+### `static EventSystem& getInstance()`
+
+Returns the single global instance of `EventSystem`.
+
+- Implements **Meyers Singleton**
+- Instance is created on first call
+
+---
+
+### `void push(std::unique_ptr<Event> e)`
+
+Adds a new event to the queue.
+
+- Transfers ownership using `std::move`
+- Prevents copying of events
+
+**Example:**
+```cpp
+EventSystem::getInstance().push(std::make_unique<ClickEvent>(x, y));
+```
+
+### `std::unique_ptr<Event> poll()`
+
+Retrieves and removes the next event from the queue.
+
+Returns:
+
+- `nullptr` if queue is empty  
+- Otherwise, the next event (ownership transferred)
+
+---
+
+### `void processEvents(Layout* root)`
+
+Processes all queued events and propagates them through the GUI.
+
+---
+
+#### Behavior:
+
+- Continuously polls events until queue is empty  
+- For each event:
+  - If `SOUND` event → handled separately
+  - Otherwise → passed to root layout:
+    ```cpp
+    root->resolveEvent(e.get());
+    ```
+
+---
+
+#### Event Propagation Model
+
+- Uses **top-down (trickling)** propagation:
+  - Event starts at root `Layout`
+  - Travels through child elements
+  - Stops when consumed
+
+---
+
+### Example Usage
 
 ```cpp
-std::vector<GuiElement*> elements;
+EventSystem& system = EventSystem::getInstance();
+
+// Push events
+system.push(std::make_unique<ClickEvent>(100, 200));
+
+// Process events
+system.processEvents(rootLayout);
 ```
+<<<<<<< HEAD
 the system now uses a hierarchical structure:
 ```cpp
 Layout* rootLayout;
@@ -1441,6 +1585,9 @@ Used to convert between float and integer vector types:
 These ensure the correct internal representation while preserving original XML tag types.
 
 ---
+=======
+ 
+>>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 ## UML Diagram
 ![UML Diagram](images/Milestone003_UML.png)

@@ -101,6 +101,29 @@ void Layout::writeXml(std::ostream& out, int depth) const {
     out << pad << "</layout>\n";
 }
 
+bool Layout::resolveEvent(Event* e) {
+    if (e->getType() == EventType::SHOW) {
+        // ShowEvent* show = static_cast<ShowEvent*>(e); // Show class needs to be implemented.
+
+        // if (this->getName() == show->getTargetLayoutName()) { // getTargetLayoutName() needs to be implemented.
+        //     active = show->shouldShow(); // shouldShow() needs to be implemented.
+        //     return true;
+        // }
+    }
+
+    if (!active) {
+        return false;
+    }
+
+    for (GuiElement* child : elements) {
+        if (child->resolveEvent(e)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 vec2 Layout::getStart() const {
     return start;
 }
