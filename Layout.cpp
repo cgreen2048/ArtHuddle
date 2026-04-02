@@ -3,6 +3,33 @@
 
 Layout::Layout() : active{false} {}
 
+Layout::Layout(ElementParameters ep) {
+    if (!isValid(ep)) {
+        throw -1;
+    }
+    this->start = ep.layoutStart;
+    this->end = ep.layoutEnd;
+    if (ep.parentStart.x != std::numeric_limits<int>::max()) {
+        this->hasParentStart = true;
+        this->parentStart = ep.parentStart;
+    }
+    else {
+        this->hasParentStart = false;
+    }
+    if (ep.parentEnd.x != std::numeric_limits<int>::lowest()) {
+        this->hasParentEnd = true;
+        this->parentEnd = ep.parentEnd;
+    }
+    else {
+        this->hasParentEnd = false;
+    }
+    this->active = ep.active;
+    for (int i = 0; i < ep.elements.size(); ++i) {
+        this->addElement(ep.elements[i]);
+    }
+    this->name = ep.name;
+}
+
 Layout::~Layout() {
     for (GuiElement *el : this->elements) {
         delete el;
@@ -102,4 +129,14 @@ int Layout::getAbsoluteEndX() {
 
 int Layout::getAbsoluteEndY() {
     return this->parentStart.y + static_cast<int>(this->end.y * (this->parentEnd.y - this->parentStart.y));
+}
+
+bool Layout::isValid(ElementParameters ep) {
+    if ((ep.layoutStart.x == std::numeric_limits<float>::lowest()) || (ep.layoutStart.y == std::numeric_limits<float>::lowest())) {
+        return false;
+    }
+    if ((ep.layoutEnd.x == std::numeric_limits<float>::lowest()) || (ep.layoutEnd.y == std::numeric_limits<float>::lowest())) {
+        return false;
+    }
+    return true;
 }

@@ -4,6 +4,7 @@
 - [Sound Class](#sound)
 - [SoundState Struct](#soundstate-struct)
 - [SoundPlayer Class](#soundplayer)
+- [ElementParameters Struct](#elementparameters-struct)
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
 - [Layout Class](#layout)
@@ -212,6 +213,126 @@ The callback function for audio playback. Takes in `userData` as a reference to 
 
 ---
 
+# ElementParameters (struct)
+
+## Description
+A struct passed to `Factory` to create a `GuiElement` object. Members are set to default values (`false`, `nullptr`, `std::numeric_limits<int>::lowest()`) to allow validity checks
+- Has a member for everything needed for all `GuiElement` objects
+  - Objects will reference relevant members when being constructed
+
+---
+
+## Data Members
+
+### `enum class TagType { Vec, IVec }`
+Enumeration used to communicate whether the corresponding attribute is a float or integer mathematical vector
+
+### `std::string name`
+The desired name of the object
+
+---
+
+### `ivec2 point1`
+The coordinates of the first point of an object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 point2`
+The coordinates of the second point of an object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 point3`
+The coordinates of the third point of an object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec3 color`
+The values for an object's color
+- Initialized to `ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `Screen* screen`
+A pointer to the `Screen` object the object should be drawn to
+- Initialized to `nullptr`
+
+---
+
+### `ivec2 parentStart`
+The coordinates that this object's parent starts at
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 parentEnd`
+The coordinates that this object's parent ends at
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `bool hasParentStart`
+Indicates whether the object has (`true`) the starting point of its parent or not(`false`)
+- Initialized to `false`
+
+---
+
+### `bool hasParentEnd`
+Indicates whether the object has (`true`) the ending point of its parent or not(`false`)
+- Initialized to `false`
+
+---
+
+### `std::vector<GuiElement*> elements`
+A vector of `GuiElement` pointers used to set the children of a new `Layout` object
+
+---
+
+### `bool active`
+Indicates whether a new `Layout` object is visible
+- Initialized to `false`
+
+---
+
+### `TagType point1Type`
+The type of mathematical vector that `point1` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType point2Type`
+The type of mathematical vector that `point2` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType point3Type`
+The type of mathematical vector that `point3` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType colorType`
+The type of mathematical vector that `color` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `vec2 layoutStart`
+The relative starting position of a `Layout` object
+- Initialized to `vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest())`
+
+---
+
+### `vec2 layoutEnd`
+The relative ending position of a `Layout` object
+- Initialized to `vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest())`
+
+---
+
 # GuiElement
 
 ## Description
@@ -324,6 +445,11 @@ Returns the `name` data for the current `GuiElement` object
 
 ---
 
+### `virtual bool isValid(ElementParameters ep)`
+A pure virtual function. Implemented by inherited classes to ensure the data passed using `ep` is valid and can be used to create a new object
+
+---
+
 # Factory
 
 ## Description
@@ -343,10 +469,11 @@ The factory returns a pointer to a `GuiElement`, allowing the caller to treat al
 
 ## Function
 
-### `GuiElement* factory(guiElement e)`
+### `GuiElement* factory(guiElement e, ElementParameters ep)`
 Creates a new GUI element based on the `guiElement` enum value.
+- Passes `ep` struct to the corresponding object's constructor.
 - Returns pointer to a newly allocated `GuiElement` object.
-- Returns `nullptr` if the enum value does not match any supported element.
+- Returns `nullptr` if the enum value does not match any supported element or if the constructor throws an exception due to invalid data.
 
 ---
 
@@ -388,6 +515,17 @@ element->draw(&screen);
 
 ### `Layout()`
 The default constructor, which only initializes `active` to false for other data to be set at a later time
+
+---
+
+### `Layout(ElementParameters ep)`
+Constructor that takes in an `ElementParameters` struct. Called via `Factory`
+- Calls `isValid` on `ep`
+  - Throws an exception if `isValid` returns `false`
+- Checks if `ep.parentStart` or `ep.parentEnd` has been set
+  - If so, sets the corresponding attribute in the new `Layout` object and sets `hasParentStart` or `hasParentEnd` to true
+- Sets the `start`, `end`, `active`, and `naem` attributes based on the corresponding data from `ep`
+- Calls `addElement` on all elements in `ep.elements` to add them to this object's child vector
 
 ---
 
@@ -476,6 +614,12 @@ Returns the absolute ending **y** position of this `Layout`
 
 ---
 
+### `bool isValid(ElementParameters ep)`
+Checks whether `ep.layoutStart` or `ep.layoutEnd` have been set
+- Returns false if `x` or `y` in `ep.layoutStart` or `ep.layoutEnd` have not been set
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/Milestone005_UML.png)
 
@@ -505,6 +649,14 @@ The default constructor. Initializes `a`, `b`, `c`, and `color` to zeros
 
 ### `Triangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 color)`
 The parameterized constructor. Assigns `pointA` to `a`, `pointB` to `b`, `pointC` to `c`, and `color` to `color
+
+---
+
+### `Triangle(ElementParameters ep)`
+Constructor that takes in an `ElementParameters` struct. Called via `Factory`
+- Calls `isValid` on `ep`
+  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Sets the `a`, `b`, `c`, `color`, `aType`, `bType`, `cType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
 
 ---
 
@@ -592,6 +744,13 @@ This allows the triangle to preserve whether the original data used floating-poi
 
 ---
 
+### `bool isValid(ElementParameters ep)`
+Checks whether `ep.point1`, `ep.point2`, and `ep.point3` have been initialized and whether `ep.color` is complete
+- Returns false if `x` or `y` in `ep.point1`, `ep.point2`, or `ep.point3` have not been set
+- Sets any missing color value to `125`
+
+---
+
 # Box
 
 ## Description
@@ -614,6 +773,14 @@ The default constructor. Initializes `min`, `max`, and `color` to zeros
 
 ### `Box(vec2 min, vec2 max, vec3 color)`
 The parameterized constructor. Assigns `min`, `max`, and `color` to appropriate attributes in the `Box` class
+
+---
+
+### `Box(ElementParameters ep)`
+Constructor that takes in an `ElementParameters` struct. Called via `Factory`
+- Calls `isValid` on `ep`
+  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Sets the `min`, `max`, `color`, `minType`, `maxType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
 
 ---
 
@@ -683,6 +850,13 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ---
 
+### `bool isValid(ElementParameters ep)`
+Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep.color` is complete
+- Returns false if `x` or `y` in `ep.point1` or `ep.point2` have not been set
+- Sets any missing color value to `125`
+
+---
+
 # Line
 
 ## Description
@@ -705,6 +879,14 @@ The default constructor. Initializes `start`, `end`, and `color` to zeros
 
 ### `Line(vec2 start, vec2 end, vec3 color)`
 The parameterized constructor. Assigns `start`, `end`, and `color` to appropriate attributes in the `Line` class
+
+---
+
+### `Line(ElementParameters ep)`
+Constructor that takes in an `ElementParameters` struct. Called via `Factory`
+- Calls `isValid` on `ep`
+  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Sets the `start`, `end`, `color`, `startType`, `endType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
 
 ---
 
@@ -774,6 +956,13 @@ This allows the line to maintain the same vector type used in the original layou
 
 ---
 
+### `bool isValid(ElementParameters ep)`
+Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep.color` is complete
+- Returns false if `x` or `y` in `ep.point1` or `ep.point2` have not been set
+- Sets any missing color value to `125`
+
+---
+
 # Point
 
 ## Description
@@ -794,6 +983,14 @@ The default constructor. Initializes `coords` and `color` to zeros
 
 ### `Point(vec2 coords, vec3 color)`
 The parameterized constructor. Assigns `coords` and `color` to appropriate attributes in the `Point` class
+
+---
+
+### `Point(ElementParameters ep)`
+Constructor that takes in an `ElementParameters` struct. Called via `Factory`
+- Calls `isValid` on `ep`
+  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Sets the `coords`, `color`, `coordsType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
 
 ---
 
@@ -852,6 +1049,13 @@ Behavior:
 - Closes the `<point>` tag
 
 This ensures the XML output preserves whether integer or floating-point vector tags were used in the layout file.
+
+---
+
+### `bool isValid(ElementParameters ep)`
+Checks whether `ep.point1` has been initialized and whether `ep.color` is complete
+- Returns false if `x` or `y` in `ep.point1` has not been set
+- Sets any missing color value to `125`
 
 ---
 
@@ -1065,14 +1269,14 @@ They implement the parsing logic used by `readFile()`.
 
 ### `Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenTag)`
 Parses a `<layout ...>` tag and its contents.
-- Creates a `Layout`  
+- Creates a new `ElementParameters` struct to hold data before `Layout` creation
 - Reads layout attributes:
   - `sX`, `sY`  
   - `eX`, `eY`  
 - Recursively parses:
   - child layouts  
   - child elements  
-- Returns the completed layout subtree
+- - Creates and returns a new `Layout` object using the factor and `ElementParameters` struct
 
 #### Additional Parsing Details
 
@@ -1092,13 +1296,13 @@ Supports:
 
 Behavior:
 - Determines type from opening tag
-- Uses the Factory to create the object
+- Creates a new `ElementParameters` struct to hold data before object creations
 - Extracts and sets the element `name` attribute
 - Parses coordinate and color data
 - Stores tag type (vec vs ivec)
 - Uses vector parsing helpers
 - Preserves original tag types for XML output
-- Returns a `GuiElement*`
+- Uses the Factory to create the object with the `ElementParameters` struct and returns the new `GuiElement` if it is created
 
 ---
 
@@ -1131,9 +1335,9 @@ Extracts a string attribute from a tag.
 
 ---
 
-### `bool setNameFromTag(const std::string& tag, GuiElement* element)`
+### `bool setNameFromTag(const std::string& tag, ElementParameters* ep)`
 
-Extracts and assigns the `name` attribute to a `GuiElement`.
+Extracts and assigns the `name` attribute to a `ElementParameter`'s `name` attribute
 
 #### Steps:
 

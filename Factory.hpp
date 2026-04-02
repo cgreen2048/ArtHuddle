@@ -7,7 +7,9 @@
 #include "Box.hpp"
 #include "Triangle.hpp"
 #include "Layout.hpp"
+#include "ElementParameters.hpp"
 
-extern GuiElement* factory(guiElement);
+extern GuiElement* factory(guiElement e, ElementParameters ep);
+
 
 #endif

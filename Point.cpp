@@ -8,11 +8,23 @@ Point::Point(ivec2 coords, ivec3 color) {
     this->color = color;
 }
 
+Point::Point(ElementParameters ep) {
+    if (!isValid(ep)) {
+        throw -1;
+    }
+    this->coords = ep.point1;
+    this->color = ep.color;
+    this->coordsType = ep.point1Type;
+    this->colorType = ep.colorType;
+    this->name = ep.name;
+}
+
 Point::Point(const Point& cp) : Point() {
     this->coords = cp.coords;
     this->color = cp.color;
     this->coordsType = cp.coordsType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
 }
 
 Point& Point::operator=(const Point& cp) {
@@ -20,6 +32,7 @@ Point& Point::operator=(const Point& cp) {
     this->color = cp.color;
     this->coordsType = cp.coordsType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
     return *this;
 }
 
@@ -67,4 +80,20 @@ void Point::writeXml(std::ostream& out, int depth) const {
         writeVec3(out, toVec3(color), pad);
     }
     out << pad << "</point>\n";
+}
+
+bool Point::isValid(ElementParameters ep) {
+    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    if (ep.color.x == std::numeric_limits<int>::lowest()) {
+        ep.color.x = 125;
+    }
+    if (ep.color.y == std::numeric_limits<int>::lowest()) {
+        ep.color.y = 125;
+    }
+    if (ep.color.z == std::numeric_limits<int>::lowest()) {
+        ep.color.z = 125;
+    }
+    return true;
 }

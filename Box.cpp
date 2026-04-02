@@ -14,6 +14,19 @@ Box::Box(ivec2 min, ivec2 max, ivec3 color) {
     this->color = color;
 }
 
+Box::Box(ElementParameters ep) {
+    if (!isValid(ep)) {
+        throw -1;
+    }
+    this->min = ep.point1;
+    this->max = ep.point2;
+    this->color = ep.color;
+    this->minType = ep.point1Type;
+    this->maxType = ep.point2Type;
+    this->colorType = ep.colorType;
+    this->name = ep.name;
+}
+
 Box::Box(const Box& cp) : Box() {
     this->min = cp.min;
     this->max = cp.max;
@@ -21,6 +34,7 @@ Box::Box(const Box& cp) : Box() {
     this->minType = cp.minType;
     this->maxType = cp.maxType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
 }
 
 Box& Box::operator=(const Box& cp) {
@@ -30,6 +44,7 @@ Box& Box::operator=(const Box& cp) {
     this->minType = cp.minType;
     this->maxType = cp.maxType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
     return *this;
 }
 
@@ -89,4 +104,23 @@ void Box::writeXml(std::ostream& out, int depth) const {
         writeVec3(out, toVec3(color), pad);
     }
     out << pad << "</box>\n";
+}
+
+bool Box::isValid(ElementParameters ep) {
+    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    if ((ep.point2.x == std::numeric_limits<int>::lowest()) || (ep.point2.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    if (ep.color.x == std::numeric_limits<int>::lowest()) {
+        ep.color.x = 125;
+    }
+    if (ep.color.y == std::numeric_limits<int>::lowest()) {
+        ep.color.y = 125;
+    }
+    if (ep.color.z == std::numeric_limits<int>::lowest()) {
+        ep.color.z = 125;
+    }
+    return true;
 }

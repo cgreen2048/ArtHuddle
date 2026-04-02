@@ -1,21 +1,49 @@
 #include "Factory.hpp"
 
-GuiElement* factory(guiElement e) {
+GuiElement* factory(guiElement e, ElementParameters ep) {
 	switch (e) {
 		case guiElement::LAYOUT: {
-			return new Layout{};
+			try {
+				return new Layout(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
 		}
 		case guiElement::POINT: {
-			return new Point{};
+			try {
+				return new Point(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
 		}
 		case guiElement::LINE: {
-			return new Line{};
+			try {
+				return new Line(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
 		}
 		case guiElement::BOX: {
-			return new Box{};
+			try {
+				return new Box(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
 		}
 		case guiElement::TRIANGLE: {
-			return new Triangle{};
+			try {
+				return new Triangle(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
+		}
+		default: {
+			return nullptr;
 		}
 	}
 	return nullptr;

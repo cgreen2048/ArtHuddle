@@ -9,6 +9,19 @@ Line::Line(ivec2 start, ivec2 end, ivec3 color) {
     this->color = color;
 }
 
+Line::Line(ElementParameters ep) {
+    if (!isValid(ep)) {
+        throw -1;
+    }
+    this->start = ep.point1;
+    this->end = ep.point2;
+    this->color = ep.color;
+    this->startType = ep.point1Type;
+    this->endType = ep.point2Type;
+    this->colorType = ep.colorType;
+    this->name = ep.name;
+}
+
 Line::Line(const Line& cp) : Line() {
     this->start = cp.start;
     this->end = cp.end;
@@ -16,6 +29,7 @@ Line::Line(const Line& cp) : Line() {
     this->startType = cp.startType;
     this->endType = cp.endType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
 }
 
 Line& Line::operator=(const Line& cp) {
@@ -25,6 +39,7 @@ Line& Line::operator=(const Line& cp) {
     this->startType = cp.startType;
     this->endType = cp.endType;
     this->colorType = cp.colorType;
+    this->name = cp.name;
     return *this;
 }
 
@@ -84,4 +99,23 @@ void Line::writeXml(std::ostream& out, int depth) const {
         writeVec3(out, toVec3(color), pad);
     }
     out << pad << "</line>\n";
+}
+
+bool Line::isValid(ElementParameters ep) {
+    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    if ((ep.point2.x == std::numeric_limits<int>::lowest()) || (ep.point2.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    if (ep.color.x == std::numeric_limits<int>::lowest()) {
+        ep.color.x = 125;
+    }
+    if (ep.color.y == std::numeric_limits<int>::lowest()) {
+        ep.color.y = 125;
+    }
+    if (ep.color.z == std::numeric_limits<int>::lowest()) {
+        ep.color.z = 125;
+    }
+    return true;
 }
