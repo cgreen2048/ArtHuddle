@@ -197,28 +197,60 @@ int readTest1() {
     expectedRoot->setActive(true);
     expectedRoot->setName("Line-Box-Point-Layout");
 
-    Line* l = new Line();
-    l->setStart(toIVec2(50.5f, 902.47f), Line::TagType::Vec);
-    l->setEnd(toIVec2(75.6f, 1024.6f), Line::TagType::Vec);
-    l->setColor(toIVec3(244.0f, 245.0f, 103.3f), Line::TagType::Vec);
+    ElementParameters lineParam;
+    lineParam.point1 = toIVec2(50.5f, 902.47f);
+    lineParam.point2 = toIVec2(75.6f, 1024.6f);
+    lineParam.color = toIVec3(244.0f, 245.0f, 103.3f);
+    lineParam.point1Type = TagType::IVec;
+    lineParam.point2Type = TagType::IVec;
+    lineParam.colorType = TagType::IVec;
+    GuiElement* l = factory(guiElement::LINE, lineParam);
+    // Line* l = new Line();
+    // l->setStart(toIVec2(50.5f, 902.47f), Line::TagType::Vec);
+    // l->setEnd(toIVec2(75.6f, 1024.6f), Line::TagType::Vec);
+    // l->setColor(toIVec3(244.0f, 245.0f, 103.3f), Line::TagType::Vec);
     expectedRoot->addElement(l);
 
-    Box* b = new Box();
-    b->setMin(toIVec2(250.3f, 122.5f), Box::TagType::Vec);
-    b->setMax(toIVec2(420.34f, 254.9f), Box::TagType::Vec);
-    b->setColor(ivec3(212, 22, 124), Box::TagType::Vec);
+    ElementParameters boxParam;
+    boxParam.point1 = toIVec2(250.3f, 122.5f);
+    boxParam.point2 = toIVec2(420.34f, 254.9f);
+    boxParam.color = ivec3(212, 22, 124);
+    boxParam.point1Type = TagType::IVec;
+    boxParam.point2Type = TagType::IVec;
+    boxParam.colorType = TagType::IVec;
+    GuiElement* b = factory(guiElement::BOX, boxParam);
+    // Box* b = new Box();
+    // b->setMin(toIVec2(250.3f, 122.5f), Box::TagType::Vec);
+    // b->setMax(toIVec2(420.34f, 254.9f), Box::TagType::Vec);
+    // b->setColor(ivec3(212, 22, 124), Box::TagType::Vec);
     expectedRoot->addElement(b);
 
-    Point* p = new Point();
-    p->setCoords(ivec2(480, 270), Point::TagType::IVec);
-    p->setColor(ivec3(67, 200, 142), Point::TagType::IVec);
+    ElementParameters pointParam;
+    pointParam.point1 = ivec2(480, 270);
+    pointParam.color = ivec3(67, 200, 142);
+    pointParam.point1Type = TagType::IVec;
+    pointParam.colorType = TagType::IVec;
+    GuiElement* p = factory(guiElement::POINT, pointParam);
+    // Point* p = new Point();
+    // p->setCoords(ivec2(480, 270), Point::TagType::IVec);
+    // p->setColor(ivec3(67, 200, 142), Point::TagType::IVec);
     expectedRoot->addElement(p);
 
-    Triangle* t = new Triangle();
-    t->setA(ivec2(100, 100), Triangle::TagType::IVec);
-    t->setB(ivec2(150, 100), Triangle::TagType::IVec);
-    t->setC(ivec2(125, 150), Triangle::TagType::IVec);
-    t->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
+    ElementParameters triangleParam;
+    triangleParam.point1 = ivec2(100, 100);
+    triangleParam.point2 = ivec2(150, 100);
+    triangleParam.point3 = ivec2(125, 150);
+    triangleParam.color = ivec3(255, 0, 0);
+    triangleParam.point1Type = TagType::IVec;
+    triangleParam.point2Type = TagType::IVec;
+    triangleParam.point3Type = TagType::IVec;
+    triangleParam.colorType = TagType::IVec;
+    GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
+    // Triangle* t = new Triangle();
+    // t->setA(ivec2(100, 100), Triangle::TagType::IVec);
+    // t->setB(ivec2(150, 100), Triangle::TagType::IVec);
+    // t->setC(ivec2(125, 150), Triangle::TagType::IVec);
+    // t->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
     expectedRoot->addElement(t);
 
     GUIFile gui;
@@ -244,11 +276,21 @@ int readTest2() {
     expectedRoot->setName("Layout1");
 
 
-    Triangle* t = new Triangle();
-    t->setA(ivec2(100, 100), Triangle::TagType::IVec);
-    t->setB(ivec2(150, 100), Triangle::TagType::IVec);
-    t->setC(ivec2(125, 150), Triangle::TagType::IVec);
-    t->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
+    ElementParameters triangleParam;
+    triangleParam.point1 = ivec2(100, 100);
+    triangleParam.point2 = ivec2(150, 100);
+    triangleParam.point3 = ivec2(125, 150);
+    triangleParam.color = ivec3(255, 0, 0);
+    triangleParam.point1Type = TagType::IVec;
+    triangleParam.point2Type = TagType::IVec;
+    triangleParam.point3Type = TagType::IVec;
+    triangleParam.colorType = TagType::IVec;
+    GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
+    // Triangle* t = new Triangle();
+    // t->setA(ivec2(100, 100), Triangle::TagType::IVec);
+    // t->setB(ivec2(150, 100), Triangle::TagType::IVec);
+    // t->setC(ivec2(125, 150), Triangle::TagType::IVec);
+    // t->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
     expectedRoot->addElement(t);
 
     Layout* nested = new Layout();
@@ -256,15 +298,29 @@ int readTest2() {
     nested->setEnd(vec2(0.75f, 0.75f));
     nested->setActive(true);
 
-    Point* p = new Point();
-    p->setCoords(ivec2(480, 270), Point::TagType::IVec);
-    p->setColor(ivec3(67, 200, 142), Point::TagType::IVec);
+    ElementParameters pParam;
+    pParam.point1 = ivec2(480, 270);
+    pParam.color = ivec3(67, 200, 142);
+    pParam.point1Type = TagType::IVec;
+    pParam.colorType = TagType::IVec;
+    GuiElement* p = factory(guiElement::POINT, pParam);
+    // Point* p = new Point();
+    // p->setCoords(ivec2(480, 270), Point::TagType::IVec);
+    // p->setColor(ivec3(67, 200, 142), Point::TagType::IVec);
     nested->addElement(p);
 
-    Box* b = new Box();
-    b->setMin(toIVec2(250.3f, 122.5f), Box::TagType::Vec);
-    b->setMax(toIVec2(420.34f, 254.9f), Box::TagType::Vec);
-    b->setColor(ivec3(212, 22, 124), Box::TagType::Vec);
+    ElementParameters boxParam;
+    boxParam.point1 = toIVec2(250.3f, 122.5f);
+    boxParam.point2 = toIVec2(420.34f, 254.9f);
+    boxParam.color = ivec3(212, 22, 124);
+    boxParam.point1Type = TagType::IVec;
+    boxParam.point2Type = TagType::IVec;
+    boxParam.colorType = TagType::IVec;
+    GuiElement* b = factory(guiElement::BOX, boxParam);
+    // Box* b = new Box();
+    // b->setMin(toIVec2(250.3f, 122.5f), Box::TagType::Vec);
+    // b->setMax(toIVec2(420.34f, 254.9f), Box::TagType::Vec);
+    // b->setColor(ivec3(212, 22, 124), Box::TagType::Vec);
     nested->addElement(b);
 
     expectedRoot->addElement(nested);
@@ -321,10 +377,18 @@ int readTest5() {
     expectedRoot->setActive(true);
     expectedRoot->setName("layout1");
 
-    Line* l = new Line();
-    l->setStart(toIVec2(1.1f, 2.2f), Line::TagType::Vec);
-    l->setEnd(toIVec2(3.3f, 4.4f), Line::TagType::Vec);
-    l->setColor(ivec3(10, 20, 30), Line::TagType::IVec);
+    ElementParameters lineParam;
+    lineParam.point1 = toIVec2(1.1f, 2.2f);
+    lineParam.point2 = toIVec2(3.3f, 4.4f);
+    lineParam.color = ivec3(10, 20, 30);
+    lineParam.point1Type = TagType::IVec;
+    lineParam.point2Type = TagType::IVec;
+    lineParam.colorType = TagType::IVec;
+    GuiElement* l = factory(guiElement::LINE, lineParam);
+    // Line* l = new Line();
+    // l->setStart(toIVec2(1.1f, 2.2f), Line::TagType::Vec);
+    // l->setEnd(toIVec2(3.3f, 4.4f), Line::TagType::Vec);
+    // l->setColor(ivec3(10, 20, 30), Line::TagType::IVec);
     expectedRoot->addElement(l);
 
     Layout* nested = new Layout();
@@ -332,9 +396,15 @@ int readTest5() {
     nested->setEnd(vec2(0.90f, 0.95f));
     nested->setActive(true);
 
-    Point* p = new Point();
-    p->setCoords(ivec2(13, 14), Point::TagType::IVec);
-    p->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
+    ElementParameters pParam;
+    pParam.point1 = ivec2(13, 14);
+    pParam.color = ivec3(101, 102, 103);
+    pParam.point1Type = TagType::IVec;
+    pParam.colorType = TagType::IVec;
+    GuiElement* p = factory(guiElement::POINT, pParam);
+    // Point* p = new Point();
+    // p->setCoords(ivec2(13, 14), Point::TagType::IVec);
+    // p->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
     nested->addElement(p);
 
     expectedRoot->addElement(nested);
@@ -429,16 +499,32 @@ int writeTest1() {
     root->setEnd(vec2(1.0f, 1.0f));
     root->setActive(true);
 
-    Line* l = new Line();
-    l->setStart(toIVec2(50.5f, 902.47f), Line::TagType::Vec);
-    l->setEnd(toIVec2(75.6f, 1024.6f), Line::TagType::Vec);
-    l->setColor(toIVec3(244.0f, 245.0f, 103.3f), Line::TagType::Vec);
+    ElementParameters lineParam;
+    lineParam.point1 = toIVec2(50.5f, 902.47f);
+    lineParam.point2 = toIVec2(75.6f, 1024.6f);
+    lineParam.color = toIVec3(244.0f, 245.0f, 103.3f);
+    lineParam.point1Type = TagType::Vec;
+    lineParam.point2Type = TagType::Vec;
+    lineParam.colorType = TagType::Vec;
+    GuiElement* l = factory(guiElement::LINE, lineParam);
+    // Line* l = new Line();
+    // l->setStart(toIVec2(50.5f, 902.47f), Line::TagType::Vec);
+    // l->setEnd(toIVec2(75.6f, 1024.6f), Line::TagType::Vec);
+    // l->setColor(toIVec3(244.0f, 245.0f, 103.3f), Line::TagType::Vec);
     root->addElement(l);
 
-    Box* b = new Box();
-    b->setMin(toIVec2(250.3f, 122.5f), Box::TagType::Vec);
-    b->setMax(toIVec2(420.34f, 254.9f), Box::TagType::Vec);
-    b->setColor(ivec3(212, 22, 124), Box::TagType::Vec);
+    ElementParameters boxParam;
+    boxParam.point1 = toIVec2(250.3f, 122.5f);
+    boxParam.point2 = toIVec2(420.34f, 254.9f);
+    boxParam.color = ivec3(212, 22, 124);
+    boxParam.point1Type = TagType::Vec;
+    boxParam.point2Type = TagType::Vec;
+    boxParam.colorType = TagType::Vec;
+    GuiElement* b = factory(guiElement::BOX, boxParam);
+    // Box* b = new Box();
+    // b->setMin(toIVec2(250.3f, 122.5f), Box::TagType::Vec);
+    // b->setMax(toIVec2(420.34f, 254.9f), Box::TagType::Vec);
+    // b->setColor(ivec3(212, 22, 124), Box::TagType::Vec);
     root->addElement(b);
 
     gui.setRootLayout(root);
@@ -448,16 +534,32 @@ int writeTest1() {
     expectedRoot->setEnd(vec2(1.0f, 1.0f));
     expectedRoot->setActive(true);
 
-    Line* el = new Line();
-    el->setStart(toIVec2(50.5f, 902.47f), Line::TagType::Vec);
-    el->setEnd(toIVec2(75.6f, 1024.6f), Line::TagType::Vec);
-    el->setColor(toIVec3(244.0f, 245.0f, 103.3f), Line::TagType::Vec);
+    ElementParameters newLineParam;
+    newLineParam.point1 = toIVec2(50.5f, 902.47f);
+    newLineParam.point2 = toIVec2(75.6f, 1024.6f);
+    newLineParam.color = toIVec3(244.0f, 245.0f, 103.3f);
+    newLineParam.point1Type = TagType::Vec;
+    newLineParam.point2Type = TagType::Vec;
+    newLineParam.colorType = TagType::Vec;
+    GuiElement* el = factory(guiElement::LINE, newLineParam);
+    // Line* el = new Line();
+    // el->setStart(toIVec2(50.5f, 902.47f), Line::TagType::Vec);
+    // el->setEnd(toIVec2(75.6f, 1024.6f), Line::TagType::Vec);
+    // el->setColor(toIVec3(244.0f, 245.0f, 103.3f), Line::TagType::Vec);
     expectedRoot->addElement(el);
 
-    Box* eb = new Box();
-    eb->setMin(toIVec2(250.3f, 122.5f), Box::TagType::Vec);
-    eb->setMax(toIVec2(420.34f, 254.9f), Box::TagType::Vec);
-    eb->setColor(ivec3(212, 22, 124), Box::TagType::Vec);
+    ElementParameters newBoxParam;
+    newBoxParam.point1 = toIVec2(250.3f, 122.5f);
+    newBoxParam.point2 = toIVec2(420.34f, 254.9f);
+    newBoxParam.color = ivec3(212, 22, 124);
+    newBoxParam.point1Type = TagType::Vec;
+    newBoxParam.point2Type = TagType::Vec;
+    newBoxParam.colorType = TagType::Vec;
+    GuiElement* eb = factory(guiElement::BOX, boxParam);
+    // Box* eb = new Box();
+    // eb->setMin(toIVec2(250.3f, 122.5f), Box::TagType::Vec);
+    // eb->setMax(toIVec2(420.34f, 254.9f), Box::TagType::Vec);
+    // eb->setColor(ivec3(212, 22, 124), Box::TagType::Vec);
     expectedRoot->addElement(eb);
 
     gui.writeFile("testFiles/writeTest1.xml");
@@ -527,9 +629,15 @@ int writeTest3() {
     nested1->setEnd(vec2(0.75f, 0.75f));
     nested1->setActive(true);
 
-    Point* p1 = new Point();
-    p1->setCoords(ivec2(13, 14), Point::TagType::IVec);
-    p1->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
+    ElementParameters p1Param;
+    p1Param.point1 = ivec2(13, 14);
+    p1Param.color = ivec3(101, 102, 103);
+    p1Param.point1Type = TagType::IVec;
+    p1Param.colorType = TagType::IVec;
+    GuiElement* p1 = factory(guiElement::POINT, p1Param);
+    // Point* p1 = new Point();
+    // p1->setCoords(ivec2(13, 14), Point::TagType::IVec);
+    // p1->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
     nested1->addElement(p1);
 
     Layout* nested2 = new Layout();
@@ -537,11 +645,21 @@ int writeTest3() {
     nested2->setEnd(vec2(1.00f, 1.00f));
     nested2->setActive(true);
 
-    Triangle* t = new Triangle();
-    t->setA(ivec2(100, 100), Triangle::TagType::IVec);
-    t->setB(ivec2(150, 100), Triangle::TagType::IVec);
-    t->setC(ivec2(125, 150), Triangle::TagType::IVec);
-    t->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
+    ElementParameters triangleParam;
+    triangleParam.point1 = ivec2(100, 100);
+    triangleParam.point2 = ivec2(150, 100);
+    triangleParam.point3 = ivec2(125, 150);
+    triangleParam.color = ivec3(255, 0, 0);
+    triangleParam.point1Type = TagType::IVec;
+    triangleParam.point2Type = TagType::IVec;
+    triangleParam.point3Type = TagType::IVec;
+    triangleParam.colorType = TagType::IVec;
+    GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
+    // Triangle* t = new Triangle();
+    // t->setA(ivec2(100, 100), Triangle::TagType::IVec);
+    // t->setB(ivec2(150, 100), Triangle::TagType::IVec);
+    // t->setC(ivec2(125, 150), Triangle::TagType::IVec);
+    // t->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
     nested2->addElement(t);
 
     nested1->addElement(nested2);
@@ -558,9 +676,15 @@ int writeTest3() {
     expectedNested1->setEnd(vec2(0.75f, 0.75f));
     expectedNested1->setActive(true);
 
-    Point* expectedPoint = new Point();
-    expectedPoint->setCoords(ivec2(13, 14), Point::TagType::IVec);
-    expectedPoint->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
+    ElementParameters pointParam;
+    pointParam.point1 = ivec2(13, 14);
+    pointParam.color = ivec3(101, 102, 103);
+    pointParam.point1Type = TagType::IVec;
+    pointParam.colorType = TagType::IVec;
+    GuiElement* expectedPoint = factory(guiElement::POINT, pointParam);
+    // Point* expectedPoint = new Point();
+    // expectedPoint->setCoords(ivec2(13, 14), Point::TagType::IVec);
+    // expectedPoint->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
     expectedNested1->addElement(expectedPoint);
 
     Layout* expectedNested2 = new Layout();
@@ -568,11 +692,21 @@ int writeTest3() {
     expectedNested2->setEnd(vec2(1.00f, 1.00f));
     expectedNested2->setActive(true);
 
-    Triangle* expectedTriangle = new Triangle();
-    expectedTriangle->setA(ivec2(100, 100), Triangle::TagType::IVec);
-    expectedTriangle->setB(ivec2(150, 100), Triangle::TagType::IVec);
-    expectedTriangle->setC(ivec2(125, 150), Triangle::TagType::IVec);
-    expectedTriangle->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
+    ElementParameters triangleParam2;
+    triangleParam2.point1 = ivec2(100, 100);
+    triangleParam2.point2 = ivec2(150, 100);
+    triangleParam2.point3 = ivec2(125, 150);
+    triangleParam2.color = ivec3(255, 0, 0);
+    triangleParam2.point1Type = TagType::IVec;
+    triangleParam2.point2Type = TagType::IVec;
+    triangleParam2.point3Type = TagType::IVec;
+    triangleParam2.colorType = TagType::IVec;
+    GuiElement* expectedTriangle = factory(guiElement::TRIANGLE, triangleParam2);
+    // Triangle* expectedTriangle = new Triangle();
+    // expectedTriangle->setA(ivec2(100, 100), Triangle::TagType::IVec);
+    // expectedTriangle->setB(ivec2(150, 100), Triangle::TagType::IVec);
+    // expectedTriangle->setC(ivec2(125, 150), Triangle::TagType::IVec);
+    // expectedTriangle->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
     expectedNested2->addElement(expectedTriangle);
 
     expectedNested1->addElement(expectedNested2);

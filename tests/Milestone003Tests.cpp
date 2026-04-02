@@ -394,9 +394,8 @@ int readTest5() {
     pParam.color = ivec3(101, 102, 103);
     pParam.point1Type = TagType::IVec;
     pParam.colorType = TagType::IVec;
-    // Point* p = new Point(pParam);
     GuiElement* p = factory(guiElement::POINT, pParam);
-    
+    // Point* p = new Point(pParam);
     // Point* p = new Point();
     // p->setCoords(ivec2(13, 14), Point::TagType::IVec);
     // p->setColor(ivec3(101, 102, 103), Point::TagType::IVec);
@@ -677,7 +676,8 @@ int writeTest3() {
     pointParam.color = ivec3(101, 102, 103);
     pointParam.point1Type = TagType::IVec;
     pointParam.colorType = TagType::IVec;
-    Point* expectedPoint = new Point(pointParam);
+    GuiElement* expectedPoint = factory(guiElement::POINT, pointParam);
+    // Point* expectedPoint = new Point(pointParam);
     // Point* expectedPoint = new Point();
     // expectedPoint->setCoords(ivec2(13, 14), Point::TagType::IVec);
     // expectedPoint->setColor(ivec3(101, 102, 103), Point::TagType::IVec);

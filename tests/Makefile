@@ -70,5 +70,6 @@ clean:
 	rm milestone005
 	rm milestone005LayoutTests
 	rm layoutDemo
+	rm milestone006
 
 

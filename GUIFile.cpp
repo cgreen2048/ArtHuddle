@@ -160,7 +160,7 @@ static bool getStringAttribute(const std::string& tag,
     return true;
 }
 
-static bool setNameFromTag(const std::string& tag, ElementParameters ep) {
+static bool setNameFromTag(const std::string& tag, ElementParameters* ep) {
     std::string name;
 
     if (!getStringAttribute(tag, "name", name)) {
@@ -168,7 +168,7 @@ static bool setNameFromTag(const std::string& tag, ElementParameters ep) {
     }
 
     // element->setName(name);
-    ep.name = name;
+    ep->name = name;
     return true;
 }
 
@@ -370,7 +370,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
     //     return nullptr;
     // }
 
-    if(!setNameFromTag(elementOpenTag, ep)){
+    if(!setNameFromTag(elementOpenTag, &ep)){
         // delete current;
         return nullptr;
     }
@@ -593,7 +593,7 @@ static Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenT
     // Layout* layout = new Layout();
     ElementParameters ep;
 
-    if(!setNameFromTag(layoutOpenTag, ep)){
+    if(!setNameFromTag(layoutOpenTag, &ep)){
         // delete layout;
         return nullptr;
     }

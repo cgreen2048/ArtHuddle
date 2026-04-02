@@ -10,6 +10,7 @@ Layout::Layout(ElementParameters ep) {
     for (int i = 0; i < ep.elements.size(); ++i) {
         this->addElement(ep.elements[i]);
     }
+    this->name = ep.name;
 }
 
 Layout::~Layout() {

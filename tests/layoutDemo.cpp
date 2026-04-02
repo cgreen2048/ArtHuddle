@@ -52,66 +52,151 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     float mouseX, mouseY;
     int x, y;
 
-    Layout* layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT));
-    layout->setStart(vec2{0.1,0.1});
-    layout->setEnd(vec2{1.0, 1.0});
-    layout->setParentStart(ivec2{0,0});
-    layout->setParentEnd(ivec2{X,Y});
+    ElementParameters rootLayout;
+    rootLayout.layoutStart = vec2(0.1, 0.1);
+    rootLayout.layoutEnd = vec2(1.0, 1.0);
+    rootLayout.parentStart = ivec2(0, 0);
+    rootLayout.parentEnd = ivec2(X, Y);
+    // Layout* layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT));
+    // layout->setStart(vec2{0.1,0.1});
+    // layout->setEnd(vec2{1.0, 1.0});
+    // layout->setParentStart(ivec2{0,0});
+    // layout->setParentEnd(ivec2{X,Y});
 
-    ivec2 triangleA{100, 100};
-    ivec2 triangleB{150, 100};
-    ivec2 triangleC{125, 150};
+    
+    
+    ElementParameters triangleParam;
+    triangleParam.point1 = ivec2(100, 100);
+    triangleParam.point2 = ivec2(150, 100);
+    triangleParam.point3 = ivec2(125, 150);
+    triangleParam.color = ivec3(255, 0, 0);
+    triangleParam.point1Type = TagType::IVec;
+    triangleParam.point2Type = TagType::IVec;
+    triangleParam.point3Type = TagType::IVec;
+    triangleParam.colorType = TagType::IVec;
+    
+    ivec2 triangleA = triangleParam.point1;
+    ivec2 triangleB = triangleParam.point2;
+    ivec2 triangleC = triangleParam.point3;
 
-    Triangle* tri = dynamic_cast<Triangle*>(factory(guiElement::TRIANGLE));
-    tri->setA(triangleA, Triangle::TagType::IVec);
-    tri->setB(triangleB, Triangle::TagType::IVec);
-    tri->setC(triangleC, Triangle::TagType::IVec);
-    tri->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
-    layout->addElement(tri);
+    Triangle* tri = dynamic_cast<Triangle*>(factory(guiElement::TRIANGLE, triangleParam));
+    // tri->setA(triangleA, Triangle::TagType::IVec);
+    // tri->setB(triangleB, Triangle::TagType::IVec);
+    // tri->setC(triangleC, Triangle::TagType::IVec);
+    // tri->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
+    // layout->addElement(tri);
+    rootLayout.elements.push_back(tri);
 
-    Box* b = dynamic_cast<Box*>(factory(guiElement::BOX));
-    b->setMin(ivec2(200,200), Box::TagType::IVec);
-    b->setMax(ivec2(400,400), Box::TagType::IVec);
-    b->setColor(ivec3(0, 255, 255), Box::TagType::IVec);
-    layout->addElement(b);
+    
+    
+    ElementParameters boxParam;
+    boxParam.point1 = ivec2(200, 200);
+    boxParam.point2 = ivec2(400, 400);
+    boxParam.color = ivec3(0, 255, 255);
+    boxParam.point1Type = TagType::IVec;
+    boxParam.point2Type = TagType::IVec;
+    boxParam.colorType = TagType::IVec;
+    Box* b = dynamic_cast<Box*>(factory(guiElement::BOX, boxParam));
+    // b->setMin(ivec2(200,200), Box::TagType::IVec);
+    // b->setMax(ivec2(400,400), Box::TagType::IVec);
+    // b->setColor(ivec3(0, 255, 255), Box::TagType::IVec);
+    // layout->addElement(b);
+    rootLayout.elements.push_back(b);
 
-    Layout* nestedLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT));
-    nestedLayout->setStart(vec2{0.5, 0.5});
-    nestedLayout->setEnd(vec2{1.0, 1.0});
-    layout->addElement(nestedLayout);
 
-    Line* nestedLayoutVerticalBorder = dynamic_cast<Line*>(factory(guiElement::LINE));
-    nestedLayoutVerticalBorder->setStart(ivec2(X/2, Y/2), Line::TagType::IVec);
-    nestedLayoutVerticalBorder->setEnd(ivec2(X/2, Y), Line::TagType::IVec);
-    nestedLayoutVerticalBorder->setColor(ivec3(0, 0, 0), Line::TagType::IVec);
-    nestedLayout->addElement(nestedLayoutVerticalBorder);
+    ElementParameters nestedLayoutParam;
+    nestedLayoutParam.layoutStart = vec2(0.5, 0.5);
+    nestedLayoutParam.layoutStart = vec2(1.0, 1.0);
+    // Layout* nestedLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, nestedLayoutParam));
+    // nestedLayout->setStart(vec2{0.5, 0.5});
+    // nestedLayout->setEnd(vec2{1.0, 1.0});
+    // layout->addElement(nestedLayout);
 
-    Line* nestedLayoutHorizontalBorder = dynamic_cast<Line*>(factory(guiElement::LINE));
-    nestedLayoutHorizontalBorder->setStart(ivec2(X/2, Y/2), Line::TagType::IVec);
-    nestedLayoutHorizontalBorder->setEnd(ivec2(X, Y/2), Line::TagType::IVec);
-    nestedLayoutHorizontalBorder->setColor(ivec3(0, 0, 0), Line::TagType::IVec);
-    nestedLayout->addElement(nestedLayoutHorizontalBorder);
 
-    Box* nestedBox = dynamic_cast<Box*>(factory(guiElement::BOX));
-    nestedBox->setMin(ivec2(800,200), Box::TagType::IVec);      // intentionally cut off the top end of the box to show relative pos
-    nestedBox->setMax(ivec2(900,500), Box::TagType::IVec);
-    nestedBox->setColor(ivec3(255, 0, 0), Box::TagType::IVec);
-    nestedLayout->addElement(nestedBox);
+    ElementParameters nestedVerticalParam;
+    nestedVerticalParam.point1 = ivec2(X/2, Y/2);
+    nestedVerticalParam.point2 = ivec2(X/2, Y);
+    nestedVerticalParam.color = ivec3(0, 0, 0);
+    nestedVerticalParam.point1Type = TagType::IVec;
+    nestedVerticalParam.point2Type = TagType::IVec;
+    nestedVerticalParam.colorType = TagType::IVec;
+    Line* nestedLayoutVerticalBorder = dynamic_cast<Line*>(factory(guiElement::LINE, nestedVerticalParam));
+    // nestedLayoutVerticalBorder->setStart(ivec2(X/2, Y/2), Line::TagType::IVec);
+    // nestedLayoutVerticalBorder->setEnd(ivec2(X/2, Y), Line::TagType::IVec);
+    // nestedLayoutVerticalBorder->setColor(ivec3(0, 0, 0), Line::TagType::IVec);
+    // nestedLayout->addElement(nestedLayoutVerticalBorder);
+    nestedLayoutParam.elements.push_back(nestedLayoutVerticalBorder);
 
-    Triangle* nestedTri = dynamic_cast<Triangle*>(factory(guiElement::TRIANGLE));
-    nestedTri->setA(ivec2(500, 530), Triangle::TagType::IVec);
-    nestedTri->setB(ivec2(750, 510), Triangle::TagType::IVec);
-    nestedTri->setC(ivec2(600, 460), Triangle::TagType::IVec);
-    nestedTri->setColor(ivec3(255, 0, 255), Triangle::TagType::IVec);
-    nestedLayout->addElement(nestedTri);
+    
+    ElementParameters nestedHorizontalParam;
+    nestedHorizontalParam.point1 = ivec2(X/2, Y/2);
+    nestedHorizontalParam.point2 = ivec2(X, Y/2);
+    nestedHorizontalParam.color = ivec3(0, 0, 0);
+    nestedHorizontalParam.point1Type = TagType::IVec;
+    nestedHorizontalParam.point2Type = TagType::IVec;
+    nestedHorizontalParam.colorType = TagType::IVec;
+    Line* nestedLayoutHorizontalBorder = dynamic_cast<Line*>(factory(guiElement::LINE, nestedHorizontalParam));
+    // nestedLayoutHorizontalBorder->setStart(ivec2(X/2, Y/2), Line::TagType::IVec);
+    // nestedLayoutHorizontalBorder->setEnd(ivec2(X, Y/2), Line::TagType::IVec);
+    // nestedLayoutHorizontalBorder->setColor(ivec3(0, 0, 0), Line::TagType::IVec);
+    // nestedLayout->addElement(nestedLayoutHorizontalBorder);
+    nestedLayoutParam.elements.push_back(nestedLayoutHorizontalBorder);
 
-    Line* nestedLine = dynamic_cast<Line*>(factory(guiElement::LINE));
-    nestedLine->setStart(ivec2(480, 280), Line::TagType::IVec);
-    nestedLine->setEnd(ivec2(940, 530), Line::TagType::IVec);
-    nestedLine->setColor(ivec3(132, 231, 52), Line::TagType::IVec);
-    nestedLayout->addElement(nestedLine);
 
-    layout->setActive(true);
+    ElementParameters nestedBoxParam;
+    nestedBoxParam.point1 = ivec2(800, 200);
+    nestedBoxParam.point2 = ivec2(900, 500);
+    nestedBoxParam.color = ivec3(255, 0, 0);
+    nestedBoxParam.point1Type = TagType::IVec;
+    nestedBoxParam.point2Type = TagType::IVec;
+    nestedBoxParam.colorType = TagType::IVec;
+    Box* nestedBox = dynamic_cast<Box*>(factory(guiElement::BOX, nestedBoxParam));
+    // nestedBox->setMin(ivec2(800,200), Box::TagType::IVec);      // intentionally cut off the top end of the box to show relative pos
+    // nestedBox->setMax(ivec2(900,500), Box::TagType::IVec);
+    // nestedBox->setColor(ivec3(255, 0, 0), Box::TagType::IVec);
+    // nestedLayout->addElement(nestedBox);
+    nestedLayoutParam.elements.push_back(nestedBox);
+
+
+
+    ElementParameters nestedTriangleParam;
+    nestedTriangleParam.point1 = ivec2(500, 530);
+    nestedTriangleParam.point2 = ivec2(750, 510);
+    nestedTriangleParam.point3 = ivec2(600, 460);
+    nestedTriangleParam.color = ivec3(255, 0, 255);
+    nestedTriangleParam.point1Type = TagType::IVec;
+    nestedTriangleParam.point2Type = TagType::IVec;
+    nestedTriangleParam.point3Type = TagType::IVec;
+    nestedTriangleParam.colorType = TagType::IVec;
+    Triangle* nestedTri = dynamic_cast<Triangle*>(factory(guiElement::TRIANGLE, nestedTriangleParam));
+    // nestedTri->setA(ivec2(500, 530), Triangle::TagType::IVec);
+    // nestedTri->setB(ivec2(750, 510), Triangle::TagType::IVec);
+    // nestedTri->setC(ivec2(600, 460), Triangle::TagType::IVec);
+    // nestedTri->setColor(ivec3(255, 0, 255), Triangle::TagType::IVec);
+    // nestedLayout->addElement(nestedTri);
+    nestedLayoutParam.elements.push_back(nestedTri);
+
+
+
+    ElementParameters nestedLineParam;
+    nestedLineParam.point1 = ivec2(480, 280);
+    nestedLineParam.point2 = ivec2(940, 530);
+    nestedLineParam.color = ivec3(132, 231, 52);
+    nestedLineParam.point1Type = TagType::IVec;
+    nestedLineParam.point2Type = TagType::IVec;
+    nestedLineParam.colorType = TagType::IVec;
+    Line* nestedLine = dynamic_cast<Line*>(factory(guiElement::LINE, nestedLineParam));
+    // nestedLine->setStart(ivec2(480, 280), Line::TagType::IVec);
+    // nestedLine->setEnd(ivec2(940, 530), Line::TagType::IVec);
+    // nestedLine->setColor(ivec3(132, 231, 52), Line::TagType::IVec);
+    // nestedLayout->addElement(nestedLine);
+    nestedLayoutParam.elements.push_back(nestedLine);
+
+    // layout->setActive(true);
+    Layout* nestedLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, nestedLayoutParam));
+    rootLayout.elements.push_back(nestedLayout);
+    rootLayout.active = true;
+    Layout* layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, rootLayout));
 
     while (!end) {
         while (SDL_PollEvent(&event)) {
