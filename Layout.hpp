@@ -7,6 +7,7 @@
 #include "GuiElement.hpp"
 #include "vec2.hpp"
 
+
 class Layout : public GuiElement {
     private:
         vec2 start;
