@@ -2,6 +2,7 @@
 #define __ELEMENT_PARAMETERS_HPP__
 
 #include <limits>
+#include <vector>
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "GuiElement.hpp"
