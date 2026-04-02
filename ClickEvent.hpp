@@ -11,4 +11,6 @@ class ClickEvent : public Event {
         ClickEvent(int x, int y);
         int getMouseX();
         int getMouseY();
-}
+};
+
+#endif
