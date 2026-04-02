@@ -213,6 +213,11 @@ The callback function for audio playback. Takes in `userData` as a reference to 
 
 ---
 
+## UML Diagram
+![UML Diagram](images/SoundPlayer_UML.png)
+
+---
+
 # ElementParameters (struct)
 
 ## Description
@@ -330,6 +335,11 @@ The relative starting position of a `Layout` object
 ### `vec2 layoutEnd`
 The relative ending position of a `Layout` object
 - Initialized to `vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest())`
+
+---
+
+## UML Diagram
+![UML Diagram](images/ElementParameters_UML.png)
 
 ---
 
