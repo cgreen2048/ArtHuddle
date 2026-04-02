@@ -16,7 +16,7 @@ struct ElementParameters {
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec3 color = ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     Screen* screen = nullptr;
-    ivec2 parentStart = ivec2(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
+    ivec2 parentStart = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 parentEnd = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     bool hasParentStart = false;
     bool hasParentEnd = false;
