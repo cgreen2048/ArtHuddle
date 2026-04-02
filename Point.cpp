@@ -10,7 +10,7 @@ Point::Point(ivec2 coords, ivec3 color) {
 
 Point::Point(ElementParameters ep) {
     if (!isValid(ep)) {
-        return;
+        throw -1;
     }
     this->coords = ep.point1;
     this->color = ep.color;
@@ -86,8 +86,14 @@ bool Point::isValid(ElementParameters ep) {
     if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
-    if ((ep.color.x == std::numeric_limits<int>::lowest()) || (ep.color.y == std::numeric_limits<int>::lowest()) || (ep.color.z == std::numeric_limits<int>::lowest())) {
-        return false;
+    if (ep.color.x == std::numeric_limits<int>::lowest()) {
+        ep.color.x = 125;
+    }
+    if (ep.color.y == std::numeric_limits<int>::lowest()) {
+        ep.color.y = 125;
+    }
+    if (ep.color.z == std::numeric_limits<int>::lowest()) {
+        ep.color.z = 125;
     }
     return true;
 }

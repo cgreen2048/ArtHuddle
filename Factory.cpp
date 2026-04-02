@@ -4,19 +4,44 @@
 GuiElement* factory(guiElement e, ElementParameters ep) {
 	switch (e) {
 		case guiElement::LAYOUT: {
-			return new Layout(ep);
+			try {
+				return new Layout(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
 		}
 		case guiElement::POINT: {
-			return new Point(ep);
+			try {
+				return new Point(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
 		}
 		case guiElement::LINE: {
-			return new Line(ep);
+			try {
+				return new Line(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
 		}
 		case guiElement::BOX: {
-			return new Box(ep);
+			try {
+				return new Box(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
 		}
 		case guiElement::TRIANGLE: {
-			return new Triangle(ep);
+			try {
+				return new Triangle(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
 		}
 		default: {
 			return nullptr;

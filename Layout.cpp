@@ -5,7 +5,7 @@ Layout::Layout() : active{false} {}
 
 Layout::Layout(ElementParameters ep) {
     if (!isValid(ep)) {
-        return;
+        throw -1;
     }
     this->start = ep.layoutStart;
     this->end = ep.layoutEnd;

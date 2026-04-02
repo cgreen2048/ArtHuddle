@@ -12,7 +12,7 @@ Triangle::Triangle(ivec2 a, ivec2 b, ivec2 c, ivec3 color) {
 
 Triangle::Triangle(ElementParameters ep) {
     if (!isValid(ep)) {
-        return;
+        throw -1;
     }
     this->a = ep.point1;
     this->b = ep.point2;
@@ -142,8 +142,14 @@ bool Triangle::isValid(ElementParameters ep) {
     if ((ep.point3.x == std::numeric_limits<int>::lowest()) || (ep.point3.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
-    if ((ep.color.x == std::numeric_limits<int>::lowest()) || (ep.color.y == std::numeric_limits<int>::lowest()) || (ep.color.z == std::numeric_limits<int>::lowest())) {
-        return false;
+    if (ep.color.x == std::numeric_limits<int>::lowest()) {
+        ep.color.x = 125;
+    }
+    if (ep.color.y == std::numeric_limits<int>::lowest()) {
+        ep.color.y = 125;
+    }
+    if (ep.color.z == std::numeric_limits<int>::lowest()) {
+        ep.color.z = 125;
     }
     return true;
 }

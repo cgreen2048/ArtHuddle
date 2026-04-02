@@ -3,11 +3,20 @@
 #include <chrono>
 #include <thread>
 #include "../SoundPlayer.hpp"
+#include "../Factory.hpp"
+#include "../GuiElement.hpp"
+#include "../Layout.hpp"
+#include "../Triangle.hpp"
+#include "../Box.hpp"
+#include "../Line.hpp"
+#include "../Point.hpp"
+#include "../Screen.hpp"
 
 
 const int X = 960;
 const int Y = 540;
 
+bool factoryTests();
 bool soundTests(SoundPlayer*);
 
 int main() {
@@ -15,6 +24,11 @@ int main() {
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
     SDL_Window *window = SDL_CreateWindow("Hello Window", X, Y, 0);
 
+    bool factorySuccess = factoryTests();
+    if (!factorySuccess) {
+        failure = 1;
+    }
+    std::cout << '\n';
     SoundPlayer* player = new SoundPlayer();
     bool soundSuccess = soundTests(player);
     if (!soundSuccess) {
@@ -45,6 +59,7 @@ int main() {
 }
 
 bool soundTests(SoundPlayer* player) {
+    std::cout << "***SoundPlayer tests***\n";
     bool loaded = player->loadSound("../SFX/song.wav");
     if (!loaded) {
         std::cout << "loading valid wav file test FAILED\n";
@@ -99,7 +114,7 @@ bool soundTests(SoundPlayer* player) {
     for (auto itr = soundBank.begin(); itr != soundBank.end(); ++itr) {
         std::cout << itr->getName() << '\n';
     }
-    std::this_thread::sleep_for(std::chrono::seconds(15));
+    // std::this_thread::sleep_for(std::chrono::seconds(15));
     bool stoppage = player->stopSound("../SFX/chords.wav");
     if (!stoppage) {
         std::cout << "stopping valid sound test FAILED\n";
@@ -122,6 +137,151 @@ bool soundTests(SoundPlayer* player) {
     }
     else {
         std::cout << "SoundPlayer working\n";
+    }
+    return success;
+}
+
+bool factoryTests() {
+    std::cout << "***Factory tests***\n";
+    bool success = true;
+    ElementParameters pointParam;
+    pointParam.color = ivec3(244, 245, 103);
+    pointParam.point1Type = TagType::IVec;
+    pointParam.colorType = TagType::IVec;
+    GuiElement* p = factory(guiElement::POINT, pointParam);
+    if (p) {
+        success = false;
+        std::cout << "point missing coordinate test FAILED\n";
+    }
+    else {
+        std::cout << "point missing coordinate test passed\n";
+    }
+
+    ElementParameters point2Param;
+    point2Param.point1 = ivec2(100, 50);
+    point2Param.point1Type = TagType::IVec;
+    point2Param.colorType = TagType::IVec;
+    GuiElement* p2 = factory(guiElement::POINT, point2Param);
+    if (!p2) {
+        success = false;
+        std::cout << "point missing color test FAILED\n";
+    }
+    else {
+        std::cout << "point missing color test passed\n";
+    }
+
+    ElementParameters lineParam;
+    lineParam.point1 = ivec2(50, 75);
+    lineParam.color = ivec3(244, 245, 103);
+    lineParam.point1Type = TagType::IVec;
+    lineParam.colorType = TagType::IVec;
+    GuiElement* l = factory(guiElement::LINE, lineParam);
+    if (l) {
+        success = false;
+        std::cout << "line missing coordinate test FAILED\n";
+    }
+    else {
+        std::cout << "line missing coordinate test passed\n";
+    }
+
+    ElementParameters lineParam2;
+    lineParam2.point1 = ivec2(100, 50);
+    lineParam2.point2 = ivec2(150, 75);
+    lineParam2.point1Type = TagType::IVec;
+    lineParam2.colorType = TagType::IVec;
+    GuiElement* l2 = factory(guiElement::LINE, lineParam2);
+    if (!l2) {
+        success = false;
+        std::cout << "line missing color test FAILED\n";
+    }
+    else {
+        std::cout << "line missing color test passed\n";
+    }
+
+    ElementParameters boxParam;
+    boxParam.point1 = ivec2(50, 75);
+    boxParam.color = ivec3(244, 245, 103);
+    boxParam.point1Type = TagType::IVec;
+    boxParam.colorType = TagType::IVec;
+    GuiElement* b = factory(guiElement::BOX, boxParam);
+    if (b) {
+        success = false;
+        std::cout << "box missing coordinate test FAILED\n";
+    }
+    else {
+        std::cout << "box missing coordinate test passed\n";
+    }
+
+    ElementParameters boxParam2;
+    boxParam2.point1 = ivec2(100, 50);
+    boxParam2.point2 = ivec2(150, 75);
+    boxParam2.point1Type = TagType::IVec;
+    boxParam2.colorType = TagType::IVec;
+    GuiElement* b2 = factory(guiElement::BOX, boxParam2);
+    if (!b2) {
+        success = false;
+        std::cout << "box missing color test FAILED\n";
+    }
+    else {
+        std::cout << "box missing color test passed\n";
+    }
+
+    ElementParameters triParam;
+    triParam.point1 = ivec2(50, 75);
+    triParam.color = ivec3(244, 245, 103);
+    triParam.point1Type = TagType::IVec;
+    triParam.colorType = TagType::IVec;
+    GuiElement* t = factory(guiElement::TRIANGLE, triParam);
+    if (t) {
+        success = false;
+        std::cout << "triangle missing coordinate test FAILED\n";
+    }
+    else {
+        std::cout << "triangle missing coordinate test passed\n";
+    }
+
+    ElementParameters triParam2;
+    triParam2.point1 = ivec2(100, 50);
+    triParam2.point2 = ivec2(150, 75);
+    triParam2.point3 = ivec2(125, 75);
+    triParam2.point1Type = TagType::IVec;
+    triParam2.colorType = TagType::IVec;
+    GuiElement* t2 = factory(guiElement::TRIANGLE, triParam2);
+    if (!t2) {
+        success = false;
+        std::cout << "triangle missing color test FAILED\n";
+    }
+    else {
+        std::cout << "triangle missing color test passed\n";
+    }    
+
+    ElementParameters layoutParam;
+    layoutParam.layoutStart = vec2(0.1, 0.5);
+    GuiElement* layout = factory(guiElement::LAYOUT, layoutParam);
+    if (layout) {
+        success = false;
+        std::cout << "layout missing end test FAILED\n";
+    }
+    else {
+        std::cout << "layout missing end test passed\n";
+    }
+
+    ElementParameters layoutParam2;
+    layoutParam2.layoutEnd = vec2(0.1, 0.5);
+    GuiElement* layout2 = factory(guiElement::LAYOUT, layoutParam2);
+    if (layout2) {
+        success = false;
+        std::cout << "layout missing start test FAILED\n";
+    }
+    else {
+        std::cout << "layout missing start test passed\n";
+    }
+
+    if (!success) {
+        std::cout << "IMPLEMENTATION FAILED: REVIEW TESTS\n";
+    }
+    else {
+        std::cout << "factory working\n";
     }
     return success;
 }
