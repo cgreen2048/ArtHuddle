@@ -3,7 +3,11 @@
 
 #include <iostream>
 #include "Screen.hpp"
+<<<<<<< HEAD
 #include "ElementParameters.hpp"
+=======
+#include "Event.hpp"
+>>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 enum class guiElement {UNKNOWN, LAYOUT, POINT, LINE, BOX, TRIANGLE};
 
@@ -24,6 +28,8 @@ class GuiElement {
 		virtual void setParentStart(const ivec2& start);
 
         virtual void setParentEnd(const ivec2& end);
+
+		virtual bool resolveEvent(Event*);
 
 		void setName(const std::string& n);
 

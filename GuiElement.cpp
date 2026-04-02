@@ -12,6 +12,9 @@ void GuiElement::draw(Screen *screen){
 void GuiElement::writeXml(std::ostream& out, int depth) const{
 
 }
+bool GuiElement::resolveEvent(Event *e){
+    return false;
+}
 void GuiElement::setParentStart(const ivec2& start) {
     this->parentStart = start;
 }
