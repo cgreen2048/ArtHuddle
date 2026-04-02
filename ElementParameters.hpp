@@ -1,6 +1,7 @@
 #ifndef __ELEMENT_PARAMETERS_HPP__
 #define __ELEMENT_PARAMETERS_HPP__
 
+#include <limits>
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "GuiElement.hpp"
@@ -16,8 +17,8 @@ struct ElementParameters {
     ivec2 point3;
     ivec3 color;
     Screen* screen;
-    ivec2 parentStart;
-    ivec2 parentEnd;
+    ivec2 parentStart = ivec2(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
+    ivec2 parentEnd = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     bool hasParentStart;
     bool hasParentEnd;
     std::vector<GuiElement*> elements;

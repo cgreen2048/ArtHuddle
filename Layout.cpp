@@ -6,6 +6,20 @@ Layout::Layout() : active{false} {}
 Layout::Layout(ElementParameters ep) {
     this->start = ep.layoutStart;
     this->end = ep.layoutEnd;
+    if (ep.parentStart.x != std::numeric_limits<int>::max()) {
+        this->hasParentStart = true;
+    }
+    else {
+        this->hasParentStart = false;
+    }
+    this->parentStart = ep.parentStart;
+    if (ep.parentEnd.x != std::numeric_limits<int>::lowest()) {
+        this->hasParentEnd = true;
+    }
+    else {
+        this->hasParentEnd = false;
+    }
+    this->parentEnd = ep.parentEnd;
     this->active = ep.active;
     for (int i = 0; i < ep.elements.size(); ++i) {
         this->addElement(ep.elements[i]);
