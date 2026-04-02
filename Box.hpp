@@ -4,8 +4,6 @@
 #include "GuiElement.hpp"
 
 class Box : public GuiElement {
-	// public:
-	// 	enum class TagType { Vec, IVec };
 	private:
 		ivec2 min;
 		ivec2 max;

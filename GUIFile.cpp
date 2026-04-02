@@ -167,7 +167,6 @@ static bool setNameFromTag(const std::string& tag, ElementParameters* ep) {
         return false;
     }
 
-    // element->setName(name);
     ep->name = name;
     return true;
 }
@@ -363,15 +362,8 @@ static bool parseIVec3(std::ifstream& inFile, ivec3& result) {
 static GuiElement* parseElement(std::ifstream& inFile, const std::string& elementOpenTag) {
     guiElement type = determineGuiElementOpenerType(elementOpenTag);
     ElementParameters ep;
-    // GuiElement* current = factory(type, ep);
-
-    // if (!current) {
-    //     delete current;
-    //     return nullptr;
-    // }
 
     if(!setNameFromTag(elementOpenTag, &ep)){
-        // delete current;
         return nullptr;
     }
 
@@ -384,7 +376,6 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
 
         if (tag.empty()) {
             std::cerr << "Malformed XML\n";
-            // delete current;
             return nullptr;
         }
 
@@ -400,7 +391,6 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
         if (tag == VEC2_OPEN) {
             vec2 temp;
             if (!parseVec2(inFile, temp)) {
-                // delete current;
                 return nullptr;
             }
 
@@ -409,53 +399,41 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
             
             
             if (type == guiElement::LINE) {
-                // Line* l = static_cast<Line*>(current);
                 if (lineVec2Index == 0) {
-                    // l->setStart(v, Line::TagType::Vec);
                     ep.point1 = v;
                     ep.point1Type = TagType::Vec;
                 }
                 else {
-                    // l->setEnd(v, Line::TagType::Vec);
                     ep.point2 = v;
                     ep.point2Type = TagType::Vec;
                 }
                 lineVec2Index++;
             }
             else if (type == guiElement::BOX) {
-                // Box* b = static_cast<Box*>(current);
                 if (boxVec2Index == 0) {
-                    // b->setMin(v, Box::TagType::Vec);
                     ep.point1 = v;
                     ep.point1Type = TagType::Vec;
                 }
                 else {
-                    // b->setMax(v, Box::TagType::Vec);
                     ep.point2 = v;
                     ep.point2Type = TagType::Vec;
                 }
                 boxVec2Index++;
             }
             else if (type == guiElement::POINT) {
-                // Point* p = static_cast<Point*>(current);
-                // p->setCoords(v, Point::TagType::Vec);
                 ep.point1 = v;
                 ep.point1Type = TagType::Vec;
             }
             else if (type == guiElement::TRIANGLE) {
-                // Triangle* t = static_cast<Triangle*>(current);
                 if (triangleVec2Index == 0) {
-                    // t->setA(v, Triangle::TagType::Vec);
                     ep.point1 = v;
                     ep.point1Type = TagType::Vec;
                 }
                 else if (triangleVec2Index == 1) {
-                    // t->setB(v, Triangle::TagType::Vec);
                     ep.point2 = v;
                     ep.point2Type = TagType::Vec;
                 }
                 else {
-                    // t->setC(v, Triangle::TagType::Vec);
                     ep.point3 = v;
                     ep.point3Type = TagType::Vec;
                 }
@@ -465,58 +443,45 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
         else if (tag == IVEC2_OPEN) {
             ivec2 v;
             if (!parseIVec2(inFile, v)) {
-                // delete current;
                 return nullptr;
             }
 
             if (type == guiElement::LINE) {
-                // Line* l = static_cast<Line*>(current);
                 if (lineVec2Index == 0) {
-                    // l->setStart(v, Line::TagType::IVec);
                     ep.point1 = v;
                     ep.point1Type = TagType::IVec;
                 }
                 else {
-                    // l->setEnd(v, Line::TagType::IVec);
                     ep.point2 = v;
                     ep.point2Type = TagType::IVec;
                 }
                 lineVec2Index++;
             }
             else if (type == guiElement::BOX) {
-                // Box* b = static_cast<Box*>(current);
                 if (boxVec2Index == 0) {
-                    // b->setMin(v, Box::TagType::IVec);
                     ep.point1 = v;
                     ep.point1Type = TagType::IVec;
                 }
                 else {
-                    // b->setMax(v, Box::TagType::IVec);
                     ep.point2 = v;
                     ep.point2Type = TagType::IVec;
                 }
                 boxVec2Index++;
             }
             else if (type == guiElement::POINT) {
-                // Point* p = static_cast<Point*>(current);
-                // p->setCoords(v, Point::TagType::IVec);
                 ep.point1 = v;
                 ep.point1Type = TagType::IVec;
             }
             else if (type == guiElement::TRIANGLE) {
-                // Triangle* t = static_cast<Triangle*>(current);
                 if (triangleVec2Index == 0) {
-                    // t->setA(v, Triangle::TagType::IVec);
                     ep.point1 = v;
                     ep.point1Type = TagType::IVec;
                 }
                 else if (triangleVec2Index == 1) {
-                    // t->setB(v, Triangle::TagType::IVec);
                     ep.point2 = v;
                     ep.point2Type = TagType::IVec;
                 }
                 else {
-                    // t->setC(v, Triangle::TagType::IVec);
                     ep.point3 = v;
                     ep.point3Type = TagType::IVec;
                 }
@@ -526,29 +491,24 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
         else if (tag == VEC3_OPEN) {
             vec3 temp;
             if (!parseVec3(inFile, temp)) {
-                // delete current;
                 return nullptr;
             }
 
             ivec3 c = toIVec3(temp);
 
             if (type == guiElement::LINE) {
-                // static_cast<Line*>(current)->setColor(c, Line::TagType::Vec);
                 ep.color = c;
                 ep.colorType = TagType::Vec;
             }
             else if (type == guiElement::BOX) {
-                // static_cast<Box*>(current)->setColor(c, Box::TagType::Vec);
                 ep.color = c;
                 ep.colorType = TagType::Vec;
             }
             else if (type == guiElement::POINT) {
-                // static_cast<Point*>(current)->setColor(c, Point::TagType::Vec);
                 ep.color = c;
                 ep.colorType = TagType::Vec;
             }
             else if (type == guiElement::TRIANGLE) {
-                // static_cast<Triangle*>(current)->setColor(c, Triangle::TagType::Vec);
                 ep.color = c;
                 ep.colorType = TagType::Vec;
             }
@@ -556,45 +516,37 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
         else if (tag == IVEC3_OPEN) {
             ivec3 c;
             if (!parseIVec3(inFile, c)) {
-                // delete current;
                 return nullptr;
             }
 
             if (type == guiElement::LINE) {
-                // static_cast<Line*>(current)->setColor(c, Line::TagType::IVec);
                 ep.color = c;
                 ep.colorType = TagType::IVec;
             }
             else if (type == guiElement::BOX) {
-                // static_cast<Box*>(current)->setColor(c, Box::TagType::IVec);
                 ep.color = c;
                 ep.colorType = TagType::IVec;
             }
             else if (type == guiElement::POINT) {
-                // static_cast<Point*>(current)->setColor(c, Point::TagType::IVec);
                 ep.color = c;
                 ep.colorType = TagType::IVec;
             }
             else if (type == guiElement::TRIANGLE) {
-                // static_cast<Triangle*>(current)->setColor(c, Triangle::TagType::IVec);
                 ep.color = c;
                 ep.colorType = TagType::IVec;
             }
         }
         else {
             std::cerr << "Malformed XML\n";
-            // delete current;
             return nullptr;
         }
     }
 }
 
 static Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenTag) {
-    // Layout* layout = new Layout();
     ElementParameters ep;
 
     if(!setNameFromTag(layoutOpenTag, &ep)){
-        // delete layout;
         return nullptr;
     }
 
@@ -604,17 +556,13 @@ static Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenT
         !getFloatAttribute(layoutOpenTag, "sY", sY) ||
         !getFloatAttribute(layoutOpenTag, "eX", eX) ||
         !getFloatAttribute(layoutOpenTag, "eY", eY)) {
-        // delete layout;
         return nullptr;
     }
 
-    // layout->setStart(vec2(sX, sY));
     ep.layoutStart = vec2(sX, sY);
-    // layout->setEnd(vec2(eX, eY));
     ep.layoutEnd = vec2(eX, eY);
 
     
-    // layout->setActive(true);
     ep.active = true;
 
     while (true) {
@@ -622,7 +570,6 @@ static Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenT
 
         if (tag.empty()) {
             std::cerr << "Malformed XML\n";
-            // delete layout;
             return nullptr;
         }
 
@@ -631,31 +578,25 @@ static Layout* parseLayout(std::ifstream& inFile, const std::string& layoutOpenT
             if (!result) {
                 std::cerr << "Error creating layout\n";
             }
-            // return layout;
             return static_cast<Layout*>(result);
         }
 
         if (isLayoutOpen(tag)) {
             Layout* childLayout = parseLayout(inFile, tag);
             if (!childLayout) {
-                // delete layout;
                 return nullptr;
             }
-            // layout->addElement(childLayout);
             ep.elements.push_back(childLayout);
         }
         else if (isElementOpen(tag)) {
             GuiElement* child = parseElement(inFile, tag);
             if (!child) {
-                // delete layout;
                 return nullptr;
             }
-            // layout->addElement(child);
             ep.elements.push_back(child);
         }
         else {
             std::cerr << "Malformed XML\n";
-            // delete layout;
             return nullptr;
         }
     }

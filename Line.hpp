@@ -4,8 +4,6 @@
 #include "GuiElement.hpp"
 
 class Line : public GuiElement {
-	// public:
-	// 	enum class TagType { Vec, IVec };
 	private:
 		ivec2 start;
 		ivec2 end;

@@ -4,8 +4,6 @@
 #include "GuiElement.hpp"
 
 class Point : public GuiElement {
-	// public:
-	// 	enum class TagType { Vec, IVec };
 	private:
 		ivec2 coords;
 		ivec3 color;

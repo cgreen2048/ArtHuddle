@@ -6,8 +6,6 @@
 #include "vec3.hpp"
 
 class Triangle : public GuiElement {
-//    public:
-// 		enum class TagType { Vec, IVec };
     private:
         ivec2 a;
         ivec2 b;
