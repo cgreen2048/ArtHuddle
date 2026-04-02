@@ -8,6 +8,7 @@
 - [Box Class](#box)
 - [Line Class](#line)
 - [Point Class](#point)
+- [EventSystem Clas](#eventsystem)
 - [GuiFile XML Parser](#guifile)
 - [Screen Class](#screen)
 - [Matrix Class](#matrix)
@@ -22,6 +23,7 @@
 main.cpp is a demonstration program
 
 ---
+
 
 # GuiElement
 
@@ -688,6 +690,129 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ---
 
+# EventSystem
+
+## Description
+
+`EventSystem` is a **centralized event manager** responsible for:
+
+- Storing events in a queue  
+- Providing controlled access to events  
+- Propagating events through the GUI hierarchy  
+
+It follows the **Singleton Design Pattern**, ensuring only one global instance exists during the program’s lifetime.
+
+This system enables **event-driven programming**, where events are created, queued, and then dispatched to GUI elements for handling.
+
+---
+
+## Core Responsibilities
+
+- Queue incoming events (`push`)
+- Retrieve events in FIFO order (`poll`)
+- Process and dispatch events to the GUI (`processEvents`)
+- Maintain a single global instance (`getInstance`)
+
+---
+
+## Internal Data Structures
+
+### `std::queue<std::unique_ptr<Event>> eventQueue`
+
+- Stores events in **FIFO (First-In, First-Out)** order  
+- Uses `std::unique_ptr<Event>` to enforce **exclusive ownership**
+- Ensures safe memory management (RAII)
+
+---
+
+## Design Patterns Used
+
+### Singleton Pattern
+
+- Only one `EventSystem` instance exists
+- Constructor is private
+- Copy/assignment disabled
+- Accessed via `getInstance()`
+
+### Event Queue Pattern
+
+- Events are buffered before processing
+- Decouples **event producers** from **event consumers**
+
+---
+
+## Methods
+
+### `static EventSystem& getInstance()`
+
+Returns the single global instance of `EventSystem`.
+
+- Implements **Meyers Singleton**
+- Instance is created on first call
+
+---
+
+### `void push(std::unique_ptr<Event> e)`
+
+Adds a new event to the queue.
+
+- Transfers ownership using `std::move`
+- Prevents copying of events
+
+**Example:**
+```cpp
+EventSystem::getInstance().push(std::make_unique<ClickEvent>(x, y));
+```
+
+### `std::unique_ptr<Event> poll()`
+
+Retrieves and removes the next event from the queue.
+
+Returns:
+
+- `nullptr` if queue is empty  
+- Otherwise, the next event (ownership transferred)
+
+---
+
+### `void processEvents(Layout* root)`
+
+Processes all queued events and propagates them through the GUI.
+
+---
+
+#### Behavior:
+
+- Continuously polls events until queue is empty  
+- For each event:
+  - If `SOUND` event → handled separately
+  - Otherwise → passed to root layout:
+    ```cpp
+    root->resolveEvent(e.get());
+    ```
+
+---
+
+#### Event Propagation Model
+
+- Uses **top-down (trickling)** propagation:
+  - Event starts at root `Layout`
+  - Travels through child elements
+  - Stops when consumed
+
+---
+
+### Example Usage
+
+```cpp
+EventSystem& system = EventSystem::getInstance();
+
+// Push events
+system.push(std::make_unique<ClickEvent>(100, 200));
+
+// Process events
+system.processEvents(rootLayout);
+```
  
 
 ## UML Diagram
