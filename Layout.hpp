@@ -35,6 +35,7 @@ class Layout : public GuiElement {
         int getAbsoluteStartY();
         int getAbsoluteEndX();
         int getAbsoluteEndY();
+        bool isValid(ElementParameters ep);
 };
 
 #endif

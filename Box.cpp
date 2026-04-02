@@ -15,6 +15,9 @@ Box::Box(ivec2 min, ivec2 max, ivec3 color) {
 }
 
 Box::Box(ElementParameters ep) {
+    if (!isValid(ep)) {
+        return;
+    }
     this->min = ep.point1;
     this->max = ep.point2;
     this->color = ep.color;
@@ -101,4 +104,17 @@ void Box::writeXml(std::ostream& out, int depth) const {
         writeVec3(out, toVec3(color), pad);
     }
     out << pad << "</box>\n";
+}
+
+bool Box::isValid(ElementParameters ep) {
+    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    if ((ep.point2.x == std::numeric_limits<int>::lowest()) || (ep.point2.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    if ((ep.color.x == std::numeric_limits<int>::lowest()) || (ep.color.y == std::numeric_limits<int>::lowest()) || (ep.color.z == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    return true;
 }

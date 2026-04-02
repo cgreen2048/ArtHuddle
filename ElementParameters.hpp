@@ -6,29 +6,28 @@
 #include "vec3.hpp"
 #include "GuiElement.hpp"
 
-// enum class TagType { Vec, IVec };
 class GuiElement;
 enum class TagType { Vec, IVec };
 
 struct ElementParameters {
     std::string name;
-    ivec2 point1;
-    ivec2 point2;
-    ivec2 point3;
-    ivec3 color;
-    Screen* screen;
+    ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec3 color = ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    Screen* screen = nullptr;
     ivec2 parentStart = ivec2(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
     ivec2 parentEnd = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
-    bool hasParentStart;
-    bool hasParentEnd;
+    bool hasParentStart = false;
+    bool hasParentEnd = false;
     std::vector<GuiElement*> elements;
-    bool active;
-    TagType point1Type;
-    TagType point2Type;
-    TagType point3Type;
-    TagType colorType;
-    vec2 layoutStart;
-    vec2 layoutEnd;
+    bool active = false;
+    TagType point1Type = TagType::Vec;
+    TagType point2Type = TagType::Vec;
+    TagType point3Type = TagType::Vec;
+    TagType colorType = TagType::Vec;
+    vec2 layoutStart = vec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    vec2 layoutEnd = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
 };
 
 #endif

@@ -32,6 +32,8 @@ class GuiElement {
         ivec2 getParentEnd();
 
 		const std::string& getName() const;
+
+		virtual bool isValid(ElementParameters ep) = 0;
 };
 
 

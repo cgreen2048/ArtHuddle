@@ -28,6 +28,7 @@ class Box : public GuiElement {
 		void setMax(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);
 		void writeXml(std::ostream& out, int depth) const;
+		bool isValid(ElementParameters ep);
 };
 
 #endif

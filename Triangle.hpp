@@ -36,6 +36,7 @@ class Triangle : public GuiElement {
         ivec2 getA();
         ivec2 getB();
         ivec2 getC();
+        bool isValid(ElementParameters ep);
 };
 
 #endif

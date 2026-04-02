@@ -10,6 +10,9 @@ Line::Line(ivec2 start, ivec2 end, ivec3 color) {
 }
 
 Line::Line(ElementParameters ep) {
+    if (!isValid(ep)) {
+        return;
+    }
     this->start = ep.point1;
     this->end = ep.point2;
     this->color = ep.color;
@@ -96,4 +99,17 @@ void Line::writeXml(std::ostream& out, int depth) const {
         writeVec3(out, toVec3(color), pad);
     }
     out << pad << "</line>\n";
+}
+
+bool Line::isValid(ElementParameters ep) {
+    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    if ((ep.point2.x == std::numeric_limits<int>::lowest()) || (ep.point2.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    if ((ep.color.x == std::numeric_limits<int>::lowest()) || (ep.color.y == std::numeric_limits<int>::lowest()) || (ep.color.z == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
+    return true;
 }
