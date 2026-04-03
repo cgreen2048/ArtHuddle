@@ -44,7 +44,7 @@ studentMachine:
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005
 	$(CXX) ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDemo
-	$(CXX) ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp ../Event.cpp Milestone006Tests.cpp \
+	$(CXX) ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp ../Event.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006
 	$(CXX) ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006EventSystem
 	

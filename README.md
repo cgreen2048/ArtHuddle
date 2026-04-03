@@ -1,6 +1,10 @@
 # SP26_Team02
 
 # Quick Links to Classes
+- [Event Class](#event)
+- [ClickEvent Class](#clickevent)
+- [ShowEvent Class](#showevent)
+- [SoundEvent Class](#soundevent)
 - [Sound Class](#sound)
 - [SoundState Struct](#soundstate-struct)
 - [SoundPlayer Class](#soundplayer)
@@ -12,7 +16,7 @@
 - [Box Class](#box)
 - [Line Class](#line)
 - [Point Class](#point)
-- [EventSystem Clas](#eventsystem)
+- [EventSystem Class](#eventsystem)
 - [GuiFile XML Parser](#guifile)
 - [Screen Class](#screen)
 - [Matrix Class](#matrix)
@@ -28,7 +32,126 @@ main.cpp is a demonstration program
 
 ---
 
-<<<<<<< HEAD
+# Event
+
+## Description
+`Event` is the primary class formulating the event-driven system. To handle events, an `Event*` trickled down from the root layout to 
+each child element, calling `GuiElement::resolveEvent` to determine if the element can handle the `Event*` passed down.
+
+Similar to `GuiElement` every event type implements this class, currently supporting these events:
+- `ClickEvent`
+- `ShowEvent`
+- `SoundEvent`
+
+## Data Members
+
+### `EventType type`
+This is an enum identifying the type of object passed down, useful in polymorphism
+
+## Methods
+
+### `Event()`
+Default constructor
+
+### `Event(EventType t)`
+Constructs an `Event` object with type = t
+
+### `Event(const Event& cp)`
+Default copy constructor
+
+### `operator=(const Event& rhs)`
+Default = operator overload
+
+### `virtual ~Event()`
+Default destructor, virtual for polymorphism
+
+### `EventType getType()`
+Returns the `Event`'s `type`
+
+# ClickEvent
+
+## Description
+`ClickEvent` represents a mouse click event, inheriting from `Event`. It contains the coordinates of the click to be used for event
+handling in `GuiElement::resolveEvent`
+
+## Data Members
+
+### `int mouseX`
+The x coordinate of the click
+
+### `int mouseY` 
+The y coordinate of the click
+
+## Methods
+
+### `ClickEvent(int x, int y)`
+Constructor for `ClickEvent`. Sets `mouseX` to `x` and `mouseY` to `y`
+
+### `int getMouseX()`
+Returns the x coordinate of the click
+
+### `int getMouseY()`
+Returns the y coordinate of the click
+
+# ShowEvent
+
+## Description
+`ShowEvent` represents an event to show or hide a `Layout`. It contains the name of the `Layout` to be shown or hidden and a `ShowActionType` to determine whether the `Layout` should be shown or hidden
+
+## Data Members
+
+### `std::string layoutName`
+The name of the `Layout` to be shown or hidden
+
+### `ShowActionType action`
+An enum to determine whether the `Layout` should be shown or hidden. Can be `ShowActionType::SHOW` or `ShowActionType::HIDE`
+
+## Methods
+
+### `ShowEvent(std::string name)`
+Constructor for `ShowEvent`. Sets `layoutName` to `layoutName` and `action` to `ShowActionType::SHOW` by default
+
+### `ShowEvent(std::string name, ShowActionType act)`
+Constructor for `ShowEvent`. Sets `layoutName` to `layoutName` and `action` to `act`
+
+### `const std::string& getLayoutName()`
+Returns the name of the `Layout` to be shown or hidden
+
+### `ShowActionType getAction()`
+Returns the `ShowActionType` of the event
+
+# SoundEvent
+
+## Description
+`SoundEvent` represents an event to play, pause, or stop a sound. It contains the name of the sound and a `SoundActionType` to determine whether the sound should be played, paused, or stopped
+
+## Data Members
+### `std::string soundName`
+The name of the sound to be played, paused, or stopped. Can be a file path or a sound name
+
+### `SoundActionType action`
+An enum to determine whether the sound should be played, paused, or stopped. Can be `SoundActionType::PLAY`, `SoundActionType::PAUSE`, or `SoundActionType::STOP`
+
+### `bool loop = false`
+A boolean to determine whether the sound should be looped or not when played. Loops when set to true
+
+## Methods
+### `SoundEvent(const std::string& name)`
+Constructor for `SoundEvent`. Sets `soundName` to `name` and initializes `action` to `SoundActionType::PLAY` and `loop` to `false`
+
+### `SoundEvent(const std::string& name, SoundActionType act, bool shouldLoop = false)`
+Constructor for `SoundEvent`. Sets `soundName` to `name`, `action` to `act`, and `loop` to `shouldLoop`
+- Allows the user to specify whether the sound should be looped when played
+
+### `const std::string& getSoundName()`
+Returns the name of the sound to be played, paused, or stopped
+
+### `SoundActionType getAction()`
+Returns the `SoundActionType` of the event
+
+### `bool shouldLoop()`
+Returns whether the sound should be looped when played or not
+
 # Sound
 
 ## Description
@@ -334,8 +457,6 @@ The relative ending position of a `Layout` object
 - Initialized to `vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest())`
 
 ---
-=======
->>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 # GuiElement
 

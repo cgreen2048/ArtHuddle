@@ -19,7 +19,7 @@ class SoundEvent : public Event {
         bool loop = false;
     public:
         SoundEvent(const std::string& name);
-        SoundEvent(const std::string& name, SoundActionType action, bool shouldLoop);
+        SoundEvent(const std::string& name, SoundActionType act, bool shouldLoop);
         const std::string& getSoundName();
         SoundActionType getAction();
         bool shouldLoop();

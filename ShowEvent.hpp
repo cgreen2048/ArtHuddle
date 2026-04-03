@@ -15,7 +15,7 @@ class ShowEvent : public Event {
         ShowActionType action;
     public:
         ShowEvent(const std::string& name);
-        ShowEvent(const std::string& name, ShowActionType action);
+        ShowEvent(const std::string& name, ShowActionType act);
         const std::string& getLayoutName();
         ShowActionType getAction();
 };
