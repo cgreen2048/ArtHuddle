@@ -4,7 +4,7 @@
 #include "GuiElement.hpp"
 
 class Box : public GuiElement {
-	private:
+	protected:
 		ivec2 min;
 		ivec2 max;
 		ivec3 color;
