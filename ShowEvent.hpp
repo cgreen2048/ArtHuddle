@@ -4,7 +4,7 @@
 #include "Event.hpp"
 #include <string>
 
-enum class ShowAction {
+enum class ShowActionType {
     SHOW,
     HIDE
 };
@@ -12,12 +12,12 @@ enum class ShowAction {
 class ShowEvent : public Event {
     private: 
         std::string layoutName;
-        ShowAction action;
+        ShowActionType action;
     public:
         ShowEvent(const std::string& name);
-        ShowEvent(const std::string& name, ShowAction action);
+        ShowEvent(const std::string& name, ShowActionType action);
         const std::string& getLayoutName();
-        ShowAction getAction();
+        ShowActionType getAction();
 };
 
 
