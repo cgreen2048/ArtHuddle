@@ -1371,7 +1371,7 @@ This system enables **event-driven programming**, where events are created, queu
 
 ## Data Members
 
-### `SoundPlayer soundPlayer`
+### `SoundPlayer* soundPlayer`
 
 - Handles all audio-related events
 - Responsible for:
@@ -1440,6 +1440,16 @@ Returns:
 ### `void processEvents(Layout* root)`
 
 Processes all queued events and propagates them through the GUI.
+
+---
+
+### `void setSoundPlayer(SoundPlayer* soundPlayer)`
+Sets the `soundPlayer` attribute with the passed pointer
+
+---
+
+`SoundPlayer* getSoundPlayer()`
+Returns the stored pointer to `SoundPlayer`
 
 ---
 
