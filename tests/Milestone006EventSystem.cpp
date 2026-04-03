@@ -39,6 +39,7 @@ void clearEventSystem();
 
 int main() {
     int failure = 0;
+    SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
 
     if (singletonTest()) {
         failure = 1;
@@ -195,6 +196,7 @@ int processEventsSoundTest() {
     system.push(std::make_unique<SoundEvent>("../SFX/song.wav", SoundActionType::PLAY, false));
 
     system.processEvents(&root);
+    SDL_Delay(5000);
 
     if (root.resolveCount != 0) {
         std::cout << "sound handling FAILED\n";
@@ -218,6 +220,7 @@ int processEventsMixedDispatchTest() {
     system.push(std::make_unique<Event>(EventType::SHOW));
 
     system.processEvents(&root);
+    SDL_Delay(5000);
 
     if (root.resolveCount != 2) {
         std::cout << "mixed dispatch FAILED\n";
