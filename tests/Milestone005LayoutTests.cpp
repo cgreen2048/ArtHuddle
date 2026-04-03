@@ -10,6 +10,7 @@
 #include "../Point.hpp"
 #include "../Triangle.hpp"
 #include "../GuiElement.hpp"
+#include "../Button.hpp"
 
 int readTest1();
 int readTest2();
@@ -102,6 +103,9 @@ int compareSingleElement(GuiElement* actual, GuiElement* expected) {
         if (*aLine != *eLine) {
             return 1;
         }
+        if (aLine->getName() != eLine->getName()) {
+            return 1;
+        }
         return 0;
     }
 
@@ -111,6 +115,9 @@ int compareSingleElement(GuiElement* actual, GuiElement* expected) {
             return 1;
         }
         if (*aBox != *eBox) {
+            return 1;
+        }
+        if (aBox->getName() != eBox->getName()) {
             return 1;
         }
         return 0;
@@ -124,6 +131,9 @@ int compareSingleElement(GuiElement* actual, GuiElement* expected) {
         if (*aPoint != *ePoint) {
             return 1;
         }
+        if (aPoint->getName() != ePoint->getName()) {
+            return 1;
+        }
         return 0;
     }
 
@@ -133,6 +143,29 @@ int compareSingleElement(GuiElement* actual, GuiElement* expected) {
             return 1;
         }
         if (*aTriangle != *eTriangle) {
+            return 1;
+        }
+        if (aTriangle->getName() != eTriangle->getName()) {
+            return 1;
+        }
+        return 0;
+    }
+
+    if (auto* aButton = dynamic_cast<Button*>(actual)) {
+        auto* eButton = dynamic_cast<Button*>(expected);
+        if (!eButton) {
+            return 1;
+        }
+        if (*aButton != *eButton) {
+            return 1;
+        }
+        if (aButton->getName() != eButton ->getName()) {
+            return 1;
+        }
+        if (aButton->getText() != eButton ->getText()) {
+            return 1;
+        }
+        if (aButton->getCallbackName() != eButton ->getCallbackName()) {
             return 1;
         }
         return 0;
@@ -207,6 +240,19 @@ int readTest1() {
     GuiElement* l = factory(guiElement::LINE, lineParam);
     expectedRoot->addElement(l);
 
+    ElementParameters buttonParam;
+    buttonParam.name = "b1";
+    buttonParam.callbackName = "testCallback";
+    buttonParam.text = "Click me!";
+    buttonParam.point1 = ivec2(50, 50);
+    buttonParam.point2 = ivec2(150, 100);
+    buttonParam.color = ivec3(255, 0, 0);
+    buttonParam.point1Type = TagType::IVec;
+    buttonParam.point2Type = TagType::IVec;
+    buttonParam.colorType = TagType::IVec;
+    GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
+    expectedRoot->addElement(btn);
+
     ElementParameters boxParam;
     boxParam.point1 = toIVec2(250.3f, 122.5f);
     boxParam.point2 = toIVec2(420.34f, 254.9f);
@@ -236,6 +282,8 @@ int readTest1() {
     triangleParam.colorType = TagType::IVec;
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     expectedRoot->addElement(t);
+
+
 
     GUIFile gui;
     gui.readFile("testFiles/readTest1.xml");
@@ -294,6 +342,19 @@ int readTest2() {
     boxParam.colorType = TagType::IVec;
     GuiElement* b = factory(guiElement::BOX, boxParam);
     nested->addElement(b);
+
+    ElementParameters buttonParam;
+    buttonParam.name = "b1";
+    buttonParam.callbackName = "testCallback";
+    buttonParam.text = "Click me!";
+    buttonParam.point1 = ivec2(50, 50);
+    buttonParam.point2 = ivec2(150, 100);
+    buttonParam.color = ivec3(255, 0, 0);
+    buttonParam.point1Type = TagType::IVec;
+    buttonParam.point2Type = TagType::IVec;
+    buttonParam.colorType = TagType::IVec;
+    GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
+    nested->addElement(btn);
 
     expectedRoot->addElement(nested);
 
@@ -451,9 +512,6 @@ int readTest8() {
 }
 
 
-
-
-
 int writeTest1() {
     int failure = 0;
 
@@ -484,6 +542,19 @@ int writeTest1() {
     GuiElement* b = factory(guiElement::BOX, boxParam);
     root->addElement(b);
 
+    ElementParameters buttonParam;
+    buttonParam.name = "writeButton";
+    buttonParam.callbackName = "testCallback";
+    buttonParam.text = "Click me!";
+    buttonParam.point1 = ivec2(50, 50);
+    buttonParam.point2 = ivec2(150, 100);
+    buttonParam.color = ivec3(255, 0, 0);
+    buttonParam.point1Type = TagType::IVec;
+    buttonParam.point2Type = TagType::IVec;
+    buttonParam.colorType = TagType::IVec;
+    GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
+    root->addElement(btn);
+
     gui.setRootLayout(root);
 
     Layout* expectedRoot = new Layout();
@@ -510,6 +581,19 @@ int writeTest1() {
     newBoxParam.colorType = TagType::Vec;
     GuiElement* eb = factory(guiElement::BOX, boxParam);
     expectedRoot->addElement(eb);
+
+    ElementParameters expectedButtonParam;
+    expectedButtonParam.name = "writeButton";
+    expectedButtonParam.callbackName = "testCallback";
+    expectedButtonParam.text = "Click me!";
+    expectedButtonParam.point1 = ivec2(50, 50);
+    expectedButtonParam.point2 = ivec2(150, 100);
+    expectedButtonParam.color = ivec3(255, 0, 0);
+    expectedButtonParam.point1Type = TagType::IVec;
+    expectedButtonParam.point2Type = TagType::IVec;
+    expectedButtonParam.colorType = TagType::IVec;
+    GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
+    expectedRoot->addElement(expectedButton);
 
     gui.writeFile("testFiles/writeTest1.xml");
     gui.readFile("testFiles/writeTest1.xml");
@@ -603,6 +687,19 @@ int writeTest3() {
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     nested2->addElement(t);
 
+    ElementParameters buttonParam;
+    buttonParam.name = "deepButton";
+    buttonParam.callbackName = "testCallback";
+    buttonParam.text = "Deep";
+    buttonParam.point1 = ivec2(200, 200);
+    buttonParam.point2 = ivec2(280, 240);
+    buttonParam.color = ivec3(0, 0, 255);
+    buttonParam.point1Type = TagType::IVec;
+    buttonParam.point2Type = TagType::IVec;
+    buttonParam.colorType = TagType::IVec;
+    GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
+    nested2->addElement(btn);
+
     nested1->addElement(nested2);
     root->addElement(nested1);
     gui.setRootLayout(root);
@@ -641,6 +738,19 @@ int writeTest3() {
     triangleParam2.colorType = TagType::IVec;
     GuiElement* expectedTriangle = factory(guiElement::TRIANGLE, triangleParam2);
     expectedNested2->addElement(expectedTriangle);
+
+    ElementParameters expectedButtonParam;
+    expectedButtonParam.name = "deepButton";
+    expectedButtonParam.callbackName = "testCallback";
+    expectedButtonParam.text = "Deep";
+    expectedButtonParam.point1 = ivec2(200, 200);
+    expectedButtonParam.point2 = ivec2(280, 240);
+    expectedButtonParam.color = ivec3(0, 0, 255);
+    expectedButtonParam.point1Type = TagType::IVec;
+    expectedButtonParam.point2Type = TagType::IVec;
+    expectedButtonParam.colorType = TagType::IVec;
+    GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
+    expectedNested2->addElement(expectedButton);
 
     expectedNested1->addElement(expectedNested2);
     expectedRoot->addElement(expectedNested1);

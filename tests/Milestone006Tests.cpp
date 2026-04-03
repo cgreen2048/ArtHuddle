@@ -233,24 +233,34 @@ bool eventTests() {
     ClickEvent* click = new ClickEvent(X, Y);
     if (click->getType() != EventType::CLICK || click->getMouseX() != X || click->getMouseY() != Y) {
         failure = 1;
+    }else{
+        std::cout << "Passed Click Event.\n"; 
     }
 
     ShowEvent* show = new ShowEvent("testLayout", ShowActionType::HIDE);
     if (show->getType() != EventType::SHOW || show->getLayoutName() != "testLayout" || show->getAction() != ShowActionType::HIDE) {
         failure = 1;
+    }else{
+        std::cout << "Passed Show Event.\n"; 
     }
     ShowEvent* defaultShow = new ShowEvent("testLayout");
     if (defaultShow->getType() != EventType::SHOW || defaultShow->getLayoutName() != "testLayout" || defaultShow->getAction() != ShowActionType::SHOW) {
         failure = 1;
+    }else{
+        std::cout << "Passed Default Show Event.\n"; 
     }
 
     SoundEvent* sound = new SoundEvent("../SFX/song.wav", SoundActionType::PLAY, true);
     if (sound->getType() != EventType::SOUND || sound->getSoundName() != "../SFX/song.wav" || sound->getAction() != SoundActionType::PLAY || sound->shouldLoop() != true) {
         failure = 1;
+    }else{
+        std::cout << "Passed Sound Event.\n"; 
     }
     SoundEvent* defaultSound = new SoundEvent("../SFX/song.wav");
     if (defaultSound->getType() != EventType::SOUND || defaultSound->getSoundName() != "../SFX/song.wav" || defaultSound->getAction() != SoundActionType::PLAY || defaultSound->shouldLoop() != false) {
         failure = 1;
+    }else{
+        std::cout << "Passed Default Sound Event.\n"; 
     }
 
     delete click;

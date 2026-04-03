@@ -29,4 +29,19 @@
           <z>124</z>
       </vec3>
   </box>
+  <button name="writeButton" text="Click me!" onClick="testCallback">
+      <ivec2>
+          <x>50</x>
+          <y>50</y>
+      </ivec2>
+      <ivec2>
+          <x>150</x>
+          <y>100</y>
+      </ivec2>
+      <ivec3>
+          <x>255</x>
+          <y>0</y>
+          <z>0</z>
+      </ivec3>
+  </button>
 </layout>

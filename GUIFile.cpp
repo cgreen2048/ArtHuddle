@@ -101,6 +101,7 @@ static bool isElementOpen(const std::string& tag) {
     return tag.rfind("<point", 0) == 0 ||
            tag.rfind("<line", 0) == 0 ||
            tag.rfind("<box", 0) == 0 ||
+           tag.rfind("<button", 0) == 0 ||
            tag.rfind("<triangle", 0) == 0;
 }
 
@@ -116,6 +117,9 @@ static guiElement determineGuiElementOpenerType(const std::string& tag) {
     }
     if (tag.rfind("<triangle", 0) == 0) {
         return guiElement::TRIANGLE;
+    }
+    if (tag.rfind("<button", 0) == 0) {
+        return guiElement::BUTTON;
     }
 
     std::cerr << "Malformed XML\n";
@@ -134,6 +138,9 @@ static bool isMatchingElementClose(const std::string& tag, guiElement type) {
     }
     if (type == guiElement::TRIANGLE) {
         return tag == TRIANGLE_CLOSE;
+    }
+    if (type == guiElement::BUTTON) {
+        return tag == BUTTON_CLOSE;
     }
     return false;
 }
@@ -168,6 +175,28 @@ static bool setNameFromTag(const std::string& tag, ElementParameters* ep) {
     }
 
     ep->name = name;
+    return true;
+}
+
+static bool setTextFromTag(const std::string& tag, ElementParameters* ep) {
+    std::string text;
+
+    if (!getStringAttribute(tag, "text", text)) {
+        return false;
+    }
+
+    ep->text = text;
+    return true;
+}
+
+static bool setCallbackNameFromTag(const std::string& tag, ElementParameters* ep) {
+    std::string callbackName;
+
+    if (!getStringAttribute(tag, "onClick", callbackName)) {
+        return false;
+    }
+
+    ep->callbackName = callbackName;
     return true;
 }
 
@@ -367,6 +396,16 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
         return nullptr;
     }
 
+    if(type == guiElement::BUTTON){
+        if(!setCallbackNameFromTag(elementOpenTag, &ep)){
+            return nullptr;
+        }
+        if(!setTextFromTag(elementOpenTag, &ep)){
+            return nullptr;
+        }
+    }
+
+
     int lineVec2Index = 0;
     int boxVec2Index = 0;
     int triangleVec2Index = 0;
@@ -397,7 +436,6 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
             ivec2 v = toIVec2(temp);
 
             
-            
             if (type == guiElement::LINE) {
                 if (lineVec2Index == 0) {
                     ep.point1 = v;
@@ -409,7 +447,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON) {
                 if (boxVec2Index == 0) {
                     ep.point1 = v;
                     ep.point1Type = TagType::Vec;
@@ -457,7 +495,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON) {
                 if (boxVec2Index == 0) {
                     ep.point1 = v;
                     ep.point1Type = TagType::IVec;
@@ -496,45 +534,16 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
 
             ivec3 c = toIVec3(temp);
 
-            if (type == guiElement::LINE) {
-                ep.color = c;
-                ep.colorType = TagType::Vec;
-            }
-            else if (type == guiElement::BOX) {
-                ep.color = c;
-                ep.colorType = TagType::Vec;
-            }
-            else if (type == guiElement::POINT) {
-                ep.color = c;
-                ep.colorType = TagType::Vec;
-            }
-            else if (type == guiElement::TRIANGLE) {
-                ep.color = c;
-                ep.colorType = TagType::Vec;
-            }
+            ep.color = c;
+            ep.colorType = TagType::Vec;
         }
         else if (tag == IVEC3_OPEN) {
             ivec3 c;
             if (!parseIVec3(inFile, c)) {
                 return nullptr;
             }
-
-            if (type == guiElement::LINE) {
-                ep.color = c;
-                ep.colorType = TagType::IVec;
-            }
-            else if (type == guiElement::BOX) {
-                ep.color = c;
-                ep.colorType = TagType::IVec;
-            }
-            else if (type == guiElement::POINT) {
-                ep.color = c;
-                ep.colorType = TagType::IVec;
-            }
-            else if (type == guiElement::TRIANGLE) {
-                ep.color = c;
-                ep.colorType = TagType::IVec;
-            }
+            ep.color = c;
+            ep.colorType = TagType::IVec;
         }
         else {
             std::cerr << "Malformed XML\n";
@@ -631,9 +640,6 @@ void GUIFile::readFile(const std::string& fileName) {
 
     rootLayout = parseLayout(inFile, firstTag);
 }
-
-
-
 
 void GUIFile::writeFile(const std::string& fileName) const {
     std::ofstream out(fileName);

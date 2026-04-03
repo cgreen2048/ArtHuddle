@@ -1687,7 +1687,8 @@ Supports:
 - `Point`  
 - `Line`  
 - `Box`  
-- `Triangle`  
+- `Triangle`
+- `Button`  
 
 Behavior:
 - Determines type from opening tag
@@ -1730,6 +1731,7 @@ Extracts a string attribute from a tag.
 
 ---
 
+
 ### `bool setNameFromTag(const std::string& tag, ElementParameters* ep)`
 
 Extracts and assigns the `name` attribute to a `ElementParameter`'s `name` attribute
@@ -1754,6 +1756,53 @@ Extracts and assigns the `name` attribute to a `ElementParameter`'s `name` attri
 * Centralizes enforcement of the required `name` attribute
 
 ---
+
+### `bool setCallbackNameFromTag(const std::string& tag, ElementParameters* ep)`
+
+Extracts and assigns the `onClick` attribute to a `Button`'s `onClick` attribute
+
+#### Steps:
+
+* Calls:
+
+  ```cpp
+  getStringAttribute(tag, "onClick", callbackName)
+  ```
+* If successful:
+
+  ```cpp
+  button->setcallbackName(callbackName);
+  ```
+* Returns success/failure
+
+
+---
+
+### `bool setTextFromTag(const std::string& tag, ElementParameters* ep)`
+
+Extracts and assigns the `text` attribute to a `ElementParameter`'s `text` attribute
+
+#### Steps:
+
+* Calls:
+
+  ```cpp
+  getStringAttribute(tag, "text", text)
+  ```
+* If successful:
+
+  ```cpp
+  element->setText(text);
+  ```
+* Returns success/failure
+
+#### Purpose:
+
+* Avoids repeating text-parsing logic across multiple element types
+* Centralizes enforcement of the required `text` attribute
+
+---
+
 
 ### `bool getFloatAttribute(const std::string& tag, const std::string& attrName, float& value)`
 
