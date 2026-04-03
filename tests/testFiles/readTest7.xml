@@ -61,4 +61,21 @@
       <z>0</z>
     </ivec3>
   </triangle>
+
+  <button name="b1" onClick="testCallback" text="Click me!">
+        <ivec2>
+            <x>50</x>
+            <y>50</y>
+        </ivec2>
+        <ivec2>
+            <x>150</x>
+            <y>100</y>
+        </ivec2>
+        <ivec3>
+            <x>255</x>
+            <y>0</y>
+            <z>0</z>
+        </ivec3>
+  </button>
+  
 </layout>

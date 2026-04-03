@@ -31,6 +31,21 @@
               <z>0</z>
           </ivec3>
       </triangle>
+      <button name="deepButton" text="Deep" onClick="testCallback">
+          <ivec2>
+              <x>200</x>
+              <y>200</y>
+          </ivec2>
+          <ivec2>
+              <x>280</x>
+              <y>240</y>
+          </ivec2>
+          <ivec3>
+              <x>0</x>
+              <y>0</y>
+              <z>255</z>
+          </ivec3>
+      </button>
     </layout>
   </layout>
 </layout>

@@ -29,6 +29,8 @@ const std::string POINT_OPEN = "<point>";
 const std::string POINT_CLOSE = "</point>";
 const std::string TRIANGLE_OPEN = "<triangle>";
 const std::string TRIANGLE_CLOSE = "</triangle>";
+const std::string BUTTON_OPEN = "<button>";
+const std::string BUTTON_CLOSE = "</button>";
 const std::string VEC2_OPEN = "<vec2>";
 const std::string VEC2_CLOSE = "</vec2>";
 const std::string VEC3_OPEN = "<vec3>";
@@ -44,8 +46,8 @@ const std::string Y_CLOSE = "</y>";
 const std::string Z_OPEN = "<z>";
 const std::string Z_CLOSE = "</z>";
 
-const std::vector<std::string> OPENERS = {LAYOUT_OPEN, LINE_OPEN, BOX_OPEN, POINT_OPEN, TRIANGLE_OPEN, VEC2_OPEN, VEC3_OPEN, IVEC2_OPEN, IVEC3_OPEN, X_OPEN, Y_OPEN, Z_OPEN};
-const std::vector<std::string> CLOSERS = {LAYOUT_CLOSE, LINE_CLOSE, BOX_CLOSE, POINT_CLOSE, TRIANGLE_CLOSE, VEC2_CLOSE, VEC3_CLOSE, IVEC2_CLOSE, IVEC3_CLOSE, X_CLOSE, Y_CLOSE, Z_CLOSE};
+const std::vector<std::string> OPENERS = {LAYOUT_OPEN, LINE_OPEN, BOX_OPEN, POINT_OPEN, TRIANGLE_OPEN, BUTTON_OPEN, VEC2_OPEN, VEC3_OPEN, IVEC2_OPEN, IVEC3_OPEN, X_OPEN, Y_OPEN, Z_OPEN};
+const std::vector<std::string> CLOSERS = {LAYOUT_CLOSE, LINE_CLOSE, BOX_CLOSE, POINT_CLOSE, TRIANGLE_CLOSE, BUTTON_CLOSE, VEC2_CLOSE, VEC3_CLOSE, IVEC2_CLOSE, IVEC3_CLOSE, X_CLOSE, Y_CLOSE, Z_CLOSE};
 
 
 
