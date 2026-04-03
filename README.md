@@ -1253,7 +1253,6 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ---
 
-<<<<<<< HEAD
 ### `bool isValid(ElementParameters ep)`
 Checks whether `ep.point1` has been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` has not been set
@@ -1261,10 +1260,8 @@ Checks whether `ep.point1` has been initialized and whether `ep.color` is comple
 
 ---
 
-# GUIFile
-=======
+
 # EventSystem
->>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 ## Description
 
@@ -1284,12 +1281,23 @@ This system enables **event-driven programming**, where events are created, queu
 
 - Queue incoming events (`push`)
 - Retrieve events in FIFO order (`poll`)
-- Process and dispatch events to the GUI (`processEvents`)
+- Process and dispatch events (`processEvents`)
+- Route events to the appropriate subsystem:
+  - GUI system (layouts)
+  - Audio system (`SoundPlayer`)
 - Maintain a single global instance (`getInstance`)
 
 ---
 
 ## Internal Data Structures
+
+### `SoundPlayer soundPlayer`
+
+- Handles all audio-related events
+- Responsible for:
+  - Playing sounds
+  - Stopping sounds
+  - Managing playback state
 
 ### `std::queue<std::unique_ptr<Event>> eventQueue`
 
@@ -1355,24 +1363,15 @@ Processes all queued events and propagates them through the GUI.
 
 ---
 
-#### Behavior:
-
-- Continuously polls events until queue is empty  
-- For each event:
-  - If `SOUND` event → handled separately
-  - Otherwise → passed to root layout:
-    ```cpp
-    root->resolveEvent(e.get());
-    ```
-
----
-
 #### Event Propagation Model
 
 - Uses **top-down (trickling)** propagation:
   - Event starts at root `Layout`
   - Travels through child elements
   - Stops when consumed
+
+
+
 
 ---
 
@@ -1383,14 +1382,10 @@ EventSystem& system = EventSystem::getInstance();
 
 // Push events
 system.push(std::make_unique<ClickEvent>(100, 200));
+system.push(std::make_unique<SoundEvent>("click.wav", SoundActionType::PLAY, false));
 
 // Process events
 system.processEvents(rootLayout);
-```
-<<<<<<< HEAD
-the system now uses a hierarchical structure:
-```cpp
-Layout* rootLayout;
 ```
 
 ---
@@ -1515,6 +1510,8 @@ These are used by the parser to verify correct nesting.
 - Both `<vec*>` and `<ivec*>` variants are supported.
 
 ---
+
+# GUIFile
 
 ## Public Methods
 
@@ -1759,9 +1756,7 @@ Used to convert between float and integer vector types:
 These ensure the correct internal representation while preserving original XML tag types.
 
 ---
-=======
  
->>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 ## UML Diagram
 ![UML Diagram](images/Milestone003_UML.png)

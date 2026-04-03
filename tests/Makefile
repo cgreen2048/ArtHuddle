@@ -14,19 +14,19 @@ test:
 	g++ ../Matrix.cpp Milestone001Tests.cpp -o milestone001
 	g++ ../Screen.cpp Milestone002Tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone002
 	g++ ../Screen.cpp screenDemo.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o screenDemo
-	g++ Milestone003Tests.cpp ../Event.cpp ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Line.cpp ../Box.cpp ../Point.cpp ../Screen.cpp ../Triangle.cpp ../Layout.cpp  \
+	g++ Milestone003Tests.cpp ../ShowEvent.cpp ../Event.cpp ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Line.cpp ../Box.cpp ../Point.cpp ../Screen.cpp ../Triangle.cpp ../Layout.cpp  \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone003
-	g++ ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone004Tests.cpp \
+	g++ ../ShowEvent.cpp ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone004Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone004
-	g++ ../Event.cpp ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005LayoutTests.cpp \
+	g++ ../ShowEvent.cpp ../Event.cpp ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005LayoutTests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone005LayoutTests
-	g++ ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005Tests.cpp \
+	g++ ../ShowEvent.cpp ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone005
-	g++ ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp \
+	g++ ../ShowEvent.cpp ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o layoutDemo
 	g++ ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp ../Event.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp ../Button.cpp Milestone006Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006
-	g++ ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp \
+	g++ ../Sound.cpp ../SoundPlayer.cpp ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006EventSystem
 
 studentMachine:
@@ -34,19 +34,19 @@ studentMachine:
 	$(CXX) ../Matrix.cpp Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone001
 	$(CXX) ../Screen.cpp Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone002
 	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
-	$(CXX) Milestone003Tests.cpp ../Event.cpp ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Line.cpp ../Box.cpp ../Point.cpp ../Screen.cpp ../Triangle.cpp ../Layout.cpp \
+	$(CXX) Milestone003Tests.cpp ../ShowEvent.cpp ../Event.cpp ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Line.cpp ../Box.cpp ../Point.cpp ../Screen.cpp ../Triangle.cpp ../Layout.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone003
-	$(CXX) ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone004Tests.cpp \
+	$(CXX) ../ShowEvent.cpp ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone004Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone004
-	$(CXX) ../Event.cpp ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005LayoutTests.cpp \
+	$(CXX) ../ShowEvent.cpp ../Event.cpp ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005LayoutTests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005LayoutTests
-	$(CXX) ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005Tests.cpp \
+	$(CXX) ../ShowEvent.cpp ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Triangle.cpp ../Layout.cpp ../Screen.cpp Milestone005Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005
-	$(CXX) ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp \
+	$(CXX) ../ShowEvent.cpp ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDemo
 	$(CXX) ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp ../Event.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp ../Button.cpp Milestone006Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006
-	$(CXX) ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006EventSystem
+	$(CXX) ../Sound.cpp ../SoundPlayer.cpp ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006EventSystem
 	
 
 mac:
@@ -60,7 +60,7 @@ mac:
 	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Screen.cpp ../Triangle.cpp ../Layout.cpp Milestone005Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone005
 	g++ ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o layoutDemo
 	g++ ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp ../Event.cpp ../Button.cpp Milestone006Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone006
-	g++ ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone006EventSystem
+	g++ ../Sound.cpp  ../SoundPlayer.cpp ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone006EventSystem
 
 
 clean:

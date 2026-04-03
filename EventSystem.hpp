@@ -5,6 +5,11 @@
 #include <queue>
 #include <memory>
 #include "Layout.hpp"
+#include "Sound.hpp"
+#include "SoundState.hpp"
+#include "SoundPlayer.hpp"
+#include "SoundEvent.hpp"
+
 
 class EventSystem{
     public:
@@ -18,6 +23,7 @@ class EventSystem{
     private:
         EventSystem();
         std::queue<std::unique_ptr<Event>> eventQueue;
+        SoundPlayer soundPlayer;
 };
 
 #endif
