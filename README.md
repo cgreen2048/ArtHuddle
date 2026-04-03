@@ -14,6 +14,7 @@
 - [Layout Class](#layout)
 - [Triangle Class](#triangle)
 - [Box Class](#box)
+- [Button Class](#button)
 - [Line Class](#line)
 - [Point Class](#point)
 - [EventSystem Class](#eventsystem)
@@ -1012,6 +1013,48 @@ This ensures the XML output preserves whether integer or floating-point vector t
 Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` or `ep.point2` have not been set
 - Sets any missing color value to `125`
+
+### `bool inBounds(const ivec2& point)`
+Checks whether the given point is within the bounds of this `Box`
+- Returns true if the point is within the bounds of the box and false otherwise
+---
+
+# Button
+
+## Description
+`Button` is a class used for storing and drawing a button to a `Screen` object. It inherits from `Box` to utilize the same geomtry and color scheme
+but allow for a label and event handling for clicks
+
+## Data Members
+
+### `std::string label`
+The text label to be drawn on the button
+
+### `std::string callbackName`
+The name of the callback function to be called when this button is clicked. Used for XML writing and event handling
+
+### `std::function<void()> callback`
+The callback function to be called when this button is clicked. Set by the user after the button is created and used for event handling
+
+## Methods
+
+### `Button()`
+The default constructor. Initializes `text` and `callbackName` to empty strings and `callback` to an empty lambda function
+
+### `Button(const Button& cp)`
+Copy assignment operator. Takes attributes from `cp` to pass into `Box` default constructor and set `text`, `callbackName`, and `callback` for this new `Button`
+
+### `Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, const std::string& callbackName, const std::string& text)`
+Initializes the button with the given geometry and color via `Box` constructor, and sets the callback function, callback name, and label text
+
+### `bool resolveEvent(Event* e)`
+Overrides `GuiElement::resolveEvent` to handle click events. If the event is a click within the button's bounds, calls the `callback` function and returns `true` to indicate the event was handled. Otherwise, returns `false` to allow event propagation to continue.
+
+### `void writeXml(std::ostream& out) const`
+Overrides `Box::writeXml` in almost identical formatting, except including the `callbackName` and `text` as parameters in the `<button>` tag for XML writing
+
+### `const std::string& getText() const`
+Returns the `text` of the button
 
 ---
 

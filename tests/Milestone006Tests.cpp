@@ -283,7 +283,8 @@ bool buttonTests() {
         std::cout << "button text test passed\n";
     }
 
-    if (button->resolveEvent(Event(EventType::CLICK))) {
+    ClickEvent* click1 = new ClickEvent(75, 75);
+    if (button->resolveEvent(click1)) {
         if (!clicked) {
             failure = 1;
             std::cout << "button click callback test FAILED\n";
@@ -292,12 +293,19 @@ bool buttonTests() {
             std::cout << "button click callback test passed\n";
         }
     }
+
+    ClickEvent* click2 = new ClickEvent(25, 25);
+    if (!button->resolveEvent(click2)) {
+        std::cout << "button out of bounds click test passed\n";
+    }
+
     else {
         failure = 1;
         std::cout << "button click event resolution test FAILED\n";
     }
 
-    if (!button->resolveEvent(Event(EventType::SHOW))) {
+    ShowEvent* show = new ShowEvent("testLayout", ShowActionType::HIDE);
+    if (!button->resolveEvent(show)) {
         std::cout << "button non-click event resolution test passed\n";
     }
     else {
