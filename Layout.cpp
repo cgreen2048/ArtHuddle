@@ -102,13 +102,20 @@ void Layout::writeXml(std::ostream& out, int depth) const {
 }
 
 bool Layout::resolveEvent(Event* e) {
+     if (e == nullptr) {
+        return false;
+    }
+    
     if (e->getType() == EventType::SHOW) {
-        // ShowEvent* show = static_cast<ShowEvent*>(e); // Show class needs to be implemented.
-
-        // if (this->getName() == show->getTargetLayoutName()) { // getTargetLayoutName() needs to be implemented.
-        //     active = show->shouldShow(); // shouldShow() needs to be implemented.
-        //     return true;
-        // }
+        ShowEvent* show = static_cast<ShowEvent*>(e);
+        if (this->getName() == show->getLayoutName()) {
+            if (show->getAction() == ShowActionType::SHOW){
+                active = true;
+            }else{
+                active = false;
+            }
+            return true;
+        }
     }
 
     if (!active) {

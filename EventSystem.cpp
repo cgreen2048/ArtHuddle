@@ -28,8 +28,20 @@ void EventSystem::processEvents(Layout *root){
         }
 
         if(e->getType() == EventType::SOUND){
-            // SoundEvent* sound = static_cast<SoundEvent*>(e.get()); // Sound class need to be implemented.
-            // play sound.
+            SoundEvent* sound = static_cast<SoundEvent*>(e.get());
+            switch (sound->getAction()) {
+                case SoundActionType::PLAY:
+                    soundPlayer.playSound(sound->getSoundName(), sound->shouldLoop());
+                    break;
+
+                case SoundActionType::PAUSE:
+                    soundPlayer.togglePlayback();
+                    break;
+
+                case SoundActionType::STOP:
+                    soundPlayer.stopSound(sound->getSoundName());
+                    break;
+            }
         }
         else{
             root->resolveEvent(e.get());

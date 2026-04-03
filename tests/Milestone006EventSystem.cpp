@@ -30,6 +30,7 @@ int fifoOrderTest();
 int processEventsDispatchTest();
 int processEventsSoundTest();
 int processEventsClearsQueueTest();
+int processEventsMixedDispatchTest();
 void clearEventSystem();
 
 // --------------------------------------------------
@@ -38,6 +39,7 @@ void clearEventSystem();
 
 int main() {
     int failure = 0;
+    SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
 
     if (singletonTest()) {
         failure = 1;
@@ -58,6 +60,9 @@ int main() {
         failure = 1;
     }
     if (processEventsClearsQueueTest()) {
+        failure = 1;
+    }
+    if(processEventsMixedDispatchTest()){
         failure = 1;
     }
 
@@ -188,9 +193,10 @@ int processEventsSoundTest() {
     EventSystem& system = EventSystem::getInstance();
     TestLayout root;
 
-    system.push(std::make_unique<Event>(EventType::SOUND));
+    system.push(std::make_unique<SoundEvent>("../SFX/song.wav", SoundActionType::PLAY, false));
 
     system.processEvents(&root);
+    SDL_Delay(5000);
 
     if (root.resolveCount != 0) {
         std::cout << "sound handling FAILED\n";
@@ -198,6 +204,35 @@ int processEventsSoundTest() {
     }
 
     std::cout << (failure ? "sound test FAILED\n" : "sound test passed\n");
+    return failure;
+}
+
+int processEventsMixedDispatchTest() {
+    int failure = 0;
+    std::cout << "Testing mixed event dispatch\n";
+
+    clearEventSystem();
+    EventSystem& system = EventSystem::getInstance();
+    TestLayout root;
+
+    system.push(std::make_unique<Event>(EventType::CLICK));
+    system.push(std::make_unique<SoundEvent>("../SFX/song.wav", SoundActionType::PLAY, true));
+    system.push(std::make_unique<Event>(EventType::SHOW));
+
+    system.processEvents(&root);
+    SDL_Delay(5000);
+
+    if (root.resolveCount != 2) {
+        std::cout << "mixed dispatch FAILED\n";
+        failure = 1;
+    }
+
+    if (system.poll() != nullptr) {
+        std::cout << "mixed dispatch queue clear FAILED\n";
+        failure = 1;
+    }
+
+    std::cout << (failure ? "mixed dispatch test FAILED\n" : "mixed dispatch test passed\n");
     return failure;
 }
 

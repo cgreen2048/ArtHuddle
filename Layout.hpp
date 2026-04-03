@@ -7,6 +7,7 @@
 #include "GuiElement.hpp"
 #include "vec2.hpp"
 #include "Event.hpp"
+#include "ShowEvent.hpp"
 
 
 class Layout : public GuiElement {
