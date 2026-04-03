@@ -3,7 +3,7 @@ SDL3_INC := $(STUDENT_MACHINE_SDL3_ROOT)/include
 SDL3_LIB := $(STUDENT_MACHINE_SDL3_ROOT)/build
 
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -I$(SDL3_INC)
+CXXFLAGS := -std=c++17 -I$(SDL3_INC)
 
 # Link flags: where to find it at link time + where to find it at run time
 LDFLAGS := -L$(SDL3_LIB) -Wl,-rpath,$(SDL3_LIB)
@@ -24,13 +24,10 @@ test:
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone005
 	g++ ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o layoutDemo
-<<<<<<< HEAD
-	g++ ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp Milestone006Tests.cpp \
+	g++ ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp ../Event.cpp Milestone006Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006
-=======
-	g++ ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp Milestone006EventSystem.cpp \
+	g++ ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006EventSystem
->>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 studentMachine:
 	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
@@ -47,12 +44,9 @@ studentMachine:
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005
 	$(CXX) ../Event.cpp ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDemo
-<<<<<<< HEAD
-	$(CXX) ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp Milestone006Tests.cpp \
+	$(CXX) ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp ../Event.cpp Milestone006Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006
-=======
-	$(CXX) ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp Milestone006EventSystem.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006EventSystem
->>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
+	$(CXX) ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006EventSystem
 	
 
 mac:
@@ -65,12 +59,9 @@ mac:
 	g++ ../GUIFile.cpp ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Screen.cpp ../Triangle.cpp ../Layout.cpp Milestone005LayoutTests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone005LayoutTests
 	g++ ../Factory.cpp ../GuiElement.cpp ../Point.cpp ../Line.cpp ../Box.cpp ../Screen.cpp ../Triangle.cpp ../Layout.cpp Milestone005Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone005
 	g++ ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp layoutDemo.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o layoutDemo
-<<<<<<< HEAD
-	g++ ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp Milestone006Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone006
+	g++ ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../SoundPlayer.cpp ../Sound.cpp ../Event.cpp Milestone006Tests.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone006
 
-=======
-	g++ ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp Milestone006EventSystem.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone006EventSystem
->>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
+	g++ ../GuiElement.cpp ../Layout.cpp ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp Milestone006EventSystem.cpp -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks -framework sdl3 -std=c++17 -Wall -o milestone006EventSystem
 
 
 clean:

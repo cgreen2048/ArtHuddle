@@ -1,6 +1,10 @@
 #include <iostream>
 #include <memory>
 #include "../EventSystem.hpp"
+#include "../Event.hpp"
+#include "../ClickEvent.hpp"
+#include "../ShowEvent.hpp"
+#include "../SoundEvent.hpp"
 
 
 
