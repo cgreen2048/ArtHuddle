@@ -1,6 +1,10 @@
 # SP26_Team02
 
 # Quick Links to Classes
+- [Event Class](#event)
+- [ClickEvent Class](#clickevent)
+- [ShowEvent Class](#showevent)
+- [SoundEvent Class](#soundevent)
 - [Sound Class](#sound)
 - [SoundState Struct](#soundstate-struct)
 - [SoundPlayer Class](#soundplayer)
@@ -12,6 +16,7 @@
 - [Box Class](#box)
 - [Line Class](#line)
 - [Point Class](#point)
+- [EventSystem Class](#eventsystem)
 - [GuiFile XML Parser](#guifile)
 - [Screen Class](#screen)
 - [Matrix Class](#matrix)
@@ -26,6 +31,126 @@
 main.cpp is a demonstration program
 
 ---
+
+# Event
+
+## Description
+`Event` is the primary class formulating the event-driven system. To handle events, an `Event*` trickled down from the root layout to 
+each child element, calling `GuiElement::resolveEvent` to determine if the element can handle the `Event*` passed down.
+
+Similar to `GuiElement` every event type implements this class, currently supporting these events:
+- `ClickEvent`
+- `ShowEvent`
+- `SoundEvent`
+
+## Data Members
+
+### `EventType type`
+This is an enum identifying the type of object passed down, useful in polymorphism
+
+## Methods
+
+### `Event()`
+Default constructor
+
+### `Event(EventType t)`
+Constructs an `Event` object with type = t
+
+### `Event(const Event& cp)`
+Default copy constructor
+
+### `operator=(const Event& rhs)`
+Default = operator overload
+
+### `virtual ~Event()`
+Default destructor, virtual for polymorphism
+
+### `EventType getType()`
+Returns the `Event`'s `type`
+
+# ClickEvent
+
+## Description
+`ClickEvent` represents a mouse click event, inheriting from `Event`. It contains the coordinates of the click to be used for event
+handling in `GuiElement::resolveEvent`
+
+## Data Members
+
+### `int mouseX`
+The x coordinate of the click
+
+### `int mouseY` 
+The y coordinate of the click
+
+## Methods
+
+### `ClickEvent(int x, int y)`
+Constructor for `ClickEvent`. Sets `mouseX` to `x` and `mouseY` to `y`
+
+### `int getMouseX()`
+Returns the x coordinate of the click
+
+### `int getMouseY()`
+Returns the y coordinate of the click
+
+# ShowEvent
+
+## Description
+`ShowEvent` represents an event to show or hide a `Layout`. It contains the name of the `Layout` to be shown or hidden and a `ShowActionType` to determine whether the `Layout` should be shown or hidden
+
+## Data Members
+
+### `std::string layoutName`
+The name of the `Layout` to be shown or hidden
+
+### `ShowActionType action`
+An enum to determine whether the `Layout` should be shown or hidden. Can be `ShowActionType::SHOW` or `ShowActionType::HIDE`
+
+## Methods
+
+### `ShowEvent(std::string name)`
+Constructor for `ShowEvent`. Sets `layoutName` to `layoutName` and `action` to `ShowActionType::SHOW` by default
+
+### `ShowEvent(std::string name, ShowActionType act)`
+Constructor for `ShowEvent`. Sets `layoutName` to `layoutName` and `action` to `act`
+
+### `const std::string& getLayoutName()`
+Returns the name of the `Layout` to be shown or hidden
+
+### `ShowActionType getAction()`
+Returns the `ShowActionType` of the event
+
+# SoundEvent
+
+## Description
+`SoundEvent` represents an event to play, pause, or stop a sound. It contains the name of the sound and a `SoundActionType` to determine whether the sound should be played, paused, or stopped
+
+## Data Members
+### `std::string soundName`
+The name of the sound to be played, paused, or stopped. Can be a file path or a sound name
+
+### `SoundActionType action`
+An enum to determine whether the sound should be played, paused, or stopped. Can be `SoundActionType::PLAY`, `SoundActionType::PAUSE`, or `SoundActionType::STOP`
+
+### `bool loop = false`
+A boolean to determine whether the sound should be looped or not when played. Loops when set to true
+
+## Methods
+### `SoundEvent(const std::string& name)`
+Constructor for `SoundEvent`. Sets `soundName` to `name` and initializes `action` to `SoundActionType::PLAY` and `loop` to `false`
+
+### `SoundEvent(const std::string& name, SoundActionType act, bool shouldLoop = false)`
+Constructor for `SoundEvent`. Sets `soundName` to `name`, `action` to `act`, and `loop` to `shouldLoop`
+- Allows the user to specify whether the sound should be looped when played
+
+### `const std::string& getSoundName()`
+Returns the name of the sound to be played, paused, or stopped
+
+### `SoundActionType getAction()`
+Returns the `SoundActionType` of the event
+
+### `bool shouldLoop()`
+Returns whether the sound should be looped when played or not
 
 # Sound
 
@@ -435,6 +560,16 @@ Sets the `parentEnd` data for the current `GuiElement` object
 
 ---
 
+### `virtual bool GuiElement::resolveEvent(Event* e)`
+Handles an incoming event for the current `GuiElement` object
+
+Returns:
+
+- `true` if the element handles and consumes the event
+- `false` if the element does not handle the event and propagation should continue
+
+---
+
 ### `void setName(const std::string& n)`
 Sets the `name` data for the current `GuiElement` object
 
@@ -567,7 +702,7 @@ Sets the parent ending coordinates as in `GuiElement` but overloaded to also set
 ### `void setActive(bool value)`
 Sets `active` to `value`, toggling the `Layout` active (able to be drawn) or not
 
---
+---
 
 ### `void isActive()`
 Getter method for `active` to check if the `Layout` can be drawn
@@ -586,6 +721,19 @@ If the `Layout` is active and contains both starting and ending parent bounds, i
 
 ### `void writeXml(std::ostream& out)`
 Similar to `draw()` except first printing the proper `<layout>` tag with parameters and then writing to an XML by calling each child `GuiElement*`'s `writeXml()` function.
+
+---
+
+### `bool resolveEvent(Event* e)`
+Handles and propagates an event through this Layout’s hierarchy
+- Checks for `SHOW` event to update current Layout state
+- If `active == false`, stops immediately and returns `false`
+- Otherwise, iterates through all child elements:
+  - Calls `child->resolveEvent(e)`
+  - Stops early if a child returns `true`
+- Returns:
+  - `true` → event was handled by a child  
+  - `false` → event was not handled  
 
 ---
 
@@ -1062,6 +1210,7 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ---
 
+<<<<<<< HEAD
 ### `bool isValid(ElementParameters ep)`
 Checks whether `ep.point1` has been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` has not been set
@@ -1070,16 +1219,132 @@ Checks whether `ep.point1` has been initialized and whether `ep.color` is comple
 ---
 
 # GUIFile
+=======
+# EventSystem
+>>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 ## Description
 
-`GUIFile` is responsible for **reading and writing an XML-based layout file** that describes a hierarchy of GUI elements.
+`EventSystem` is a **centralized event manager** responsible for:
 
-Instead of storing elements in a flat container:
+- Storing events in a queue  
+- Providing controlled access to events  
+- Propagating events through the GUI hierarchy  
+
+It follows the **Singleton Design Pattern**, ensuring only one global instance exists during the program’s lifetime.
+
+This system enables **event-driven programming**, where events are created, queued, and then dispatched to GUI elements for handling.
+
+---
+
+## Core Responsibilities
+
+- Queue incoming events (`push`)
+- Retrieve events in FIFO order (`poll`)
+- Process and dispatch events to the GUI (`processEvents`)
+- Maintain a single global instance (`getInstance`)
+
+---
+
+## Internal Data Structures
+
+### `std::queue<std::unique_ptr<Event>> eventQueue`
+
+- Stores events in **FIFO (First-In, First-Out)** order  
+- Uses `std::unique_ptr<Event>` to enforce **exclusive ownership**
+- Ensures safe memory management (RAII)
+
+---
+
+## Design Patterns Used
+
+### Singleton Pattern
+
+- Only one `EventSystem` instance exists
+- Constructor is private
+- Copy/assignment disabled
+- Accessed via `getInstance()`
+
+### Event Queue Pattern
+
+- Events are buffered before processing
+- Decouples **event producers** from **event consumers**
+
+---
+
+## Methods
+
+### `static EventSystem& getInstance()`
+
+Returns the single global instance of `EventSystem`.
+
+- Implements **Meyers Singleton**
+- Instance is created on first call
+
+---
+
+### `void push(std::unique_ptr<Event> e)`
+
+Adds a new event to the queue.
+
+- Transfers ownership using `std::move`
+- Prevents copying of events
+
+**Example:**
+```cpp
+EventSystem::getInstance().push(std::make_unique<ClickEvent>(x, y));
+```
+
+### `std::unique_ptr<Event> poll()`
+
+Retrieves and removes the next event from the queue.
+
+Returns:
+
+- `nullptr` if queue is empty  
+- Otherwise, the next event (ownership transferred)
+
+---
+
+### `void processEvents(Layout* root)`
+
+Processes all queued events and propagates them through the GUI.
+
+---
+
+#### Behavior:
+
+- Continuously polls events until queue is empty  
+- For each event:
+  - If `SOUND` event → handled separately
+  - Otherwise → passed to root layout:
+    ```cpp
+    root->resolveEvent(e.get());
+    ```
+
+---
+
+#### Event Propagation Model
+
+- Uses **top-down (trickling)** propagation:
+  - Event starts at root `Layout`
+  - Travels through child elements
+  - Stops when consumed
+
+---
+
+### Example Usage
 
 ```cpp
-std::vector<GuiElement*> elements;
+EventSystem& system = EventSystem::getInstance();
+
+// Push events
+system.push(std::make_unique<ClickEvent>(100, 200));
+
+// Process events
+system.processEvents(rootLayout);
 ```
+<<<<<<< HEAD
 the system now uses a hierarchical structure:
 ```cpp
 Layout* rootLayout;
@@ -1451,6 +1716,9 @@ Used to convert between float and integer vector types:
 These ensure the correct internal representation while preserving original XML tag types.
 
 ---
+=======
+ 
+>>>>>>> a2de0e2c15f92687746cda4000e61dbec3bb8135
 
 ## UML Diagram
 ![UML Diagram](images/Milestone003_UML.png)
