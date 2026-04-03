@@ -76,6 +76,7 @@ bool SoundPlayer::playSound(std::string filePath, bool loop) {
             soundData.bufferStart = itr.getBuffer();
             soundData.audioLength = itr.getLength();
             soundData.originalLength = itr.getLength();
+            soundData.loop = loop;
             this->playback.push_back(soundData);
             return true;
         }
@@ -91,6 +92,7 @@ bool SoundPlayer::playSound(std::string filePath, bool loop) {
                 soundData.bufferStart = itr.getBuffer();
                 soundData.audioLength = itr.getLength();
                 soundData.originalLength = itr.getLength();
+                soundData.loop = loop;
                 this->playback.push_back(soundData);
                 return true;
             }
