@@ -40,6 +40,9 @@ void clearEventSystem();
 int main() {
     int failure = 0;
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
+    EventSystem& system = EventSystem::getInstance();
+    SoundPlayer player;
+    system.setSoundPlayer(&player);
 
     if (singletonTest()) {
         failure = 1;

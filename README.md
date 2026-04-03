@@ -358,6 +358,8 @@ A struct passed to `Factory` to create a `GuiElement` object. Members are set to
 ### `enum class TagType { Vec, IVec }`
 Enumeration used to communicate whether the corresponding attribute is a float or integer mathematical vector
 
+---
+
 ### `std::string name`
 The desired name of the object
 
@@ -462,12 +464,18 @@ The relative starting position of a `Layout` object
 The relative ending position of a `Layout` object
 - Initialized to `vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest())`
 
+---
+
 ### `std::function<void()> callback`
 A callback function used for `Button` objects. Called when a `Button` is clicked
 - Initialized to empty lambda function `[](){}`
 
+---
+
 ### `std::string callbackName`
 The name of the callback function for a `Button` object. Used to identify the callback when writing to an XML layout file
+
+---
 
 ### `std::string text`
 The text label for a `Button` object. Used to display text on the button and also written as a parameter in an XML layout file
@@ -1371,7 +1379,7 @@ This system enables **event-driven programming**, where events are created, queu
 
 ## Data Members
 
-### `SoundPlayer soundPlayer`
+### `SoundPlayer* soundPlayer`
 
 - Handles all audio-related events
 - Responsible for:
@@ -1440,6 +1448,16 @@ Returns:
 ### `void processEvents(Layout* root)`
 
 Processes all queued events and propagates them through the GUI.
+
+---
+
+### `void setSoundPlayer(SoundPlayer* soundPlayer)`
+Sets the `soundPlayer` attribute with the passed pointer
+
+---
+
+`SoundPlayer* getSoundPlayer()`
+Returns the stored pointer to `SoundPlayer`
 
 ---
 
