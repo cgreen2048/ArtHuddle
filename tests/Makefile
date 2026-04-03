@@ -47,7 +47,7 @@ test:
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006EventSystem
 
 	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp Milestone006Demo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006Demo
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006Demo
 
 
 studentMachine:
