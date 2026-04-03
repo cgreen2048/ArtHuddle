@@ -462,6 +462,16 @@ The relative starting position of a `Layout` object
 The relative ending position of a `Layout` object
 - Initialized to `vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest())`
 
+### `std::function<void()> callback`
+A callback function used for `Button` objects. Called when a `Button` is clicked
+- Initialized to empty lambda function `[](){}`
+
+### `std::string callbackName`
+The name of the callback function for a `Button` object. Used to identify the callback when writing to an XML layout file
+
+### `std::string text`
+The text label for a `Button` object. Used to display text on the button and also written as a parameter in an XML layout file
+
 ---
 
 ## UML Diagram
@@ -496,7 +506,7 @@ This enumeration identifies the type of GUI element being created.
 It is primarily used by the **Factory** to determine which object to instantiate.
 
 ```cpp
-enum class guiElement { LAYOUOT, POINT, LINE, BOX, TRIANGLE };
+enum class guiElement { LAYOUOT, POINT, LINE, BOX, TRIANGLE, BUTTON };
 ```
 
 ---
@@ -540,6 +550,7 @@ Each derived class implements its own drawing behavior:
 | `Line` | `drawBresenhamLine()` |
 | `Box` | `drawBox()` |
 | `Triangle` | `drawTriangle()` |
+| `Button` | `drawBox()` |
 
 In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will call `draw()` on all children of that parent
 
@@ -632,6 +643,7 @@ Creates a new GUI element based on the `guiElement` enum value.
 | `guiElement::LINE` | `Line` |
 | `guiElement::BOX` | `Box` |
 | `guiElement::TRIANGLE` | `Triangle` |
+| `guiElement::BUTTON` | `Button` |
 
 ---
 
@@ -788,14 +800,32 @@ Checks whether `ep.layoutStart` or `ep.layoutEnd` have been set
 
 ## Description
 `Triangle` is a class used for storing and drawing a filled triangle to a `Screen` object. It inherits from the `GuiElement` class
-- `ivec2 a`: the coordinates of the first point of the triangle
-- `ivec2 b`: the coordinates of the second point of the triangle
-- `ivec2 c`: the coordinates of the third point of the triangle
-- `ivec3 color`: the color of the triangle
-- `TagType aType`: the type of tag for the `a` attribute
-- `TagType bType`: the type of tag for the `b` attribute
-- `TagType cType`: the type of tag for the `c` attribute
-- `TagType colorType`: the type of tag for the `color` attribute
+
+## Data Members
+
+### `ivec2 a`
+The coordinates of the first point of the triangle
+
+### `ivec2 b`
+The coordinates of the second point of the triangle
+
+### `ivec2 c`
+The coordinates of the third point of the triangle
+
+### `ivec3 color`
+The color of the triangle
+
+### `TagType aType`
+The type of tag for the `a` attribute
+
+### `TagType bType`
+The type of tag for the `b` attribute
+
+### `TagType cType`
+The type of tag for the `c` attribute
+
+### `TagType colorType`
+The type of tag for the `color` attribute
 
 ---
 
@@ -914,12 +944,26 @@ Checks whether `ep.point1`, `ep.point2`, and `ep.point3` have been initialized a
 
 ## Description
 `Box` is a class used for storing and drawing a filled box to a `Screen` object. It inherits from the `GuiElement` class
-- `vec2 min`: the coordinates of the minimum point of the box
-- `vec2 max`: the coordinates of the maximum point of the box
-- `vec3 color`: the color of the box
-- `TagType minType`: the type of tag for the `min` attribute
-- `TagType maxType`: the type of tag for the `max` attribute
-- `TagType colorType`: the type of tag for the `color` attribute
+
+## Data Members
+
+### `vec2 min`
+The coordinates of the minimum point of the box
+
+### `vec2 max`
+The coordinates of the maximum point of the box
+
+### `vec3 color`
+The color of the box
+
+### `TagType minType`
+The type of tag for the `min` attribute
+
+### `TagType maxType`
+The type of tag for the `max` attribute
+
+### `TagType colorType`
+The type of tag for the `color` attribute
 
 ---
 
@@ -1044,6 +1088,13 @@ The default constructor. Initializes `text` and `callbackName` to empty strings 
 ### `Button(const Button& cp)`
 Copy assignment operator. Takes attributes from `cp` to pass into `Box` default constructor and set `text`, `callbackName`, and `callback` for this new `Button`
 
+### `Button(ElementParameters ep)`
+Constructor that takes in an `ElementParameters` struct. Called via `Factory`
+- Calls `isValid` on `ep`
+  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Sets the `text`, `callbackName`, and `callback` attributes based on the corresponding data in `ep`
+- Passes `ep` to the `Box` constructor to set the geometry and color attributes for this `Button`
+
 ### `Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, const std::string& callbackName, const std::string& text)`
 Initializes the button with the given geometry and color via `Box` constructor, and sets the callback function, callback name, and label text
 
@@ -1052,6 +1103,11 @@ Overrides `GuiElement::resolveEvent` to handle click events. If the event is a c
 
 ### `void writeXml(std::ostream& out) const`
 Overrides `Box::writeXml` in almost identical formatting, except including the `callbackName` and `text` as parameters in the `<button>` tag for XML writing
+
+### `bool isValid(ElementParameters ep)`
+Uses the same signature as `Box::isValid` but also checks that `ep.callbackName` has been set to valid values for a button
+- Returns false if `ep.callbackName` is empty 
+- Allows empty lambda function for `callback` as a button with no functionality may still be desired
 
 ### `const std::string& getText() const`
 Returns the `text` of the button
@@ -1062,12 +1118,26 @@ Returns the `text` of the button
 
 ## Description
 `Line` is a class used for storing and drawing a line to a `Screen` object. It inherits from the `GuiElement` class
-- `vec2 start`: the coordinates of the starting point of the line
-- `vec2 end`: the coordinates of the ending point of the line
-- `vec3 color`: the color of the line
-- `TagType startType`: the type of tag for the `start` attribute
-- `TagType endType`: the type of tag for the `end` attribute
-- `TagType colorType`: the type of tag for the `color` attribute
+
+## Data Members
+
+### `vec2 start`
+The coordinates of the starting point of the line
+
+### `vec2 end`
+The coordinates of the ending point of the line
+
+### `vec3 color`
+The color of the line
+
+### `TagType startType`
+The type of tag for the `start` attribute
+
+### `TagType endType`
+The type of tag for the `end` attribute
+
+### `TagType colorType`
+The type of tag for the `color` attribute
 
 ---
 
@@ -1168,10 +1238,20 @@ Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep
 
 ## Description
 `Point` is a class used for storing and drawing a point to a `Screen` object. It inherits from the `GuiElement` class
-- `vec2 coords`: the coordinates of the point
-- `vec3 color`: the color of the box
-- `TagType coordsType`: the type of tag for the `coords` attribute
-- `TagType colorType`: the type of tag for the `color` attribute
+
+## Data Members
+
+### `vec2 coords`
+The coordinates of the point
+
+### `vec3 color`
+The color of the point
+
+### `TagType coordsType`
+The type of tag for the `coords` attribute
+
+### `TagType colorType`
+The type of tag for the `color` attribute
 
 ---
 
@@ -1289,7 +1369,7 @@ This system enables **event-driven programming**, where events are created, queu
 
 ---
 
-## Internal Data Structures
+## Data Members
 
 ### `SoundPlayer soundPlayer`
 

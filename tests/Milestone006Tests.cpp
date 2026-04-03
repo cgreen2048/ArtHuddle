@@ -267,7 +267,7 @@ bool buttonTests() {
     int failure = 0;
     bool clicked = false;
     Button* button = new Button(ivec2(50, 50), ivec2(150, 100), ivec3(255, 0, 0), [&clicked](){ clicked = true; }, "testCallback", "Click me!");
-    if (button->getName() != "testCallback") {
+    if (button->getCallbackName() != "testCallback") {
         failure = 1;
         std::cout << "button name test FAILED\n";
     }

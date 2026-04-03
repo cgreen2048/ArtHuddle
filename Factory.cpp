@@ -45,6 +45,14 @@ GuiElement* factory(guiElement e, ElementParameters ep) {
 		default: {
 			return nullptr;
 		}
+		case guiElement::BUTTON: {
+			try {
+				return new Button(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
+		}
 	}
 	return nullptr;
 }

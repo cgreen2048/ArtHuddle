@@ -6,6 +6,8 @@
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "GuiElement.hpp"
+#include <functional>
+#include <string>
 
 class GuiElement;
 enum class TagType { Vec, IVec };
@@ -29,6 +31,9 @@ struct ElementParameters {
     TagType colorType = TagType::Vec;
     vec2 layoutStart = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     vec2 layoutEnd = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
+    std::function<void()> callback = []() {};
+    std::string callbackName = "";
+    std::string text = "";
 };
 
 #endif
