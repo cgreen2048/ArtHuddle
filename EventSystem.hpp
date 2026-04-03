@@ -19,6 +19,8 @@ class EventSystem{
         EventSystem& operator=(const EventSystem&) = delete;
         std::unique_ptr<Event> poll();
         void processEvents(Layout *rootlayout);
+        void setSoundPlayer(SoundPlayer soundPlayer);
+        SoundPlayer getSoundPlayer();
 
     private:
         EventSystem();

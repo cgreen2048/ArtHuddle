@@ -1,5 +1,6 @@
 #include "Button.hpp"
 #include "XmlWriteHelpers.hpp"
+#include <iostream>
 
 Button::Button() : Box(), onClick([](){}), callbackName(""), text("") {}
 
@@ -17,7 +18,7 @@ Button::Button(ElementParameters ep) : Box(ep) {
 
 Button::Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, const std::string& callbackName, const std::string& text = "") : Box(min, max, color), onClick(callback), callbackName(callbackName), text(text) {}
 
-bool Button::resolveEvent(const Event* event) {
+bool Button::resolveEvent(Event* event) {
     if (event->getType() == EventType::CLICK) {
         ClickEvent* clickEvent = dynamic_cast<ClickEvent*>(const_cast<Event*>(event));
         if (this->inBounds(ivec2(clickEvent->getMouseX(), clickEvent->getMouseY()))) {
