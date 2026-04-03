@@ -124,3 +124,10 @@ bool Box::isValid(ElementParameters ep) {
     }
     return true;
 }
+
+bool Box::inBounds(const ivec2& point) const {
+    if ((point.x < min.x) || (point.x > max.x) || (point.y < min.y) || (point.y > max.y)) {
+        return false;
+    }
+    return true;
+}

@@ -15,6 +15,7 @@
 #include "../ClickEvent.hpp"
 #include "../ShowEvent.hpp"
 #include "../SoundEvent.hpp"
+#include "../Button.hpp"
 
 
 const int X = 960;
@@ -22,6 +23,7 @@ const int Y = 540;
 
 bool factoryTests();
 bool eventTests();
+bool buttonTests();
 bool soundTests(SoundPlayer*);
 
 int main() {
@@ -37,6 +39,13 @@ int main() {
 
     bool eventSuccess = eventTests();
     if (!eventSuccess) {
+        failure = 1;
+    }
+
+    std::cout << '\n';
+
+    bool buttonSuccess = buttonTests();
+    if (!buttonSuccess) {
         failure = 1;
     }
 
@@ -244,6 +253,74 @@ bool eventTests() {
         failure = 1;
     }
 
+    delete click;
+    delete show;
+    delete defaultShow;
+    delete sound;
+    delete defaultSound;
+    return failure;
+}
+
+bool buttonTests() {
+    std::cout << "***Button tests***\n";
+
+    int failure = 0;
+    bool clicked = false;
+    Button* button = new Button(ivec2(50, 50), ivec2(150, 100), ivec3(255, 0, 0), [&clicked](){ clicked = true; }, "testCallback", "Click me!");
+    if (button->getCallbackName() != "testCallback") {
+        failure = 1;
+        std::cout << "button name test FAILED\n";
+    }
+    else {
+        std::cout << "button name test passed\n";
+    }
+
+    if (button->getText() != "Click me!") {
+        failure = 1;
+        std::cout << "button text test FAILED\n";
+    }
+    else {
+        std::cout << "button text test passed\n";
+    }
+
+    ClickEvent* click1 = new ClickEvent(75, 75);
+    if (button->resolveEvent(click1)) {
+        if (!clicked) {
+            failure = 1;
+            std::cout << "button click callback test FAILED\n";
+        }
+        else {
+            std::cout << "button click callback test passed\n";
+        }
+    }
+
+    ClickEvent* click2 = new ClickEvent(25, 25);
+    if (!button->resolveEvent(click2)) {
+        std::cout << "button out of bounds click test passed\n";
+    }
+
+    else {
+        failure = 1;
+        std::cout << "button click event resolution test FAILED\n";
+    }
+
+    ShowEvent* show = new ShowEvent("testLayout", ShowActionType::HIDE);
+    if (!button->resolveEvent(show)) {
+        std::cout << "button non-click event resolution test passed\n";
+    }
+    else {
+        failure = 1;
+        std::cout << "button non-click event resolution test FAILED\n";
+    }
+
+    if (!failure) {
+        std::cout << "Button working\n";
+    }
+    else {
+        std::cout << "IMPLEMENTATION FAILED: REVIEW TESTS\n";
+    }
+
+    delete button;
     return failure;
 }
 
