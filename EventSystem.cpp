@@ -35,15 +35,15 @@ void EventSystem::processEvents(Layout *root){
             std::cout << "Processing sound event\n";
             switch (sound->getAction()) {
                 case SoundActionType::PLAY:
-                    soundPlayer.playSound(sound->getSoundName(), sound->shouldLoop());
+                    soundPlayer->playSound(sound->getSoundName(), sound->shouldLoop());
                     break;
 
                 case SoundActionType::PAUSE:
-                    soundPlayer.togglePlayback();
+                    soundPlayer->togglePlayback();
                     break;
 
                 case SoundActionType::STOP:
-                    soundPlayer.stopSound(sound->getSoundName());
+                    soundPlayer->stopSound(sound->getSoundName());
                     break;
             }
         }
@@ -54,10 +54,10 @@ void EventSystem::processEvents(Layout *root){
     }
 }
 
-void EventSystem::setSoundPlayer(SoundPlayer soundPlayer) {
+void EventSystem::setSoundPlayer(SoundPlayer* soundPlayer) {
     this->soundPlayer = soundPlayer;
 }
 
-SoundPlayer EventSystem::getSoundPlayer() {
+SoundPlayer* EventSystem::getSoundPlayer() {
     return soundPlayer;
 }

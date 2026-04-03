@@ -56,7 +56,7 @@ int eventDemo(Screen *screen, SDL_Window *window) {
     SDL_Event event;
     EventSystem& eventSystem = EventSystem::getInstance();
     SoundPlayer player;
-    eventSystem.setSoundPlayer(player);
+    eventSystem.setSoundPlayer(&player);
 
     ElementParameters rootLayout;
     rootLayout.layoutStart = vec2(0.0,0.0);

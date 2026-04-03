@@ -131,5 +131,6 @@ clean:
 	rm milestone006EventSystem
 	rm layoutDemo
 	rm milestone006
+	rm milestone006Demo
 
 
