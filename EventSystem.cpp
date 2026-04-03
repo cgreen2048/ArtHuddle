@@ -1,4 +1,6 @@
 #include "EventSystem.hpp"
+#include <iostream>
+#include "ClickEvent.hpp"
 
 EventSystem::EventSystem() {}
 
@@ -20,6 +22,7 @@ std::unique_ptr<Event> EventSystem::poll() {
 }
 
 void EventSystem::processEvents(Layout *root){
+    std::cout << "Processing events, queue size: " << eventQueue.size() << '\n';
     while(!eventQueue.empty()){
         std::unique_ptr<Event> e = poll();
 
@@ -29,6 +32,7 @@ void EventSystem::processEvents(Layout *root){
 
         if(e->getType() == EventType::SOUND){
             SoundEvent* sound = static_cast<SoundEvent*>(e.get());
+            std::cout << "Processing sound event\n";
             switch (sound->getAction()) {
                 case SoundActionType::PLAY:
                     soundPlayer.playSound(sound->getSoundName(), sound->shouldLoop());
@@ -44,7 +48,16 @@ void EventSystem::processEvents(Layout *root){
             }
         }
         else{
+            // Handle other event types here by trickling down through the layout tree and calling resolveEvent on each element
             root->resolveEvent(e.get());
         }
     }
+}
+
+void EventSystem::setSoundPlayer(SoundPlayer soundPlayer) {
+    this->soundPlayer = soundPlayer;
+}
+
+SoundPlayer EventSystem::getSoundPlayer() {
+    return soundPlayer;
 }

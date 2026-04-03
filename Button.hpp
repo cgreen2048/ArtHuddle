@@ -23,7 +23,7 @@ class Button : public Box {
         ~Button() = default;
         Button& operator=(const Button& rhs) = default;
 
-        bool resolveEvent(const Event* event);
+        bool resolveEvent(Event* event);
         void writeXml(std::ostream& out, int depth) const;
         bool isValid(ElementParameters ep);
         const std::string& getText() const;

@@ -106,7 +106,7 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
 
     ElementParameters nestedLayoutParam;
     nestedLayoutParam.layoutStart = vec2(0.5, 0.5);
-    nestedLayoutParam.layoutStart = vec2(1.0, 1.0);
+    nestedLayoutParam.layoutEnd = vec2(1.0, 1.0);
     // Layout* nestedLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, nestedLayoutParam));
     // nestedLayout->setStart(vec2{0.5, 0.5});
     // nestedLayout->setEnd(vec2{1.0, 1.0});

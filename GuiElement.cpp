@@ -1,5 +1,5 @@
 #include "GuiElement.hpp"
-
+#include <iostream>
 GuiElement::GuiElement() {
     
 }
