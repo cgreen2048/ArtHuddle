@@ -2,23 +2,30 @@
 #define __ELLIPSE_HPP__
 
 #include "GuiElement.hpp"
+#include "ElementParameters.hpp"
+#include "Event.hpp"
+#include "ClickEvent.hpp"
+#include "vec2.hpp"
 
 class Ellipse : public GuiElement {
     private:
         ivec2 center;
         int radiusX;
         int radiusY;
+        ivec3 color;
 
     public:
         Ellipse();
-        Ellipse(ivec2 center, int radius);
-        Ellipse(ivec2 center, int radiusX, int radiusY);
+        Ellipse(ivec2 center, int radius, ivec3 color);
+        Ellipse(ivec2 center, int radiusX, int radiusY, ivec3 color);
         Ellipse(const Ellipse& cp);
         Ellipse& operator=(const Ellipse& rhs);
+        Ellipse(ElementParameters ep);
         ~Ellipse();
 
         void draw(Screen* screen);
         void writeXml(std::ostream& out, int depth) const;
         bool resolveEvent(Event* e);
         bool isValid(ElementParameters ep);
+        bool pointInEllipse(ivec2 point);
 };
