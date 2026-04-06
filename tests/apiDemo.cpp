@@ -100,6 +100,47 @@ int main() {
                 }
             }
         }
+        float mouseX = 0;
+        float mouseY = 0;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        switch (type) {
+            case 1: {
+                if (point == 1) {
+                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
+                    drawTempElement(type, point1, point2, point3, color);
+                }
+                break;
+            }
+            case 2: {
+                if (point == 1) {
+                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
+                    drawTempElement(type, point1, point2, point3, color);
+                }
+                break;
+            }
+            case 3: {
+                if (point == 1) {
+                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
+                    drawTempElement(1, point1, point2, point3, color);
+                }
+                else if (point == 2) {
+                    point3 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
+                    drawTempElement(type, point1, point2, point3, color);
+                    break;
+                }
+                break;
+            }
+            case 4: {
+                break;
+            }
+            case 5: {
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
         const bool* keyboardState = SDL_GetKeyboardState(&numKeys);
         if (keyboardState[SDL_SCANCODE_1]) {
             type = 0;

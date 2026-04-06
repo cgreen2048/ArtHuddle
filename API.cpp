@@ -20,6 +20,60 @@ void playSound(std::string filePath, int loop) {
     soundPlayer->playSound(filePath, loop);
 }
 
+void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
+    tempLayout->clearElements();
+    guiElement ge = static_cast<guiElement>(type);
+    ElementParameters ep;
+    ep.point1 = point1;
+    ep.point2 = point2;
+    ep.point3 = point3;
+    ep.color = color;
+    ep.point1Type = TagType::IVec;
+    ep.point2Type = TagType::IVec;
+    ep.point3Type = TagType::IVec;
+    ep.colorType = TagType::IVec;
+    switch (ge) {
+		case guiElement::LINE: {
+			Line* element = dynamic_cast<Line*>(factory(ge, ep));
+            if (element) {
+                tempLayout->addElement(element);
+            }
+            return;
+		}
+		case guiElement::BOX: {
+			Box* element = dynamic_cast<Box*>(factory(ge, ep));
+            if (element) {
+                tempLayout->addElement(element);
+            }
+            return;
+		}
+		case guiElement::TRIANGLE: {
+			Triangle* element = dynamic_cast<Triangle*>(factory(ge, ep));
+            if (element) {
+                tempLayout->addElement(element);
+            }
+            return;
+		}
+        case guiElement::LAYOUT: {
+			Layout* element = dynamic_cast<Layout*>(factory(ge, ep));
+            if (element) {
+                tempLayout->addElement(element);
+            }
+            return;
+		}
+		case guiElement::BUTTON: {
+			Button* element = dynamic_cast<Button*>(factory(ge, ep));
+            if (element) {
+                tempLayout->addElement(element);
+            }
+            return;
+		}
+        default: {
+            return;
+        }
+	}
+}
+
 void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
     guiElement ge = static_cast<guiElement>(type);
     ElementParameters ep;
@@ -78,6 +132,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             return;
         }
 	}
+    tempLayout->clearElements();
 }
 
 void update() {

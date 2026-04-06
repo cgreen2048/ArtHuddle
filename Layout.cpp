@@ -169,3 +169,7 @@ bool Layout::isValid(ElementParameters ep) {
     }
     return true;
 }
+
+void Layout::clearElements() {
+    this->elements.clear();
+}

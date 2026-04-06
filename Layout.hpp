@@ -40,6 +40,7 @@ class Layout : public GuiElement {
         int getAbsoluteEndX();
         int getAbsoluteEndY();
         bool isValid(ElementParameters ep);
+        void clearElements();
 };
 
 #endif

@@ -29,6 +29,7 @@ extern SDL_Window* window;
 extern Screen* screen;
 extern SoundPlayer* soundPlayer;
 extern Layout* rootLayout;
+extern Layout* tempLayout;
 
 void createWindow();
 void createScreen();

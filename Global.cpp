@@ -4,7 +4,7 @@ SDL_Window* window = nullptr;
 Screen* screen = nullptr;
 SoundPlayer* soundPlayer = nullptr;
 Layout* rootLayout = nullptr;
-
+Layout* tempLayout = nullptr;
 
 void createWindow() {
     window = SDL_CreateWindow("ArtHuddle", X, Y, 0);
@@ -27,6 +27,16 @@ void createRootLayout() {
     root.active = true;
     root.name = "rootLayout";
     rootLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, root));
+    
+    ElementParameters temp;
+    temp.layoutStart = vec2(0.0,0.0);
+    temp.layoutEnd = vec2(1.0, 1.0);
+    temp.parentStart = ivec2(0,0);
+    temp.parentEnd = ivec2(X,Y);
+    temp.active = true;
+    temp.name = "tempLayout";
+    tempLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, temp));
+    rootLayout->addElement(tempLayout);
 }
 
 void setEventSystem() {
