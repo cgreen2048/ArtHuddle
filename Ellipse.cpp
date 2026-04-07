@@ -1,4 +1,5 @@
 #include "Ellipse.hpp"
+#include "XmlWriteHelpers.hpp"
 
 Ellipse::Ellipse() : center{0,0}, radiusX{0}, radiusY{0}, color{0,0,0} {}
 
@@ -41,7 +42,26 @@ void Ellipse::draw(Screen* screen) {
 }
 
 void Ellipse::writeXml(std::ostream& out, int depth) const {
+    std::string pad = std::string(depth * 2, ' ');
 
+    out << pad << "<ellipse "
+        << "name=\"" << name << "\" "
+        << "rx=\"" << radiusX << "\" "
+        << "ry=\"" << radiusY << "\">\n";
+
+    if (centerType == TagType::IVec) {
+        writeIVec2(out, center, pad);
+    } else {
+        writeVec2(out, toVec2(center), pad);
+    }
+
+    if (colorType == TagType::IVec) {
+        writeIVec3(out, color, pad);
+    } else {
+        writeVec3(out, toVec3(color), pad);
+    }
+
+    out << pad << "</ellipse>\n";
 }
 
 bool Ellipse::resolveEvent(Event* e) {

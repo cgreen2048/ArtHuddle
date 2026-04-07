@@ -6,6 +6,7 @@
 #include "Event.hpp"
 #include "ClickEvent.hpp"
 #include "vec2.hpp"
+#include "vec3.hpp"
 
 class Ellipse : public GuiElement {
     private:
@@ -13,6 +14,8 @@ class Ellipse : public GuiElement {
         int radiusX;
         int radiusY;
         ivec3 color;
+        TagType centerType = TagType::IVec;
+        TagType colorType = TagType::IVec;
 
     public:
         Ellipse();
