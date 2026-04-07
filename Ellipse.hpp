@@ -29,3 +29,5 @@ class Ellipse : public GuiElement {
         bool isValid(ElementParameters ep);
         bool pointInEllipse(ivec2 point);
 };
+
+#endif

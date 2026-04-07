@@ -34,11 +34,18 @@ Ellipse::Ellipse(ElementParameters ep) {
     this->name = ep.name;
 }
 
-~Ellipse() {}
+Ellipse::~Ellipse() {}
+    
+void Ellipse::draw(Screen* screen) {
+    screen->drawEllipse(center, radiusX, radiusY, color, parentStart, parentEnd);
+}
 
+void Ellipse::writeXml(std::ostream& out, int depth) const {
+
+}
 
 bool Ellipse::resolveEvent(Event* e) {
-    if (e->getType() == EventType::Click) {
+    if (e->getType() == EventType::CLICK) {
         ClickEvent* click = dynamic_cast<ClickEvent*>(e);
         if (pointInEllipse(ivec2(click->getMouseX(), click->getMouseY()))) {
             // Handle selecting the element

@@ -13,7 +13,7 @@ MAC_CXXFLAGS := -std=c++17 -Wall
 MAC_LDFLAGS := -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks
 MAC_LDLIBS := -framework sdl3
 
-FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  
+FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp ../Ellipse.cpp  
 EVENT_ELEMENTS := ../Event.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp
 
 test:
@@ -82,6 +82,9 @@ studentMachine:
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp Milestone006Demo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006Demo
+
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) EllipseDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o ellipseDemo
 	
 
 mac:
@@ -132,5 +135,6 @@ clean:
 	rm layoutDemo
 	rm milestone006
 	rm milestone006Demo
+	rm ellipseDemo
 
 
