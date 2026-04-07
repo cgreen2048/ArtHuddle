@@ -31,6 +31,10 @@ class Ellipse : public GuiElement {
         bool resolveEvent(Event* e);
         bool isValid(ElementParameters ep);
         bool pointInEllipse(ivec2 point);
+
+        ivec2 getCenter();
+        int getRadiusX();
+        int getRadiusY();
 };
 
 #endif

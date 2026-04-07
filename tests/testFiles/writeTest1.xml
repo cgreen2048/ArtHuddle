@@ -14,6 +14,17 @@
           <z>103</z>
       </vec3>
   </line>
+  <ellipse name="e1" rx="4" ry="6">
+      <ivec2>
+          <x>50</x>
+          <y>20</y>
+      </ivec2>
+      <ivec3>
+          <x>255</x>
+          <y>0</y>
+          <z>0</z>
+      </ivec3>
+  </ellipse>
   <box name="">
       <vec2>
           <x>250</x>

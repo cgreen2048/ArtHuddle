@@ -105,3 +105,15 @@ bool Ellipse::pointInEllipse(ivec2 point) {
         && (point.y < center.y + radiusY)
     );
 }
+
+ivec2 Ellipse::getCenter() {
+    return this->center;
+}
+
+int Ellipse::getRadiusX() {
+    return this->radiusX;
+}
+
+int Ellipse::getRadiusY() {
+    return this->radiusY;
+}
