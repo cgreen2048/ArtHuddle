@@ -50,7 +50,7 @@ test:
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006Demo
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) EllipseDemo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o ellipseDemo
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o ellipseDemo
 
 
 studentMachine:
