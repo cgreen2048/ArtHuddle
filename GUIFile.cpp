@@ -399,11 +399,11 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
     guiElement type = determineGuiElementOpenerType(elementOpenTag);
     ElementParameters ep;
 
-    if(!setNameFromTag(elementOpenTag, &ep)){
+    if (!setNameFromTag(elementOpenTag, &ep)){
         return nullptr;
     }
 
-    if(type == guiElement::BUTTON){
+    if (type == guiElement::BUTTON){
         if(!setCallbackNameFromTag(elementOpenTag, &ep)){
             return nullptr;
         }
@@ -416,6 +416,8 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
     int lineVec2Index = 0;
     int boxVec2Index = 0;
     int triangleVec2Index = 0;
+    bool parsedArrowStem = false;
+    bool parsedArrowPoint = false;
 
     while (true) {
         std::string tag = getNextTag(inFile);
@@ -454,7 +456,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX || type == guiElement::BUTTON) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON || (type == guiElement::ARROW && parsedArrowStem == false)) {
                 if (boxVec2Index == 0) {
                     ep.min = v;
                     ep.minType = TagType::Vec;
@@ -462,6 +464,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 else {
                     ep.max = v;
                     ep.maxType = TagType::Vec;
+                    parsedArrowStem = true;
                 }
                 boxVec2Index++;
             }
@@ -469,7 +472,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 ep.coords = v;
                 ep.coordsType = TagType::Vec;
             }
-            else if (type == guiElement::TRIANGLE) {
+            else if (type == guiElement::TRIANGLE || (type == guiElement::ARROW && parsedArrowPoint == false)) {
                 if (triangleVec2Index == 0) {
                     ep.pointA = v;
                     ep.pointAType = TagType::Vec;
@@ -481,6 +484,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 else {
                     ep.pointC = v;
                     ep.pointCType = TagType::Vec;
+                    parsedArrowPoint = true;
                 }
                 triangleVec2Index++;
             }
@@ -502,7 +506,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX || type == guiElement::BUTTON) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON || (type == guiElement::ARROW && parsedArrowStem == false)) {
                 if (boxVec2Index == 0) {
                     ep.min = v;
                     ep.minType = TagType::IVec;
@@ -510,6 +514,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 else {
                     ep.max = v;
                     ep.maxType = TagType::IVec;
+                    parsedArrowStem = true;
                 }
                 boxVec2Index++;
             }
@@ -517,7 +522,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 ep.coords = v;
                 ep.coordsType = TagType::IVec;
             }
-            else if (type == guiElement::TRIANGLE) {
+            else if (type == guiElement::TRIANGLE || (type == guiElement::ARROW && parsedArrowPoint == false)) {
                 if (triangleVec2Index == 0) {
                     ep.pointA = v;
                     ep.pointAType = TagType::IVec;
@@ -529,6 +534,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 else {
                     ep.pointC = v;
                     ep.pointCType = TagType::IVec;
+                    parsedArrowPoint = true;
                 }
                 triangleVec2Index++;
             }

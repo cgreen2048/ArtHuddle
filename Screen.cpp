@@ -170,6 +170,11 @@ void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors
     }
 }
 
+void Screen::drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd) {
+    this->drawBox(min, max, colors, parentStart, parentEnd);
+    this->drawTriangle(pointA, pointB, pointC, colors, parentStart, parentEnd);
+}
+
 void Screen::clear(ivec3 color) {
     this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), color, ivec2(0, 0), ivec2(this->width, this->height));
 }

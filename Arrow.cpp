@@ -1,36 +1,71 @@
 #include "Arrow.hpp"
 #include "XmlWriteHelpers.hpp"
 
-Arrow::Arrow() : stem(), point(), color({0, 0, 0}) {}
+Arrow::Arrow() : min({0, 0}), max({0, 0}), pointA({0, 0}), pointB({0, 0}), pointC({0, 0}), color({0, 0, 0}) {}
 
-Arrow::Arrow(ivec2 min, ivec2 max, ivec2 a, ivec2 b, ivec2 c, ivec3 color) : stem(min, max, color), point(a, b, c, color), color(color) {
-    
+Arrow::Arrow(ivec2 min, ivec2 max, ivec2 a, ivec2 b, ivec2 c, ivec3 color) {
+    this->min = min;
+    this->max = max;
+    this->pointA = a;
+    this->pointB = b;
+    this->pointC = c;
+    this->color = color;
 }
 
 Arrow::Arrow(ElementParameters ep) {
     if (!isValid(ep)) {
         throw -1;
     }
+    this->min = ep.min;
+    this->max = ep.max;
+    this->pointA = ep.pointA;
+    this->pointB = ep.pointB;
+    this->pointC = ep.pointC;
     this->color = ep.color;
-    this->stem = Box(ep.min, ep.max, ep.color);
-    this->point = Triangle(ep.pointA, ep.pointB, ep.pointC, ep.color);
+    this->minType = ep.minType;
+    this->maxType = ep.maxType;
+    this->pointAType = ep.pointAType;
+    this->pointBType = ep.pointBType;
+    this->pointCType = ep.pointCType;
+    this->colorType = ep.colorType;
     this->name = ep.name;
 }
 
-Arrow::Arrow(const Arrow& cp) : stem(cp.stem), point(cp.point), color(cp.color) {
+Arrow::Arrow(const Arrow& cp) {
+    this->min = cp.min;
+    this->max = cp.max;
+    this->pointA = cp.pointA;
+    this->pointB = cp.pointB;
+    this->pointC = cp.pointC;
+    this->color = cp.color;
+    this->minType = cp.minType;
+    this->maxType = cp.maxType;
+    this->pointAType = cp.pointAType;
+    this->pointBType = cp.pointBType;
+    this->pointCType = cp.pointCType;
+    this->colorType = cp.colorType;
     this->name = cp.name;
 }
 
 Arrow& Arrow::operator=(const Arrow& cp) {
+    this->min = cp.min;
+    this->max = cp.max;
+    this->pointA = cp.pointA;
+    this->pointB = cp.pointB;
+    this->pointC = cp.pointC;
     this->color = cp.color;
-    this->stem = cp.stem;
-    this->point = cp.point;
+    this->minType = cp.minType;
+    this->maxType = cp.maxType;
+    this->pointAType = cp.pointAType;
+    this->pointBType = cp.pointBType;
+    this->pointCType = cp.pointCType;
+    this->colorType = cp.colorType;
     this->name = cp.name;
     return *this;
 }
 
 bool Arrow::operator==(Arrow rhs) {
-    if ((this->stem != rhs.stem) || (this->point != rhs.point) || (this->color != rhs.color)) {
+    if ((this->min != rhs.min) || (this->max != rhs.max) || (this->pointA != rhs.pointA) || (this->pointB != rhs.pointB) || (this->pointC != rhs.pointC) || (this->color != rhs.color)) {
         return false;
     }
     return true;
@@ -43,12 +78,51 @@ bool Arrow::operator!=(Arrow rhs) {
 Arrow::~Arrow() {}
 
 void Arrow::draw(Screen *screen) {
-    stem.setParentStart(this->getParentStart());
-    stem.setParentEnd(this->getParentEnd());
-    point.setParentStart(this->getParentStart());
-    point.setParentEnd(this->getParentEnd());
-    stem.draw(screen);
-    point.draw(screen);
+    screen->drawArrow(min, max, pointA, pointB, pointC, color, parentStart, parentEnd);
+}
+
+void Arrow::writeXml(std::ostream& out, int depth) const {
+    std::string pad = std::string(depth * 2, ' ');
+
+    out << pad << "<arrow " << "name=\"" << name << "\">\n";
+
+    if (minType == TagType::IVec) {
+        writeIVec2(out, min, pad);
+    }
+    else {
+        writeVec2(out, toVec2(min), pad);
+    }
+    if (maxType == TagType::IVec) {
+        writeIVec2(out, max, pad);
+    }
+    else {
+        writeVec2(out, toVec2(max), pad);
+    }
+    if (pointAType == TagType::IVec) {
+        writeIVec2(out, pointA, pad);
+    }
+    else {
+        writeVec2(out, toVec2(pointA), pad);
+    }
+    if (pointBType == TagType::IVec) {
+        writeIVec2(out, pointB, pad);
+    }
+    else {
+        writeVec2(out, toVec2(pointB), pad);
+    }
+    if (pointCType == TagType::IVec) {
+        writeIVec2(out, pointC, pad);
+    }
+    else {
+        writeVec2(out, toVec2(pointC), pad);
+    }
+    if (colorType == TagType::IVec) {
+        writeIVec3(out, color, pad);
+    }
+    else {
+        writeVec3(out, toVec3(color), pad);
+    }
+    out << pad << "</arrow>\n";
 }
 
 bool Arrow::isValid(ElementParameters ep) {
