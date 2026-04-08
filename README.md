@@ -28,8 +28,114 @@
 # main.cpp
 
 ## Description
-
 main.cpp is a demonstration program
+
+---
+
+# Global
+
+## Description
+Handles the creation of vital systems and stores references for use in `API`
+
+---
+
+## Variables
+
+### `const int X, Y`
+The size of the window to be opened, where `X` is the width and `Y` is the height
+
+---
+
+### `SDL_Window* window`
+A pointer to an `SDL_Window` object to show visual information
+
+---
+
+### `Screen* screen`
+A pointer to a `Screen` object to draw to
+
+---
+
+### `SoundPlayer* soundPlayer`
+A pointer to a `SoundPlayer` object to enable audio playback
+
+---
+
+### `Layout* rootLayout`
+The root `Layout` object of the program, set to the dimensions of the full window
+
+---
+
+### `Layout* tempLayout`
+A nested `Layout` object of the program, set to the dimensions of the full window
+- Used to hold elements that are in the process of being drawn but not fully complete
+
+---
+
+## Functions
+
+### `void createWindow()`
+Creates a new `SDL_Window` object and assigns it to `window`
+- Reports errors in window creation
+
+---
+
+### `void createScreen()`
+Creates a new `Screen` object, set to the size of the full window, and assigns it to `screen`
+
+---
+
+### `void createRootLayout()`
+Creates a new `Layout` object and assigns it to `rootLayout`. Also creates a nested `Layout` object and sets it to `tempLayout`
+
+---
+
+### `void setEventSystem()`
+Gets the instance of the `Event` singleton. Creates a new `SoundPlayer` object and saves the reference `soundPlayer` and to the `Event`'s `soundPlayer` attribute
+
+---
+
+# API
+
+## Description
+The interface that allows a programmer to interact with the underlying systems created in `Global`
+
+---
+
+## Functions
+
+### `void initialize()`
+Initializes video and audio through SDL and calls `createWindow()`, `createScreen()`, `createRootLayout()`, and `setEventSystem()` from `Global`
+
+---
+
+### `void loadSound(std::string filePath)`
+Attempts to loads the file specified by `filePath` into the program's `SoundPlayer` object using its `loadSound()` method
+
+---
+
+### `void playSound(std::string filePath, int loop)`
+Attempts to play the file specified by `filePath` using the program's `SoundPlayer` object using its `playSound()` method
+
+---
+
+### `void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+Draws an element to the `tempLayout` `Layout` object 
+
+---
+
+### `void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+
+
+---
+
+### `void update()`
+
+
+---
+
+### `void closeAll()`
+
 
 ---
 
@@ -796,6 +902,11 @@ Returns the absolute ending **y** position of this `Layout`
 ### `bool isValid(ElementParameters ep)`
 Checks whether `ep.layoutStart` or `ep.layoutEnd` have been set
 - Returns false if `x` or `y` in `ep.layoutStart` or `ep.layoutEnd` have not been set
+
+---
+
+### `void clearElements()`
+Clears all `GuiElement`s from the `elements` vector
 
 ---
 
