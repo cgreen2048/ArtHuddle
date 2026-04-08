@@ -365,20 +365,50 @@ The desired name of the object
 
 ---
 
-### `ivec2 point1`
-The coordinates of the first point of an object
+### `ivec2 coords`
+The coordinates for a `Point` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
 
-### `ivec2 point2`
-The coordinates of the second point of an object
+### `ivec2 start`
+The coordinates of the starting point of a `Line` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
 
-### `ivec2 point3`
-The coordinates of the third point of an object
+### `ivec2 end`
+The coordinates of the ending point of a `Line` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 min`
+The coordinates of the minimum point of a `Box` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 max`
+The coordinates of the maximum point of a `Box` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 pointA`
+The coordinates of the first point of a `Triangle` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 pointB`
+The coordinates of the second point of a `Triangle` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 pointC`
+The coordinates of the third point of a `Triangle` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
@@ -430,20 +460,50 @@ Indicates whether a new `Layout` object is visible
 
 ---
 
-### `TagType point1Type`
-The type of mathematical vector that `point1` is. Can be `TagType::Vec` or `TagType::IVec`
+### `TagType coordsType`
+The type of mathematical vector that `coords` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
 
-### `TagType point2Type`
-The type of mathematical vector that `point2` is. Can be `TagType::Vec` or `TagType::IVec`
+### `TagType startType`
+The type of mathematical vector that `start` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
 
-### `TagType point3Type`
-The type of mathematical vector that `point3` is. Can be `TagType::Vec` or `TagType::IVec`
+### `TagType endType`
+The type of mathematical vector that `end` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType minType`
+The type of mathematical vector that `min` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType maxType`
+The type of mathematical vector that `max` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType pointAType`
+The type of mathematical vector that `pointA` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType pointBType`
+The type of mathematical vector that `pointB` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType pointCType`
+The type of mathematical vector that `pointC` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
@@ -500,6 +560,7 @@ It defines a common interface used by all graphical objects such as:
 - `Line`
 - `Box`
 - `Triangle`
+- `Arrow`
 
 The class allows these derived types to be handled **polymorphically**, meaning they can be stored and manipulated using a `GuiElement*`.
 
@@ -514,7 +575,7 @@ This enumeration identifies the type of GUI element being created.
 It is primarily used by the **Factory** to determine which object to instantiate.
 
 ```cpp
-enum class guiElement { LAYOUOT, POINT, LINE, BOX, TRIANGLE, BUTTON };
+enum class guiElement { LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, ARROW };
 ```
 
 ---
@@ -559,6 +620,7 @@ Each derived class implements its own drawing behavior:
 | `Box` | `drawBox()` |
 | `Triangle` | `drawTriangle()` |
 | `Button` | `drawBox()` |
+| `Arrow` | `drawArrow()` |
 
 In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will call `draw()` on all children of that parent
 
@@ -652,13 +714,14 @@ Creates a new GUI element based on the `guiElement` enum value.
 | `guiElement::BOX` | `Box` |
 | `guiElement::TRIANGLE` | `Triangle` |
 | `guiElement::BUTTON` | `Button` |
+| `guiElement::Arrow` | `Arrow` |
 
 ---
 
 ## Example Usage
 
 ```cpp
-GuiElement* element = factory(guiElement::LINE);
+GuiElement* element = factory(guiElement::LINE, elementParametersStruct);
 element->draw(&screen);
 ```
 
@@ -1706,7 +1769,8 @@ Supports:
 - `Line`  
 - `Box`  
 - `Triangle`
-- `Button`  
+- `Button`
+- `Arrow`
 
 Behavior:
 - Determines type from opening tag
@@ -1955,6 +2019,10 @@ Draws a line to the Target Screen object's SDL_Surface using the Bresenham algor
 - Uses 2D mathematical vectors to store the start and end points of the line
 - Will only draw on pixels that exist in the surface
 - Calls `colorOnePixel` for each pixel that exists on the line
+
+### `drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd)`
+Draws an arrow to the target Screen object's SDL_Surface
+- Internally calls `drawBox()` and `drawTriangle()` to draw the stem and point of the arrow respectively
 
 ### `clear(ivec3 color)`
 Clears the Target Screen object's `SDL_Surface` by filling the entire surface with the given color

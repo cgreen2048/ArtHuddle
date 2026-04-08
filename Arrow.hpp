@@ -2,8 +2,6 @@
 #define __ARROW_HPP__
 
 #include "GuiElement.hpp"
-#include "Box.hpp"
-#include "Triangle.hpp"
 
 class Arrow : public GuiElement {
     private:
