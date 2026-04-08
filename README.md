@@ -12,6 +12,7 @@
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
 - [Layout Class](#layout)
+- [Ellipse Classs](#ellipse)
 - [Triangle Class](#triangle)
 - [Box Class](#box)
 - [Button Class](#button)
@@ -500,6 +501,8 @@ It defines a common interface used by all graphical objects such as:
 - `Line`
 - `Box`
 - `Triangle`
+- `Button`
+- `Ellipse`
 
 The class allows these derived types to be handled **polymorphically**, meaning they can be stored and manipulated using a `GuiElement*`.
 
@@ -559,6 +562,7 @@ Each derived class implements its own drawing behavior:
 | `Box` | `drawBox()` |
 | `Triangle` | `drawTriangle()` |
 | `Button` | `drawBox()` |
+| `Ellipse` | `drawEllipse()` |
 
 In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will call `draw()` on all children of that parent
 
@@ -652,6 +656,7 @@ Creates a new GUI element based on the `guiElement` enum value.
 | `guiElement::BOX` | `Box` |
 | `guiElement::TRIANGLE` | `Triangle` |
 | `guiElement::BUTTON` | `Button` |
+| `guiElement::ELLIPSE` | `Ellipse` |
 
 ---
 
@@ -801,6 +806,81 @@ Checks whether `ep.layoutStart` or `ep.layoutEnd` have been set
 
 ## UML Diagram
 ![UML Diagram](images/Milestone005_UML.png)
+
+---
+
+# Ellipse
+
+## Description
+`Ellipse` is a class used for storing and drawing a filled ellipse to a `Screen` object.
+It inherits from the `GuiELement` class
+
+## Data Members
+
+### `ivec2 center`
+The coordinates of the center of the ellipse
+
+### `int radiusX`
+The x radius length of the ellipse
+
+### `int radiusY`
+The y radius length of the ellipse
+
+### `ivec3 color`
+The fill color of the ellipse
+
+### `TagType centerType`
+The type of the tag for the `center` attribute for XML parsing
+
+---
+
+## Methods
+
+### `Ellipse()`
+Default constructor. Initializes `center`, `radiusX`, `radiusY`, and `color` to zeros
+
+### `Ellipse(ivec2 center, int radius, ivec3 color)`
+Circle constructor. Sets `center` to `center`, `color` to `color`, and both `radiusX` and `radiusY` to `radius`
+
+### `Ellipse(ivec2 center, int radiusX, int radiusY, ivec3 color)`
+Ellipse constructor. Sets `center` to `center`, `color` to `color`, and `radiusX` to `radiusX`, and `radiusY` to `radiusY`
+
+### `Ellipse(const Ellipse& cp)`
+Copy constructor using attributes from `cp` to create a new `Ellipse`
+
+### `Ellipse& operator=(const Ellipse& rhs)`
+Assignment operator overload that uses attributes from `rhs` to create a new `Ellipse`
+
+### `Ellipse(ElementParameters ep)`
+Constructor taking in an `ElementParameters` struct to check if the attempted construction
+has the required attributes for `Ellipse` via `isValid(ep)`
+
+### `~Ellipse()`
+Default destructor
+
+### `void draw(Screen* screen)`
+Calls `screen->drawEllipse()` to draw `Ellipse` object to `screen`'s SDL_Surface
+
+### `void writeXml(std::ostream& out, int depth) const`
+Writes an `Ellipse` object to XML using standard XML formatting in the following way:
+- After writing padding, writes `<ellipse>` with its parameters `name="name" rx="radiusX" ry="radiusY"`
+- Writes the corresponding `<ivec2>` or `<vec2>` tag based on `centerType` for `center` using ``writeIVec2()`/`writeVec2()`
+- Writes the corresponding `<ivec3>` or `<vec3>` tag based on `colorType` for `color` using `writeIVec3()`/`writeVec3()`
+- Writes a closing `</ellipse>` tag after some padding
+
+### `bool resolveEvent(Event *e)`
+Attempts to resolve `ClickEvent`s to select the `Ellipse` object, handling the event if the click is within the `Ellipse`'s bounds, and returning true if so.
+
+### `bool isValid(ElementParameters ep)`
+Checks if `ep` has the required attributes needed to construct an `Ellipse` object:
+- `ivec2 center`
+- `int radiusX`
+- `int radiusY`
+- Sets `color` to default values if not included
+Returns true if all of the above are included, false if not
+
+### `bool isPointInside(ivec2 point)`
+Checks if `point` is within the bounds of the ellipse
 
 ---
 

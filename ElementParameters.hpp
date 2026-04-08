@@ -34,6 +34,11 @@ struct ElementParameters {
     std::function<void()> callback = []() {};
     std::string callbackName = "";
     std::string text = "";
+
+    ivec2 center = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    int radiusX = std::numeric_limits<int>::lowest();
+    int radiusY = std::numeric_limits<int>::lowest();
+    TagType centerType = TagType::Vec;
 };
 
 #endif
