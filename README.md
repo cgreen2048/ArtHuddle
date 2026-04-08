@@ -879,7 +879,7 @@ Checks if `ep` has the required attributes needed to construct an `Ellipse` obje
 - Sets `color` to default values if not included
 Returns true if all of the above are included, false if not
 
-### `bool pointInEllipse(ivec2 point)`
+### `bool isPointInside(ivec2 point)`
 Checks if `point` is within the bounds of the ellipse
 
 ---
