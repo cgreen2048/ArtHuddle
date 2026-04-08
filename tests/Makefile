@@ -141,5 +141,6 @@ clean:
 	rm layoutDemo
 	rm milestone006
 	rm milestone006Demo
+	rm arrowDemo
 
 

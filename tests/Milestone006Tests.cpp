@@ -38,14 +38,14 @@ int main() {
     std::cout << '\n';
 
     bool eventSuccess = eventTests();
-    if (!eventSuccess) {
+    if (eventSuccess) {
         failure = 1;
     }
 
     std::cout << '\n';
 
     bool buttonSuccess = buttonTests();
-    if (!buttonSuccess) {
+    if (buttonSuccess) {
         failure = 1;
     }
 
@@ -85,7 +85,7 @@ bool factoryTests() {
     bool success = true;
     ElementParameters pointParam;
     pointParam.color = ivec3(244, 245, 103);
-    pointParam.point1Type = TagType::IVec;
+    pointParam.coordsType = TagType::IVec;
     pointParam.colorType = TagType::IVec;
     GuiElement* p = factory(guiElement::POINT, pointParam);
     if (p) {
@@ -97,8 +97,8 @@ bool factoryTests() {
     }
 
     ElementParameters point2Param;
-    point2Param.point1 = ivec2(100, 50);
-    point2Param.point1Type = TagType::IVec;
+    point2Param.coords = ivec2(100, 50);
+    point2Param.coordsType = TagType::IVec;
     point2Param.colorType = TagType::IVec;
     GuiElement* p2 = factory(guiElement::POINT, point2Param);
     if (!p2) {
@@ -110,9 +110,9 @@ bool factoryTests() {
     }
 
     ElementParameters lineParam;
-    lineParam.point1 = ivec2(50, 75);
+    lineParam.start = ivec2(50, 75);
     lineParam.color = ivec3(244, 245, 103);
-    lineParam.point1Type = TagType::IVec;
+    lineParam.startType = TagType::IVec;
     lineParam.colorType = TagType::IVec;
     GuiElement* l = factory(guiElement::LINE, lineParam);
     if (l) {
@@ -124,9 +124,9 @@ bool factoryTests() {
     }
 
     ElementParameters lineParam2;
-    lineParam2.point1 = ivec2(100, 50);
-    lineParam2.point2 = ivec2(150, 75);
-    lineParam2.point1Type = TagType::IVec;
+    lineParam2.start = ivec2(100, 50);
+    lineParam2.end = ivec2(150, 75);
+    lineParam2.startType = TagType::IVec;
     lineParam2.colorType = TagType::IVec;
     GuiElement* l2 = factory(guiElement::LINE, lineParam2);
     if (!l2) {
@@ -138,9 +138,9 @@ bool factoryTests() {
     }
 
     ElementParameters boxParam;
-    boxParam.point1 = ivec2(50, 75);
+    boxParam.min = ivec2(50, 75);
     boxParam.color = ivec3(244, 245, 103);
-    boxParam.point1Type = TagType::IVec;
+    boxParam.minType = TagType::IVec;
     boxParam.colorType = TagType::IVec;
     GuiElement* b = factory(guiElement::BOX, boxParam);
     if (b) {
@@ -152,9 +152,9 @@ bool factoryTests() {
     }
 
     ElementParameters boxParam2;
-    boxParam2.point1 = ivec2(100, 50);
-    boxParam2.point2 = ivec2(150, 75);
-    boxParam2.point1Type = TagType::IVec;
+    boxParam2.min = ivec2(100, 50);
+    boxParam2.max = ivec2(150, 75);
+    boxParam2.minType = TagType::IVec;
     boxParam2.colorType = TagType::IVec;
     GuiElement* b2 = factory(guiElement::BOX, boxParam2);
     if (!b2) {
@@ -166,9 +166,9 @@ bool factoryTests() {
     }
 
     ElementParameters triParam;
-    triParam.point1 = ivec2(50, 75);
+    triParam.pointA = ivec2(50, 75);
     triParam.color = ivec3(244, 245, 103);
-    triParam.point1Type = TagType::IVec;
+    triParam.pointAType = TagType::IVec;
     triParam.colorType = TagType::IVec;
     GuiElement* t = factory(guiElement::TRIANGLE, triParam);
     if (t) {
@@ -180,10 +180,10 @@ bool factoryTests() {
     }
 
     ElementParameters triParam2;
-    triParam2.point1 = ivec2(100, 50);
-    triParam2.point2 = ivec2(150, 75);
-    triParam2.point3 = ivec2(125, 75);
-    triParam2.point1Type = TagType::IVec;
+    triParam2.pointA = ivec2(100, 50);
+    triParam2.pointB = ivec2(150, 75);
+    triParam2.pointC = ivec2(125, 75);
+    triParam2.pointAType = TagType::IVec;
     triParam2.colorType = TagType::IVec;
     GuiElement* t2 = factory(guiElement::TRIANGLE, triParam2);
     if (!t2) {

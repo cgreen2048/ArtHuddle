@@ -231,11 +231,11 @@ int readTest1() {
     expectedRoot->setName("Line-Box-Point-Layout");
 
     ElementParameters lineParam;
-    lineParam.point1 = toIVec2(50.5f, 902.47f);
-    lineParam.point2 = toIVec2(75.6f, 1024.6f);
+    lineParam.start = toIVec2(50.5f, 902.47f);
+    lineParam.end = toIVec2(75.6f, 1024.6f);
     lineParam.color = toIVec3(244.0f, 245.0f, 103.3f);
-    lineParam.point1Type = TagType::IVec;
-    lineParam.point2Type = TagType::IVec;
+    lineParam.startType = TagType::IVec;
+    lineParam.endType = TagType::IVec;
     lineParam.colorType = TagType::IVec;
     GuiElement* l = factory(guiElement::LINE, lineParam);
     expectedRoot->addElement(l);
@@ -244,41 +244,41 @@ int readTest1() {
     buttonParam.name = "b1";
     buttonParam.callbackName = "testCallback";
     buttonParam.text = "Click me!";
-    buttonParam.point1 = ivec2(50, 50);
-    buttonParam.point2 = ivec2(150, 100);
+    buttonParam.min = ivec2(50, 50);
+    buttonParam.max = ivec2(150, 100);
     buttonParam.color = ivec3(255, 0, 0);
-    buttonParam.point1Type = TagType::IVec;
-    buttonParam.point2Type = TagType::IVec;
+    buttonParam.minType = TagType::IVec;
+    buttonParam.maxType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     expectedRoot->addElement(btn);
 
     ElementParameters boxParam;
-    boxParam.point1 = toIVec2(250.3f, 122.5f);
-    boxParam.point2 = toIVec2(420.34f, 254.9f);
+    boxParam.min = toIVec2(250.3f, 122.5f);
+    boxParam.max = toIVec2(420.34f, 254.9f);
     boxParam.color = ivec3(212, 22, 124);
-    boxParam.point1Type = TagType::IVec;
-    boxParam.point2Type = TagType::IVec;
+    boxParam.minType = TagType::IVec;
+    boxParam.maxType = TagType::IVec;
     boxParam.colorType = TagType::IVec;
     GuiElement* b = factory(guiElement::BOX, boxParam);
     expectedRoot->addElement(b);
 
     ElementParameters pointParam;
-    pointParam.point1 = ivec2(480, 270);
+    pointParam.coords = ivec2(480, 270);
     pointParam.color = ivec3(67, 200, 142);
-    pointParam.point1Type = TagType::IVec;
+    pointParam.coordsType = TagType::IVec;
     pointParam.colorType = TagType::IVec;
     GuiElement* p = factory(guiElement::POINT, pointParam);
     expectedRoot->addElement(p);
 
     ElementParameters triangleParam;
-    triangleParam.point1 = ivec2(100, 100);
-    triangleParam.point2 = ivec2(150, 100);
-    triangleParam.point3 = ivec2(125, 150);
+    triangleParam.pointA = ivec2(100, 100);
+    triangleParam.pointB = ivec2(150, 100);
+    triangleParam.pointC = ivec2(125, 150);
     triangleParam.color = ivec3(255, 0, 0);
-    triangleParam.point1Type = TagType::IVec;
-    triangleParam.point2Type = TagType::IVec;
-    triangleParam.point3Type = TagType::IVec;
+    triangleParam.pointAType = TagType::IVec;
+    triangleParam.pointBType = TagType::IVec;
+    triangleParam.pointCType = TagType::IVec;
     triangleParam.colorType = TagType::IVec;
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     expectedRoot->addElement(t);
@@ -309,13 +309,13 @@ int readTest2() {
 
 
     ElementParameters triangleParam;
-    triangleParam.point1 = ivec2(100, 100);
-    triangleParam.point2 = ivec2(150, 100);
-    triangleParam.point3 = ivec2(125, 150);
+    triangleParam.pointA = ivec2(100, 100);
+    triangleParam.pointB = ivec2(150, 100);
+    triangleParam.pointC = ivec2(125, 150);
     triangleParam.color = ivec3(255, 0, 0);
-    triangleParam.point1Type = TagType::IVec;
-    triangleParam.point2Type = TagType::IVec;
-    triangleParam.point3Type = TagType::IVec;
+    triangleParam.pointAType = TagType::IVec;
+    triangleParam.pointBType = TagType::IVec;
+    triangleParam.pointCType = TagType::IVec;
     triangleParam.colorType = TagType::IVec;
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     expectedRoot->addElement(t);
@@ -326,19 +326,19 @@ int readTest2() {
     nested->setActive(true);
 
     ElementParameters pParam;
-    pParam.point1 = ivec2(480, 270);
+    pParam.coords = ivec2(480, 270);
     pParam.color = ivec3(67, 200, 142);
-    pParam.point1Type = TagType::IVec;
+    pParam.coordsType = TagType::IVec;
     pParam.colorType = TagType::IVec;
     GuiElement* p = factory(guiElement::POINT, pParam);
     nested->addElement(p);
 
     ElementParameters boxParam;
-    boxParam.point1 = toIVec2(250.3f, 122.5f);
-    boxParam.point2 = toIVec2(420.34f, 254.9f);
+    boxParam.min = toIVec2(250.3f, 122.5f);
+    boxParam.max = toIVec2(420.34f, 254.9f);
     boxParam.color = ivec3(212, 22, 124);
-    boxParam.point1Type = TagType::IVec;
-    boxParam.point2Type = TagType::IVec;
+    boxParam.minType = TagType::IVec;
+    boxParam.maxType = TagType::IVec;
     boxParam.colorType = TagType::IVec;
     GuiElement* b = factory(guiElement::BOX, boxParam);
     nested->addElement(b);
@@ -347,11 +347,11 @@ int readTest2() {
     buttonParam.name = "b1";
     buttonParam.callbackName = "testCallback";
     buttonParam.text = "Click me!";
-    buttonParam.point1 = ivec2(50, 50);
-    buttonParam.point2 = ivec2(150, 100);
+    buttonParam.min = ivec2(50, 50);
+    buttonParam.max = ivec2(150, 100);
     buttonParam.color = ivec3(255, 0, 0);
-    buttonParam.point1Type = TagType::IVec;
-    buttonParam.point2Type = TagType::IVec;
+    buttonParam.minType = TagType::IVec;
+    buttonParam.maxType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     nested->addElement(btn);
@@ -411,11 +411,11 @@ int readTest5() {
     expectedRoot->setName("layout1");
 
     ElementParameters lineParam;
-    lineParam.point1 = toIVec2(1.1f, 2.2f);
-    lineParam.point2 = toIVec2(3.3f, 4.4f);
+    lineParam.start = toIVec2(1.1f, 2.2f);
+    lineParam.end = toIVec2(3.3f, 4.4f);
     lineParam.color = ivec3(10, 20, 30);
-    lineParam.point1Type = TagType::IVec;
-    lineParam.point2Type = TagType::IVec;
+    lineParam.startType = TagType::IVec;
+    lineParam.endType = TagType::IVec;
     lineParam.colorType = TagType::IVec;
     GuiElement* l = factory(guiElement::LINE, lineParam);
     expectedRoot->addElement(l);
@@ -426,9 +426,9 @@ int readTest5() {
     nested->setActive(true);
 
     ElementParameters pParam;
-    pParam.point1 = ivec2(13, 14);
+    pParam.coords = ivec2(13, 14);
     pParam.color = ivec3(101, 102, 103);
-    pParam.point1Type = TagType::IVec;
+    pParam.coordsType = TagType::IVec;
     pParam.colorType = TagType::IVec;
     GuiElement* p = factory(guiElement::POINT, pParam);
     nested->addElement(p);
@@ -523,21 +523,21 @@ int writeTest1() {
     root->setActive(true);
 
     ElementParameters lineParam;
-    lineParam.point1 = toIVec2(50.5f, 902.47f);
-    lineParam.point2 = toIVec2(75.6f, 1024.6f);
+    lineParam.start = toIVec2(50.5f, 902.47f);
+    lineParam.end = toIVec2(75.6f, 1024.6f);
     lineParam.color = toIVec3(244.0f, 245.0f, 103.3f);
-    lineParam.point1Type = TagType::Vec;
-    lineParam.point2Type = TagType::Vec;
+    lineParam.startType = TagType::Vec;
+    lineParam.endType = TagType::Vec;
     lineParam.colorType = TagType::Vec;
     GuiElement* l = factory(guiElement::LINE, lineParam);
     root->addElement(l);
 
     ElementParameters boxParam;
-    boxParam.point1 = toIVec2(250.3f, 122.5f);
-    boxParam.point2 = toIVec2(420.34f, 254.9f);
+    boxParam.min = toIVec2(250.3f, 122.5f);
+    boxParam.max = toIVec2(420.34f, 254.9f);
     boxParam.color = ivec3(212, 22, 124);
-    boxParam.point1Type = TagType::Vec;
-    boxParam.point2Type = TagType::Vec;
+    boxParam.minType = TagType::Vec;
+    boxParam.maxType = TagType::Vec;
     boxParam.colorType = TagType::Vec;
     GuiElement* b = factory(guiElement::BOX, boxParam);
     root->addElement(b);
@@ -546,11 +546,11 @@ int writeTest1() {
     buttonParam.name = "writeButton";
     buttonParam.callbackName = "testCallback";
     buttonParam.text = "Click me!";
-    buttonParam.point1 = ivec2(50, 50);
-    buttonParam.point2 = ivec2(150, 100);
+    buttonParam.min = ivec2(50, 50);
+    buttonParam.max = ivec2(150, 100);
     buttonParam.color = ivec3(255, 0, 0);
-    buttonParam.point1Type = TagType::IVec;
-    buttonParam.point2Type = TagType::IVec;
+    buttonParam.startType = TagType::IVec;
+    buttonParam.endType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     root->addElement(btn);
@@ -563,21 +563,21 @@ int writeTest1() {
     expectedRoot->setActive(true);
 
     ElementParameters newLineParam;
-    newLineParam.point1 = toIVec2(50.5f, 902.47f);
-    newLineParam.point2 = toIVec2(75.6f, 1024.6f);
+    newLineParam.start = toIVec2(50.5f, 902.47f);
+    newLineParam.end = toIVec2(75.6f, 1024.6f);
     newLineParam.color = toIVec3(244.0f, 245.0f, 103.3f);
-    newLineParam.point1Type = TagType::Vec;
-    newLineParam.point2Type = TagType::Vec;
+    newLineParam.startType = TagType::Vec;
+    newLineParam.endType = TagType::Vec;
     newLineParam.colorType = TagType::Vec;
     GuiElement* el = factory(guiElement::LINE, newLineParam);
     expectedRoot->addElement(el);
 
     ElementParameters newBoxParam;
-    newBoxParam.point1 = toIVec2(250.3f, 122.5f);
-    newBoxParam.point2 = toIVec2(420.34f, 254.9f);
+    newBoxParam.min = toIVec2(250.3f, 122.5f);
+    newBoxParam.max = toIVec2(420.34f, 254.9f);
     newBoxParam.color = ivec3(212, 22, 124);
-    newBoxParam.point1Type = TagType::Vec;
-    newBoxParam.point2Type = TagType::Vec;
+    newBoxParam.minType = TagType::Vec;
+    newBoxParam.maxType = TagType::Vec;
     newBoxParam.colorType = TagType::Vec;
     GuiElement* eb = factory(guiElement::BOX, boxParam);
     expectedRoot->addElement(eb);
@@ -586,11 +586,11 @@ int writeTest1() {
     expectedButtonParam.name = "writeButton";
     expectedButtonParam.callbackName = "testCallback";
     expectedButtonParam.text = "Click me!";
-    expectedButtonParam.point1 = ivec2(50, 50);
-    expectedButtonParam.point2 = ivec2(150, 100);
+    expectedButtonParam.min = ivec2(50, 50);
+    expectedButtonParam.max = ivec2(150, 100);
     expectedButtonParam.color = ivec3(255, 0, 0);
-    expectedButtonParam.point1Type = TagType::IVec;
-    expectedButtonParam.point2Type = TagType::IVec;
+    expectedButtonParam.minType = TagType::IVec;
+    expectedButtonParam.maxType = TagType::IVec;
     expectedButtonParam.colorType = TagType::IVec;
     GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
     expectedRoot->addElement(expectedButton);
@@ -663,9 +663,9 @@ int writeTest3() {
     nested1->setActive(true);
 
     ElementParameters p1Param;
-    p1Param.point1 = ivec2(13, 14);
+    p1Param.coords = ivec2(13, 14);
     p1Param.color = ivec3(101, 102, 103);
-    p1Param.point1Type = TagType::IVec;
+    p1Param.coordsType = TagType::IVec;
     p1Param.colorType = TagType::IVec;
     GuiElement* p1 = factory(guiElement::POINT, p1Param);
     nested1->addElement(p1);
@@ -676,13 +676,13 @@ int writeTest3() {
     nested2->setActive(true);
 
     ElementParameters triangleParam;
-    triangleParam.point1 = ivec2(100, 100);
-    triangleParam.point2 = ivec2(150, 100);
-    triangleParam.point3 = ivec2(125, 150);
+    triangleParam.pointA = ivec2(100, 100);
+    triangleParam.pointB = ivec2(150, 100);
+    triangleParam.pointC = ivec2(125, 150);
     triangleParam.color = ivec3(255, 0, 0);
-    triangleParam.point1Type = TagType::IVec;
-    triangleParam.point2Type = TagType::IVec;
-    triangleParam.point3Type = TagType::IVec;
+    triangleParam.pointAType = TagType::IVec;
+    triangleParam.pointBType = TagType::IVec;
+    triangleParam.pointCType = TagType::IVec;
     triangleParam.colorType = TagType::IVec;
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     nested2->addElement(t);
@@ -691,11 +691,11 @@ int writeTest3() {
     buttonParam.name = "deepButton";
     buttonParam.callbackName = "testCallback";
     buttonParam.text = "Deep";
-    buttonParam.point1 = ivec2(200, 200);
-    buttonParam.point2 = ivec2(280, 240);
+    buttonParam.min = ivec2(200, 200);
+    buttonParam.max = ivec2(280, 240);
     buttonParam.color = ivec3(0, 0, 255);
-    buttonParam.point1Type = TagType::IVec;
-    buttonParam.point2Type = TagType::IVec;
+    buttonParam.minType = TagType::IVec;
+    buttonParam.maxType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     nested2->addElement(btn);
@@ -715,9 +715,9 @@ int writeTest3() {
     expectedNested1->setActive(true);
 
     ElementParameters pointParam;
-    pointParam.point1 = ivec2(13, 14);
+    pointParam.coords = ivec2(13, 14);
     pointParam.color = ivec3(101, 102, 103);
-    pointParam.point1Type = TagType::IVec;
+    pointParam.coordsType = TagType::IVec;
     pointParam.colorType = TagType::IVec;
     GuiElement* expectedPoint = factory(guiElement::POINT, pointParam);
     expectedNested1->addElement(expectedPoint);
@@ -728,13 +728,13 @@ int writeTest3() {
     expectedNested2->setActive(true);
 
     ElementParameters triangleParam2;
-    triangleParam2.point1 = ivec2(100, 100);
-    triangleParam2.point2 = ivec2(150, 100);
-    triangleParam2.point3 = ivec2(125, 150);
+    triangleParam2.pointA = ivec2(100, 100);
+    triangleParam2.pointB = ivec2(150, 100);
+    triangleParam2.pointC = ivec2(125, 150);
     triangleParam2.color = ivec3(255, 0, 0);
-    triangleParam2.point1Type = TagType::IVec;
-    triangleParam2.point2Type = TagType::IVec;
-    triangleParam2.point3Type = TagType::IVec;
+    triangleParam2.pointAType = TagType::IVec;
+    triangleParam2.pointBType = TagType::IVec;
+    triangleParam2.pointCType = TagType::IVec;
     triangleParam2.colorType = TagType::IVec;
     GuiElement* expectedTriangle = factory(guiElement::TRIANGLE, triangleParam2);
     expectedNested2->addElement(expectedTriangle);
@@ -743,11 +743,11 @@ int writeTest3() {
     expectedButtonParam.name = "deepButton";
     expectedButtonParam.callbackName = "testCallback";
     expectedButtonParam.text = "Deep";
-    expectedButtonParam.point1 = ivec2(200, 200);
-    expectedButtonParam.point2 = ivec2(280, 240);
+    expectedButtonParam.min = ivec2(200, 200);
+    expectedButtonParam.max = ivec2(280, 240);
     expectedButtonParam.color = ivec3(0, 0, 255);
-    expectedButtonParam.point1Type = TagType::IVec;
-    expectedButtonParam.point2Type = TagType::IVec;
+    expectedButtonParam.minType = TagType::IVec;
+    expectedButtonParam.maxType = TagType::IVec;
     expectedButtonParam.colorType = TagType::IVec;
     GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
     expectedNested2->addElement(expectedButton);
