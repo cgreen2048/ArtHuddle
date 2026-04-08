@@ -8,6 +8,7 @@
 #include "Triangle.hpp"
 #include "Layout.hpp"
 #include "Button.hpp"
+#include "Arrow.hpp"
 #include "ElementParameters.hpp"
 
 extern GuiElement* factory(guiElement e, ElementParameters ep);

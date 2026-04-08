@@ -53,6 +53,14 @@ GuiElement* factory(guiElement e, ElementParameters ep) {
 				return nullptr;
 			}
 		}
+		case guiElement::ARROW: {
+			try {
+				return new Arrow(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
+		}
 	}
 	return nullptr;
 }

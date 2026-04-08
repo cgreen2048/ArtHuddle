@@ -14,9 +14,14 @@ enum class TagType { Vec, IVec };
 
 struct ElementParameters {
     std::string name;
-    ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
-    ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
-    ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 coords = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 start = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 end = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 min = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 max = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 pointA = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 pointB = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 pointC = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec3 color = ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     Screen* screen = nullptr;
     ivec2 parentStart = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
@@ -25,9 +30,14 @@ struct ElementParameters {
     bool hasParentEnd = false;
     std::vector<GuiElement*> elements;
     bool active = false;
-    TagType point1Type = TagType::Vec;
-    TagType point2Type = TagType::Vec;
-    TagType point3Type = TagType::Vec;
+    TagType coordsType = TagType::Vec;
+    TagType startType = TagType::Vec;
+    TagType endType = TagType::Vec;
+    TagType minType = TagType::Vec;
+    TagType maxType = TagType::Vec;
+    TagType pointAType = TagType::Vec;
+    TagType pointBType = TagType::Vec;
+    TagType pointCType = TagType::Vec;
     TagType colorType = TagType::Vec;
     vec2 layoutStart = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     vec2 layoutEnd = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
