@@ -1,6 +1,7 @@
 # SP26_Team02
 
 # Quick Links to Classes
+- [Arrow Class](#arrow)
 - [Event Class](#event)
 - [ClickEvent Class](#clickevent)
 - [ShowEvent Class](#showevent)
@@ -30,6 +31,171 @@
 ## Description
 
 main.cpp is a demonstration program
+
+---
+
+# Arrow
+
+## Description
+`Arrow` is a class used for storing and drawing a filled arrow to a `Screen` object. It inherits from the `GuiElement` class
+
+---
+
+## Data Members
+
+### `ivec2 min`
+The coordinates for the minimum point or the arrow's stem box
+
+---
+
+### `ivec2 max`
+The coordinates for the maximum point or the arrow's stem box
+
+---
+
+### `ivec2 pointA`
+The coordinates for a vertex on the arrow's triangular point
+
+---
+
+### `ivec2 pointB`
+The coordinates for a vertex on the arrow's triangular point
+
+---
+
+### `ivec2 pointC`
+The coordinates for a vertex on the arrow's triangular point
+
+---
+
+### `ivec3 color`
+The color of the vector in RGB order
+
+---
+
+### `TagType minType`
+The type of tag for the `min` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType maxType`
+The type of tag for the `max` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType pointAType`
+The type of tag for the `pointA` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType pointBType`
+The type of tag for the `pointB` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType pointCType`
+The type of tag for the `pointC` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType colorType`
+The type of tag for the `color` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+## Methods
+
+### `Arrow()`
+Default constructor. Sets all points and `color` to zeros
+
+---
+
+### `Arrow(ivec2 min, ivec2 max, ivec2 a, ivec2 b, ivec2 c, ivec3 color)`
+Parameterized constructor. Sets `this->min` to `min`, `this->max` to `max`, `this->pointA` to `a`, `this->pointB` to `b`, `this->pointC` to `c`, and `this->color` to `color`
+
+---
+
+### `Arrow(ElementParameters ep)`
+Constructor that takes in an `ElementParameters` struct. Called via `Factory`
+- Calls `isValid` on `ep`
+  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Sets the `min`, `max`, `pointA`, `pointB`, `pointC`, `color`, `minType`, `maxType`, `pointAType`, `pointBType`, `pointCType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
+
+---
+
+### `Arrow(const Arrow& cp)`
+Copy assignment operator. Takes attributes from `cp` and creates a new `Arrow`
+
+---
+
+### `Arrow& operator=(const Arrow& rhs)`
+Assignment operator. Sets the current `Arrow`'s attributes equal to corresponding attributes from `cp`
+
+---
+
+### `bool operator==(Arrow rhs)`
+The equality operator. Checks that `min`, `max`, `pointA`, `pointB`, `pointC`, and color attributes match between this `Arrow` and `rhs`
+- Returns true if attributes match
+- Returns false otherwise
+
+---
+
+### `bool operator!=(Arrow rhs)`
+The innequality operator. Checks for innequality
+- Returns the inverse of the equality operator
+
+---
+
+### `~Arrow()`
+Default destructor
+
+---
+
+### `void draw(Screen* screen)`
+Calls the `drawArrow()` method from the passed `Screen` pointer
+
+---
+
+### `void writeXml(std::ostream& out, int depth) const`
+Writes this arrow's data to the specified output stream in XML format
+
+Behavior:
+- Writes an `<arrow>` tag with the name parameter to the output stream
+- Writes the minimum corner (`min`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the maximum corner (`max`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes a triangle corner (`pointA`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes a triangle corner (`pointB`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes a triangle corner (`pointC`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the box color (`color`)
+  - `<vec3>` if `TagType::Vec`
+  - `<ivec3>` if `TagType::IVec`
+- Closes the `<arrow>` tag
+
+This ensures the XML output preserves whether integer or floating-point vector tags were used.
+
+---
+
+### `bool isValid(ElementParameters ep)`
+Checks whether the passed `ElementParameters` struct contains valid data to create an `Arrow` object
+- Checks if all points have been set
+  - Returns false if not
+- Checks if the color `vec3` has been set
+  - Sets any unset member of color to a default value of 125
+
+---
+
+## UML Diagram
+![UML Diagram](images/Arrow_UML.png)
 
 ---
 
