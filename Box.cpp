@@ -65,6 +65,10 @@ void Box::draw(Screen *screen) {
     screen->drawBox(this->min, this->max, this->color, this->getParentStart(), this->getParentEnd());
 }
 
+GuiElement* Box::clone() const {
+    return new Box(*this);
+}
+
 void Box::setMin(const ivec2& v, TagType t){
     this->min = v;
     this->minType = t;

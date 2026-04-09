@@ -81,6 +81,10 @@ void Arrow::draw(Screen *screen) {
     screen->drawArrow(min, max, pointA, pointB, pointC, color, parentStart, parentEnd);
 }
 
+GuiElement* Arrow::clone() const {
+    return new Arrow(*this);
+}
+
 void Arrow::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 

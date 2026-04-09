@@ -41,6 +41,10 @@ void Ellipse::draw(Screen* screen) {
     screen->drawEllipse(center, radiusX, radiusY, color, parentStart, parentEnd);
 }
 
+GuiElement* Ellipse::clone() const {
+    return new Ellipse(*this);
+}
+
 void Ellipse::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 

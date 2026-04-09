@@ -28,6 +28,7 @@ class Arrow : public GuiElement {
 		bool operator!=(Arrow rhs);
 		~Arrow();
         void draw(Screen* screen);
+        GuiElement* clone() const;
         void writeXml(std::ostream& out, int depth) const;
         bool isValid(ElementParameters ep);
 };

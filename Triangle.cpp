@@ -67,6 +67,10 @@ void Triangle::draw(Screen *screen) {
     screen->drawTriangle(this->a, this->b, this->c, this->color, this->getParentStart(), this->getParentEnd());
 }
 
+GuiElement* Triangle::clone() const {
+    return new Triangle(*this);
+}
+
 void Triangle::setA(const ivec2& v, TagType t){
     this->a = v;
     this->aType = t;

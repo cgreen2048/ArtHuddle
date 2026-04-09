@@ -27,6 +27,7 @@ class Ellipse : public GuiElement {
         ~Ellipse();
 
         void draw(Screen* screen);
+        GuiElement* clone() const;
         void writeXml(std::ostream& out, int depth) const;
         bool resolveEvent(Event* e);
         bool isValid(ElementParameters ep);

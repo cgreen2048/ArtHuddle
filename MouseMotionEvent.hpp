@@ -9,9 +9,8 @@ class MouseMotionEvent : public MouseEvent {
         ivec2 previousCoords;
     public:
         MouseMotionEvent(ivec2 coords, ivec2 previousCoords, bool mouseDown);
-        ivec2 getPreviousCoords();
-        bool isMouseDown();
-}
-
+        ivec2 getPreviousCoords() const;
+        bool isMouseDown() const;
+};
 
 #endif

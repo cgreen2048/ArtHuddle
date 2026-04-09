@@ -79,6 +79,10 @@ void Layout::draw(Screen *screen) {
     }
 }
 
+GuiElement* Layout::clone() const {
+    return new Layout(*this);
+}
+
 static std::string indent(int depth) {
     return std::string(depth * 2, ' ');  // 2 spaces per level
 }

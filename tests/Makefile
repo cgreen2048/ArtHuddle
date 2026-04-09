@@ -13,8 +13,8 @@ MAC_CXXFLAGS := -std=c++17 -Wall
 MAC_LDFLAGS := -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks
 MAC_LDLIBS := -framework sdl3
 
-FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp ../Ellipse.cpp ../Arrow.cpp
-EVENT_ELEMENTS := ../Event.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp
+FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp ../Ellipse.cpp ../Arrow.cpp ../Freehand.cpp
+EVENT_ELEMENTS := ../Event.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp ../MouseEvent.cpp ../MouseUpEvent.cpp ../MouseDownEvent.cpp ../MouseMotionEvent.cpp
 
 test:
 	g++ tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3

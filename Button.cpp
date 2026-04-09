@@ -18,6 +18,10 @@ Button::Button(ElementParameters ep) : Box(ep) {
 
 Button::Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, const std::string& callbackName, const std::string& text = "") : Box(min, max, color), onClick(callback), callbackName(callbackName), text(text) {}
 
+GuiElement* Button::clone() const {
+    return new Button(*this);
+}
+
 bool Button::resolveEvent(Event* event) {
     if (event->getType() == EventType::CLICK) {
         ClickEvent* clickEvent = dynamic_cast<ClickEvent*>(const_cast<Event*>(event));

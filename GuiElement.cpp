@@ -9,6 +9,9 @@ GuiElement::~GuiElement() {
 void GuiElement::draw(Screen *screen){
     
 }
+GuiElement* GuiElement::clone() const {
+
+}
 void GuiElement::writeXml(std::ostream& out, int depth) const{
 
 }

@@ -23,6 +23,7 @@ class Button : public Box {
         ~Button() = default;
         Button& operator=(const Button& rhs) = default;
 
+        GuiElement* clone() const;
         bool resolveEvent(Event* event);
         void writeXml(std::ostream& out, int depth) const;
         bool isValid(ElementParameters ep);

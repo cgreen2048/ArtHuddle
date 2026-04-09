@@ -22,6 +22,7 @@ class Box : public GuiElement {
 		bool operator!=(Box rhs);
 		~Box();
 		void draw(Screen *screen);
+		GuiElement* clone() const;
 		void setMin(const ivec2& v, TagType t);
 		void setMax(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);
