@@ -6,6 +6,9 @@
 #include "Line.hpp"
 #include "Event.hpp"
 #include "ClickEvent.hpp"
+#include "MouseDownEvent.hpp"
+#include "MouseUpEvent.hpp"
+#include "MouseMotionEvent.hpp"
 #include "ElementParameters.hpp"
 
 class Freehand : public GuiElement {

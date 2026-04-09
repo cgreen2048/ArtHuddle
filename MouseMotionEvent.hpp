@@ -6,10 +6,9 @@
 class MouseMotionEvent : public MouseEvent {
     private:
         bool mouseDown;
-        ivec2 previousCoords;
+
     public:
-        MouseMotionEvent(ivec2 coords, ivec2 previousCoords, bool mouseDown);
-        ivec2 getPreviousCoords() const;
+        MouseMotionEvent(ivec2 coords, bool mouseDown);
         bool isMouseDown() const;
 };
 

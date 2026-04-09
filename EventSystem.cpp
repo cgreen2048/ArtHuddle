@@ -1,6 +1,6 @@
 #include "EventSystem.hpp"
 #include <iostream>
-#include "ClickEvent.hpp"
+
 
 EventSystem::EventSystem() {}
 
@@ -48,8 +48,10 @@ void EventSystem::processEvents(Layout *root){
         }
         else {
             if (targetedElement != nullptr &&
-                (e->getType() == EventType::MOUSE_MOTION ||
-                 e->getType() == EventType::MOUSE_UP)) {
+                    (e->getType() == EventType::MOUSE_DOWN 
+                    || e->getType() == EventType::MOUSE_MOTION
+                    ||e->getType() == EventType::MOUSE_UP)
+                ) {
 
                 targetedElement->resolveEvent(e.get());
 
@@ -68,7 +70,7 @@ void EventSystem::setSoundPlayer(SoundPlayer* soundPlayer) {
     this->soundPlayer = soundPlayer;
 }
 
-void setTargetedElement(GuiElement* e) {
+void EventSystem::setTargetedElement(GuiElement* e) {
     this->targetedElement = e;
 }
 

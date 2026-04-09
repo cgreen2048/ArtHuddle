@@ -54,10 +54,16 @@ test:
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) EllipseDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o ellipseDemo
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../EventSystem.cpp ../Sound.cpp ../SoundPlayer.cpp freehandDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o freehandDemo
 
 
 studentMachine:
 	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../EventSystem.cpp ../Sound.cpp ../SoundPlayer.cpp freehandDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o freehandDemo
 
 	$(CXX) ../Matrix.cpp Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone001
 
@@ -94,10 +100,15 @@ studentMachine:
 	
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ArrowDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o arrowDemo
+
+	
 	
 
 mac:
 	$(CXX) tests.cpp $(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS)
+
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../EventSystem.cpp ../Sound.cpp ../SoundPlayer.cpp freehandDemo.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o freehandDemo
 
 	$(CXX) ../Matrix.cpp Milestone001Tests.cpp -Wall -o milestone001
 
@@ -136,6 +147,7 @@ mac:
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ArrowDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o arrowDemo
+
 
 clean:
 	rm a.out

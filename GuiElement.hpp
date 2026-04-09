@@ -28,7 +28,7 @@ class GuiElement {
 
 		virtual bool resolveEvent(Event* e);
 
-		virtual GuiElement* clone() const;
+		virtual GuiElement* clone() const = 0;
 
 		void setName(const std::string& n);
 

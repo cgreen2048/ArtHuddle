@@ -1,4 +1,5 @@
 #include "Freehand.hpp"
+#include <iostream>
 
 Freehand::Freehand() : elements{}, lastDrawnPoint{0,0}, color{0,0,0} {}
 
@@ -40,7 +41,6 @@ bool Freehand::resolveEvent(Event *e) {
             if (!hasFirstPoint) {
                 lastDrawnPoint = md->getCoords();
                 hasFirstPoint = true;
-                drawPoint(lastDrawnPoint);
                 return true;
             }
 
@@ -51,7 +51,7 @@ bool Freehand::resolveEvent(Event *e) {
             MouseMotionEvent* mm = static_cast<MouseMotionEvent*>(e);
 
             if (!hasFirstPoint || !mm->isMouseDown()) {
-                return false;
+                return true;
             }
 
             ivec2 current = mm->getCoords();
@@ -62,7 +62,6 @@ bool Freehand::resolveEvent(Event *e) {
 
             elements.push_back(new Line(lastDrawnPoint, current, color));
             lastDrawnPoint = current;
-            drawPoint(lastDrawnPoint);
             return true;
         }
 
@@ -81,7 +80,15 @@ bool Freehand::resolveEvent(Event *e) {
 }
 
 void Freehand::writeXml(std::ostream& out, int depth) const {
+    std::string pad = std::string(depth * 2, ' ');
 
+    out << pad << "<freehand>\n";
+
+    for (GuiElement* e : elements) {
+        e->writeXml(out, depth + 1); 
+    }
+
+    out << pad << "</freehand>\n";
 }
 
 bool Freehand::isValid(ElementParameters ep) {
