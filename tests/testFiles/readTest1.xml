@@ -1,4 +1,4 @@
-<layout name="Line-Box-Point-Layout" sX="0.0" sY="0.0" eX="1.0" eY="1.0">
+<layout name="Line-Ellipse-Box-Point-Layout" sX="0.0" sY="0.0" eX="1.0" eY="1.0">
   <line name="">
     <vec2>
       <x>50.5</x>
@@ -14,6 +14,18 @@
       <z>103.3</z>
     </vec3>
   </line>
+
+  <ellipse name="e1" rx="4" ry="6">
+      <ivec2>
+        <x>50</x>
+        <y>20</y>
+      </ivec2>
+      <ivec3>
+          <x>255</x>
+          <y>0</y>
+          <z>0</z>
+      </ivec3>
+  </ellipse>
 
   <button name="b1" onClick="testCallback" text="Click me!">
         <ivec2>

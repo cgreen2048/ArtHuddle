@@ -1,67 +1,43 @@
 #include "Factory.hpp"
+#include <iostream>
 
 GuiElement* factory(guiElement e, ElementParameters ep) {
-	switch (e) {
-		case guiElement::LAYOUT: {
-			try {
+	try {
+		switch (e) {
+			case guiElement::LAYOUT: {
 				return new Layout(ep);
 			}
-			catch (...) {
-				return nullptr;
-			}
-		}
-		case guiElement::POINT: {
-			try {
+			case guiElement::POINT: {
 				return new Point(ep);
 			}
-			catch (...) {
-				return nullptr;
-			}
-		}
-		case guiElement::LINE: {
-			try {
+			case guiElement::LINE: {
 				return new Line(ep);
+
 			}
-			catch (...) {
-				return nullptr;
-			}
-		}
-		case guiElement::BOX: {
-			try {
+			case guiElement::BOX: {
 				return new Box(ep);
 			}
-			catch (...) {
-				return nullptr;
-			}
-		}
-		case guiElement::TRIANGLE: {
-			try {
+			case guiElement::TRIANGLE: {
 				return new Triangle(ep);
 			}
-			catch (...) {
-				return nullptr;
-			}
-		}
-		default: {
-			return nullptr;
-		}
-		case guiElement::BUTTON: {
-			try {
+			case guiElement::BUTTON: {
 				return new Button(ep);
 			}
-			catch (...) {
-				return nullptr;
+			case guiElement::ELLIPSE: {
+				return new Ellipse(ep);
 			}
-		}
-		case guiElement::ARROW: {
-			try {
+			case guiElement::ARROW: {
 				return new Arrow(ep);
 			}
-			catch (...) {
+			default: {
 				return nullptr;
 			}
 		}
 	}
+	catch (...) {
+		std::cerr << "Invalid parameters for element type " << static_cast<int>(e) << "\n";
+	}
+	
 	return nullptr;
 }
 

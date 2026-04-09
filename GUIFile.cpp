@@ -103,6 +103,7 @@ static bool isElementOpen(const std::string& tag) {
            tag.rfind("<box", 0) == 0 ||
            tag.rfind("<button", 0) == 0 ||
            tag.rfind("<triangle", 0) == 0 ||
+           tag.rfind("<ellipse", 0) == 0 ||
            tag.rfind("<arrow", 0) == 0;
 }
 
@@ -121,6 +122,9 @@ static guiElement determineGuiElementOpenerType(const std::string& tag) {
     }
     if (tag.rfind("<button", 0) == 0) {
         return guiElement::BUTTON;
+    }
+    if (tag.rfind("<ellipse", 0) == 0) {
+        return guiElement::ELLIPSE;
     }
     if (tag.rfind("<arrow", 0) == 0) {
         return guiElement::ARROW;
@@ -145,6 +149,9 @@ static bool isMatchingElementClose(const std::string& tag, guiElement type) {
     }
     if (type == guiElement::BUTTON) {
         return tag == BUTTON_CLOSE;
+    }
+    if (type == guiElement::ELLIPSE) {
+        return tag == ELLIPSE_CLOSE;
     }
     if (type == guiElement::ARROW) {
         return tag == ARROW_CLOSE;
@@ -171,6 +178,20 @@ static bool getStringAttribute(const std::string& tag,
     }
 
     value = tag.substr(start, end - start);
+    return true;
+}
+
+static bool getFloatAttribute(const std::string& tag,
+                                const std::string& attrName,
+                                float& value) {
+    std::string strValue;
+    
+    if (!getStringAttribute(tag, attrName, strValue)){
+        return false;
+    }
+
+
+    value = std::stof(strValue);
     return true;
 }
 
@@ -207,17 +228,20 @@ static bool setCallbackNameFromTag(const std::string& tag, ElementParameters* ep
     return true;
 }
 
-static bool getFloatAttribute(const std::string& tag,
-                                const std::string& attrName,
-                                float& value) {
-    std::string strValue;
-    
-    if (!getStringAttribute(tag, attrName, strValue)){
+static bool setRadiusFromTag(const std::string& tag, ElementParameters* ep) {
+    float radiusX;
+    float radiusY;
+
+    if (!getFloatAttribute(tag, "rx", radiusX)) {
         return false;
     }
+    ep->radiusX = static_cast<int>(radiusX);
 
+    if (!getFloatAttribute(tag, "ry", radiusY)) {
+        return false;
+    }
+    ep->radiusY = static_cast<int>(radiusY);
 
-    value = std::stof(strValue);
     return true;
 }
 
@@ -412,6 +436,12 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
         }
     }
 
+    if (type == guiElement::ELLIPSE) {
+        if (!setRadiusFromTag(elementOpenTag, &ep)) {
+            return nullptr;
+        }
+    }
+
 
     int lineVec2Index = 0;
     int boxVec2Index = 0;
@@ -488,6 +518,10 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 }
                 triangleVec2Index++;
             }
+            else if (type == guiElement::ELLIPSE) {
+                ep.center = v;
+                ep.centerType = TagType::Vec;
+            }
         }
         else if (tag == IVEC2_OPEN) {
             ivec2 v;
@@ -537,6 +571,10 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                     parsedArrowPoint = true;
                 }
                 triangleVec2Index++;
+            }
+            else if (type == guiElement::ELLIPSE) {
+                ep.center = v;
+                ep.centerType = TagType::IVec;
             }
         }
         else if (tag == VEC3_OPEN) {

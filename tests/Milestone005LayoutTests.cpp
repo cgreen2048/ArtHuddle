@@ -171,6 +171,41 @@ int compareSingleElement(GuiElement* actual, GuiElement* expected) {
         return 0;
     }
 
+    if (auto* aEllipse = dynamic_cast<Ellipse*>(actual)) {
+        auto* eEllipse = dynamic_cast<Ellipse*>(expected);
+
+        if (!eEllipse) {
+            return 1;
+        }
+        if (aEllipse->getName() != eEllipse->getName()) {
+            return 1;
+        }
+        if (aEllipse->getCenter() != eEllipse->getCenter()) {
+            return 1;
+        }
+        if (aEllipse->getRadiusX() != eEllipse->getRadiusX()) {
+            return 1;
+        }
+        if (aEllipse->getRadiusY() != eEllipse->getRadiusY()) {
+            return 1;
+        }
+        return 0;
+    }
+
+    if (auto* aArrow = dynamic_cast<Arrow*>(actual)) {
+        auto* eArrow = dynamic_cast<Arrow*>(expected);
+        if (!eArrow) {
+            return 1;
+        }
+        if (*aArrow != *eArrow) {
+            return 1;
+        }
+        if (aArrow->getName() != eArrow->getName()) {
+            return 1;
+        }
+        return 0;
+    }
+
     return 1;
 }
 
@@ -228,7 +263,7 @@ int readTest1() {
     expectedRoot->setStart(vec2(0.0f, 0.0f));
     expectedRoot->setEnd(vec2(1.0f, 1.0f));
     expectedRoot->setActive(true);
-    expectedRoot->setName("Line-Box-Point-Layout");
+    expectedRoot->setName("Line-Ellipse-Box-Point-Layout");
 
     ElementParameters lineParam;
     lineParam.start = toIVec2(50.5f, 902.47f);
@@ -239,6 +274,17 @@ int readTest1() {
     lineParam.colorType = TagType::IVec;
     GuiElement* l = factory(guiElement::LINE, lineParam);
     expectedRoot->addElement(l);
+
+    ElementParameters ellipseParam;
+    ellipseParam.name = "e1";
+    ellipseParam.center = ivec2(50, 20);
+    ellipseParam.radiusX = 4;
+    ellipseParam.radiusY = 6;
+    ellipseParam.color = ivec3(255,0,0);
+    ellipseParam.centerType = TagType::IVec;
+    ellipseParam.colorType = TagType::IVec;
+    GuiElement* eli = factory(guiElement::ELLIPSE, ellipseParam); 
+    expectedRoot->addElement(eli);
 
     ElementParameters buttonParam;
     buttonParam.name = "b1";
@@ -283,7 +329,21 @@ int readTest1() {
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     expectedRoot->addElement(t);
 
-
+    ElementParameters arrowParam;
+    arrowParam.min = ivec2(250, 250);
+    arrowParam.max = ivec2(500, 400);
+    arrowParam.pointA = ivec2(500, 150);
+    arrowParam.pointB = ivec2(500, 500);
+    arrowParam.pointC = ivec2(650, 325);
+    arrowParam.minType = TagType::IVec;
+    arrowParam.maxType = TagType::IVec;
+    arrowParam.pointAType = TagType::IVec;
+    arrowParam.pointBType = TagType::IVec;
+    arrowParam.pointCType = TagType::IVec;
+    arrowParam.color = ivec3(125, 125, 125);
+    arrowParam.colorType = TagType::IVec;
+    GuiElement* a = factory(guiElement::ARROW, arrowParam);
+    expectedRoot->addElement(a);
 
     GUIFile gui;
     gui.readFile("testFiles/readTest1.xml");
@@ -355,6 +415,22 @@ int readTest2() {
     buttonParam.colorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     nested->addElement(btn);
+
+    ElementParameters arrowParam;
+    arrowParam.min = ivec2(250, 250);
+    arrowParam.max = ivec2(500, 400);
+    arrowParam.pointA = ivec2(500, 150);
+    arrowParam.pointB = ivec2(500, 500);
+    arrowParam.pointC = ivec2(650, 325);
+    arrowParam.minType = TagType::IVec;
+    arrowParam.maxType = TagType::IVec;
+    arrowParam.pointAType = TagType::IVec;
+    arrowParam.pointBType = TagType::IVec;
+    arrowParam.pointCType = TagType::IVec;
+    arrowParam.color = ivec3(125, 125, 125);
+    arrowParam.colorType = TagType::IVec;
+    GuiElement* a = factory(guiElement::ARROW, arrowParam);
+    nested->addElement(a);
 
     expectedRoot->addElement(nested);
 
@@ -532,6 +608,17 @@ int writeTest1() {
     GuiElement* l = factory(guiElement::LINE, lineParam);
     root->addElement(l);
 
+    ElementParameters ellipseParam;
+    ellipseParam.name = "e1";
+    ellipseParam.center = ivec2(50, 20);
+    ellipseParam.radiusX = 4;
+    ellipseParam.radiusY = 6;
+    ellipseParam.color = ivec3(255,0,0);
+    ellipseParam.centerType = TagType::IVec;
+    ellipseParam.colorType = TagType::IVec;
+    GuiElement* eli = factory(guiElement::ELLIPSE, ellipseParam); 
+    root->addElement(eli);
+
     ElementParameters boxParam;
     boxParam.min = toIVec2(250.3f, 122.5f);
     boxParam.max = toIVec2(420.34f, 254.9f);
@@ -555,6 +642,22 @@ int writeTest1() {
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     root->addElement(btn);
 
+    ElementParameters arrowParam;
+    arrowParam.min = ivec2(250, 250);
+    arrowParam.max = ivec2(500, 400);
+    arrowParam.pointA = ivec2(500, 150);
+    arrowParam.pointB = ivec2(500, 500);
+    arrowParam.pointC = ivec2(650, 325);
+    arrowParam.minType = TagType::IVec;
+    arrowParam.maxType = TagType::IVec;
+    arrowParam.pointAType = TagType::IVec;
+    arrowParam.pointBType = TagType::IVec;
+    arrowParam.pointCType = TagType::IVec;
+    arrowParam.color = ivec3(125, 125, 125);
+    arrowParam.colorType = TagType::IVec;
+    GuiElement* a = factory(guiElement::ARROW, arrowParam);
+    root->addElement(a);
+
     gui.setRootLayout(root);
 
     Layout* expectedRoot = new Layout();
@@ -571,6 +674,17 @@ int writeTest1() {
     newLineParam.colorType = TagType::Vec;
     GuiElement* el = factory(guiElement::LINE, newLineParam);
     expectedRoot->addElement(el);
+
+    ElementParameters newEllipseParam;
+    newEllipseParam.name = "e1";
+    newEllipseParam.center = ivec2(50, 20);
+    newEllipseParam.radiusX = 4;
+    newEllipseParam.radiusY = 6;
+    newEllipseParam.color = ivec3(255,0,0);
+    newEllipseParam.centerType = TagType::IVec;
+    newEllipseParam.colorType = TagType::IVec;
+    GuiElement* eEli = factory(guiElement::ELLIPSE, ellipseParam); 
+    expectedRoot->addElement(eEli);
 
     ElementParameters newBoxParam;
     newBoxParam.min = toIVec2(250.3f, 122.5f);
@@ -594,6 +708,22 @@ int writeTest1() {
     expectedButtonParam.colorType = TagType::IVec;
     GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
     expectedRoot->addElement(expectedButton);
+
+    ElementParameters expectedArrowParam;
+    expectedArrowParam.min = ivec2(250, 250);
+    expectedArrowParam.max = ivec2(500, 400);
+    expectedArrowParam.pointA = ivec2(500, 150);
+    expectedArrowParam.pointB = ivec2(500, 500);
+    expectedArrowParam.pointC = ivec2(650, 325);
+    expectedArrowParam.minType = TagType::IVec;
+    expectedArrowParam.maxType = TagType::IVec;
+    expectedArrowParam.pointAType = TagType::IVec;
+    expectedArrowParam.pointBType = TagType::IVec;
+    expectedArrowParam.pointCType = TagType::IVec;
+    expectedArrowParam.color = ivec3(125, 125, 125);
+    expectedArrowParam.colorType = TagType::IVec;
+    GuiElement* expectedArrow = factory(guiElement::ARROW, expectedArrowParam);
+    expectedRoot->addElement(expectedArrow);
 
     gui.writeFile("testFiles/writeTest1.xml");
     gui.readFile("testFiles/writeTest1.xml");
@@ -700,6 +830,22 @@ int writeTest3() {
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     nested2->addElement(btn);
 
+    ElementParameters arrowParam;
+    arrowParam.min = ivec2(250, 250);
+    arrowParam.max = ivec2(500, 400);
+    arrowParam.pointA = ivec2(500, 150);
+    arrowParam.pointB = ivec2(500, 500);
+    arrowParam.pointC = ivec2(650, 325);
+    arrowParam.minType = TagType::IVec;
+    arrowParam.maxType = TagType::IVec;
+    arrowParam.pointAType = TagType::IVec;
+    arrowParam.pointBType = TagType::IVec;
+    arrowParam.pointCType = TagType::IVec;
+    arrowParam.color = ivec3(125, 125, 125);
+    arrowParam.colorType = TagType::IVec;
+    GuiElement* a = factory(guiElement::ARROW, arrowParam);
+    nested2->addElement(a);
+
     nested1->addElement(nested2);
     root->addElement(nested1);
     gui.setRootLayout(root);
@@ -751,6 +897,22 @@ int writeTest3() {
     expectedButtonParam.colorType = TagType::IVec;
     GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
     expectedNested2->addElement(expectedButton);
+
+    ElementParameters expectedArrowParam;
+    expectedArrowParam.min = ivec2(250, 250);
+    expectedArrowParam.max = ivec2(500, 400);
+    expectedArrowParam.pointA = ivec2(500, 150);
+    expectedArrowParam.pointB = ivec2(500, 500);
+    expectedArrowParam.pointC = ivec2(650, 325);
+    expectedArrowParam.minType = TagType::IVec;
+    expectedArrowParam.maxType = TagType::IVec;
+    expectedArrowParam.pointAType = TagType::IVec;
+    expectedArrowParam.pointBType = TagType::IVec;
+    expectedArrowParam.pointCType = TagType::IVec;
+    expectedArrowParam.color = ivec3(125, 125, 125);
+    expectedArrowParam.colorType = TagType::IVec;
+    GuiElement* expectedArrow = factory(guiElement::ARROW, expectedArrowParam);
+    expectedNested2->addElement(expectedArrow);
 
     expectedNested1->addElement(expectedNested2);
     expectedRoot->addElement(expectedNested1);

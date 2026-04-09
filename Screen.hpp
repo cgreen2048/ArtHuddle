@@ -28,6 +28,7 @@ class Screen {
         void drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color, ivec2 parentStart, ivec2 parentEnd);
         bool pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 pointP);
         void drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd);
+        void drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, ivec2 parentStart, ivec2 parentEnd);
         void drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd);
         void clear(ivec3 color);
 
