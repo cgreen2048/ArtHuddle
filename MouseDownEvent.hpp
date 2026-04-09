@@ -1,15 +1,11 @@
 #ifndef __MOUSE_DOWN_EVENT_HPP__
 #define __MOUSE_DOWN_EVENT_HPP__
 
-#include "Event.hpp"
-#include "vec2.hpp"
+#include "MouseEvent.hpp"
 
-class MouseDownEvent : public Event {
-    private:
-        ivec2 coords;
+class MouseDownEvent : public MouseEvent {
     public:
         MouseDownEvent(ivec2 coords);
-        ivec2 getCoords();
 };
 
 #endif
