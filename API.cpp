@@ -32,6 +32,10 @@ void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 c
     ep.point2Type = TagType::IVec;
     ep.point3Type = TagType::IVec;
     ep.colorType = TagType::IVec;
+    ep.center = point1;
+    ep.radiusX = std::abs(point3.x - point1.x);
+    ep.radiusY = std::abs(point2.y - point1.y);
+    ep.centerType = TagType::IVec;
     switch (ge) {
 		case guiElement::LINE: {
 			Line* element = dynamic_cast<Line*>(factory(ge, ep));
@@ -54,6 +58,13 @@ void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 c
             }
             return;
 		}
+        case guiElement::ELLIPSE: {
+            Ellipse* element = dynamic_cast<Ellipse*>(factory(ge, ep));
+            if (element) {
+                tempLayout->addElement(element);
+            }
+            return;
+        }
         case guiElement::LAYOUT: {
 			Layout* element = dynamic_cast<Layout*>(factory(ge, ep));
             if (element) {
@@ -85,6 +96,10 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
     ep.point2Type = TagType::IVec;
     ep.point3Type = TagType::IVec;
     ep.colorType = TagType::IVec;
+    ep.center = point1;
+    ep.radiusX = std::abs(point3.x - point1.x);
+    ep.radiusY = std::abs(point2.y - point1.y);
+    ep.centerType = TagType::IVec;
     switch (ge) {
 		case guiElement::POINT: {
 			Point* element = dynamic_cast<Point*>(factory(ge, ep));
@@ -114,6 +129,13 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             }
             return;
 		}
+        case guiElement::ELLIPSE: {
+            Ellipse* element = dynamic_cast<Ellipse*>(factory(ge, ep));
+            if (element) {
+                rootLayout->addElement(element);
+            }
+            return;
+        }
         case guiElement::LAYOUT: {
 			Layout* element = dynamic_cast<Layout*>(factory(ge, ep));
             if (element) {

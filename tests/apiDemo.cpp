@@ -87,6 +87,24 @@ int main() {
                             break;
                         }
                         case 4: {
+                            switch (point) {
+                                case 0: {
+                                    point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    ++point;
+                                    break;
+                                }
+                                case 1: {
+                                    point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    ++point;
+                                    break;
+                                }
+                                case 2: {
+                                    point3 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    drawElement(type, point1, point2, point3, color);
+                                    resetPoints(point, point1, point2, point3);
+                                    break;
+                                }
+                            }
                             break;
                         }
                         case 5: {
@@ -131,6 +149,15 @@ int main() {
                 break;
             }
             case 4: {
+                if (point == 1) {
+                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
+                    drawTempElement(1, point1, point2, point3, color);
+                }
+                else if (point == 2) {
+                    point3 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
+                    drawTempElement(type, point1, point2, point3, color);
+                    break;
+                }
                 break;
             }
             case 5: {
