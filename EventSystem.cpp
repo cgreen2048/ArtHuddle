@@ -46,9 +46,20 @@ void EventSystem::processEvents(Layout *root){
                     break;
             }
         }
-        else{
-            // Handle other event types here by trickling down through the layout tree and calling resolveEvent on each element
-            root->resolveEvent(e.get());
+        else {
+            if (targetedElement != nullptr &&
+                (e->getType() == EventType::MOUSE_MOTION ||
+                 e->getType() == EventType::MOUSE_UP)) {
+
+                targetedElement->resolveEvent(e.get());
+
+                if (e->getType() == EventType::MOUSE_UP) {
+                    targetedElement = nullptr;
+                }
+            }
+            else {
+                root->resolveEvent(e.get());
+            }
         }
     }
 }
@@ -57,6 +68,14 @@ void EventSystem::setSoundPlayer(SoundPlayer* soundPlayer) {
     this->soundPlayer = soundPlayer;
 }
 
+void setTargetedElement(GuiElement* e) {
+    this->targetedElement = e;
+}
+
 SoundPlayer* EventSystem::getSoundPlayer() {
     return soundPlayer;
+}
+
+GuiElement* EventSystem::getTargetedElement() {
+    return targetedElement;
 }
