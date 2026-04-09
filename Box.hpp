@@ -28,6 +28,7 @@ class Box : public GuiElement {
 		void writeXml(std::ostream& out, int depth) const;
 		bool isValid(ElementParameters ep);
 		bool inBounds(const ivec2& point) const;
+		bool isInside(ivec2 coordinates);
 };
 
 #endif

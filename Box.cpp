@@ -132,3 +132,10 @@ bool Box::inBounds(const ivec2& point) const {
     }
     return true;
 }
+
+bool Box::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    return this->inBounds(coordinates);
+}

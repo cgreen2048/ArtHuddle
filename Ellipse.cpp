@@ -117,3 +117,10 @@ int Ellipse::getRadiusX() {
 int Ellipse::getRadiusY() {
     return this->radiusY;
 }
+
+bool Ellipse::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    return this->isPointInside(coordinates);
+}

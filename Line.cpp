@@ -119,3 +119,11 @@ bool Line::isValid(ElementParameters ep) {
     }
     return true;
 }
+
+bool Line::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    // add check to see if point is on the line
+    return false;
+}

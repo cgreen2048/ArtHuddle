@@ -127,6 +127,17 @@ bool Layout::resolveEvent(Event* e) {
         }
     }
 
+    if (e->getType() == EventType::CLICK) {
+        for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
+            GuiElement* object = *ritr;
+            ClickEvent* click = dynamic_cast<ClickEvent*>(e);
+            if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
+                Selected::getInstance().setSelectedElement(object);
+                return true;
+            }
+        }
+    }
+
     return false;
 }
 
@@ -165,6 +176,16 @@ bool Layout::isValid(ElementParameters ep) {
         return false;
     }
     if ((ep.layoutEnd.x == std::numeric_limits<float>::lowest()) || (ep.layoutEnd.y == std::numeric_limits<float>::lowest())) {
+        return false;
+    }
+    return true;
+}
+
+bool Layout::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    if ((this->getAbsoluteStartX() > coordinates.x) || (this->getAbsoluteStartY() > coordinates.y) || (this->getAbsoluteEndX() <= coordinates.x) || (this->getAbsoluteEndY() <= coordinates.y)) {
         return false;
     }
     return true;

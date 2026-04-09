@@ -97,3 +97,13 @@ bool Point::isValid(ElementParameters ep) {
     }
     return true;
 }
+
+bool Point::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    if (this->coords == coordinates) {
+        return true;
+    }
+    return false;
+}
