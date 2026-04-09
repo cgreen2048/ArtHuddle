@@ -9,6 +9,7 @@
 - [SoundState Struct](#soundstate-struct)
 - [SoundPlayer Class](#soundplayer)
 - [ElementParameters Struct](#elementparameters-struct)
+- [Selected Class](#selected)
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
 - [Layout Class](#layout)
@@ -567,6 +568,86 @@ The type of mathematical vector that `center` is. Can be `TagType::Vec` or `TagT
 
 ## UML Diagram
 ![UML Diagram](images/ElementParameters_UML.png)
+
+---
+
+# Selected
+
+## Description
+A singleton class that holds the last `GuiElement` clicked on by the user
+- Gets the coordinates of the `GuiElement` and determines the minimum and maximum `x` and `y` values
+- Draws a blue bounding box around the element using four `Line` objects
+
+---
+
+## Data Members
+
+### `GuiElement* selectedElement`
+A pointer to the last selected element
+- Can be `nullptr` if no element is selected
+
+---
+
+### `Layout* selectedLayout`
+A layout to draw a bounding box around the currently selected element
+
+---
+
+### `ivec2 minBound`
+The minimum `x` and `y` coordinates of the currently selected shape. Used to draw the bounding box
+
+---
+
+### `ivec2 maxBound`
+The maximum `x` and `y` coordinates of the currently selected shape. Used to draw the bounding box
+
+---
+
+## Methods
+
+### `Selected()`
+Default constructor (private)
+
+---
+
+`~Selected()`
+Default destructor (private)
+
+---
+
+### `static Selected& getInstance()`
+Returns the instance of the singleton
+
+---
+### `void setSelectedElement(GuiElement* updatedElement)`
+Sets the `selectedElement` attribute
+- Gets the minimum and maximum `x` and `y` values from the passed element
+- Calls `drawBoundingBox()` to draw a box around the element
+- Immediately clears `selectedLayout` if `updatedElement` is `nullptr`
+
+---
+
+### `GuiElement* getSelectedElement()`
+Returns the `GuiElement*` held in the `selectedElement` attribute
+
+---
+
+### `void setSelectedLayout(Layout* boundingBoxLayout)`
+Sets the `selectedLayout` attribute to the passed `Layout*` argument
+- Allows the bounding box to be drawn and cleared without interfering with other elements
+
+---
+
+### `void drawBoundingBox()`
+Draws a bounding box around the currently selected element
+- Clears `selectedLayout` using the `clearElements` method from `Layout`
+- Creates four `Line` objects using `minBound` and `maxBound` to form a box that fully contains the element
+- Adds the newly created lines to `selectedLayout` to be drawn on the next iteration of the main loop
+
+---
+
+## UML Diagram
+![UML Diagram](images/Selected_UML.png)
 
 ---
 

@@ -146,6 +146,8 @@ bool Layout::resolveEvent(Event* e) {
             }
         }
     }
+    
+    Selected::getInstance().setSelectedElement(nullptr);
 
     return false;
 }

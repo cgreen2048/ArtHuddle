@@ -14,6 +14,11 @@ Selected& Selected::getInstance() {
 void Selected::setSelectedElement(GuiElement* updatedElement) {
     this->selectedElement = updatedElement;
 
+    if (!this->selectedElement) {
+        this->selectedLayout->clearElements();
+        return;
+    }
+
     Point* point = dynamic_cast<Point*>(this->selectedElement);
     if (point) {
         ivec2 pointCoords = point->getCoords();
@@ -117,7 +122,7 @@ void Selected::drawBoundingBox() {
     this->minBound.y -= 5;
     this->maxBound.x += 5;
     this->maxBound.y += 5;
-    
+
     ElementParameters topParam;
     topParam.start = this->minBound;
     topParam.end = ivec2(this->maxBound.x, this->minBound.y);
