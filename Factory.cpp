@@ -26,6 +26,9 @@ GuiElement* factory(guiElement e, ElementParameters ep) {
 			case guiElement::ELLIPSE: {
 				return new Ellipse(ep);
 			}
+			case guiElement::ARROW: {
+				return new Arrow(ep);
+			}
 			default: {
 				return nullptr;
 			}

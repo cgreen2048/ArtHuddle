@@ -13,7 +13,7 @@ MAC_CXXFLAGS := -std=c++17 -Wall
 MAC_LDFLAGS := -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks
 MAC_LDLIBS := -framework sdl3
 
-FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp ../Ellipse.cpp  
+FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp ../Ellipse.cpp ../Arrow.cpp
 EVENT_ELEMENTS := ../Event.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp
 
 test:
@@ -48,6 +48,9 @@ test:
 
 	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp Milestone006Demo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006Demo
+	
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ArrowDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o arrowDemo
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) EllipseDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o ellipseDemo
@@ -88,6 +91,9 @@ studentMachine:
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) EllipseDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o ellipseDemo
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ArrowDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o arrowDemo
 	
 
 mac:
@@ -131,6 +137,9 @@ mac:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp SelectedDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o selectedDemo
 
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ArrowDemo.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o arrowDemo
+
 clean:
 	rm a.out
 	rm milestone001
@@ -145,5 +154,6 @@ clean:
 	rm milestone006
 	rm milestone006Demo
 	rm ellipseDemo
+	rm arrowDemo
 
 

@@ -22,7 +22,7 @@ std::unique_ptr<Event> EventSystem::poll() {
 }
 
 void EventSystem::processEvents(Layout *root){
-    std::cout << "Processing events, queue size: " << eventQueue.size() << '\n';
+    // std::cout << "Processing events, queue size: " << eventQueue.size() << '\n';
     while(!eventQueue.empty()){
         std::unique_ptr<Event> e = poll();
 
