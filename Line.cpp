@@ -13,11 +13,11 @@ Line::Line(ElementParameters ep) {
     if (!isValid(ep)) {
         throw -1;
     }
-    this->start = ep.point1;
-    this->end = ep.point2;
+    this->start = ep.start;
+    this->end = ep.end;
     this->color = ep.color;
-    this->startType = ep.point1Type;
-    this->endType = ep.point2Type;
+    this->startType = ep.startType;
+    this->endType = ep.endType;
     this->colorType = ep.colorType;
     this->name = ep.name;
 }
@@ -102,10 +102,10 @@ void Line::writeXml(std::ostream& out, int depth) const {
 }
 
 bool Line::isValid(ElementParameters ep) {
-    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.start.x == std::numeric_limits<int>::lowest()) || (ep.start.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
-    if ((ep.point2.x == std::numeric_limits<int>::lowest()) || (ep.point2.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.end.x == std::numeric_limits<int>::lowest()) || (ep.end.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
     if (ep.color.x == std::numeric_limits<int>::lowest()) {

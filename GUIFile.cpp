@@ -103,7 +103,8 @@ static bool isElementOpen(const std::string& tag) {
            tag.rfind("<box", 0) == 0 ||
            tag.rfind("<button", 0) == 0 ||
            tag.rfind("<triangle", 0) == 0 ||
-           tag.rfind("<ellipse", 0) == 0;
+           tag.rfind("<ellipse", 0) == 0 ||
+           tag.rfind("<arrow", 0) == 0;
 }
 
 static guiElement determineGuiElementOpenerType(const std::string& tag) {
@@ -124,6 +125,9 @@ static guiElement determineGuiElementOpenerType(const std::string& tag) {
     }
     if (tag.rfind("<ellipse", 0) == 0) {
         return guiElement::ELLIPSE;
+    }
+    if (tag.rfind("<arrow", 0) == 0) {
+        return guiElement::ARROW;
     }
 
     std::cerr << "Malformed XML\n";
@@ -148,6 +152,9 @@ static bool isMatchingElementClose(const std::string& tag, guiElement type) {
     }
     if (type == guiElement::ELLIPSE) {
         return tag == ELLIPSE_CLOSE;
+    }
+    if (type == guiElement::ARROW) {
+        return tag == ARROW_CLOSE;
     }
     return false;
 }
@@ -416,11 +423,11 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
     guiElement type = determineGuiElementOpenerType(elementOpenTag);
     ElementParameters ep;
 
-    if(!setNameFromTag(elementOpenTag, &ep)){
+    if (!setNameFromTag(elementOpenTag, &ep)){
         return nullptr;
     }
 
-    if(type == guiElement::BUTTON){
+    if (type == guiElement::BUTTON){
         if(!setCallbackNameFromTag(elementOpenTag, &ep)){
             return nullptr;
         }
@@ -439,6 +446,8 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
     int lineVec2Index = 0;
     int boxVec2Index = 0;
     int triangleVec2Index = 0;
+    bool parsedArrowStem = false;
+    bool parsedArrowPoint = false;
 
     while (true) {
         std::string tag = getNextTag(inFile);
@@ -468,42 +477,44 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
             
             if (type == guiElement::LINE) {
                 if (lineVec2Index == 0) {
-                    ep.point1 = v;
-                    ep.point1Type = TagType::Vec;
+                    ep.start = v;
+                    ep.startType = TagType::Vec;
                 }
                 else {
-                    ep.point2 = v;
-                    ep.point2Type = TagType::Vec;
+                    ep.end = v;
+                    ep.endType = TagType::Vec;
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX || type == guiElement::BUTTON) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON || (type == guiElement::ARROW && parsedArrowStem == false)) {
                 if (boxVec2Index == 0) {
-                    ep.point1 = v;
-                    ep.point1Type = TagType::Vec;
+                    ep.min = v;
+                    ep.minType = TagType::Vec;
                 }
                 else {
-                    ep.point2 = v;
-                    ep.point2Type = TagType::Vec;
+                    ep.max = v;
+                    ep.maxType = TagType::Vec;
+                    parsedArrowStem = true;
                 }
                 boxVec2Index++;
             }
             else if (type == guiElement::POINT) {
-                ep.point1 = v;
-                ep.point1Type = TagType::Vec;
+                ep.coords = v;
+                ep.coordsType = TagType::Vec;
             }
-            else if (type == guiElement::TRIANGLE) {
+            else if (type == guiElement::TRIANGLE || (type == guiElement::ARROW && parsedArrowPoint == false)) {
                 if (triangleVec2Index == 0) {
-                    ep.point1 = v;
-                    ep.point1Type = TagType::Vec;
+                    ep.pointA = v;
+                    ep.pointAType = TagType::Vec;
                 }
                 else if (triangleVec2Index == 1) {
-                    ep.point2 = v;
-                    ep.point2Type = TagType::Vec;
+                    ep.pointB = v;
+                    ep.pointBType = TagType::Vec;
                 }
                 else {
-                    ep.point3 = v;
-                    ep.point3Type = TagType::Vec;
+                    ep.pointC = v;
+                    ep.pointCType = TagType::Vec;
+                    parsedArrowPoint = true;
                 }
                 triangleVec2Index++;
             }
@@ -520,42 +531,44 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
 
             if (type == guiElement::LINE) {
                 if (lineVec2Index == 0) {
-                    ep.point1 = v;
-                    ep.point1Type = TagType::IVec;
+                    ep.start = v;
+                    ep.startType = TagType::IVec;
                 }
                 else {
-                    ep.point2 = v;
-                    ep.point2Type = TagType::IVec;
+                    ep.end = v;
+                    ep.endType = TagType::IVec;
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX || type == guiElement::BUTTON) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON || (type == guiElement::ARROW && parsedArrowStem == false)) {
                 if (boxVec2Index == 0) {
-                    ep.point1 = v;
-                    ep.point1Type = TagType::IVec;
+                    ep.min = v;
+                    ep.minType = TagType::IVec;
                 }
                 else {
-                    ep.point2 = v;
-                    ep.point2Type = TagType::IVec;
+                    ep.max = v;
+                    ep.maxType = TagType::IVec;
+                    parsedArrowStem = true;
                 }
                 boxVec2Index++;
             }
             else if (type == guiElement::POINT) {
-                ep.point1 = v;
-                ep.point1Type = TagType::IVec;
+                ep.coords = v;
+                ep.coordsType = TagType::IVec;
             }
-            else if (type == guiElement::TRIANGLE) {
+            else if (type == guiElement::TRIANGLE || (type == guiElement::ARROW && parsedArrowPoint == false)) {
                 if (triangleVec2Index == 0) {
-                    ep.point1 = v;
-                    ep.point1Type = TagType::IVec;
+                    ep.pointA = v;
+                    ep.pointAType = TagType::IVec;
                 }
                 else if (triangleVec2Index == 1) {
-                    ep.point2 = v;
-                    ep.point2Type = TagType::IVec;
+                    ep.pointB = v;
+                    ep.pointBType = TagType::IVec;
                 }
                 else {
-                    ep.point3 = v;
-                    ep.point3Type = TagType::IVec;
+                    ep.pointC = v;
+                    ep.pointCType = TagType::IVec;
+                    parsedArrowPoint = true;
                 }
                 triangleVec2Index++;
             }
