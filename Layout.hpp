@@ -43,6 +43,7 @@ class Layout : public GuiElement {
         int getAbsoluteEndY();
         bool isValid(ElementParameters ep);
         bool isInside(ivec2 coordinates);
+        void clearElements();
 };
 
 #endif

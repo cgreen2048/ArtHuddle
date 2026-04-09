@@ -1,13 +1,24 @@
 #ifndef __SELECTED_HPP__
 #define __SELECTED_HPP__
 
+#include <algorithm>
 #include "GuiElement.hpp"
+#include "Point.hpp"
+#include "Line.hpp"
+#include "Box.hpp"
+#include "Triangle.hpp"
+#include "Ellipse.hpp"
+#include "Layout.hpp"
+#include "Factory.hpp"
+
+class Layout;
 
 class Selected {
     private:
         Selected();
         ~Selected();
         GuiElement* selectedElement;
+        Layout* selectedLayout;
         ivec2 minBound;
         ivec2 maxBound;
     
@@ -17,6 +28,8 @@ class Selected {
         Selected& operator=(const Selected&) = delete;
         void setSelectedElement(GuiElement* updatedElement);
         GuiElement* getSelectedElement();
+        void setSelectedLayout(Layout* boundingBoxLayout);
+        void drawBoundingBox();
 };
 
 #endif

@@ -80,6 +80,14 @@ void Box::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
+ivec2 Box::getMin() {
+    return this->min;
+}
+
+ivec2 Box::getMax() {
+    return this->max;
+}
+
 void Box::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 

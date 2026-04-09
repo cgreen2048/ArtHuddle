@@ -68,9 +68,20 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     rootLayout.name = "rootLayout";
     Layout *layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, rootLayout));
 
+    ElementParameters boundingLayoutParam;
+    boundingLayoutParam.layoutStart = vec2(0.0,0.0);
+    boundingLayoutParam.layoutEnd = vec2(1.0, 1.0);
+    boundingLayoutParam.parentStart = ivec2(0,0);
+    boundingLayoutParam.parentEnd = ivec2(X,Y);
+    boundingLayoutParam.active = true;
+    boundingLayoutParam.name = "boundingLayout";
+    Layout *boundingLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, boundingLayoutParam));
+    selectedSingleton.setSelectedLayout(boundingLayout);
+    layout->addElement(boundingLayout);
+
     ElementParameters pointParam;
     pointParam.point1 = ivec2(500, 500);
-    pointParam.color = ivec3(20, 20, 255);
+    pointParam.color = ivec3(20, 255, 20);
     pointParam.point1Type = TagType::IVec;
     pointParam.name = "point1";
     Point* point = dynamic_cast<Point*>(factory(guiElement::POINT, pointParam));
@@ -79,7 +90,7 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     ElementParameters lineParam;
     lineParam.point1 = ivec2(450, 450);
     lineParam.point2 = ivec2(450, 375);
-    lineParam.color = ivec3(20, 20, 255);
+    lineParam.color = ivec3(20, 255, 20);
     lineParam.point1Type = TagType::IVec;
     lineParam.point2Type = TagType::IVec;
     lineParam.name = "line1";
@@ -89,7 +100,7 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     ElementParameters boxParam;
     boxParam.point1 = ivec2(50, 200);
     boxParam.point2 = ivec2(100, 300);
-    boxParam.color = ivec3(20, 20, 255);
+    boxParam.color = ivec3(20, 255, 20);
     boxParam.point1Type = TagType::IVec;
     boxParam.point2Type = TagType::IVec;
     boxParam.name = "box1";
@@ -100,7 +111,7 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     triangleParam.point1 = ivec2(450, 50);
     triangleParam.point2 = ivec2(450, 200);
     triangleParam.point3 = ivec2(300, 150);
-    triangleParam.color = ivec3(20, 20, 255);
+    triangleParam.color = ivec3(20, 255, 20);
     triangleParam.point1Type = TagType::IVec;
     triangleParam.point2Type = TagType::IVec;
     triangleParam.point3Type = TagType::IVec;
@@ -112,7 +123,7 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     ellipseParam.center = ivec2(600, 300);
     ellipseParam.radiusX = 25;
     ellipseParam.radiusY = 50;
-    ellipseParam.color = ivec3(20, 20, 255);
+    ellipseParam.color = ivec3(20, 255, 20);
     ellipseParam.centerType = TagType::IVec;
     ellipseParam.name = "ellipse1";
     Ellipse* ellipse = dynamic_cast<Ellipse*>(factory(guiElement::ELLIPSE, ellipseParam));

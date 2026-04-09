@@ -63,6 +63,10 @@ void Point::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
+ivec2 Point::getCoords() {
+    return this->coords;
+}
+
 void Point::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 

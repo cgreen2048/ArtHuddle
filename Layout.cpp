@@ -196,3 +196,7 @@ bool Layout::isInside(ivec2 coordinates) {
     }
     return true;
 }
+
+void Layout::clearElements() {
+    this->elements.clear();
+}

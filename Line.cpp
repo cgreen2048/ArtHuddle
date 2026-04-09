@@ -75,6 +75,14 @@ void Line::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
+ivec2 Line::getStart() {
+    return this->start;
+}
+
+ivec2 Line::getEnd() {
+    return this->end;
+}
+
 void Line::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 
