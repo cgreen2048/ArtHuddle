@@ -132,6 +132,12 @@ bool Layout::resolveEvent(Event* e) {
             GuiElement* object = *ritr;
             ClickEvent* click = dynamic_cast<ClickEvent*>(e);
             if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
+                Layout* downcast = dynamic_cast<Layout*>(object);
+                if (downcast) {
+                    if (downcast->resolveEvent(e)) {
+                        return true;
+                    }
+                }
                 Selected::getInstance().setSelectedElement(object);
                 return true;
             }

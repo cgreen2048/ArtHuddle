@@ -124,6 +124,11 @@ bool Line::isInside(ivec2 coordinates) {
     if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
         return false;
     }
-    // add check to see if point is on the line
+    int term1 = (coordinates.y - this->start.y) * (this->end.x - this->start.x);
+    int term2 = (coordinates.x - this->start.x) * (this->end.y - this->start.y);
+    int difference = term1 - term2;
+    if (difference == 0) {
+        return true;
+    }
     return false;
 }

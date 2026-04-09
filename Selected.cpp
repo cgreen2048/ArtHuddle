@@ -12,7 +12,7 @@ Selected& Selected::getInstance() {
 }
 
 void Selected::setSelectedElement(GuiElement* updatedElement) {
-
+    this->selectedElement = updatedElement;
 }
 
 GuiElement* Selected::getSelectedElement() {
