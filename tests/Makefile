@@ -28,7 +28,7 @@ test:
 	g++ Milestone003Tests.cpp ../GUIFile.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) ../Selected.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone003
 
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) Milestone004Tests.cpp \
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp Milestone004Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone004
 
 	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../GUIFile.cpp Milestone005LayoutTests.cpp ../Selected.cpp \
