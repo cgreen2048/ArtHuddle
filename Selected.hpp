@@ -8,6 +8,7 @@
 #include "Box.hpp"
 #include "Triangle.hpp"
 #include "Ellipse.hpp"
+#include "Arrow.hpp"
 #include "Layout.hpp"
 #include "Factory.hpp"
 

@@ -108,9 +108,10 @@ bool Layout::resolveEvent(Event* e) {
     if (e->getType() == EventType::SHOW) {
         ShowEvent* show = static_cast<ShowEvent*>(e);
         if (this->getName() == show->getLayoutName()) {
-            if (show->getAction() == ShowActionType::SHOW){
+            if (show->getAction() == ShowActionType::SHOW) {
                 active = true;
-            }else{
+            }
+            else {
                 active = false;
             }
             return true;
@@ -138,8 +139,10 @@ bool Layout::resolveEvent(Event* e) {
                         return true;
                     }
                 }
-                Selected::getInstance().setSelectedElement(object);
-                return true;
+                else {
+                    Selected::getInstance().setSelectedElement(object);
+                    return true;
+                }
             }
         }
     }

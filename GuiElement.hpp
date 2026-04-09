@@ -38,7 +38,7 @@ class GuiElement {
 
 		virtual bool isValid(ElementParameters ep) = 0;
 		
-		virtual bool isInside(ivec2 mouseCoords) = 0;
+		virtual bool isInside(ivec2 coordinates) = 0;
 };
 
 
