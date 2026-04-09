@@ -2287,6 +2287,11 @@ Draws a line to the Target Screen object's SDL_Surface using the Bresenham algor
 - Will only draw on pixels that exist in the surface
 - Calls `colorOnePixel` for each pixel that exists on the line
 
+### `drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
+Draws an ellipse to the target Screen object's SDL_Surface
+- Centers the ellipse on `center`
+- Draws along x and y axes based on `radiusX` and `radiusY`
+
 ### `drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd)`
 Draws an arrow to the target Screen object's SDL_Surface
 - Internally calls `drawBox()` and `drawTriangle()` to draw the stem and point of the arrow respectively
