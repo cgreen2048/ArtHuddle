@@ -102,6 +102,7 @@ static bool isElementOpen(const std::string& tag) {
            tag.rfind("<line", 0) == 0 ||
            tag.rfind("<box", 0) == 0 ||
            tag.rfind("<button", 0) == 0 ||
+           tag.rfind("<textbox", 0) == 0 ||
            tag.rfind("<triangle", 0) == 0;
 }
 
@@ -120,6 +121,9 @@ static guiElement determineGuiElementOpenerType(const std::string& tag) {
     }
     if (tag.rfind("<button", 0) == 0) {
         return guiElement::BUTTON;
+    }
+    if (tag.rfind("<textbox", 0) == 0) {
+        return guiElement::TEXTBOX;
     }
 
     std::cerr << "Malformed XML\n";
@@ -141,6 +145,9 @@ static bool isMatchingElementClose(const std::string& tag, guiElement type) {
     }
     if (type == guiElement::BUTTON) {
         return tag == BUTTON_CLOSE;
+    }
+    if (type == guiElement::TEXTBOX) {
+        return tag == TEXTBOX_CLOSE;
     }
     return false;
 }
@@ -405,6 +412,11 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
         }
     }
 
+    if(type == guiElement::TEXTBOX){
+        if(!setTextFromTag(elementOpenTag, &ep)){
+            return nullptr;
+        }
+    }
 
     int lineVec2Index = 0;
     int boxVec2Index = 0;
@@ -447,7 +459,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX || type == guiElement::BUTTON) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON || type == guiElement::TEXTBOX) {
                 if (boxVec2Index == 0) {
                     ep.point1 = v;
                     ep.point1Type = TagType::Vec;
@@ -495,7 +507,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX || type == guiElement::BUTTON) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON || type == guiElement::TEXTBOX) {
                 if (boxVec2Index == 0) {
                     ep.point1 = v;
                     ep.point1Type = TagType::IVec;

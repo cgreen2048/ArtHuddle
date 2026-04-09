@@ -22,7 +22,7 @@ void spawnEvents();
 int main() {
     std::cout << "Milestone 006 Demo\n";
 
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         return 1;
     }

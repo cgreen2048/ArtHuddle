@@ -53,6 +53,14 @@ GuiElement* factory(guiElement e, ElementParameters ep) {
 				return nullptr;
 			}
 		}
+		case guiElement::TEXTBOX: {
+			try {
+				return new TextBox(ep);
+			}
+			catch (...) {
+				return nullptr;
+			}
+		}
 	}
 	return nullptr;
 }
