@@ -37,15 +37,15 @@ int main() {
     }
     std::cout << '\n';
 
-    bool eventSuccess = eventTests();
-    if (eventSuccess) {
+    bool eventFailure = eventTests();
+    if (eventFailure) {
         failure = 1;
     }
 
     std::cout << '\n';
 
-    bool buttonSuccess = buttonTests();
-    if (buttonSuccess) {
+    bool buttonFailure = buttonTests();
+    if (buttonFailure) {
         failure = 1;
     }
 
