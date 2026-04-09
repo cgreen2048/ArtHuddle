@@ -28,6 +28,8 @@ class GuiElement {
 
 		virtual bool resolveEvent(Event* e);
 
+		virtual GuiElement* clone() const;
+
 		void setName(const std::string& n);
 
 		ivec2 getParentStart();

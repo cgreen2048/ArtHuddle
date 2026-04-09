@@ -5,6 +5,7 @@
 #include "Point.hpp"
 #include "Line.hpp"
 #include "Event.hpp"
+#include "ClickEvent.hpp"
 
 class Freehand : public GuiElement {
     private:

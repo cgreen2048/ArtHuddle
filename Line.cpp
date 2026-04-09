@@ -60,6 +60,11 @@ void Line::draw(Screen *screen) {
     screen->drawBresenhamLine(this->start, this->end, this->color, this->getParentStart(), this->getParentEnd());
 }
 
+GuiElement* Line::clone() const {
+    return new Line(*this);
+}
+
+
 void Line::setStart(const ivec2& v, TagType t){
     this->start = v;
     this->startType = t;

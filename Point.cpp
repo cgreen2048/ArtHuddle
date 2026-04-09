@@ -53,6 +53,10 @@ void Point::draw(Screen *screen) {
     screen->colorOnePixel(this->coords, this->color, this->getParentStart(), this->getParentEnd());
 }
 
+GuiElement* Point::clone() const {
+    return new Point(*this);
+}
+
 void Point::setCoords(const ivec2& v, TagType t){
     this->coords = v;
     this->coordsType = t;

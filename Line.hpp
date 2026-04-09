@@ -22,6 +22,7 @@ class Line : public GuiElement {
 		bool operator!=(Line rhs);
 		~Line();
 		void draw(Screen *screen);
+		GuiElement* clone() const;
 		void setStart(const ivec2& v, TagType t);
 		void setEnd(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);
