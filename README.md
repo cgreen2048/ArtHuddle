@@ -2,6 +2,10 @@
 
 # Quick Links to Classes
 - [Event Class](#event)
+- [MouseEvent Class](#mouseevent)
+- [MouseDownEvent Class](#mousedownevent)
+- [MouseMotionEvent Class](#mousemotionevent)
+- [MouseUpEventClass](#mouseupevent)
 - [ClickEvent Class](#clickevent)
 - [ShowEvent Class](#showevent)
 - [SoundEvent Class](#soundevent)
@@ -12,9 +16,10 @@
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
 - [Layout Class](#layout)
-- [Ellipse Classs](#ellipse)
-- [Triangle Class](#triangle)
+- [Freehand Class](#freehand)
 - [Arrow Class](#arrow)
+- [Ellipse Class](#ellipse)
+- [Triangle Class](#triangle)
 - [Box Class](#box)
 - [Button Class](#button)
 - [Line Class](#line)
@@ -45,6 +50,10 @@ Similar to `GuiElement` every event type implements this class, currently suppor
 - `ClickEvent`
 - `ShowEvent`
 - `SoundEvent`
+- `MouseEvent`
+- `MouseDownEvent`
+- `MouseMotionEvent`
+- `MouseUpEvent`
 
 ## Data Members
 
@@ -95,6 +104,88 @@ Returns the x coordinate of the click
 
 ### `int getMouseY()`
 Returns the y coordinate of the click
+
+# MouseEvent
+
+## Description
+Base class to represent all events that occur with the mouse. Only contains the coordinates
+where the mouse event occurred. It implements `Event` class
+
+---
+
+## Data Members
+
+### `ivec2 coords`
+The coordinates of the mouse event
+
+---
+
+## Methods
+
+### `MouseEvent(EventType type, ivec2 coords)`
+Calls the constructor of `Event` with `type` and sets `this->coords` = `coords`
+
+---
+
+### `ivec2 getCoords() const`
+Returns coords for this `MouseEvent`
+
+---
+
+# MouseDownEvent
+
+## Description
+Represents a mouse click down, corresponding to `SDL_EVENT_MOUSE_BUTTON_DOWN`. 
+It implements `MouseEvent`
+
+---
+
+## Methods
+
+### `MouseDownEvent(ivec2 coords)`
+Calls `MouseEvent` constructor with `EventType::MOUSE_DOWN` and `coords`
+
+---
+
+# MouseMotionEvent
+
+## Description
+Represents the event of the mouse moving, corresponding to `SDL_EVENT_MOUSE_MOTION`. 
+It implements `MouseEvent`
+
+---
+
+## Data Members
+
+### `bool mouseDown`
+Boolean to check if the mouse button is being held down while moving
+
+## Methods
+
+### `MouseMotionEvent(ivec2 coords, bool mouseDown)`
+Calls `MouseEvent` constructor with `EventType::MOUSE_MOTION` and `coords`, then sets `this->mouseDown` = `mouseDown`
+
+---
+
+### `bool isMouseDown const`
+Returns `mouseDown` to check if the mouse is being held down
+
+---
+
+# MouseUpEvent
+
+## Description
+Represents a mouse click release, corresponding to `SDL_EVENT_MOUSE_BUTTON_UP`. 
+It implements `MouseEvent`
+
+---
+
+## Methods
+
+### `MouseUpEvent(ivec2 coords)`
+Calls `MouseEvent` constructor with `EventType::MOUSE_UP` and `coords`
+
+---
 
 # ShowEvent
 
@@ -563,6 +654,21 @@ The length of the radius of the ellipse along the y-axis
 The type of mathematical vector that `center` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
+### `std::vector<ivec2> points`
+Stores points to be drawn, mainly in `Freehand` elements
+
+### `bool hasFirstPoint`
+Boolean for if a `Freehand` element has its first point to draw
+
+### `ivec2 lastDrawnPoint`
+Stores the last drawn point for a `Freehand` element
+
+### `bool finished`
+Boolean to check if an element is finished being created/drawn, primarily for `Freehand`
+
+### `bool isFreehandShape`
+Boolean to check if `Freehand` element is in Shape or Line mode
+
 ---
 
 ## UML Diagram
@@ -698,8 +804,8 @@ Returns the `name` data for the current `GuiElement` object
 
 ---
 
-### `virtual bool isValid(ElementParameters ep)`
-A pure virtual function. Implemented by inherited classes to ensure the data passed using `ep` is valid and can be used to create a new object
+### `virtual bool validateAndNormalize(ElementParameters& ep)`
+A pure virtual function. Implemented by inherited classes to ensure the data passed using `ep` is valid and to normalize any default values in the passed-in object.
 
 ---
 
@@ -776,11 +882,11 @@ The default constructor, which only initializes `active` to false for other data
 
 ### `Layout(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
-- Calls `isValid` on `ep`
-  - Throws an exception if `isValid` returns `false`
+- Calls `validateAndNormalize` on `ep`
+  - Throws an exception if `validateAndNormalize` returns `false`
 - Checks if `ep.parentStart` or `ep.parentEnd` has been set
   - If so, sets the corresponding attribute in the new `Layout` object and sets `hasParentStart` or `hasParentEnd` to true
-- Sets the `start`, `end`, `active`, and `naem` attributes based on the corresponding data from `ep`
+- Sets the `start`, `end`, `active`, and `name` attributes based on the corresponding data from `ep`
 - Calls `addElement` on all elements in `ep.elements` to add them to this object's child vector
 
 ---
@@ -883,7 +989,7 @@ Returns the absolute ending **y** position of this `Layout`
 
 ---
 
-### `bool isValid(ElementParameters ep)`
+### `bool validateAndNormalize(ElementParameters& ep)`
 Checks whether `ep.layoutStart` or `ep.layoutEnd` have been set
 - Returns false if `x` or `y` in `ep.layoutStart` or `ep.layoutEnd` have not been set
 
@@ -893,6 +999,100 @@ Checks whether `ep.layoutStart` or `ep.layoutEnd` have been set
 ![UML Diagram](images/Milestone005_UML.png)
 
 ---
+
+# Freehand
+
+## Description
+`Freehand` is a class that allows for completely freehand drawing in two different modes: Line mode and Shape Mode
+- Line Mode: While the user holds the mouse down, draws a freehand line following their mouse movement
+- Shape Mode: Similar to line mode, except if the user releases the mouse nearby their starting point, `Freehand` will connect the first and last points to make a connected shape and flood fill the inside of the shape (if the user releases their mouse before being close enough to the starting point, their previosly drawn incomplete shape is deleted)
+`Freehand` inherits from the `GuiElement` class
+
+## Data Members
+
+### `std::vector<ivec2> points;
+Stores points part of the freehand drawing. 
+By default, this will only store points that are at least 
+`PIXEL_DRAW_DIST_THRESHOLD` (default = 3) pixels away from each other to increase performance
+
+### `bool hasFirstPoint`
+Boolean to check if the freehand drawing has been started. 
+Used in `MouseDownEvent` conditionals in `Freehand::resolveEvent`
+
+### `ivec2 lastDrawnPoint`
+Stores the last drawn point in the freehand drawing. Used to draw a line between the 
+`lastDrawnPoint` and the `current` point during `Freehand::resolveEvent`
+
+### `bool finished`
+Boolean to check if the user released their mouse, indicating that drawing is finished.
+Used in `Freehand::resolveEvent`
+
+### `bool isFreehandShape`
+Boolean to check if we're in Line mode or Shape mode
+
+### `ivec3 color`
+The color for freehand drawing
+
+## Methods
+
+### `Freehand()`
+Default constructor. Sets points to an empty vector, lastDrawnPoint to (0,0), and color
+ to black
+
+### `Freehand(ivec3 color, bool isFreehandShape = false)`
+Constructor allowing user to specify color and if in Line or Shape mode, defaulting to Line mode
+
+### `Freehand(const Freehand& cp)`
+Default copy constructor. Sets member data of `this` to member data of `cp`
+
+### `Freehand(ElementParameters ep)`
+Calls `validateAndNormalize(ep)` to check if the given parameters are valid for construction, then constructors a new `Freehand` element based on those parameters
+
+### `void draw(Screen *screen)`
+Draws the freehand points to the `Screen` by calling `drawBresenhamLine` directly 
+using each sequential pair of points in `points`
+- If no points, draw nothing
+- If only one point exists, simply draw one pixel
+This method calls `colorOnePixel` and `drawBresenhamLine` directly 
+as `Freehand` stores `ivec2`s, not `Point/Line` for speed
+
+After drawing all points, if the user has released their mouse and in freehand shape mode, compute the centroid of all points in `points`, then call `Freehand::floodFill` 
+starting from the centroid and flood filling to the border of the shape.
+
+### `void floodFill(ivec2 start, Screen* screen) 
+Flood fills a freehand shape from the starting point all the way to the borders
+Repeatedly pops from the stack, colors pixels that are not the correct color of the border, 
+and pushes all adjacent pixels to the stack to color until the stack is empty
+
+### `GuiElement* clone()`
+Returns a clone of the `Freehand` element
+
+### `bool Freehand::resolveEvent(Event *e)`
+This method is the main driver for drawing the `Freehand` element to the screen properly.
+If the `Freehand` is finished drawing, continue to proper `ClickEvent` handling for selecting the `Freehand` element.
+Else, continue into the conditional block to handle continuing the current freehand drawing
+- If the event received is a mouse down event, add the current point to `points` as the first point, starting the freehand drawing
+- If the event received is a mouse motion event, add the current point to `points` if it's not less than `PIXEL_DRAW_DIST_THRESHOLD` pixels away from the previously drawn pixel
+- If the event recieved is a mouse up event, add the final point to `points` and set `finished` to true to finish drawing. If in Shape mode and the final point is less than `SHAPE_COMPLETION_DIST_THRESHOLD` pixels away from the first point, add the first point to `points` again to complete the shape
+
+### `void writeXml`
+Writes an opening `<freehand>` tag, then each point in `points` as an `ivec2`child via `writeIVec2`, finally closing with a `</freehand>` tag
+
+Ex.
+```
+<freehand>
+  <ivec2>...</ivec2>
+  <ivec2>...</ivec2>
+  ...
+</freehand>
+```
+
+### `bool validateAndNormalize(ElementParameters& ep)`
+Validates the `Freehand` element parameters to check if element can be constructed normally.
+- Returns false if no points available
+- Sets lastDrawnPoint = the last point in `points`
+- Ensures that `finished` and `hasLastPoint` are both true for complete state
+- Sets `color` to default (125,125,125) if not included
 
 # Ellipse
 
@@ -938,7 +1138,7 @@ Assignment operator overload that uses attributes from `rhs` to create a new `El
 
 ### `Ellipse(ElementParameters ep)`
 Constructor taking in an `ElementParameters` struct to check if the attempted construction
-has the required attributes for `Ellipse` via `isValid(ep)`
+has the required attributes for `Ellipse` via `validateAndNormalize(ep)`
 
 ### `~Ellipse()`
 Default destructor
@@ -956,7 +1156,7 @@ Writes an `Ellipse` object to XML using standard XML formatting in the following
 ### `bool resolveEvent(Event *e)`
 Attempts to resolve `ClickEvent`s to select the `Ellipse` object, handling the event if the click is within the `Ellipse`'s bounds, and returning true if so.
 
-### `bool isValid(ElementParameters ep)`
+### `bool validateAndNormalize(ElementParameters& ep)`
 Checks if `ep` has the required attributes needed to construct an `Ellipse` object:
 - `ivec2 center`
 - `int radiusX`
@@ -1016,8 +1216,8 @@ The parameterized constructor. Assigns `pointA` to `a`, `pointB` to `b`, `pointC
 
 ### `Triangle(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
-- Calls `isValid` on `ep`
-  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Calls `validateAndNormalize` on `ep`
+  - Throws an exception if `validateAndNormalize` returns `false` to prevent the object from being created
 - Sets the `a`, `b`, `c`, `color`, `aType`, `bType`, `cType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
 
 ---
@@ -1106,7 +1306,7 @@ This allows the triangle to preserve whether the original data used floating-poi
 
 ---
 
-### `bool isValid(ElementParameters ep)`
+### `bool validateAndNormalize(ElementParameters ep)`
 Checks whether `ep.point1`, `ep.point2`, and `ep.point3` have been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1`, `ep.point2`, or `ep.point3` have not been set
 - Sets any missing color value to `125`
@@ -1196,8 +1396,8 @@ Parameterized constructor. Sets `this->min` to `min`, `this->max` to `max`, `thi
 
 ### `Arrow(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
-- Calls `isValid` on `ep`
-  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Calls `validateAndNormalize` on `ep`
+  - Throws an exception if `validateAndNormalize` returns `false` to prevent the object from being created
 - Sets the `min`, `max`, `pointA`, `pointB`, `pointC`, `color`, `minType`, `maxType`, `pointAType`, `pointBType`, `pointCType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
 
 ---
@@ -1264,7 +1464,7 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ---
 
-### `bool isValid(ElementParameters ep)`
+### `bool validateAndNormalize(ElementParameters ep)`
 Checks whether the passed `ElementParameters` struct contains valid data to create an `Arrow` object
 - Checks if all points have been set
   - Returns false if not
@@ -1319,8 +1519,8 @@ The parameterized constructor. Assigns `min`, `max`, and `color` to appropriate 
 
 ### `Box(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
-- Calls `isValid` on `ep`
-  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Calls `validateAndNormalize` on `ep`
+  - Throws an exception if `validateAndNormalize` returns `false` to prevent the object from being created
 - Sets the `min`, `max`, `color`, `minType`, `maxType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
 
 ---
@@ -1391,7 +1591,7 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ---
 
-### `bool isValid(ElementParameters ep)`
+### `bool validateAndNormalize(ElementParameters& ep)`
 Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` or `ep.point2` have not been set
 - Sets any missing color value to `125`
@@ -1428,8 +1628,8 @@ Copy assignment operator. Takes attributes from `cp` to pass into `Box` default 
 
 ### `Button(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
-- Calls `isValid` on `ep`
-  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Calls `validateAndNormalize` on `ep`
+  - Throws an exception if `validateAndNormalize` returns `false` to prevent the object from being created
 - Sets the `text`, `callbackName`, and `callback` attributes based on the corresponding data in `ep`
 - Passes `ep` to the `Box` constructor to set the geometry and color attributes for this `Button`
 
@@ -1442,8 +1642,8 @@ Overrides `GuiElement::resolveEvent` to handle click events. If the event is a c
 ### `void writeXml(std::ostream& out) const`
 Overrides `Box::writeXml` in almost identical formatting, except including the `callbackName` and `text` as parameters in the `<button>` tag for XML writing
 
-### `bool isValid(ElementParameters ep)`
-Uses the same signature as `Box::isValid` but also checks that `ep.callbackName` has been set to valid values for a button
+### `bool validateAndNormalize(ElementParameters& ep)`
+Uses the same signature as `Box::validateAndNormalize` but also checks that `ep.callbackName` has been set to valid values for a button
 - Returns false if `ep.callbackName` is empty 
 - Allows empty lambda function for `callback` as a button with no functionality may still be desired
 
@@ -1493,8 +1693,8 @@ The parameterized constructor. Assigns `start`, `end`, and `color` to appropriat
 
 ### `Line(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
-- Calls `isValid` on `ep`
-  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Calls `validateAndNormalize` on `ep`
+  - Throws an exception if `validateAndNormalize` returns `false` to prevent the object from being created
 - Sets the `start`, `end`, `color`, `startType`, `endType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
 
 ---
@@ -1565,7 +1765,7 @@ This allows the line to maintain the same vector type used in the original layou
 
 ---
 
-### `bool isValid(ElementParameters ep)`
+### `bool validateAndNormalize(ElementParameters& ep)`
 Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` or `ep.point2` have not been set
 - Sets any missing color value to `125`
@@ -1607,8 +1807,8 @@ The parameterized constructor. Assigns `coords` and `color` to appropriate attri
 
 ### `Point(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
-- Calls `isValid` on `ep`
-  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Calls `validateAndNormalize` on `ep`
+  - Throws an exception if `validateAndNormalize` returns `false` to prevent the object from being created
 - Sets the `coords`, `color`, `coordsType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
 
 ---
@@ -1671,7 +1871,7 @@ This ensures the XML output preserves whether integer or floating-point vector t
 
 ---
 
-### `bool isValid(ElementParameters ep)`
+### `bool validateAndNormalize(ElementParameters ep)`
 Checks whether `ep.point1` has been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` has not been set
 - Sets any missing color value to `125`
@@ -1703,6 +1903,7 @@ This system enables **event-driven programming**, where events are created, queu
 - Route events to the appropriate subsystem:
   - GUI system (layouts)
   - Audio system (`SoundPlayer`)
+  - Freehand Drawing Instance Control (`Freehand`)
 - Maintain a single global instance (`getInstance`)
 
 ---
@@ -1710,18 +1911,17 @@ This system enables **event-driven programming**, where events are created, queu
 ## Data Members
 
 ### `SoundPlayer* soundPlayer`
-
-- Handles all audio-related events
-- Responsible for:
+Handles all audio-related events
   - Playing sounds
   - Stopping sounds
   - Managing playback state
 
 ### `std::queue<std::unique_ptr<Event>> eventQueue`
+Stores events in **FIFO (First-In, First-Out)** order, using `std::unique_ptr<Event>` to enforce **exclusive ownership** and safe memory management (RAII)
 
-- Stores events in **FIFO (First-In, First-Out)** order  
-- Uses `std::unique_ptr<Event>` to enforce **exclusive ownership**
-- Ensures safe memory management (RAII)
+### `GuiElement* targetedElement`
+Used primarily for `Freehand` to call `targetedElement->resolveEvent()` directly to make sure that the specified event is resolved by that element rather than propogating through
+the `GuiElement` tree and accidentally being resolved by another element
 
 ---
 
@@ -1779,6 +1979,9 @@ Returns:
 
 Processes all queued events and propagates them through the GUI.
 
+If we have a `targetedElement`, `processEvents` branches into special conditional blocks on certain events to handle such edge cases within `targetedElement` as opposed to propogating though the tree structure
+- Ex. if `targetedElement` is a `Freehand`, we want a `MouseDownEvent` to start freehand drawing, `MouseMotionEvent` to continue such drawing on the same `Freehand`, and `MouseUpEvent` to end the specific Freehand, so we call `freehand->resolveEvent()` directly
+
 ---
 
 ### `void setSoundPlayer(SoundPlayer* soundPlayer)`
@@ -1786,8 +1989,13 @@ Sets the `soundPlayer` attribute with the passed pointer
 
 ---
 
-`SoundPlayer* getSoundPlayer()`
+### `SoundPlayer* getSoundPlayer()`
 Returns the stored pointer to `SoundPlayer`
+
+---
+
+### `GuiElement* getTargetedElement()`
+Returns stored pointer to `targetedElement`
 
 ---
 
@@ -1797,9 +2005,6 @@ Returns the stored pointer to `SoundPlayer`
   - Event starts at root `Layout`
   - Travels through child elements
   - Stops when consumed
-
-
-
 
 ---
 

@@ -26,7 +26,7 @@ class Button : public Box {
         GuiElement* clone() const;
         bool resolveEvent(Event* event);
         void writeXml(std::ostream& out, int depth) const;
-        bool isValid(ElementParameters ep);
+        bool validateAndNormalize(ElementParameters& ep);
         const std::string& getText() const;
         const std::string& getCallbackName() const;
 };

@@ -15,7 +15,7 @@ Box::Box(ivec2 min, ivec2 max, ivec3 color) {
 }
 
 Box::Box(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->min = ep.min;
@@ -110,7 +110,7 @@ void Box::writeXml(std::ostream& out, int depth) const {
     out << pad << "</box>\n";
 }
 
-bool Box::isValid(ElementParameters ep) {
+bool Box::validateAndNormalize(ElementParameters& ep) {
     if ((ep.min.x == std::numeric_limits<int>::lowest()) || (ep.min.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

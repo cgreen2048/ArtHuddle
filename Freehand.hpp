@@ -29,12 +29,15 @@ class Freehand : public GuiElement {
         Freehand();
         Freehand(ivec3 color, bool isFreehandShape = false);
         Freehand(const Freehand& cp);
+        Freehand(ElementParameters ep);
         void draw(Screen *screen);
         void floodFill(ivec2 start, Screen* screen);
         GuiElement* clone() const;
         void writeXml(std::ostream& out, int depth) const;
         bool resolveEvent(Event *e);
-        bool isValid(ElementParameters ep);
+        bool validateAndNormalize(ElementParameters& ep);
+        bool isFinished() const;
+        bool isFreehandShapeMode() const;
 };
 
 #endif

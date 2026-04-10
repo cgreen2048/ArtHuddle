@@ -39,15 +39,25 @@ struct ElementParameters {
     TagType pointBType = TagType::Vec;
     TagType pointCType = TagType::Vec;
     TagType colorType = TagType::Vec;
+    
     vec2 layoutStart = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     vec2 layoutEnd = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
+    
     std::function<void()> callback = []() {};
     std::string callbackName = "";
     std::string text = "";
+
     ivec2 center = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     int radiusX = std::numeric_limits<int>::lowest();
     int radiusY = std::numeric_limits<int>::lowest();
     TagType centerType = TagType::Vec;
+
+    // Freehand
+    std::vector<ivec2> points{};
+    bool hasFirstPoint = false;
+    ivec2 lastDrawnPoint = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    bool finished = false;
+    bool isFreehandShape = false;
 };
 
 #endif

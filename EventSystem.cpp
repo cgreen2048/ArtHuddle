@@ -51,12 +51,19 @@ void EventSystem::processEvents(Layout *root){
                     || e->getType() == EventType::MOUSE_MOTION
                     ||e->getType() == EventType::MOUSE_UP)
                 ) {
+                Freehand *fr = dynamic_cast<Freehand*>(targetedElement);
+                if (fr != nullptr) {
+                    bool success = fr->resolveEvent(e.get());
 
-                targetedElement->resolveEvent(e.get());
+                    if (!success && fr->isFinishedFreehandDrawing()) {
+                        // ADD ROOT DELETE FUNCTON TO DELETE INCOMPLETE FREEHAND
+                    }
 
-                if (e->getType() == EventType::MOUSE_UP) {
-                    targetedElement = nullptr;
+                    if (e->getType() == EventType::MOUSE_UP) {
+                        targetedElement = nullptr;
+                    }
                 }
+
             }
             else {
                 root->resolveEvent(e.get());

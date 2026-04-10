@@ -10,6 +10,22 @@ Freehand::Freehand(const Freehand& cp) : Freehand() {
     this->lastDrawnPoint = cp.lastDrawnPoint;
     this->finished = cp.finished;
     this->points = cp.points;
+    this->color = cp.color;
+    this->isFreehandShape = cp.isFreehandShape;
+    this->name = cp.name;
+}
+
+Freehand::Freehand(ElementParameters ep) {
+    if (!validateAndNormalize(ep)) {
+        throw -1;
+    }
+    this->points = ep.points;
+    this->hasFirstPoint = ep.hasFirstPoint;
+    this->lastDrawnPoint = ep.lastDrawnPoint;
+    this->finished = ep.finished;
+    this->color = ep.color;
+    this->isFreehandShape = ep.isFreehandShape;
+    this->name = ep.name;
 }
 
 void Freehand::draw(Screen *screen) {
@@ -73,7 +89,7 @@ GuiElement* Freehand::clone() const {
 }
 
 bool Freehand::resolveEvent(Event *e) {
-    if (finished) {
+    if (this->finished) {
         if (e->getType() == EventType::CLICK) {
             ClickEvent* click = static_cast<ClickEvent*>(e);
             // run selection logic
@@ -135,7 +151,7 @@ bool Freehand::resolveEvent(Event *e) {
                 if (dx * dx + dy * dy > SHAPE_COMPLETION_DIST_THRESHOLD * SHAPE_COMPLETION_DIST_THRESHOLD) {  
                     this->points.clear();
                     lastDrawnPoint = current;
-                    return true;
+                    return false;
                 }
 
                 this->points.push_back(points[0]);
@@ -161,6 +177,40 @@ void Freehand::writeXml(std::ostream& out, int depth) const {
     out << pad << "</freehand>\n";
 }
 
-bool Freehand::isValid(ElementParameters ep) {
+bool Freehand::validateAndNormalize(ElementParameters& ep) {
+    if (ep.points.empty()) {
+        return false;
+    }
+
+    // Make sure the last drawn point is the last point in points
+    ep.lastDrawnPoint = ep.points.back();
+
+    // Prevent created Freehand elements from being in incomplete state
+    if (!ep.finished) {
+        ep.finished = true;
+    }
+
+    if (!ep.hasFirstPoint) {
+        ep.hasFirstPoint = true;
+    }
+
+    if (ep.color.x == std::numeric_limits<int>::lowest()) {
+        ep.color.x = 125;
+    }
+    if (ep.color.y == std::numeric_limits<int>::lowest()) {
+        ep.color.y = 125;
+    }
+    if (ep.color.z == std::numeric_limits<int>::lowest()) {
+        ep.color.z = 125;
+    }
+
     return true;
+}
+
+bool Freehand::isFinished() const {
+    return finished;
+}
+
+bool Freehand::isFreehandShapeMode() const {
+    return isFreehandShape;
 }

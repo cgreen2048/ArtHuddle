@@ -24,7 +24,7 @@ Ellipse& Ellipse::operator=(const Ellipse& rhs) {
 }
 
 Ellipse::Ellipse(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
 
@@ -79,7 +79,7 @@ bool Ellipse::resolveEvent(Event* e) {
     return false;
 }
 
-bool Ellipse::isValid(ElementParameters ep) {
+bool Ellipse::validateAndNormalize(ElementParameters& ep) {
     if ((ep.center.x == std::numeric_limits<int>::lowest()) || (ep.center.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

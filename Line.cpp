@@ -10,7 +10,7 @@ Line::Line(ivec2 start, ivec2 end, ivec3 color) {
 }
 
 Line::Line(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->start = ep.start;
@@ -106,7 +106,7 @@ void Line::writeXml(std::ostream& out, int depth) const {
     out << pad << "</line>\n";
 }
 
-bool Line::isValid(ElementParameters ep) {
+bool Line::validateAndNormalize(ElementParameters& ep) {
     if ((ep.start.x == std::numeric_limits<int>::lowest()) || (ep.start.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

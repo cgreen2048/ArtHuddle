@@ -11,7 +11,7 @@ Triangle::Triangle(ivec2 a, ivec2 b, ivec2 c, ivec3 color) {
 }
 
 Triangle::Triangle(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->a = ep.pointA;
@@ -136,7 +136,7 @@ ivec2 Triangle::getC() {
     return this->c;
 }
 
-bool Triangle::isValid(ElementParameters ep) {
+bool Triangle::validateAndNormalize(ElementParameters& ep) {
     if ((ep.pointA.x == std::numeric_limits<int>::lowest()) || (ep.pointA.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

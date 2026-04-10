@@ -7,7 +7,7 @@ Button::Button() : Box(), onClick([](){}), callbackName(""), text("") {}
 Button::Button(const Button& cp) : Box(cp.min, cp.max, cp.color), onClick(cp.onClick), callbackName(cp.callbackName), text(cp.text) {}
 
 Button::Button(ElementParameters ep) : Box(ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
 
@@ -59,7 +59,7 @@ void Button::writeXml(std::ostream& out, int depth) const {
     out << pad << "</button>\n";
 }
 
-bool Button::isValid(ElementParameters ep) {
+bool Button::validateAndNormalize(ElementParameters& ep) {
     if ((ep.min.x == std::numeric_limits<int>::lowest()) || (ep.min.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

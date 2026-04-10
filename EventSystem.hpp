@@ -5,6 +5,7 @@
 #include <queue>
 #include <memory>
 #include "Layout.hpp"
+#include "Freehand.hpp"
 #include "Sound.hpp"
 #include "SoundState.hpp"
 #include "SoundPlayer.hpp"

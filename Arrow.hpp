@@ -30,7 +30,7 @@ class Arrow : public GuiElement {
         void draw(Screen* screen);
         GuiElement* clone() const;
         void writeXml(std::ostream& out, int depth) const;
-        bool isValid(ElementParameters ep);
+        bool validateAndNormalize(ElementParameters& ep);
 };
 
 #endif
