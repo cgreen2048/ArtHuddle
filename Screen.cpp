@@ -127,6 +127,7 @@ void Screen::drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color, ivec2 parent
     }     
 }
 
+
 bool Screen::pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 pointP) {
     ivec2 ap = pointP - pointA;
     ivec2 ab = pointB - pointA;
@@ -169,6 +170,8 @@ void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors
         }
     }
 }
+
+
 
 void Screen::clear(ivec3 color) {
     this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), color, ivec2(0, 0), ivec2(this->width, this->height));

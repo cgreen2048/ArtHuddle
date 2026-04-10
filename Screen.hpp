@@ -5,15 +5,19 @@
 #include <algorithm>
 #include <SDL3/SDL.h>
 #include <cstring>
+#include <string>
 #include "vec2.hpp"
 #include "vec3.hpp"
 #define MIN_COLOR_VALUE 0
 #define MAX_COLOR_VALUE 255
+static constexpr int SDL_DEBUG_FONT_WIDTH = 8;
+static constexpr int SDL_DEBUG_FONT_HEIGHT = 8;
 
 class Screen {
     private:
         uint32_t width, height;
         SDL_Surface* surface = nullptr;
+        SDL_Renderer* renderer = nullptr;
         
     public:
         Screen();
@@ -81,6 +85,45 @@ class Screen {
                 }
             }
         }
+        
+        template<typename T1, typename T2>
+        void drawText(Tvec2<T1> pos, const std::string& text, Tvec3<T2> textColors) {
+            if (!renderer || text.empty()) 
+            {
+                return;
+            }
+
+            SDL_Color sdlColor = {
+                static_cast<Uint8>(std::clamp(static_cast<int>(textColors.x), MIN_COLOR_VALUE, MAX_COLOR_VALUE)),
+                static_cast<Uint8>(std::clamp(static_cast<int>(textColors.y), MIN_COLOR_VALUE, MAX_COLOR_VALUE)),
+                static_cast<Uint8>(std::clamp(static_cast<int>(textColors.z), MIN_COLOR_VALUE, MAX_COLOR_VALUE)),
+                255
+            };
+
+            SDL_SetRenderDrawColor(renderer, sdlColor.r, sdlColor.g, sdlColor.b, sdlColor.a);
+            SDL_RenderDebugText(renderer, static_cast<float>(pos.x), static_cast<float>(pos.y), text.c_str());
+        }
+
+
+        template<typename T1, typename T2>
+        void drawTextCentered(Tvec2<T1> min, Tvec2<T1> max, const std::string& text, Tvec3<T2> textColors) {
+            if (text.empty()) 
+            {
+                return;
+            }
+
+            int textWidth = static_cast<int>(text.size()) * SDL_DEBUG_FONT_WIDTH;
+            int textHeight = SDL_DEBUG_FONT_HEIGHT;
+
+            int boxWidth = max.x - min.x;
+            int boxHeight = max.y - min.y;
+
+            int x = min.x + (boxWidth - textWidth) / 2;
+            int y = min.y + (boxHeight - textHeight) / 2;
+
+            drawText(ivec2(x, y), text, textColors);
+        }
+
 };
 
 #endif

@@ -31,6 +31,37 @@ TextBox::TextBox(ElementParameters ep) : Box(ep) {
     this->textColor = ep.textColor;
 }
 
+void TextBox::draw(Screen *screen) {
+    // Draw the rectangle from Box
+    Box::draw(screen);
+
+    // Draw left-aligned text with small padding
+    ivec2 textPos{min.x + 5, min.y + 5};
+    screen->drawText(textPos, text, textColor);
+}
+
+void TextBox::setActive(bool value) { 
+    active = value; 
+}
+
+bool TextBox::isActive() const { 
+    return active; 
+}
+
+void TextBox::appendText(const std::string& s) {
+    text += s;
+}
+
+void TextBox::backspace() {
+    if (!text.empty()) {
+        text.pop_back();
+    }
+}
+
+bool TextBox::containsPoint(int x, int y) const {
+    return x >= min.x && x <= max.x && y >= min.y && y <= max.y;
+}
+
 
 // bool Button::resolveEvent(Event* event) {
 //     if (event->getType() == EventType::CLICK) {
