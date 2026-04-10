@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#incluee <string>
 #include "Screen.hpp"
 #include "GuiElement.hpp"
 #include "vec2.hpp"
@@ -44,6 +45,7 @@ class Layout : public GuiElement {
         bool isValid(ElementParameters ep);
         bool isInside(ivec2 coordinates);
         void clearElements();
+        void deleteElement(std::string elementName);
 };
 
 #endif

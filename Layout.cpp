@@ -205,3 +205,20 @@ bool Layout::isInside(ivec2 coordinates) {
 void Layout::clearElements() {
     this->elements.clear();
 }
+
+void Layout::deleteElement(const std::string& name) {
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        if ((*it)->getName() == name) {
+            EventSystem& eventSystem = EventSystem::getInstance();
+            GuiElement* e = eventSystem.getTargetedElement();
+
+            if (e != nullptr && e->getName() == name) {
+                eventSystem.setTargetedElement(nullptr);
+            }
+
+            delete *it;
+            elements.erase(it);
+            return;
+        }
+    }
+}
