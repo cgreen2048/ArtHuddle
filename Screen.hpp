@@ -30,6 +30,7 @@ class Screen {
         void drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd);
         void drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, ivec2 parentStart, ivec2 parentEnd);
         void drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd);
+        ivec3 getPixelColor(ivec2 coords) const;
         void clear(ivec3 color);
 
         SDL_Surface* getSurface();

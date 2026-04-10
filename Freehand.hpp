@@ -12,8 +12,10 @@
 #include "ElementParameters.hpp"
 #include "XmlWriteHelpers.hpp"
 #include <limits>
+#include <stack>
 
-#define PIXEL_DISTANCE_THRESHOLD 3
+#define PIXEL_DRAW_DIST_THRESHOLD 3
+#define SHAPE_COMPLETION_DIST_THRESHOLD 10
 
 class Freehand : public GuiElement {
     private:
@@ -21,12 +23,14 @@ class Freehand : public GuiElement {
         bool hasFirstPoint = false;
         ivec2 lastDrawnPoint; 
         bool finished = false;
+        bool isFreehandShape = false;
         ivec3 color;
     public:
         Freehand();
-        Freehand(ivec3 color);
+        Freehand(ivec3 color, bool isFreehandShape = false);
         Freehand(const Freehand& cp);
         void draw(Screen *screen);
+        void floodFill(ivec2 start, Screen* screen);
         GuiElement* clone() const;
         void writeXml(std::ostream& out, int depth) const;
         bool resolveEvent(Event *e);

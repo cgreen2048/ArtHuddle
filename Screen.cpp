@@ -245,6 +245,17 @@ void Screen::drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 p
     this->drawTriangle(pointA, pointB, pointC, colors, parentStart, parentEnd);
 }
 
+ivec3 Screen::getPixelColor(ivec2 coords) const {
+    if (coords.x < 0 || coords.y < 0 || coords.x >= surface->w || coords.y >= surface->h) {
+        return ivec3{0,0,0};
+    }
+
+    uint8_t* base = static_cast<uint8_t*>(surface->pixels);
+    uint8_t* pixel = base + coords.y * surface->pitch + coords.x * 4;
+
+    return ivec3{pixel[0], pixel[1], pixel[2]};
+}
+
 void Screen::clear(ivec3 color) {
     this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), color, ivec2(0, 0), ivec2(this->width, this->height));
 }
