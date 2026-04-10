@@ -207,6 +207,17 @@ bool Freehand::validateAndNormalize(ElementParameters& ep) {
     return true;
 }
 
+bool Freehand::isInside(ivec2 coordinates) {
+    for (const ivec2& point : this->points) {
+        int dx = coordinates.x - point.x;
+        int dy = coordinates.y - point.y;
+        if (dx * dx + dy * dy <= PIXEL_DRAW_DIST_THRESHOLD * PIXEL_DRAW_DIST_THRESHOLD) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Freehand::isFinished() const {
     return finished;
 }

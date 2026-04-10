@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#incluee <string>
+#include <string>
 #include "Screen.hpp"
 #include "GuiElement.hpp"
 #include "vec2.hpp"
@@ -11,7 +11,6 @@
 #include "ClickEvent.hpp"
 #include "ShowEvent.hpp"
 #include "Selected.hpp"
-
 
 class Layout : public GuiElement {
     private:
@@ -45,7 +44,7 @@ class Layout : public GuiElement {
         int getAbsoluteEndY();
         bool isInside(ivec2 coordinates);
         void clearElements();
-        void deleteElement(std::string elementName);
+        void deleteElement(const std::string& elementName);
         bool validateAndNormalize(ElementParameters& ep);
 };
 

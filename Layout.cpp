@@ -213,12 +213,12 @@ void Layout::clearElements() {
 void Layout::deleteElement(const std::string& name) {
     for (auto it = elements.begin(); it != elements.end(); ++it) {
         if ((*it)->getName() == name) {
-            EventSystem& eventSystem = EventSystem::getInstance();
-            GuiElement* e = eventSystem.getTargetedElement();
+            // EventSystem& eventSystem = EventSystem::getInstance();
+            // GuiElement* e = eventSystem.getTargetedElement();
 
-            if (e != nullptr && e->getName() == name) {
-                eventSystem.setTargetedElement(nullptr);
-            }
+            // if (e != nullptr && e->getName() == name) {
+            //     eventSystem.setTargetedElement(nullptr);
+            // }
 
             delete *it;
             elements.erase(it);

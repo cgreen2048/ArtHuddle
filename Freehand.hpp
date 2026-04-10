@@ -36,6 +36,7 @@ class Freehand : public GuiElement {
         void writeXml(std::ostream& out, int depth) const;
         bool resolveEvent(Event *e);
         bool validateAndNormalize(ElementParameters& ep);
+        bool isInside(ivec2 coordinates);
         bool isFinished() const;
         bool isFreehandShapeMode() const;
 };

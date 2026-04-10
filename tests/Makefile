@@ -62,7 +62,7 @@ test:
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o freehandDemo
 
 
-studentMachine: testsSM freehandDemoSM milestone001SM milestone002SM screenDemoSM milestone003SM milestone004SM milestone005LayoutTestsSM milestone005SM layoutDemoSM milestone006SM milestone006EventSystemSM milestone006DemoSM ellipseDemoSM arrowDemoSM
+studentMachine: testsSM freehandDemoSM milestone001SM milestone002SM screenDemoSM milestone003SM milestone004SM milestone005LayoutTestsSM milestone005SM layoutDemoSM milestone006SM milestone006EventSystemSM milestone006DemoSM ellipseDemoSM arrowDemoSM selectedDemoSM
 
 testsSM:
 	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
@@ -121,7 +121,7 @@ freehandDemoSM:
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o freehandDemo
 
 selectedDemoSM:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp SelectedDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp SelectedDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o selectedDemo
 	
 

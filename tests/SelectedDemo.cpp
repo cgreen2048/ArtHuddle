@@ -170,6 +170,16 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
                     eventSystem.push(std::make_unique<ClickEvent>(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
                     break;
                 }
+                case SDL_EVENT_KEY_DOWN: {
+                    if (event.key.key == SDLK_BACKSPACE) {
+                        GuiElement *selected = selectedSingleton.getSelectedElement();
+                        if (selected != nullptr) {
+                            layout->deleteElement(selected->getName());
+                            selectedSingleton.setSelectedElement(nullptr);
+                        }
+                    }
+                }
+                
             }
         }
         screen->clear(ivec3(255,255,255));

@@ -55,7 +55,7 @@ void EventSystem::processEvents(Layout *root){
                 if (fr != nullptr) {
                     bool success = fr->resolveEvent(e.get());
 
-                    if (!success && fr->isFinishedFreehandDrawing()) {
+                    if (!success && fr->isFinished()) {
                         // ADD ROOT DELETE FUNCTON TO DELETE INCOMPLETE FREEHAND
                     }
 
