@@ -171,6 +171,23 @@ int compareSingleElement(GuiElement* actual, GuiElement* expected) {
         return 0;
     }
 
+    if (auto* aTextBox = dynamic_cast<TextBox*>(actual)) {
+        auto* eTextBox = dynamic_cast<TextBox*>(expected);
+        if (!eTextBox) {
+            return 1;
+        }
+        if (*aTextBox != *eTextBox) {
+            return 1;
+        }
+        if (aTextBox->getName() != eTextBox->getName()) {
+            return 1;
+        }
+        if (aTextBox->getText() != eTextBox->getText()) {
+            return 1;
+        }
+        return 0;
+    }
+
     return 1;
 }
 
@@ -284,6 +301,18 @@ int readTest1() {
     expectedRoot->addElement(t);
 
 
+    ElementParameters textBoxParam;
+    textBoxParam.point1 = ivec2(100, 100);
+    textBoxParam.point2 = ivec2(300, 150);
+    textBoxParam.color = ivec3(255, 255, 255);
+    textBoxParam.textColor = ivec3(0, 0, 0);
+    textBoxParam.point1Type = TagType::IVec;
+    textBoxParam.point2Type = TagType::IVec;
+    textBoxParam.colorType = TagType::IVec;
+    textBoxParam.textColorType = TagType::IVec;
+    GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
+    expectedRoot->addElement(tb);
+
 
     GUIFile gui;
     gui.readFile("testFiles/readTest1.xml");
@@ -355,6 +384,19 @@ int readTest2() {
     buttonParam.colorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     nested->addElement(btn);
+
+    ElementParameters textBoxParam;
+    textBoxParam.point1 = ivec2(100, 100);
+    textBoxParam.point2 = ivec2(300, 150);
+    textBoxParam.color = ivec3(255, 255, 255);
+    textBoxParam.textColor = ivec3(0, 0, 0);
+    textBoxParam.point1Type = TagType::IVec;
+    textBoxParam.point2Type = TagType::IVec;
+    textBoxParam.colorType = TagType::IVec;
+    textBoxParam.textColorType = TagType::IVec;
+    GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
+    nested->addElement(tb);
+
 
     expectedRoot->addElement(nested);
 
@@ -555,6 +597,18 @@ int writeTest1() {
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     root->addElement(btn);
 
+    ElementParameters textBoxParam;
+    textBoxParam.point1 = ivec2(100, 100);
+    textBoxParam.point2 = ivec2(300, 150);
+    textBoxParam.color = ivec3(255, 255, 255);
+    textBoxParam.textColor = ivec3(0, 0, 0);
+    textBoxParam.point1Type = TagType::IVec;
+    textBoxParam.point2Type = TagType::IVec;
+    textBoxParam.colorType = TagType::IVec;
+    textBoxParam.textColorType = TagType::IVec;
+    GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
+    root->addElement(tb);
+
     gui.setRootLayout(root);
 
     Layout* expectedRoot = new Layout();
@@ -594,6 +648,20 @@ int writeTest1() {
     expectedButtonParam.colorType = TagType::IVec;
     GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
     expectedRoot->addElement(expectedButton);
+
+    ElementParameters expectedtextBoxParam;
+    expectedtextBoxParam.point1 = ivec2(100, 100);
+    expectedtextBoxParam.point2 = ivec2(300, 150);
+    expectedtextBoxParam.color = ivec3(255, 255, 255);
+    expectedtextBoxParam.textColor = ivec3(0, 0, 0);
+    expectedtextBoxParam.point1Type = TagType::IVec;
+    expectedtextBoxParam.point2Type = TagType::IVec;
+    expectedtextBoxParam.colorType = TagType::IVec;
+    expectedtextBoxParam.textColorType = TagType::IVec;
+    GuiElement* etb = factory(guiElement::TEXTBOX, expectedtextBoxParam);
+    expectedRoot->addElement(etb);
+
+    
 
     gui.writeFile("testFiles/writeTest1.xml");
     gui.readFile("testFiles/writeTest1.xml");
@@ -700,6 +768,18 @@ int writeTest3() {
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     nested2->addElement(btn);
 
+    ElementParameters textBoxParam;
+    textBoxParam.point1 = ivec2(100, 100);
+    textBoxParam.point2 = ivec2(300, 150);
+    textBoxParam.color = ivec3(255, 255, 255);
+    textBoxParam.textColor = ivec3(0, 0, 0);
+    textBoxParam.point1Type = TagType::IVec;
+    textBoxParam.point2Type = TagType::IVec;
+    textBoxParam.colorType = TagType::IVec;
+    textBoxParam.textColorType = TagType::IVec;
+    GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
+    nested2->addElement(tb);
+
     nested1->addElement(nested2);
     root->addElement(nested1);
     gui.setRootLayout(root);
@@ -751,6 +831,18 @@ int writeTest3() {
     expectedButtonParam.colorType = TagType::IVec;
     GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
     expectedNested2->addElement(expectedButton);
+
+    ElementParameters expectedtextBoxParam;
+    expectedtextBoxParam.point1 = ivec2(100, 100);
+    expectedtextBoxParam.point2 = ivec2(300, 150);
+    expectedtextBoxParam.color = ivec3(255, 255, 255);
+    expectedtextBoxParam.textColor = ivec3(0, 0, 0);
+    expectedtextBoxParam.point1Type = TagType::IVec;
+    expectedtextBoxParam.point2Type = TagType::IVec;
+    expectedtextBoxParam.colorType = TagType::IVec;
+    expectedtextBoxParam.textColorType = TagType::IVec;
+    GuiElement* etb = factory(guiElement::TEXTBOX, expectedtextBoxParam);
+    expectedNested2->addElement(etb);
 
     expectedNested1->addElement(expectedNested2);
     expectedRoot->addElement(expectedNested1);

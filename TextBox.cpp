@@ -9,6 +9,20 @@ TextBox::TextBox(const TextBox& cp) : Box(cp.min, cp.max, cp.color), textColor(c
 TextBox::TextBox(ivec2 min, ivec2 max, ivec3 color, ivec3 textColor, const std::string& text): Box(min, max, color), textColor(textColor), text(text), active(false) {}
 
 
+bool TextBox::operator==(TextBox rhs) {
+    if (!Box::operator==(rhs)) {
+        return false;
+    }
+    if (textColor != rhs.textColor){
+        return false;
+    }
+    return true;
+}
+
+bool TextBox::operator!=(TextBox rhs) {
+    return !(*this == rhs);
+}
+
 TextBox::TextBox(ElementParameters ep) : Box(ep) {
     if (!isValid(ep)) {
         throw -1;
@@ -32,32 +46,38 @@ TextBox::TextBox(ElementParameters ep) : Box(ep) {
 void TextBox::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 
-    out << pad << "<textbox " << "name=\"" << name <<  "\" text=\"" << text << "\">\n";
+    out << pad << "<textbox "
+        << "name=\"" << name << "\" "
+        << "text=\"" << text << "\">\n";
+
     if (minType == TagType::IVec) {
         writeIVec2(out, min, pad);
-    } else {
+    } 
+    else {
         writeVec2(out, toVec2(min), pad);
     }
 
     if (maxType == TagType::IVec) {
         writeIVec2(out, max, pad);
-    }
+    } 
     else {
         writeVec2(out, toVec2(max), pad);
     }
 
     if (colorType == TagType::IVec) {
         writeIVec3(out, color, pad);
-    }
+    } 
     else {
         writeVec3(out, toVec3(color), pad);
     }
+
     if (textColorType == TagType::IVec) {
-        writeIVec3(out, color, pad);
-    }
+        writeIVec3(out, textColor, pad);
+    } 
     else {
-        writeVec3(out, toVec3(color), pad);
+        writeVec3(out, toVec3(textColor), pad);
     }
+
     out << pad << "</textbox>\n";
 }
 

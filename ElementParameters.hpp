@@ -30,6 +30,7 @@ struct ElementParameters {
     TagType point2Type = TagType::Vec;
     TagType point3Type = TagType::Vec;
     TagType colorType = TagType::Vec;
+    TagType textColorType = TagType::Vec;
     vec2 layoutStart = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     vec2 layoutEnd = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     std::function<void()> callback = []() {};

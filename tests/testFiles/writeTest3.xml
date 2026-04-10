@@ -46,6 +46,26 @@
               <z>255</z>
           </ivec3>
       </button>
+      <textbox name="" text="">
+          <ivec2>
+              <x>100</x>
+              <y>100</y>
+          </ivec2>
+          <ivec2>
+              <x>300</x>
+              <y>150</y>
+          </ivec2>
+          <ivec3>
+              <x>255</x>
+              <y>255</y>
+              <z>255</z>
+          </ivec3>
+          <vec3>
+              <x>0</x>
+              <y>0</y>
+              <z>0</z>
+          </vec3>
+      </textbox>
     </layout>
   </layout>
 </layout>

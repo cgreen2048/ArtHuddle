@@ -421,6 +421,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
     int lineVec2Index = 0;
     int boxVec2Index = 0;
     int triangleVec2Index = 0;
+    int textBoxVec3Index = 0;
 
     while (true) {
         std::string tag = getNextTag(inFile);
@@ -543,19 +544,44 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
             if (!parseVec3(inFile, temp)) {
                 return nullptr;
             }
-
             ivec3 c = toIVec3(temp);
 
-            ep.color = c;
-            ep.colorType = TagType::Vec;
+            if (type == guiElement::TEXTBOX) {
+                if (textBoxVec3Index == 0) {
+                    ep.color = c;
+                    ep.colorType = TagType::Vec;
+                }
+                else {
+                    ep.textColor = c;
+                    ep.textColorType = TagType::Vec;
+                }
+                textBoxVec3Index++;
+            }
+            else{
+                ep.color = c;
+                ep.colorType = TagType::Vec;
+            }
         }
         else if (tag == IVEC3_OPEN) {
             ivec3 c;
             if (!parseIVec3(inFile, c)) {
                 return nullptr;
             }
-            ep.color = c;
-            ep.colorType = TagType::IVec;
+            if (type == guiElement::TEXTBOX) {
+                if (textBoxVec3Index == 0) {
+                    ep.color = c;
+                    ep.colorType = TagType::IVec;
+                }
+                else {
+                    ep.textColor = c;
+                    ep.textColorType = TagType::IVec;
+                }
+                textBoxVec3Index++;
+            }
+            else{
+                ep.color = c;
+                ep.colorType = TagType::IVec;
+            }
         }
         else {
             std::cerr << "Malformed XML\n";
