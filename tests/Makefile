@@ -198,9 +198,9 @@ selectedDemoMac:
 
 
 clean:
-	rm -f freehandDemo milestone001 milestone002 screenDemo \
+	rm -f a.out freehandDemo milestone001 milestone002 screenDemo \
 	      milestone003 milestone004 milestone005 milestone005LayoutTests \
 	      milestone006 milestone006EventSystem milestone006Demo \
-	      layoutDemo ellipseDemo arrowDemo
+	      layoutDemo ellipseDemo arrowDemo selectedDemo
 
 
