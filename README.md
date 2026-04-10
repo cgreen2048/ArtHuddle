@@ -9,11 +9,13 @@
 - [SoundState Struct](#soundstate-struct)
 - [SoundPlayer Class](#soundplayer)
 - [ElementParameters Struct](#elementparameters-struct)
+- [Selected Class](#selected)
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
 - [Layout Class](#layout)
 - [Ellipse Classs](#ellipse)
 - [Triangle Class](#triangle)
+- [Arrow Class](#arrow)
 - [Box Class](#box)
 - [Button Class](#button)
 - [Line Class](#line)
@@ -472,20 +474,50 @@ The desired name of the object
 
 ---
 
-### `ivec2 point1`
-The coordinates of the first point of an object
+### `ivec2 coords`
+The coordinates for a `Point` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
 
-### `ivec2 point2`
-The coordinates of the second point of an object
+### `ivec2 start`
+The coordinates of the starting point of a `Line` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
 
-### `ivec2 point3`
-The coordinates of the third point of an object
+### `ivec2 end`
+The coordinates of the ending point of a `Line` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 min`
+The coordinates of the minimum point of a `Box` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 max`
+The coordinates of the maximum point of a `Box` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 pointA`
+The coordinates of the first point of a `Triangle` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 pointB`
+The coordinates of the second point of a `Triangle` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 pointC`
+The coordinates of the third point of a `Triangle` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
@@ -537,20 +569,50 @@ Indicates whether a new `Layout` object is visible
 
 ---
 
-### `TagType point1Type`
-The type of mathematical vector that `point1` is. Can be `TagType::Vec` or `TagType::IVec`
+### `TagType coordsType`
+The type of mathematical vector that `coords` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
 
-### `TagType point2Type`
-The type of mathematical vector that `point2` is. Can be `TagType::Vec` or `TagType::IVec`
+### `TagType startType`
+The type of mathematical vector that `start` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
 
-### `TagType point3Type`
-The type of mathematical vector that `point3` is. Can be `TagType::Vec` or `TagType::IVec`
+### `TagType endType`
+The type of mathematical vector that `end` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType minType`
+The type of mathematical vector that `min` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType maxType`
+The type of mathematical vector that `max` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType pointAType`
+The type of mathematical vector that `pointA` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType pointBType`
+The type of mathematical vector that `pointB` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType pointCType`
+The type of mathematical vector that `pointC` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
@@ -589,8 +651,109 @@ The text label for a `Button` object. Used to display text on the button and als
 
 ---
 
+### `ivec2 center`
+The center point of an ellipse
+
+---
+
+### `int radiusX`
+The length of the radius of the ellipse along the x-axis
+
+---
+
+### `int radiusY`
+The length of the radius of the ellipse along the y-axis
+
+---
+
+### `TagType centerType`
+The type of mathematical vector that `center` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/ElementParameters_UML.png)
+
+---
+
+# Selected
+
+## Description
+A singleton class that holds the last `GuiElement` clicked on by the user
+- Gets the coordinates of the `GuiElement` and determines the minimum and maximum `x` and `y` values
+- Draws a blue bounding box around the element using four `Line` objects
+
+---
+
+## Data Members
+
+### `GuiElement* selectedElement`
+A pointer to the last selected element
+- Can be `nullptr` if no element is selected
+
+---
+
+### `Layout* selectedLayout`
+A layout to draw a bounding box around the currently selected element
+
+---
+
+### `ivec2 minBound`
+The minimum `x` and `y` coordinates of the currently selected shape. Used to draw the bounding box
+
+---
+
+### `ivec2 maxBound`
+The maximum `x` and `y` coordinates of the currently selected shape. Used to draw the bounding box
+
+---
+
+## Methods
+
+### `Selected()`
+Default constructor (private)
+
+---
+
+`~Selected()`
+Default destructor (private)
+
+---
+
+### `static Selected& getInstance()`
+Returns the instance of the singleton
+
+---
+### `void setSelectedElement(GuiElement* updatedElement)`
+Sets the `selectedElement` attribute
+- Gets the minimum and maximum `x` and `y` values from the passed element
+- Calls `drawBoundingBox()` to draw a box around the element
+- Immediately clears `selectedLayout` if `updatedElement` is `nullptr`
+
+---
+
+### `GuiElement* getSelectedElement()`
+Returns the `GuiElement*` held in the `selectedElement` attribute
+
+---
+
+### `void setSelectedLayout(Layout* boundingBoxLayout)`
+Sets the `selectedLayout` attribute to the passed `Layout*` argument
+- Allows the bounding box to be drawn and cleared without interfering with other elements
+
+---
+
+### `void drawBoundingBox()`
+Draws a bounding box around the currently selected element
+- Clears `selectedLayout` using the `clearElements` method from `Layout`
+- Creates four `Line` objects using `minBound` and `maxBound` to form a box that fully contains the element
+- Adds the newly created lines to `selectedLayout` to be drawn on the next iteration of the main loop
+
+---
+
+## UML Diagram
+![UML Diagram](images/Selected_UML.png)
 
 ---
 
@@ -609,6 +772,7 @@ It defines a common interface used by all graphical objects such as:
 - `Triangle`
 - `Button`
 - `Ellipse`
+- `Arrow`
 
 The class allows these derived types to be handled **polymorphically**, meaning they can be stored and manipulated using a `GuiElement*`.
 
@@ -623,7 +787,7 @@ This enumeration identifies the type of GUI element being created.
 It is primarily used by the **Factory** to determine which object to instantiate.
 
 ```cpp
-enum class guiElement { LAYOUOT, POINT, LINE, BOX, TRIANGLE, BUTTON };
+enum class guiElement { LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, ELLIPSE, ARROW };
 ```
 
 ---
@@ -669,6 +833,7 @@ Each derived class implements its own drawing behavior:
 | `Triangle` | `drawTriangle()` |
 | `Button` | `drawBox()` |
 | `Ellipse` | `drawEllipse()` |
+| `Arrow` | `drawArrow()` |
 
 In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will call `draw()` on all children of that parent
 
@@ -725,6 +890,11 @@ A pure virtual function. Implemented by inherited classes to ensure the data pas
 
 ---
 
+### `virtual bool isInside(ivec2 coordinates)`
+A pure virtual function. Implemented by inherited classes to check if the passed coordinates are inside of the bounds of the object
+
+---
+
 # Factory
 
 ## Description
@@ -763,13 +933,14 @@ Creates a new GUI element based on the `guiElement` enum value.
 | `guiElement::TRIANGLE` | `Triangle` |
 | `guiElement::BUTTON` | `Button` |
 | `guiElement::ELLIPSE` | `Ellipse` |
+| `guiElement::Arrow` | `Arrow` |
 
 ---
 
 ## Example Usage
 
 ```cpp
-GuiElement* element = factory(guiElement::LINE);
+GuiElement* element = factory(guiElement::LINE, elementParametersStruct);
 element->draw(&screen);
 ```
 
@@ -863,6 +1034,10 @@ Handles and propagates an event through this Layout’s hierarchy
 - Otherwise, iterates through all child elements:
   - Calls `child->resolveEvent(e)`
   - Stops early if a child returns `true`
+- Checks for `CLICK` events if no `SHOW` events trigger
+  - Iterates through child elements in reverse and determines if the mouse coordinates are within the bounds of each
+    - Uses the reverse direction as later elements will be drawn on top of earlier elements
+  - Sets the selected element in the `Selected` class if any child elements contain the mouse coordinates
 - Returns:
   - `true` → event was handled by a child  
   - `false` → event was not handled  
@@ -910,8 +1085,14 @@ Checks whether `ep.layoutStart` or `ep.layoutEnd` have been set
 
 ---
 
-### `void clearElements()`
-Clears all `GuiElement`s from the `elements` vector
+### `bool isInside(ivec2 coordinates)`
+Checks whether the passed coordinates are within the bounds of the `Layout` object and its parent (if applicable)
+- Uses `getAbsoluteStartX()`, `getAbsoluteStartY()`, `getAbsoluteEndX()`, and `getAbsoluteEndY()` to get coordinate values for the `Layout` bounds
+
+---
+
+### `clearElements()`
+Clears the `elements` vector so that no previous elements will be drawn
 
 ---
 
@@ -992,6 +1173,28 @@ Returns true if all of the above are included, false if not
 
 ### `bool isPointInside(ivec2 point)`
 Checks if `point` is within the bounds of the ellipse
+
+---
+
+### `ivec2 getCenter()`
+Returns the `ivec2` in the ellipse's `center` attribute
+
+---
+
+### `int getRadiusX()`
+Returns the integer in the ellipse's `radiusX` attribute
+
+---
+
+### `int getRadiusY()`
+Returns the integer in the ellipse's `radiusY` attribute
+
+---
+
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are within the bounds of the `Ellipse` object
+- Returns the result of `isPointInside()`
+- Ensures the passed coordinates are within this object's parent's bounds
 
 ---
 
@@ -1139,6 +1342,212 @@ Checks whether `ep.point1`, `ep.point2`, and `ep.point3` have been initialized a
 
 ---
 
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are within the bounds of the triangle using `a`, `b`, and `c`
+- Uses the same logic as `Screen`'s `pointInTriangle()` method
+  - Performs cross-product calculations based on the triangle's bounds and the passed `coordinates`
+- Ensures the passed coordinates are within this object's parent's bounds
+
+---
+
+# Arrow
+
+## Description
+`Arrow` is a class used for storing and drawing a filled arrow to a `Screen` object. It inherits from the `GuiElement` class
+
+---
+
+## Data Members
+
+### `ivec2 min`
+The coordinates for the minimum point or the arrow's stem box
+
+---
+
+### `ivec2 max`
+The coordinates for the maximum point or the arrow's stem box
+
+---
+
+### `ivec2 pointA`
+The coordinates for a vertex on the arrow's triangular point
+
+---
+
+### `ivec2 pointB`
+The coordinates for a vertex on the arrow's triangular point
+
+---
+
+### `ivec2 pointC`
+The coordinates for a vertex on the arrow's triangular point
+
+---
+
+### `ivec3 color`
+The color of the vector in RGB order
+
+---
+
+### `TagType minType`
+The type of tag for the `min` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType maxType`
+The type of tag for the `max` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType pointAType`
+The type of tag for the `pointA` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType pointBType`
+The type of tag for the `pointB` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType pointCType`
+The type of tag for the `pointC` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType colorType`
+The type of tag for the `color` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+## Methods
+
+### `Arrow()`
+Default constructor. Sets all points and `color` to zeros
+
+---
+
+### `Arrow(ivec2 min, ivec2 max, ivec2 a, ivec2 b, ivec2 c, ivec3 color)`
+Parameterized constructor. Sets `this->min` to `min`, `this->max` to `max`, `this->pointA` to `a`, `this->pointB` to `b`, `this->pointC` to `c`, and `this->color` to `color`
+
+---
+
+### `Arrow(ElementParameters ep)`
+Constructor that takes in an `ElementParameters` struct. Called via `Factory`
+- Calls `isValid` on `ep`
+  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Sets the `min`, `max`, `pointA`, `pointB`, `pointC`, `color`, `minType`, `maxType`, `pointAType`, `pointBType`, `pointCType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
+
+---
+
+### `Arrow(const Arrow& cp)`
+Copy assignment operator. Takes attributes from `cp` and creates a new `Arrow`
+
+---
+
+### `Arrow& operator=(const Arrow& rhs)`
+Assignment operator. Sets the current `Arrow`'s attributes equal to corresponding attributes from `cp`
+
+---
+
+### `bool operator==(Arrow rhs)`
+The equality operator. Checks that `min`, `max`, `pointA`, `pointB`, `pointC`, and color attributes match between this `Arrow` and `rhs`
+- Returns true if attributes match
+- Returns false otherwise
+
+---
+
+### `bool operator!=(Arrow rhs)`
+The innequality operator. Checks for innequality
+- Returns the inverse of the equality operator
+
+---
+
+### `~Arrow()`
+Default destructor
+
+---
+
+### `void draw(Screen* screen)`
+Calls the `drawArrow()` method from the passed `Screen` pointer
+
+---
+
+### `void writeXml(std::ostream& out, int depth) const`
+Writes this arrow's data to the specified output stream in XML format
+
+Behavior:
+- Writes an `<arrow>` tag with the name parameter to the output stream
+- Writes the minimum corner (`min`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the maximum corner (`max`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes a triangle corner (`pointA`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes a triangle corner (`pointB`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes a triangle corner (`pointC`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the box color (`color`)
+  - `<vec3>` if `TagType::Vec`
+  - `<ivec3>` if `TagType::IVec`
+- Closes the `<arrow>` tag
+
+This ensures the XML output preserves whether integer or floating-point vector tags were used.
+
+---
+
+### `bool isValid(ElementParameters ep)`
+Checks whether the passed `ElementParameters` struct contains valid data to create an `Arrow` object
+- Checks if all points have been set
+  - Returns false if not
+- Checks if the color `vec3` has been set
+  - Sets any unset member of color to a default value of 125
+
+---
+
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are within the bounds of an `Arrow` object
+- Returns true if the coordinates are within the arrow, false otherwise
+  - Combines logic from the `isInside()` methods from `Box` and `Triangle` and returns the logical OR of the the results
+- Ensures the passed coordinates are within this object's parent's bounds
+
+---
+
+`ivec2 getMin()`
+Returns the `ivec2` in the `min` attribute of the `Arrow` object
+
+---
+
+`ivec2 getMax()`
+Returns the `ivec2` in the `max` attribute of the `Arrow` object
+
+---
+
+`ivec2 getA()`
+Returns the `ivec2` in the `pointA` attribute of the `Arrow` object
+
+---
+
+`ivec2 getB()`
+Returns the `ivec2` in the `pointB` attribute of the `Arrow` object
+
+---
+
+`ivec2 getC()`
+Returns the `ivec2` in the `pointC` attribute of the `Arrow` object
+
+---
+
+## UML Diagram
+![UML Diagram](images/Arrow_UML.png)
+
+---
+
 # Box
 
 ## Description
@@ -1232,6 +1641,16 @@ Method to set the `color` and `colorType` attributes of a `Box` object
 
 ---
 
+### `ivec2 getMin()`
+Returns the `ivec2` in the `min` attribute of a `Box` object
+
+---
+
+### `ivec2 getMax()`
+Returns the `ivec2` in the `max` attribute of a `Box` object
+
+---
+
 ### `void writeXml(std::ostream& out) const`
 Writes the box to an XML layout file.
 
@@ -1260,6 +1679,14 @@ Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep
 ### `bool inBounds(const ivec2& point)`
 Checks whether the given point is within the bounds of this `Box`
 - Returns true if the point is within the bounds of the box and false otherwise
+
+---
+
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are within the bounds of the box object
+- Returns the result of `inBounds()` returns true
+- Ensures the passed coordinates are within this object's parent's bounds
+
 ---
 
 # Button
@@ -1406,6 +1833,16 @@ Method to set the `color` and `colorType` attributes of a `Line` object
 
 ---
 
+### `ivec2 getStart()`
+Returns the `ivec2` in the `start` attribute of this line
+
+---
+
+### `ivec2 getEnd()`
+Returns the `ivec2` in the `end` attribute of this line
+
+---
+
 ### `void writeXml(std::ostream& out) const`
 Writes the line to an XML layout file.
 
@@ -1430,6 +1867,13 @@ This allows the line to maintain the same vector type used in the original layou
 Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` or `ep.point2` have not been set
 - Sets any missing color value to `125`
+
+---
+
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are on the line using the `start` and `end` attributes
+- Returns true if the coordinates are on the line, false otherwise
+- Ensures the passed coordinates are within this object's parent's bounds
 
 ---
 
@@ -1510,6 +1954,11 @@ Method to set the `coords` and `coordsType` attributes of a point object
 
 ---
 
+### `ivec2 getCoords()`
+Returns the `ivec2` in the `coords`attribute of a point object
+
+---
+
 ### `void setColor(const ivec3& v, TagType t)`
 Method to set the `color` and `colorType` attributes of a point object
 
@@ -1539,6 +1988,12 @@ Checks whether `ep.point1` has been initialized and whether `ep.color` is comple
 
 ---
 
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are equal to the coordinates in the `coords` attribute
+- Returns true if the coordinates are equal, false otherwise
+- Ensures the passed coordinates are within this object's parent's bounds
+
+---
 
 # EventSystem
 
@@ -1897,7 +2352,8 @@ Supports:
 - `Line`  
 - `Box`  
 - `Triangle`
-- `Button`  
+- `Button`
+- `Arrow`
 
 Behavior:
 - Determines type from opening tag
@@ -2146,6 +2602,15 @@ Draws a line to the Target Screen object's SDL_Surface using the Bresenham algor
 - Uses 2D mathematical vectors to store the start and end points of the line
 - Will only draw on pixels that exist in the surface
 - Calls `colorOnePixel` for each pixel that exists on the line
+
+### `drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
+Draws an ellipse to the target Screen object's SDL_Surface
+- Centers the ellipse on `center`
+- Draws along x and y axes based on `radiusX` and `radiusY`
+
+### `drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd)`
+Draws an arrow to the target Screen object's SDL_Surface
+- Internally calls `drawBox()` and `drawTriangle()` to draw the stem and point of the arrow respectively
 
 ### `clear(ivec3 color)`
 Clears the Target Screen object's `SDL_Surface` by filling the entire surface with the given color

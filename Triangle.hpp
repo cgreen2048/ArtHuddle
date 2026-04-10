@@ -35,6 +35,7 @@ class Triangle : public GuiElement {
         ivec2 getB();
         ivec2 getC();
         bool isValid(ElementParameters ep);
+        bool isInside(ivec2 coordinates);
 };
 
 #endif

@@ -108,9 +108,10 @@ bool Layout::resolveEvent(Event* e) {
     if (e->getType() == EventType::SHOW) {
         ShowEvent* show = static_cast<ShowEvent*>(e);
         if (this->getName() == show->getLayoutName()) {
-            if (show->getAction() == ShowActionType::SHOW){
+            if (show->getAction() == ShowActionType::SHOW) {
                 active = true;
-            }else{
+            }
+            else {
                 active = false;
             }
             return true;
@@ -126,6 +127,27 @@ bool Layout::resolveEvent(Event* e) {
             return true;
         }
     }
+
+    if (e->getType() == EventType::CLICK) {
+        for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
+            GuiElement* object = *ritr;
+            ClickEvent* click = dynamic_cast<ClickEvent*>(e);
+            if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
+                Layout* downcast = dynamic_cast<Layout*>(object);
+                if (downcast) {
+                    if (downcast->resolveEvent(e)) {
+                        return true;
+                    }
+                }
+                else {
+                    Selected::getInstance().setSelectedElement(object);
+                    return true;
+                }
+            }
+        }
+    }
+    
+    Selected::getInstance().setSelectedElement(nullptr);
 
     return false;
 }
@@ -165,6 +187,16 @@ bool Layout::isValid(ElementParameters ep) {
         return false;
     }
     if ((ep.layoutEnd.x == std::numeric_limits<float>::lowest()) || (ep.layoutEnd.y == std::numeric_limits<float>::lowest())) {
+        return false;
+    }
+    return true;
+}
+
+bool Layout::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    if ((this->getAbsoluteStartX() > coordinates.x) || (this->getAbsoluteStartY() > coordinates.y) || (this->getAbsoluteEndX() <= coordinates.x) || (this->getAbsoluteEndY() <= coordinates.y)) {
         return false;
     }
     return true;

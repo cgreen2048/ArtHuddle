@@ -14,13 +14,13 @@ Triangle::Triangle(ElementParameters ep) {
     if (!isValid(ep)) {
         throw -1;
     }
-    this->a = ep.point1;
-    this->b = ep.point2;
-    this->c = ep.point3;
+    this->a = ep.pointA;
+    this->b = ep.pointB;
+    this->c = ep.pointC;
     this->color = ep.color;
-    this->aType = ep.point1Type;
-    this->bType = ep.point2Type;
-    this->cType = ep.point2Type;
+    this->aType = ep.pointAType;
+    this->bType = ep.pointBType;
+    this->cType = ep.pointCType;
     this->colorType = ep.colorType;
     this->name = ep.name;
 }
@@ -133,13 +133,13 @@ ivec2 Triangle::getC() {
 }
 
 bool Triangle::isValid(ElementParameters ep) {
-    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.pointA.x == std::numeric_limits<int>::lowest()) || (ep.pointA.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
-    if ((ep.point2.x == std::numeric_limits<int>::lowest()) || (ep.point2.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.pointB.x == std::numeric_limits<int>::lowest()) || (ep.pointB.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
-    if ((ep.point3.x == std::numeric_limits<int>::lowest()) || (ep.point3.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.pointC.x == std::numeric_limits<int>::lowest()) || (ep.pointC.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
     if (ep.color.x == std::numeric_limits<int>::lowest()) {
@@ -152,4 +152,25 @@ bool Triangle::isValid(ElementParameters ep) {
         ep.color.z = 125;
     }
     return true;
+}
+
+bool Triangle::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    ivec2 ap = coordinates - this->a;
+    ivec2 ab = this->b - this->a;
+    ivec2 bp = coordinates - this->b;
+    ivec2 bc = this->c - this->b;
+    ivec2 cp = coordinates - this->c;
+    ivec2 ca = this->a - this->c;
+
+    int crossApAb = ap.cross(ab);
+    int crossBpBc = bp.cross(bc);
+    int crossCpCa = cp.cross(ca);
+
+    bool hasPositive = crossApAb > 0 || crossBpBc > 0 || crossCpCa > 0;
+    bool hasNegative = crossApAb < 0 || crossBpBc < 0 || crossCpCa < 0;
+
+    return !(hasPositive && hasNegative);
 }

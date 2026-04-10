@@ -22,8 +22,10 @@ class Point : public GuiElement {
 		void draw(Screen *screen);
 		void setCoords(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);
+		ivec2 getCoords();
 		void writeXml(std::ostream& out, int depth) const;
 		bool isValid(ElementParameters ep);
+		bool isInside(ivec2 coordinates);
 };
 
 #endif

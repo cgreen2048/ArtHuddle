@@ -12,9 +12,9 @@ Point::Point(ElementParameters ep) {
     if (!isValid(ep)) {
         throw -1;
     }
-    this->coords = ep.point1;
+    this->coords = ep.coords;
     this->color = ep.color;
-    this->coordsType = ep.point1Type;
+    this->coordsType = ep.coordsType;
     this->colorType = ep.colorType;
     this->name = ep.name;
 }
@@ -63,6 +63,10 @@ void Point::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
+ivec2 Point::getCoords() {
+    return this->coords;
+}
+
 void Point::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 
@@ -83,7 +87,7 @@ void Point::writeXml(std::ostream& out, int depth) const {
 }
 
 bool Point::isValid(ElementParameters ep) {
-    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.coords.x == std::numeric_limits<int>::lowest()) || (ep.coords.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
     if (ep.color.x == std::numeric_limits<int>::lowest()) {
@@ -96,4 +100,14 @@ bool Point::isValid(ElementParameters ep) {
         ep.color.z = 125;
     }
     return true;
+}
+
+bool Point::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    if (this->coords == coordinates) {
+        return true;
+    }
+    return false;
 }

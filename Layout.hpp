@@ -7,7 +7,9 @@
 #include "GuiElement.hpp"
 #include "vec2.hpp"
 #include "Event.hpp"
+#include "ClickEvent.hpp"
 #include "ShowEvent.hpp"
+#include "Selected.hpp"
 
 
 class Layout : public GuiElement {
@@ -40,6 +42,7 @@ class Layout : public GuiElement {
         int getAbsoluteEndX();
         int getAbsoluteEndY();
         bool isValid(ElementParameters ep);
+        bool isInside(ivec2 coordinates);
         void clearElements();
 };
 

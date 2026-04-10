@@ -68,11 +68,11 @@ int eventDemo(Screen *screen, SDL_Window *window) {
     Layout *layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, rootLayout));
 
     ElementParameters buttonParam;
-    buttonParam.point1 = ivec2(X/4, Y/4);
-    buttonParam.point2 = ivec2(X/2, Y/2);
+    buttonParam.min = ivec2(X/4, Y/4);
+    buttonParam.max = ivec2(X/2, Y/2);
     buttonParam.color = ivec3(255, 0, 0);
-    buttonParam.point1Type = TagType::IVec;
-    buttonParam.point2Type = TagType::IVec;
+    buttonParam.minType = TagType::IVec;
+    buttonParam.maxType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
     buttonParam.name = "button1";
     buttonParam.callback = spawnEvents;
@@ -91,11 +91,11 @@ int eventDemo(Screen *screen, SDL_Window *window) {
 
 
     ElementParameters nestedBoxParam;
-    nestedBoxParam.point1 = ivec2(3 * X / 4, 3 * Y / 4);
-    nestedBoxParam.point2 = ivec2(X, Y);
+    nestedBoxParam.min = ivec2(3 * X / 4, 3 * Y / 4);
+    nestedBoxParam.max = ivec2(X, Y);
     nestedBoxParam.color = ivec3(0, 255, 0);
-    nestedBoxParam.point1Type = TagType::IVec;
-    nestedBoxParam.point2Type = TagType::IVec;
+    nestedBoxParam.minType = TagType::IVec;
+    nestedBoxParam.maxType = TagType::IVec;
     nestedBoxParam.colorType = TagType::IVec;
     nestedBoxParam.name = "nestedBox";
     Box* nestedBox = dynamic_cast<Box*>(factory(guiElement::BOX, nestedBoxParam));

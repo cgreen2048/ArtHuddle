@@ -6,7 +6,7 @@
 #include "ElementParameters.hpp"
 #include "Event.hpp"
 
-enum class guiElement {POINT, LINE, BOX, TRIANGLE, ELLIPSE, BUTTON, LAYOUT, UNKNOWN};
+enum class guiElement {POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, BUTTON, LAYOUT, UNKNOWN};
 
 class GuiElement {
 	protected:
@@ -37,6 +37,8 @@ class GuiElement {
 		const std::string& getName() const;
 
 		virtual bool isValid(ElementParameters ep) = 0;
+		
+		virtual bool isInside(ivec2 coordinates) = 0;
 };
 
 
