@@ -18,6 +18,7 @@ class Freehand : public GuiElement {
         ivec2 lastDrawnPoint; 
         bool finished = false;
         ivec3 color;
+        void addElement(GuiElement*);
     public:
         Freehand();
         Freehand(ivec3 color);

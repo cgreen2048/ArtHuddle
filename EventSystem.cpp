@@ -31,7 +31,6 @@ void EventSystem::processEvents(Layout *root){
 
         if(e->getType() == EventType::SOUND){
             SoundEvent* sound = static_cast<SoundEvent*>(e.get());
-            std::cout << "Processing sound event\n";
             switch (sound->getAction()) {
                 case SoundActionType::PLAY:
                     soundPlayer->playSound(sound->getSoundName(), sound->shouldLoop());

@@ -48,7 +48,6 @@ int main() {
 
     // This marks that the user is in Freehand draw mode, which will allow for Freehand upon mouse down
     bool isFreehand = true;
-    bool isDrawing = false;
 
     while (true) {
        while (SDL_PollEvent(&event)) {
@@ -59,15 +58,15 @@ int main() {
                 }
                 case SDL_EVENT_MOUSE_BUTTON_DOWN: {
                     if (isFreehand) {
-                        isDrawing = true;
                         Freehand* freehand = new Freehand(color);
                         layout->addElement(freehand);
                         eventSystem.setTargetedElement(freehand);
                         ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
                         
                         eventSystem.push(std::make_unique<MouseDownEvent>(point));
-                        break;
+                        
                     }
+                    break;
                 }
                 case SDL_EVENT_MOUSE_MOTION: {
                     if (isFreehand && event.motion.state != 0) {
@@ -76,14 +75,15 @@ int main() {
                         eventSystem.push(std::make_unique<MouseMotionEvent>(point, true));
                         break;
                     }
+                    break;
                 }
                 case SDL_EVENT_MOUSE_BUTTON_UP: {
                     if (isFreehand) {
-                        isDrawing = false;
                         ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
 
                         eventSystem.push(std::make_unique<MouseUpEvent>(point));
                     }
+                    break;
                 }
             }
         }
@@ -93,6 +93,5 @@ int main() {
         screen->blitTo(SDL_GetWindowSurface(window));
         SDL_UpdateWindowSurface(window);
         eventSystem.processEvents(layout);
-       
     }
 }
