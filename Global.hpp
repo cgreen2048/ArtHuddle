@@ -7,6 +7,7 @@
 #include "ElementParameters.hpp"
 #include "Event.hpp"
 #include "EventSystem.hpp"
+#include "Selected.hpp"
 #include "Factory.hpp"
 #include "GUIFile.hpp"
 #include "GuiElement.hpp"

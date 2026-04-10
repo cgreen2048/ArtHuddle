@@ -21,6 +21,7 @@ void playSound(std::string filePath, int loop) {
 }
 
 void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
+    clicked(ivec2(-1, -1));
     tempLayout->clearElements();
     guiElement ge = static_cast<guiElement>(type);
     ElementParameters ep;
@@ -134,6 +135,7 @@ void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 c
 }
 
 void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
+    clicked(ivec2(-1, -1));
     guiElement ge = static_cast<guiElement>(type);
     ElementParameters ep;
     ep.color = color;
@@ -255,12 +257,18 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
     tempLayout->clearElements();
 }
 
+void clicked(ivec2 coords) {
+    EventSystem& eventSystem = EventSystem::getInstance();
+    eventSystem.push(std::make_unique<ClickEvent>(coords.x, coords.y));
+}
+
 void update() {
     screen->clear(ivec3(255,255,255));
+    EventSystem& eventSystem = EventSystem::getInstance();
+    eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
     screen->blitTo(SDL_GetWindowSurface(window));
     SDL_UpdateWindowSurface(window);
-    // eventSystem.processEvents(layout);
 }
 
 void closeAll() {

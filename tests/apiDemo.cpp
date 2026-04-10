@@ -129,6 +129,7 @@ int main() {
                             break;
                         }
                         default: {
+                            clicked(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
                             break;
                         }
                     }
@@ -221,6 +222,7 @@ int main() {
             resetPoints(point, point1, point2, point3);
         }
         if (keyboardState[SDL_SCANCODE_ESCAPE]) {
+            type = -1;
             resetPoints(point, point1, point2, point3);
         }
         update();

@@ -37,6 +37,18 @@ void createRootLayout() {
     temp.name = "tempLayout";
     tempLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, temp));
     rootLayout->addElement(tempLayout);
+
+    Selected& selectedSingleton = Selected::getInstance();
+    ElementParameters boundingLayoutParam;
+    boundingLayoutParam.layoutStart = vec2(0.0,0.0);
+    boundingLayoutParam.layoutEnd = vec2(1.0, 1.0);
+    boundingLayoutParam.parentStart = ivec2(0,0);
+    boundingLayoutParam.parentEnd = ivec2(X,Y);
+    boundingLayoutParam.active = true;
+    boundingLayoutParam.name = "boundingLayout";
+    Layout *boundingLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, boundingLayoutParam));
+    selectedSingleton.setSelectedLayout(boundingLayout);
+    rootLayout->addElement(boundingLayout);
 }
 
 void setEventSystem() {

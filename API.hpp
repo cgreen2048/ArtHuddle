@@ -15,6 +15,7 @@ void loadSound(std::string filePath);
 void playSound(std::string filePath, int loop);
 void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
 void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
+void clicked(ivec2 coords);
 void update();
 void closeAll();
 

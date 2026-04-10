@@ -89,7 +89,9 @@ Creates a new `Screen` object, set to the size of the full window, and assigns i
 ---
 
 ### `void createRootLayout()`
-Creates a new `Layout` object and assigns it to `rootLayout`. Also creates a nested `Layout` object and sets it to `tempLayout`
+Creates a new `Layout` object and assigns it to `rootLayout`
+- Also creates a nested `Layout` object and sets it to `tempLayout`
+- Also creates a nested `Layout` object and uses it for the `Selected` singleton's bounding box layout
 
 ---
 
@@ -136,8 +138,13 @@ Draws an element of type specified by `type` to the `rootLayout` `Layout` object
 
 ---
 
+`void clicked(ivec2 coords)`
+Spawns a click event using the passed coordinates
+
+---
+
 ### `void update()`
-Clears the screen, draws all elements in `rootLayout`, blits the screen, and updates the window
+Clears the screen, processes events, draws all elements in `rootLayout`, blits the screen, and updates the window
 
 ---
 
