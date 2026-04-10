@@ -1,5 +1,5 @@
 <layout name="Line-Ellipse-Box-Point-Layout" sX="0.0" sY="0.0" eX="1.0" eY="1.0">
-  <line name="">
+  <line name="l1">
     <vec2>
       <x>50.5</x>
       <y>902.47</y>
@@ -90,7 +90,7 @@
       <z>0</z>
     </ivec3>
   </triangle>
-  <arrow name="">
+  <arrow name="a1">
     <ivec2>
       <x>250</x>
       <y>250</y>

@@ -61,8 +61,12 @@ test:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../EventSystem.cpp ../Sound.cpp ../SoundPlayer.cpp freehandDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o freehandDemo
 
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) LayoutDeleteTest.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o layoutDelete
 
-studentMachine: testsSM freehandDemoSM milestone001SM milestone002SM screenDemoSM milestone003SM milestone004SM milestone005LayoutTestsSM milestone005SM layoutDemoSM milestone006SM milestone006EventSystemSM milestone006DemoSM ellipseDemoSM arrowDemoSM selectedDemoSM
+
+
+studentMachine: testsSM freehandDemoSM milestone001SM milestone002SM screenDemoSM milestone003SM milestone004SM milestone005LayoutTestsSM milestone005SM layoutDemoSM milestone006SM milestone006EventSystemSM milestone006DemoSM ellipseDemoSM arrowDemoSM selectedDemoSM layoutDeleteSM
 
 testsSM:
 	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
@@ -123,6 +127,10 @@ freehandDemoSM:
 selectedDemoSM:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp SelectedDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o selectedDemo
+
+layoutDeleteSM:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) LayoutDeleteTest.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDelete
 	
 
 
@@ -193,14 +201,17 @@ arrowDemoMac:
 
 selectedDemoMac:	
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp SelectedDemo.cpp \
-				$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o selectedDemo
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o selectedDemo
 
+layoutDeleteMac:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) LayoutDeleteTest.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o layoutDelete
 
 
 clean:
 	rm -f a.out freehandDemo milestone001 milestone002 screenDemo \
 	      milestone003 milestone004 milestone005 milestone005LayoutTests \
 	      milestone006 milestone006EventSystem milestone006Demo \
-	      layoutDemo ellipseDemo arrowDemo selectedDemo
+	      layoutDemo ellipseDemo arrowDemo selectedDemo layoutDelete
 
 

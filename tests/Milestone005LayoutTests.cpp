@@ -272,6 +272,7 @@ int readTest1() {
     lineParam.startType = TagType::IVec;
     lineParam.endType = TagType::IVec;
     lineParam.colorType = TagType::IVec;
+    lineParam.name = "l1";
     GuiElement* l = factory(guiElement::LINE, lineParam);
     expectedRoot->addElement(l);
 
@@ -342,8 +343,18 @@ int readTest1() {
     arrowParam.pointCType = TagType::IVec;
     arrowParam.color = ivec3(125, 125, 125);
     arrowParam.colorType = TagType::IVec;
+    arrowParam.name = "a1";
     GuiElement* a = factory(guiElement::ARROW, arrowParam);
     expectedRoot->addElement(a);
+
+    expectedRoot->deleteElement(arrowParam.name);
+    for (GuiElement *e : expectedRoot->getElements()) {
+        if (e->getName() == arrowParam.name) {
+            failure = 1;
+        }
+    }
+    GuiElement* newA = factory(guiElement::ARROW, arrowParam);
+    expectedRoot->addElement(newA);
 
     GUIFile gui;
     gui.readFile("testFiles/readTest1.xml");

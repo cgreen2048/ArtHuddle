@@ -1091,10 +1091,13 @@ Checks whether the passed coordinates are within the bounds of the `Layout` obje
 
 ---
 
-### `clearElements()`
+### `void clearElements()`
 Clears the `elements` vector so that no previous elements will be drawn
 
 ---
+
+### `void deleteElement(const std::string& elementName)`
+Finds the element whose name = `elementName`, deleting if found
 
 ## UML Diagram
 ![UML Diagram](images/Milestone005_UML.png)
