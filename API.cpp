@@ -75,12 +75,38 @@ void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 c
             return;
         }
         case guiElement::ARROW: {
+            if ((point1.x > point2.x) && (point1.y > point2.y)) {
+                ivec2 holder = point1;
+                point1 = point2;
+                point2 = holder;
+            }
             ep.min = point1;
-            ep.max = point2;
-            ep.pointA = ivec2(point2.x, point1.y - ((point2.y - point1.y)/5));
-            ep.pointB = ivec2(point2.x, point2.y + ((point2.y - point1.y)/5));
+            ep.max = point2;            
+            ivec2 center = ivec2(std::abs(point2.x + point1.x)/2, std::abs(point2.y + point1.y)/2);
+
+            if ((point3.y > center.y) && (point3.x < point2.x) && (point3.x > point1.x)) {
+                ep.pointA = ivec2(point1.x - ((point2.x - point1.x)/5), point2.y);
+                ep.pointB = ivec2(point2.x + ((point2.x - point1.x)/5), point2.y);
+            }
+            else if ((point3.y < center.y) && (point3.x > point1.x) && (point3.x < point2.x)) {
+                ep.pointA = ivec2(point1.x - ((point2.x - point1.x)/5), point1.y);
+                ep.pointB = ivec2(point2.x + ((point2.x - point1.x)/5), point1.y);
+            }
+            else if (point3.x < center.x) {
+                ep.pointA = ivec2(point1.x, point1.y - ((point2.y - point1.y)/5));
+                ep.pointB = ivec2(point1.x, point2.y + ((point2.y - point1.y)/5));
+            }
+            else {
+                ep.pointA = ivec2(point2.x, point1.y - ((point2.y - point1.y)/5));
+                ep.pointB = ivec2(point2.x, point2.y + ((point2.y - point1.y)/5));
+            }
+            
             ep.pointC = point3;
-            ep.centerType = TagType::IVec;
+            ep.minType = TagType::IVec;
+            ep.maxType = TagType::IVec;
+            ep.pointAType = TagType::IVec;
+            ep.pointBType = TagType::IVec;
+            ep.pointCType = TagType::IVec;
             Arrow* element = dynamic_cast<Arrow*>(factory(ge, ep));
             if (element) {
                 tempLayout->addElement(element);
@@ -170,12 +196,38 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             return;
         }
         case guiElement::ARROW: {
+            if ((point1.x > point2.x) && (point1.y > point2.y)) {
+                ivec2 holder = point1;
+                point1 = point2;
+                point2 = holder;
+            }
             ep.min = point1;
-            ep.max = point2;
-            ep.pointA = ivec2(point2.x, point1.y - ((point2.y - point1.y)/5));
-            ep.pointB = ivec2(point2.x, point2.y + ((point2.y - point1.y)/5));
+            ep.max = point2;    
+            ivec2 center = ivec2(std::abs(point2.x + point1.x)/2, std::abs(point2.y + point1.y)/2);
+
+            if ((point3.y > center.y) && (point3.x < point2.x) && (point3.x > point1.x)) {
+                ep.pointA = ivec2(point1.x - ((point2.x - point1.x)/5), point2.y);
+                ep.pointB = ivec2(point2.x + ((point2.x - point1.x)/5), point2.y);
+            }
+            else if ((point3.y < center.y) && (point3.x > point1.x) && (point3.x < point2.x)) {
+                ep.pointA = ivec2(point1.x - ((point2.x - point1.x)/5), point1.y);
+                ep.pointB = ivec2(point2.x + ((point2.x - point1.x)/5), point1.y);
+            }
+            else if (point3.x < center.x) {
+                ep.pointA = ivec2(point1.x, point1.y - ((point2.y - point1.y)/5));
+                ep.pointB = ivec2(point1.x, point2.y + ((point2.y - point1.y)/5));
+            }
+            else {
+                ep.pointA = ivec2(point2.x, point1.y - ((point2.y - point1.y)/5));
+                ep.pointB = ivec2(point2.x, point2.y + ((point2.y - point1.y)/5));
+            }
+            
             ep.pointC = point3;
-            ep.centerType = TagType::IVec;
+            ep.minType = TagType::IVec;
+            ep.maxType = TagType::IVec;
+            ep.pointAType = TagType::IVec;
+            ep.pointBType = TagType::IVec;
+            ep.pointCType = TagType::IVec;
             Arrow* element = dynamic_cast<Arrow*>(factory(ge, ep));
             if (element) {
                 rootLayout->addElement(element);

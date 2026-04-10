@@ -123,22 +123,26 @@ Attempts to play the file specified by `filePath` using the program's `SoundPlay
 ---
 
 ### `void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
-Draws an element to the `tempLayout` `Layout` object 
+Draws an element of type specified by `type` to the `tempLayout` `Layout` object based on the three passed coordinates
+- Some shapes need fewer than three coordinates
+- For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
 
 ---
 
 ### `void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
-
+Draws an element of type specified by `type` to the `rootLayout` `Layout` object based on the three passed coordinates
+- Some shapes need fewer than three coordinates
+- For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
 
 ---
 
 ### `void update()`
-
+Clears the screen, draws all elements in `rootLayout`, blits the screen, and updates the window
 
 ---
 
 ### `void closeAll()`
-
+Deletes `soundPlayer` and `screen`, then quits SDL
 
 ---
 

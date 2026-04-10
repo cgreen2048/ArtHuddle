@@ -5,6 +5,8 @@
 #include <string>
 #include <iostream>
 #include <limits>
+#include <cmath>
+#include <algorithm>
 #include "vec2.hpp"
 #include "vec3.hpp"
 
