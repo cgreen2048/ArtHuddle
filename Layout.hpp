@@ -35,6 +35,7 @@ class Layout : public GuiElement {
         bool isActive();
         void addElement(GuiElement *element);
         void draw(Screen *screen);
+        GuiElement* clone() const;
         void writeXml(std::ostream& out, int depth = 0) const;
         bool resolveEvent(Event* e);
         const std::vector<GuiElement*>& getElements() const;
@@ -42,10 +43,10 @@ class Layout : public GuiElement {
         int getAbsoluteStartY();
         int getAbsoluteEndX();
         int getAbsoluteEndY();
-        bool isValid(ElementParameters ep);
         bool isInside(ivec2 coordinates);
         void clearElements();
         void deleteElement(std::string elementName);
+        bool validateAndNormalize(ElementParameters& ep);
 };
 
 #endif

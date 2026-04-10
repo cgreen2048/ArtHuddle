@@ -1,6 +1,6 @@
 #include "EventSystem.hpp"
 #include <iostream>
-#include "ClickEvent.hpp"
+
 
 EventSystem::EventSystem() {}
 
@@ -22,7 +22,6 @@ std::unique_ptr<Event> EventSystem::poll() {
 }
 
 void EventSystem::processEvents(Layout *root){
-    // std::cout << "Processing events, queue size: " << eventQueue.size() << '\n';
     while(!eventQueue.empty()){
         std::unique_ptr<Event> e = poll();
 
@@ -32,7 +31,6 @@ void EventSystem::processEvents(Layout *root){
 
         if(e->getType() == EventType::SOUND){
             SoundEvent* sound = static_cast<SoundEvent*>(e.get());
-            std::cout << "Processing sound event\n";
             switch (sound->getAction()) {
                 case SoundActionType::PLAY:
                     soundPlayer->playSound(sound->getSoundName(), sound->shouldLoop());
@@ -47,9 +45,29 @@ void EventSystem::processEvents(Layout *root){
                     break;
             }
         }
-        else{
-            // Handle other event types here by trickling down through the layout tree and calling resolveEvent on each element
-            root->resolveEvent(e.get());
+        else {
+            if (targetedElement != nullptr &&
+                    (e->getType() == EventType::MOUSE_DOWN 
+                    || e->getType() == EventType::MOUSE_MOTION
+                    ||e->getType() == EventType::MOUSE_UP)
+                ) {
+                Freehand *fr = dynamic_cast<Freehand*>(targetedElement);
+                if (fr != nullptr) {
+                    bool success = fr->resolveEvent(e.get());
+
+                    if (!success && fr->isFinishedFreehandDrawing()) {
+                        // ADD ROOT DELETE FUNCTON TO DELETE INCOMPLETE FREEHAND
+                    }
+
+                    if (e->getType() == EventType::MOUSE_UP) {
+                        targetedElement = nullptr;
+                    }
+                }
+
+            }
+            else {
+                root->resolveEvent(e.get());
+            }
         }
     }
 }
@@ -58,6 +76,14 @@ void EventSystem::setSoundPlayer(SoundPlayer* soundPlayer) {
     this->soundPlayer = soundPlayer;
 }
 
+void EventSystem::setTargetedElement(GuiElement* e) {
+    this->targetedElement = e;
+}
+
 SoundPlayer* EventSystem::getSoundPlayer() {
     return soundPlayer;
+}
+
+GuiElement* EventSystem::getTargetedElement() {
+    return targetedElement;
 }

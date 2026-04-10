@@ -3,7 +3,7 @@
 Layout::Layout() : active{false} {}
 
 Layout::Layout(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->start = ep.layoutStart;
@@ -77,6 +77,10 @@ void Layout::draw(Screen *screen) {
     for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
         (*start)->draw(screen);
     }
+}
+
+GuiElement* Layout::clone() const {
+    return new Layout(*this);
 }
 
 static std::string indent(int depth) {
@@ -182,7 +186,7 @@ int Layout::getAbsoluteEndY() {
     return this->parentStart.y + static_cast<int>(this->end.y * (this->parentEnd.y - this->parentStart.y));
 }
 
-bool Layout::isValid(ElementParameters ep) {
+bool Layout::validateAndNormalize(ElementParameters& ep) {
     if ((ep.layoutStart.x == std::numeric_limits<float>::lowest()) || (ep.layoutStart.y == std::numeric_limits<float>::lowest())) {
         return false;
     }
