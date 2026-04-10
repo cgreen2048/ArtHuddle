@@ -30,6 +30,12 @@ class Arrow : public GuiElement {
         void draw(Screen* screen);
         void writeXml(std::ostream& out, int depth) const;
         bool isValid(ElementParameters ep);
+        bool isInside(ivec2 coordinates);
+        ivec2 getMin();
+        ivec2 getMax();
+        ivec2 getA();
+        ivec2 getB();
+        ivec2 getC();
 };
 
 #endif

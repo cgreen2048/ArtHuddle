@@ -25,9 +25,12 @@ class Box : public GuiElement {
 		void setMin(const ivec2& v, TagType t);
 		void setMax(const ivec2& v, TagType t);
 		void setColor(const ivec3& v, TagType t);
+		ivec2 getMin();
+		ivec2 getMax();
 		void writeXml(std::ostream& out, int depth) const;
 		bool isValid(ElementParameters ep);
 		bool inBounds(const ivec2& point) const;
+		bool isInside(ivec2 coordinates);
 };
 
 #endif

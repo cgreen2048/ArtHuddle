@@ -75,6 +75,14 @@ void Line::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
+ivec2 Line::getStart() {
+    return this->start;
+}
+
+ivec2 Line::getEnd() {
+    return this->end;
+}
+
 void Line::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 
@@ -118,4 +126,17 @@ bool Line::isValid(ElementParameters ep) {
         ep.color.z = 125;
     }
     return true;
+}
+
+bool Line::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    int term1 = (coordinates.y - this->start.y) * (this->end.x - this->start.x);
+    int term2 = (coordinates.x - this->start.x) * (this->end.y - this->start.y);
+    int difference = term1 - term2;
+    if (difference == 0) {
+        return true;
+    }
+    return false;
 }
