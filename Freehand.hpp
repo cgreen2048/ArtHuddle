@@ -10,15 +10,18 @@
 #include "MouseUpEvent.hpp"
 #include "MouseMotionEvent.hpp"
 #include "ElementParameters.hpp"
+#include "XmlWriteHelpers.hpp"
+#include <limits>
+
+#define PIXEL_DISTANCE_THRESHOLD 3
 
 class Freehand : public GuiElement {
     private:
-        std::vector<GuiElement*> elements;
+        std::vector<ivec2> points;
         bool hasFirstPoint = false;
         ivec2 lastDrawnPoint; 
         bool finished = false;
         ivec3 color;
-        void addElement(GuiElement*);
     public:
         Freehand();
         Freehand(ivec3 color);

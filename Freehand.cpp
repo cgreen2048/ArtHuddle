@@ -1,23 +1,29 @@
 #include "Freehand.hpp"
 #include <iostream>
 
-Freehand::Freehand() : elements{}, lastDrawnPoint{0,0}, color{0,0,0} {}
+Freehand::Freehand() : points{}, lastDrawnPoint{0,0}, color{0,0,0} {}
 
-Freehand::Freehand(ivec3 color) : elements{}, lastDrawnPoint{0,0}, color{color} {}
+Freehand::Freehand(ivec3 color) : points{}, lastDrawnPoint{0,0}, color{color} {}
 
 Freehand::Freehand(const Freehand& cp) : Freehand() {
     this->hasFirstPoint = cp.hasFirstPoint;
     this->lastDrawnPoint = cp.lastDrawnPoint;
     this->finished = cp.finished;
-
-    for (GuiElement *e : cp.elements) {
-        this->elements.push_back(e->clone());
-    }
+    this->points = cp.points;
 }
 
 void Freehand::draw(Screen *screen) {
-    for (GuiElement *e : this->elements) {
-        e->draw(screen);
+    if (points.empty()) {
+        return;
+    }
+
+    if (points.size() == 1) {
+        screen->colorOnePixel(points[0], color, parentStart, parentEnd);
+        return;
+    }
+
+    for (size_t i = 1; i < points.size(); ++i) {
+        screen->drawBresenhamLine(points[i - 1], points[i], color, parentStart, parentEnd);
     }
 }
 
@@ -41,7 +47,7 @@ bool Freehand::resolveEvent(Event *e) {
             if (!hasFirstPoint) {
                 lastDrawnPoint = md->getCoords();
                 hasFirstPoint = true;
-                this->addElement(new Point(lastDrawnPoint, color));
+                this->points.push_back(ivec2{lastDrawnPoint});
                 return true;
             }
 
@@ -62,7 +68,14 @@ bool Freehand::resolveEvent(Event *e) {
                 return true;
             }
 
-            this->addElement(new Line(lastDrawnPoint, current, color));
+            int dx = current.x - lastDrawnPoint.x;
+            int dy = current.y - lastDrawnPoint.y;
+
+            if (dx * dx + dy * dy < PIXEL_DISTANCE_THRESHOLD * PIXEL_DISTANCE_THRESHOLD) {  
+                return true;
+            }
+
+            this->points.push_back(ivec2{lastDrawnPoint});
             lastDrawnPoint = current;
             return true;
         }
@@ -71,7 +84,7 @@ bool Freehand::resolveEvent(Event *e) {
             MouseUpEvent* mu = static_cast<MouseUpEvent*>(e);
 
             ivec2 current = mu->getCoords();
-            this->addElement(new Line(lastDrawnPoint, current, color));
+            this->points.push_back(ivec2{lastDrawnPoint});
             lastDrawnPoint = current;
             this->finished = true;
             return true;
@@ -86,8 +99,8 @@ void Freehand::writeXml(std::ostream& out, int depth) const {
 
     out << pad << "<freehand>\n";
 
-    for (GuiElement* e : elements) {
-        e->writeXml(out, depth + 1); 
+    for (ivec2 point : this->points) {
+        writeIVec2(out, point, pad);
     }
 
     out << pad << "</freehand>\n";
@@ -95,10 +108,4 @@ void Freehand::writeXml(std::ostream& out, int depth) const {
 
 bool Freehand::isValid(ElementParameters ep) {
     return true;
-}
-
-void Freehand::addElement(GuiElement *element) {
-    this->elements.push_back(element);
-    element->setParentStart(this->getParentStart());
-    element->setParentEnd(this->getParentEnd());
 }
