@@ -4,6 +4,7 @@
 #include "../Layout.hpp"
 #include "../vec2.hpp"
 #include "../vec3.hpp"
+#include "../Box.hpp"
 #include "../GuiElement.hpp"
 #include "../ElementParameters.hpp"
 #include "../EventSystem.hpp"
@@ -11,6 +12,7 @@
 #include "../MouseUpEvent.hpp"
 #include "../MouseMotionEvent.hpp"
 #include "../SoundPlayer.hpp"
+#include "../Selected.hpp"
 #include <iostream>
 #include <SDL3/SDL.h>
 
@@ -34,6 +36,8 @@ int main() {
     }
     SDL_Event event;
     Screen *screen = new Screen(X, Y);
+    EventSystem& eventSystem = EventSystem::getInstance();
+    Selected& selectedSingleton = Selected::getInstance();
     
     ElementParameters rootLayout;
     rootLayout.layoutStart = vec2(0.0, 0.0);
@@ -43,12 +47,31 @@ int main() {
     rootLayout.active = true;
     Layout *layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, rootLayout));
 
+    ElementParameters boxParam;
+    boxParam.min = ivec2(50, 200);
+    boxParam.max = ivec2(100, 300);
+    boxParam.color = ivec3(20, 255, 20);
+    boxParam.minType = TagType::IVec;
+    boxParam.maxType = TagType::IVec;
+    boxParam.name = "box1";
+    Box* box = dynamic_cast<Box*>(factory(guiElement::BOX, boxParam));
+    layout->addElement(box);
+
+    ElementParameters boundingLayoutParam;
+    boundingLayoutParam.layoutStart = vec2(0.0,0.0);
+    boundingLayoutParam.layoutEnd = vec2(1.0, 1.0);
+    boundingLayoutParam.parentStart = ivec2(0,0);
+    boundingLayoutParam.parentEnd = ivec2(X,Y);
+    boundingLayoutParam.active = true;
+    boundingLayoutParam.name = "boundingLayout";
+    Layout *boundingLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, boundingLayoutParam));
+    selectedSingleton.setSelectedLayout(boundingLayout);
+    layout->addElement(boundingLayout);
+
     ivec3 color{255,0,0};
 
-    EventSystem& eventSystem = EventSystem::getInstance();
-
     // This marks that the user is in Freehand draw mode, which will allow for Freehand upon mouse down
-    bool isFreehandMode = true;
+    bool isFreehandMode = false;
 
     // This marks whether or not we're in Freehand shape vs. Freehand line mode. Press the B ky on the keyboard to switch between modes
     bool isFreehandShape = true;
@@ -69,6 +92,9 @@ int main() {
                         
                         eventSystem.push(std::make_unique<MouseDownEvent>(point));
                         
+                    }
+                    else {
+                        eventSystem.push(std::make_unique<ClickEvent>(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
                     }
                     break;
                 }
@@ -99,7 +125,22 @@ int main() {
                         }
 
                         isFreehandShape = !isFreehandShape;
+                    }
+                    if (event.key.key == SDLK_F) {
+                        std::cout << "Toggling freehand drawing mode ";
+                        if (isFreehandMode) {
+                            std::cout << "off\n";
+                        } else {
+                            std::cout << "on\n";
+                        }
 
+                        isFreehandMode = !isFreehandMode;
+                    }
+                    if (event.key.key == SDLK_BACKSPACE) {
+                        GuiElement *selected = selectedSingleton.getSelectedElement();
+                        if (selected != nullptr) {
+                            layout->deleteElement(selected->getName());
+                        }
                     }
                     break;
                 }

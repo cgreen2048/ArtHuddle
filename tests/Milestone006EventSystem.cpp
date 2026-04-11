@@ -1,10 +1,13 @@
 #include <iostream>
 #include <memory>
+#include "../Layout.hpp"
 #include "../EventSystem.hpp"
 #include "../Event.hpp"
 #include "../ClickEvent.hpp"
 #include "../ShowEvent.hpp"
 #include "../SoundEvent.hpp"
+#include "../SoundPlayer.hpp"
+#include <SDL3/SDL.h>
 
 
 

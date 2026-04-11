@@ -4,6 +4,7 @@
 #include "../ClickEvent.hpp"
 #include "../ShowEvent.hpp"
 #include "../SoundEvent.hpp"
+#include "../SoundPlayer.hpp"
 #include "../EventSystem.hpp"
 #include "../Factory.hpp"
 #include "../Layout.hpp"
