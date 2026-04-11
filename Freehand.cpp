@@ -123,6 +123,7 @@ bool Freehand::resolveEvent(Event *e) {
             lastDrawnPoint = md->getCoords();
             hasFirstPoint = true;
             this->points.push_back(ivec2{lastDrawnPoint});
+            this->updateBounds(ivec2{lastDrawnPoint});
             return true;
         }
 
@@ -151,6 +152,7 @@ bool Freehand::resolveEvent(Event *e) {
         }
 
         this->points.push_back(ivec2{lastDrawnPoint});
+        this->updateBounds(ivec2{lastDrawnPoint});
         lastDrawnPoint = current;
         return true;
     }
@@ -161,6 +163,7 @@ bool Freehand::resolveEvent(Event *e) {
 
         ivec2 current = mu->getCoords();
         this->points.push_back(ivec2{lastDrawnPoint});
+        this->updateBounds(ivec2{lastDrawnPoint});
         this->finished = true;
 
         if (isFreehandShape) {
@@ -175,6 +178,7 @@ bool Freehand::resolveEvent(Event *e) {
 
             this->points.push_back(points[0]);
             lastDrawnPoint = points[0];
+            this->updateBounds(ivec2{lastDrawnPoint});
         }
         return true;
     }

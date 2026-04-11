@@ -71,7 +71,7 @@ void Ellipse::writeXml(std::ostream& out, int depth) const {
 bool Ellipse::resolveEvent(Event* e) {
     if (e->getType() == EventType::CLICK) {
         ClickEvent* click = dynamic_cast<ClickEvent*>(e);
-        if (isPointInside(ivec2(click->getMouseX(), click->getMouseY()))) {
+        if (isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
             // Handle selecting the element
             // Try selecting child components of element first for greater specificity
         }
@@ -101,15 +101,6 @@ bool Ellipse::validateAndNormalize(ElementParameters& ep) {
     return true;
 }
 
-bool Ellipse::isPointInside(ivec2 point) {
-    return (
-        (point.x > center.x - radiusX) 
-        && (point.x < center.x + radiusX)
-        && (point.y > center.y - radiusY)
-        && (point.y < center.y + radiusY)
-    );
-}
-
 ivec2 Ellipse::getCenter() {
     return this->center;
 }
@@ -126,5 +117,10 @@ bool Ellipse::isInside(ivec2 coordinates) {
     if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
         return false;
     }
-    return this->isPointInside(coordinates);
+    return (
+        (coordinates.x > center.x - radiusX) 
+        && (coordinates.x < center.x + radiusX)
+        && (coordinates.y > center.y - radiusY)
+        && (coordinates.y < center.y + radiusY)
+    );
 }

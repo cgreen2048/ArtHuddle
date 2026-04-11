@@ -31,7 +31,6 @@ class Ellipse : public GuiElement {
         void writeXml(std::ostream& out, int depth) const;
         bool resolveEvent(Event* e);
         bool validateAndNormalize(ElementParameters& ep);
-        bool isPointInside(ivec2 point);
 
         ivec2 getCenter();
         int getRadiusX();

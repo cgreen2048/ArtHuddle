@@ -1115,7 +1115,7 @@ Finds the element whose name = `elementName`, deleting if found
 
 ## Data Members
 
-### `std::vector<ivec2> points;
+### `std::vector<ivec2> points`
 Stores points part of the freehand drawing. 
 By default, this will only store points that are at least 
 `PIXEL_DRAW_DIST_THRESHOLD` (default = 3) pixels away from each other to increase performance
