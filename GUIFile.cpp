@@ -104,7 +104,8 @@ static bool isElementOpen(const std::string& tag) {
            tag.rfind("<button", 0) == 0 ||
            tag.rfind("<triangle", 0) == 0 ||
            tag.rfind("<ellipse", 0) == 0 ||
-           tag.rfind("<arrow", 0) == 0;
+           tag.rfind("<arrow", 0) == 0 ||
+           tag.rfind("<freehand", 0) == 0;
 }
 
 static guiElement determineGuiElementOpenerType(const std::string& tag) {
@@ -128,6 +129,9 @@ static guiElement determineGuiElementOpenerType(const std::string& tag) {
     }
     if (tag.rfind("<arrow", 0) == 0) {
         return guiElement::ARROW;
+    }
+    if (tag.rfind("<freehand", 0) == 0) {
+        return guiElement::FREEHAND;
     }
 
     std::cerr << "Malformed XML\n";
@@ -155,6 +159,9 @@ static bool isMatchingElementClose(const std::string& tag, guiElement type) {
     }
     if (type == guiElement::ARROW) {
         return tag == ARROW_CLOSE;
+    }
+    if (type == guiElement::FREEHAND) {
+        return tag == FREEHAND_CLOSE;
     }
     return false;
 }
@@ -192,6 +199,24 @@ static bool getFloatAttribute(const std::string& tag,
 
 
     value = std::stof(strValue);
+    return true;
+}
+
+static bool getBoolAttribute(const std::string& tag,
+                                const std::string& attrName,
+                                bool& value) {
+    std::string strValue;
+    
+    if (!getStringAttribute(tag, attrName, strValue)){
+        return false;
+    }
+
+    if (strValue == "true") {
+        value = true;
+    }
+    else {
+        value = false;
+    }
     return true;
 }
 
@@ -241,6 +266,17 @@ static bool setRadiusFromTag(const std::string& tag, ElementParameters* ep) {
         return false;
     }
     ep->radiusY = static_cast<int>(radiusY);
+
+    return true;
+}
+
+static bool setShapeModeFromTag(const std::string& tag, ElementParameters* ep) {
+    bool shapeMode;
+
+    if (!getBoolAttribute(tag, "shapeMode", shapeMode)) {
+        shapeMode = false;
+    }
+    ep->isFreehandShape = shapeMode;
 
     return true;
 }
@@ -442,6 +478,10 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
         }
     }
 
+    if (type == guiElement::FREEHAND) {
+        setShapeModeFromTag(elementOpenTag, &ep);
+    }
+
 
     int lineVec2Index = 0;
     int boxVec2Index = 0;
@@ -522,6 +562,9 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 ep.center = v;
                 ep.centerType = TagType::Vec;
             }
+            else if (type == guiElement::FREEHAND) {
+                ep.points.push_back(v);
+            }
         }
         else if (tag == IVEC2_OPEN) {
             ivec2 v;
@@ -575,6 +618,9 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
             else if (type == guiElement::ELLIPSE) {
                 ep.center = v;
                 ep.centerType = TagType::IVec;
+            }
+            else if (type == guiElement::FREEHAND) {
+                ep.points.push_back(v);
             }
         }
         else if (tag == VEC3_OPEN) {

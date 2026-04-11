@@ -124,14 +124,14 @@ void Selected::setSelectedElement(GuiElement* updatedElement) {
             this->maxBound = freehand->getMaxBound();
         }
         else {
-            const std::vector<ivec2>& points = freehand->getPoints();
+            std::vector<ivec2>& points = freehand->getPoints();
 
             int minX = points[0].x;
             int maxX = points[0].x;
             int minY = points[0].y;
             int maxY = points[0].y;
 
-            for (const ivec2& point : points) {
+            for (ivec2& point : points) {
                 minX = std::min(point.x, minX);
                 maxX = std::max(point.x, maxX);
                 minY = std::min(point.y, minY);

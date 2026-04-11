@@ -11,6 +11,7 @@
 #include "../Triangle.hpp"
 #include "../GuiElement.hpp"
 #include "../Button.hpp"
+#include "../Freehand.hpp"
 
 int readTest1();
 int readTest2();
@@ -206,6 +207,21 @@ int compareSingleElement(GuiElement* actual, GuiElement* expected) {
         return 0;
     }
 
+    if (auto* aFreehand = dynamic_cast<Freehand*>(actual)) {
+        auto* eFreehand = dynamic_cast<Freehand*>(expected);
+        if (!eFreehand) {
+            return 1;
+        }
+        std::vector<ivec2>& aPoints = aFreehand->getPoints();
+        std::vector<ivec2>& ePoints = eFreehand->getPoints();
+        for (int i = 0; i < aPoints.size(); ++i) {
+            if (aPoints[i] != ePoints[i]) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
     return 1;
 }
 
@@ -307,6 +323,7 @@ int readTest1() {
     boxParam.minType = TagType::IVec;
     boxParam.maxType = TagType::IVec;
     boxParam.colorType = TagType::IVec;
+    boxParam.name = "box1";
     GuiElement* b = factory(guiElement::BOX, boxParam);
     expectedRoot->addElement(b);
 
@@ -315,6 +332,7 @@ int readTest1() {
     pointParam.color = ivec3(67, 200, 142);
     pointParam.coordsType = TagType::IVec;
     pointParam.colorType = TagType::IVec;
+    pointParam.name = "p1";
     GuiElement* p = factory(guiElement::POINT, pointParam);
     expectedRoot->addElement(p);
 
@@ -327,6 +345,7 @@ int readTest1() {
     triangleParam.pointBType = TagType::IVec;
     triangleParam.pointCType = TagType::IVec;
     triangleParam.colorType = TagType::IVec;
+    triangleParam.name = "t1";
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     expectedRoot->addElement(t);
 
@@ -347,14 +366,15 @@ int readTest1() {
     GuiElement* a = factory(guiElement::ARROW, arrowParam);
     expectedRoot->addElement(a);
 
-    expectedRoot->deleteElement(arrowParam.name);
-    for (GuiElement *e : expectedRoot->getElements()) {
-        if (e->getName() == arrowParam.name) {
-            failure = 1;
-        }
-    }
-    GuiElement* newA = factory(guiElement::ARROW, arrowParam);
-    expectedRoot->addElement(newA);
+    ElementParameters freehandParam;
+    freehandParam.points.push_back(ivec2(250,250));
+    freehandParam.points.push_back(ivec2(500,400));
+    freehandParam.points.push_back(ivec2(500,150));
+    freehandParam.points.push_back(ivec2(500,500));
+    freehandParam.points.push_back(ivec2(650,325));
+    freehandParam.isFreehandShape = true;
+    GuiElement* f = factory(guiElement::FREEHAND, freehandParam);
+    expectedRoot->addElement(f);
 
     GUIFile gui;
     gui.readFile("testFiles/readTest1.xml");
@@ -388,6 +408,7 @@ int readTest2() {
     triangleParam.pointBType = TagType::IVec;
     triangleParam.pointCType = TagType::IVec;
     triangleParam.colorType = TagType::IVec;
+    triangleParam.name = "t1";
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     expectedRoot->addElement(t);
 
@@ -395,12 +416,14 @@ int readTest2() {
     nested->setStart(vec2(0.25f, 0.25f));
     nested->setEnd(vec2(0.75f, 0.75f));
     nested->setActive(true);
+    nested->setName("l1");
 
     ElementParameters pParam;
     pParam.coords = ivec2(480, 270);
     pParam.color = ivec3(67, 200, 142);
     pParam.coordsType = TagType::IVec;
     pParam.colorType = TagType::IVec;
+    pParam.name = "p1";
     GuiElement* p = factory(guiElement::POINT, pParam);
     nested->addElement(p);
 
@@ -411,6 +434,7 @@ int readTest2() {
     boxParam.minType = TagType::IVec;
     boxParam.maxType = TagType::IVec;
     boxParam.colorType = TagType::IVec;
+    boxParam.name = "box1";
     GuiElement* b = factory(guiElement::BOX, boxParam);
     nested->addElement(b);
 
@@ -440,6 +464,7 @@ int readTest2() {
     arrowParam.pointCType = TagType::IVec;
     arrowParam.color = ivec3(125, 125, 125);
     arrowParam.colorType = TagType::IVec;
+    arrowParam.name = "a1";
     GuiElement* a = factory(guiElement::ARROW, arrowParam);
     nested->addElement(a);
 
@@ -504,6 +529,7 @@ int readTest5() {
     lineParam.startType = TagType::IVec;
     lineParam.endType = TagType::IVec;
     lineParam.colorType = TagType::IVec;
+    lineParam.name = "l1";
     GuiElement* l = factory(guiElement::LINE, lineParam);
     expectedRoot->addElement(l);
 
@@ -511,12 +537,14 @@ int readTest5() {
     nested->setStart(vec2(0.10f, 0.20f));
     nested->setEnd(vec2(0.90f, 0.95f));
     nested->setActive(true);
+    nested->setName("nested1");
 
     ElementParameters pParam;
     pParam.coords = ivec2(13, 14);
     pParam.color = ivec3(101, 102, 103);
     pParam.coordsType = TagType::IVec;
     pParam.colorType = TagType::IVec;
+    pParam.name = "p1";
     GuiElement* p = factory(guiElement::POINT, pParam);
     nested->addElement(p);
 
@@ -607,6 +635,7 @@ int writeTest1() {
     Layout* root = new Layout();
     root->setStart(vec2(0.0f, 0.0f));
     root->setEnd(vec2(1.0f, 1.0f));
+    root->setName("layout1");
     root->setActive(true);
 
     ElementParameters lineParam;
@@ -616,6 +645,7 @@ int writeTest1() {
     lineParam.startType = TagType::Vec;
     lineParam.endType = TagType::Vec;
     lineParam.colorType = TagType::Vec;
+    lineParam.name = "l1";
     GuiElement* l = factory(guiElement::LINE, lineParam);
     root->addElement(l);
 
@@ -637,6 +667,7 @@ int writeTest1() {
     boxParam.minType = TagType::Vec;
     boxParam.maxType = TagType::Vec;
     boxParam.colorType = TagType::Vec;
+    boxParam.name = "box1";
     GuiElement* b = factory(guiElement::BOX, boxParam);
     root->addElement(b);
 
@@ -666,8 +697,20 @@ int writeTest1() {
     arrowParam.pointCType = TagType::IVec;
     arrowParam.color = ivec3(125, 125, 125);
     arrowParam.colorType = TagType::IVec;
+    arrowParam.name = "a1";
     GuiElement* a = factory(guiElement::ARROW, arrowParam);
     root->addElement(a);
+
+    ElementParameters freehandParam;
+    freehandParam.points.push_back(ivec2(250,250));
+    freehandParam.points.push_back(ivec2(500,400));
+    freehandParam.points.push_back(ivec2(500,150));
+    freehandParam.points.push_back(ivec2(500,500));
+    freehandParam.points.push_back(ivec2(650,325));
+    freehandParam.isFreehandShape = true;
+    freehandParam.name = "f1";
+    GuiElement* f = factory(guiElement::FREEHAND, freehandParam);
+    root->addElement(f);
 
     gui.setRootLayout(root);
 
@@ -675,6 +718,7 @@ int writeTest1() {
     expectedRoot->setStart(vec2(0.0f, 0.0f));
     expectedRoot->setEnd(vec2(1.0f, 1.0f));
     expectedRoot->setActive(true);
+    expectedRoot->setName("layout1");
 
     ElementParameters newLineParam;
     newLineParam.start = toIVec2(50.5f, 902.47f);
@@ -683,6 +727,7 @@ int writeTest1() {
     newLineParam.startType = TagType::Vec;
     newLineParam.endType = TagType::Vec;
     newLineParam.colorType = TagType::Vec;
+    newLineParam.name = "l1";
     GuiElement* el = factory(guiElement::LINE, newLineParam);
     expectedRoot->addElement(el);
 
@@ -704,6 +749,7 @@ int writeTest1() {
     newBoxParam.minType = TagType::Vec;
     newBoxParam.maxType = TagType::Vec;
     newBoxParam.colorType = TagType::Vec;
+    newBoxParam.name = "box1";
     GuiElement* eb = factory(guiElement::BOX, boxParam);
     expectedRoot->addElement(eb);
 
@@ -733,8 +779,20 @@ int writeTest1() {
     expectedArrowParam.pointCType = TagType::IVec;
     expectedArrowParam.color = ivec3(125, 125, 125);
     expectedArrowParam.colorType = TagType::IVec;
+    expectedArrowParam.name = "a1";
     GuiElement* expectedArrow = factory(guiElement::ARROW, expectedArrowParam);
     expectedRoot->addElement(expectedArrow);
+
+    ElementParameters expectedFreehandParam;
+    expectedFreehandParam.points.push_back(ivec2(250,250));
+    expectedFreehandParam.points.push_back(ivec2(500,400));
+    expectedFreehandParam.points.push_back(ivec2(500,150));
+    expectedFreehandParam.points.push_back(ivec2(500,500));
+    expectedFreehandParam.points.push_back(ivec2(650,325));
+    expectedFreehandParam.isFreehandShape = true;
+    expectedFreehandParam.name = "f1";
+    GuiElement* fr = factory(guiElement::FREEHAND, expectedFreehandParam);
+    expectedRoot->addElement(fr);
 
     gui.writeFile("testFiles/writeTest1.xml");
     gui.readFile("testFiles/writeTest1.xml");
@@ -796,11 +854,13 @@ int writeTest3() {
     Layout* root = new Layout();
     root->setStart(vec2(0.0f, 0.0f));
     root->setEnd(vec2(1.0f, 1.0f));
+    root->setName("layout1");
     root->setActive(true);
 
     Layout* nested1 = new Layout();
     nested1->setStart(vec2(0.25f, 0.25f));
     nested1->setEnd(vec2(0.75f, 0.75f));
+    nested1->setName("nested1");
     nested1->setActive(true);
 
     ElementParameters p1Param;
@@ -808,12 +868,14 @@ int writeTest3() {
     p1Param.color = ivec3(101, 102, 103);
     p1Param.coordsType = TagType::IVec;
     p1Param.colorType = TagType::IVec;
+    p1Param.name = "p1";
     GuiElement* p1 = factory(guiElement::POINT, p1Param);
     nested1->addElement(p1);
 
     Layout* nested2 = new Layout();
     nested2->setStart(vec2(0.50f, 0.50f));
     nested2->setEnd(vec2(1.00f, 1.00f));
+    nested2->setName("nested2");
     nested2->setActive(true);
 
     ElementParameters triangleParam;
@@ -825,6 +887,7 @@ int writeTest3() {
     triangleParam.pointBType = TagType::IVec;
     triangleParam.pointCType = TagType::IVec;
     triangleParam.colorType = TagType::IVec;
+    triangleParam.name = "t1";
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     nested2->addElement(t);
 
@@ -854,6 +917,7 @@ int writeTest3() {
     arrowParam.pointCType = TagType::IVec;
     arrowParam.color = ivec3(125, 125, 125);
     arrowParam.colorType = TagType::IVec;
+    arrowParam.name = "a1";
     GuiElement* a = factory(guiElement::ARROW, arrowParam);
     nested2->addElement(a);
 
@@ -864,11 +928,13 @@ int writeTest3() {
     Layout* expectedRoot = new Layout();
     expectedRoot->setStart(vec2(0.0f, 0.0f));
     expectedRoot->setEnd(vec2(1.0f, 1.0f));
+    expectedRoot->setName("layout1");
     expectedRoot->setActive(true);
 
     Layout* expectedNested1 = new Layout();
     expectedNested1->setStart(vec2(0.25f, 0.25f));
     expectedNested1->setEnd(vec2(0.75f, 0.75f));
+    expectedNested1->setName("nested1");
     expectedNested1->setActive(true);
 
     ElementParameters pointParam;
@@ -876,12 +942,14 @@ int writeTest3() {
     pointParam.color = ivec3(101, 102, 103);
     pointParam.coordsType = TagType::IVec;
     pointParam.colorType = TagType::IVec;
+    pointParam.name = "p1";
     GuiElement* expectedPoint = factory(guiElement::POINT, pointParam);
     expectedNested1->addElement(expectedPoint);
 
     Layout* expectedNested2 = new Layout();
     expectedNested2->setStart(vec2(0.50f, 0.50f));
     expectedNested2->setEnd(vec2(1.00f, 1.00f));
+    expectedNested2->setName("nested2");
     expectedNested2->setActive(true);
 
     ElementParameters triangleParam2;
@@ -893,6 +961,7 @@ int writeTest3() {
     triangleParam2.pointBType = TagType::IVec;
     triangleParam2.pointCType = TagType::IVec;
     triangleParam2.colorType = TagType::IVec;
+    triangleParam2.name = "t1";
     GuiElement* expectedTriangle = factory(guiElement::TRIANGLE, triangleParam2);
     expectedNested2->addElement(expectedTriangle);
 
@@ -922,6 +991,7 @@ int writeTest3() {
     expectedArrowParam.pointCType = TagType::IVec;
     expectedArrowParam.color = ivec3(125, 125, 125);
     expectedArrowParam.colorType = TagType::IVec;
+    expectedArrowParam.name = "a1";
     GuiElement* expectedArrow = factory(guiElement::ARROW, expectedArrowParam);
     expectedNested2->addElement(expectedArrow);
 

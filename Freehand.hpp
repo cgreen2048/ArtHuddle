@@ -34,7 +34,7 @@ class Freehand : public GuiElement {
         bool isInside(ivec2 coordinates);
         bool isFinished() const;
         bool isFreehandShapeMode() const;
-        const std::vector<ivec2>& getPoints() const;
+        std::vector<ivec2>& getPoints();
         ivec2 getMinBound() const;
         ivec2 getMaxBound() const;
         bool hasDrawBounds() const;

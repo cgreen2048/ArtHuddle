@@ -184,8 +184,9 @@ bool Freehand::resolveEvent(Event *e) {
 
 void Freehand::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
+    std::string shapeMode = isFreehandShape ? "true" : "false";
 
-    out << pad << "<freehand>\n";
+    out << pad << "<freehand " << "name=\"" << this->getName() << "\" shapeMode=\"" << shapeMode << "\">\n";
 
     for (ivec2 point : this->points) {
         writeIVec2(out, point, pad);
@@ -265,7 +266,7 @@ bool Freehand::isFreehandShapeMode() const {
     return isFreehandShape;
 }
 
-const std::vector<ivec2>& Freehand::getPoints() const {
+std::vector<ivec2>& Freehand::getPoints() {
     return points;
 }
 

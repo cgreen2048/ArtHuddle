@@ -917,6 +917,7 @@ The factory returns a pointer to a `GuiElement`, allowing the caller to treat al
 ### `GuiElement* factory(guiElement e, ElementParameters ep)`
 Creates a new GUI element based on the `guiElement` enum value.
 - Passes `ep` struct to the corresponding object's constructor.
+- Generates a random element name if not given
 - Returns pointer to a newly allocated `GuiElement` object.
 - Returns `nullptr` if the enum value does not match any supported element or if the constructor throws an exception due to invalid data.
 
@@ -1137,11 +1138,20 @@ Boolean to check if we're in Line mode or Shape mode
 ### `ivec3 color`
 The color for freehand drawing
 
+### `ivec2 minBound`
+The minimum calculated bound of freehand drawn pixels
+
+### `ivec2 maxBound`
+The maximum calculated bound of freehand drawn pixels
+
+### `bool hasBounds`
+Boolean to track if the `Freehand` has bounds for its drawn pixels
+
 ## Methods
 
 ### `Freehand()`
 Default constructor. Sets points to an empty vector, lastDrawnPoint to (0,0), and color
- to black
+ to black, and generates a random name
 
 ### `Freehand(ivec3 color, bool isFreehandShape = false)`
 Constructor allowing user to specify color and if in Line or Shape mode, defaulting to Line mode
@@ -1163,10 +1173,13 @@ as `Freehand` stores `ivec2`s, not `Point/Line` for speed
 After drawing all points, if the user has released their mouse and in freehand shape mode, compute the centroid of all points in `points`, then call `Freehand::floodFill` 
 starting from the centroid and flood filling to the border of the shape.
 
-### `void floodFill(ivec2 start, Screen* screen) 
+### `void floodFill(ivec2 start, Screen* screen)` 
 Flood fills a freehand shape from the starting point all the way to the borders
 Repeatedly pops from the stack, colors pixels that are not the correct color of the border, 
 and pushes all adjacent pixels to the stack to color until the stack is empty
+
+### `void updateBounds(const ivec2& coords)`
+Updates the bounds of the `Freehand` element as each pixel is drawn to the screen
 
 ### `GuiElement* clone()`
 Returns a clone of the `Freehand` element
@@ -1197,6 +1210,24 @@ Validates the `Freehand` element parameters to check if element can be construct
 - Sets lastDrawnPoint = the last point in `points`
 - Ensures that `finished` and `hasLastPoint` are both true for complete state
 - Sets `color` to default (125,125,125) if not included
+
+### `bool isFinished()`
+Returns if the `Freehand` is `finished` drawing or not
+
+### `bool isFreehandShapeMode()`
+Returns the mode of the `Freehand` for drawing, Shape or Line
+
+### `std::vector<ivec2>& getPoints()`
+Returns the `points` held within the `Freehand` element
+
+### `ivec2 getMinBound() const`
+Returns the minimum bound for the `Freehand` element's drawn points
+
+### `ivec2 getMaxBound() const`
+Returns the maximum bound for the `Freehand` element's drawn points
+
+### `bool hasDrawBounds() const`
+Returns if the `Freehand` has drawn bounds `minBound` and `maxBound`
 
 # Ellipse
 
