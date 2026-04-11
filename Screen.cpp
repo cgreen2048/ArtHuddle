@@ -2,9 +2,10 @@
 
 Screen::Screen() : width{0}, height{0} {}
 
-Screen::Screen(uint32_t w, uint32_t h) : Screen() {
+Screen::Screen(uint32_t w, uint32_t h, SDL_Renderer* renderer) : Screen() {
     this->width = w;
     this->height = h;
+    this->renderer = renderer;
     this->surface = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGBA32);
     if (!this->surface) {
         std::cerr << SDL_GetError();
@@ -16,6 +17,7 @@ Screen::Screen(uint32_t w, uint32_t h) : Screen() {
 Screen::Screen(const Screen& cp) : Screen() {
     this->width = cp.width;
     this->height = cp.height;
+    this->renderer = cp.renderer;
     this->surface = SDL_CreateSurface(this->width, this->height, SDL_PIXELFORMAT_RGBA32);
     if (!this->surface) {
         std::cerr << SDL_GetError();
@@ -171,7 +173,113 @@ void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors
     }
 }
 
+void Screen::drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, ivec2 parentStart, ivec2 parentEnd) {
+    float dx, dy, d1, d2, x = 0, y = radiusY;
 
+    d1 = (radiusY * radiusY) - (radiusX * radiusX * radiusY) + (0.25 * radiusX * radiusX);
+    dx = 2 * radiusY * radiusY * x;
+    dy = 2 * radiusX * radiusX * y;
+
+    int xCenter = center.x;
+    int yCenter = center.y;
+
+    while (dx < dy) 
+    {
+        // Colors pixels based on 4-way symmetry
+        int intX = static_cast<int>(x);
+        int intY = static_cast<int>(y);
+        for (int i = xCenter - intX; i <= xCenter + intX; ++i) {
+            colorOnePixel(ivec2(i, yCenter + intY), color, parentStart, parentEnd);
+            colorOnePixel(ivec2(i, yCenter - intY), color, parentStart, parentEnd);
+        }
+
+        if (d1 < 0)
+        {
+            x++;
+            dx = dx + (2 * radiusY * radiusY);
+            d1 = d1 + dx + (radiusY * radiusY);
+        }
+        else 
+        {
+            x++;
+            y--;
+            dx = dx + (2 * radiusY * radiusY);
+            dy = dy - (2 * radiusX * radiusX);
+            d1 = d1 + dx - dy + (radiusY * radiusY);
+        }
+    }
+
+    d2 = ((radiusY * radiusY) * ((x + 0.5) * (x + 0.5))) + 
+         ((radiusX * radiusX) * ((y - 1) * (y - 1))) -
+          (radiusX * radiusX * radiusY * radiusY);
+
+    while (y >= 0)
+    {
+
+        // Colors pixels based on 4-way symmetry
+        int intX = static_cast<int>(x);
+        int intY = static_cast<int>(y);
+        for (int i = xCenter - intX; i <= xCenter + intX; ++i) {
+            colorOnePixel(ivec2(i, yCenter + intY), color, parentStart, parentEnd);
+            colorOnePixel(ivec2(i, yCenter - intY), color, parentStart, parentEnd);
+        }
+
+        // Checking and updating parameter
+        // value based on algorithm
+        if (d2 > 0) 
+        {
+            y--;
+            dy = dy - (2 * radiusX * radiusX);
+            d2 = d2 + (radiusX * radiusX) - dy;
+        }
+        else 
+        {
+            y--;
+            x++;
+            dx = dx + (2 * radiusY * radiusY);
+            dy = dy - (2 * radiusX * radiusX);
+            d2 = d2 + dx - dy + (radiusX * radiusX);
+        }
+    }
+}
+
+void Screen::renderToRenderer(){
+    if (!this->renderer || !this->surface){
+        return;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(this->renderer, this->surface);
+    if(!texture){
+        std::cerr << SDL_GetError();
+        return;
+    }
+
+    SDL_RenderTexture(this->renderer, texture, nullptr, nullptr);
+    SDL_DestroyTexture(texture);
+}
+
+void Screen::drawTextClipped(ivec2 min, ivec2 max, const std::string& text, ivec3 color)  {
+    int padding = 5;
+    int boxWidth = max.x - min.x;
+    int usableWidth = boxWidth - 2 * padding;
+    int maxChars = usableWidth / 8;
+
+    std::string visibleText = text;
+    if (static_cast<int>(visibleText.size()) > maxChars) {
+        visibleText = visibleText.substr(visibleText.size() - maxChars);
+    }
+
+    drawText(ivec2(min.x + padding, min.y + padding), visibleText, color);
+}
+
+void Screen::drawCursor(ivec2 pos, ivec3 color) {
+    drawText(pos, "|", color);
+}
+
+void Screen::drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd) {
+    this->drawBox(min, max, colors, parentStart, parentEnd);
+    this->drawTriangle(pointA, pointB, pointC, colors, parentStart, parentEnd);
+}
 
 void Screen::clear(ivec3 color) {
     this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), color, ivec2(0, 0), ivec2(this->width, this->height));

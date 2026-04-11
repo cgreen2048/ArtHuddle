@@ -14,13 +14,13 @@ Triangle::Triangle(ElementParameters ep) {
     if (!isValid(ep)) {
         throw -1;
     }
-    this->a = ep.point1;
-    this->b = ep.point2;
-    this->c = ep.point3;
+    this->a = ep.pointA;
+    this->b = ep.pointB;
+    this->c = ep.pointC;
     this->color = ep.color;
-    this->aType = ep.point1Type;
-    this->bType = ep.point2Type;
-    this->cType = ep.point2Type;
+    this->aType = ep.pointAType;
+    this->bType = ep.pointBType;
+    this->cType = ep.pointCType;
     this->colorType = ep.colorType;
     this->name = ep.name;
 }
@@ -53,7 +53,7 @@ Triangle& Triangle::operator=(const Triangle& cp) {
 }
 
 bool Triangle::operator==(Triangle rhs) {
-    if ((this->a != rhs.a) || (this->b != rhs.b) || (this->c != rhs.c) || (this->color != rhs.color)) {
+    if ((this->a != rhs.a) || (this->b != rhs.b) || (this->c != rhs.c) || (this->color != rhs.color) || (this->colorType != rhs.colorType)) {
         return false;
     }
     return true;
@@ -133,13 +133,13 @@ ivec2 Triangle::getC() {
 }
 
 bool Triangle::isValid(ElementParameters ep) {
-    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.pointA.x == std::numeric_limits<int>::lowest()) || (ep.pointA.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
-    if ((ep.point2.x == std::numeric_limits<int>::lowest()) || (ep.point2.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.pointB.x == std::numeric_limits<int>::lowest()) || (ep.pointB.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
-    if ((ep.point3.x == std::numeric_limits<int>::lowest()) || (ep.point3.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.pointC.x == std::numeric_limits<int>::lowest()) || (ep.pointC.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
     if (ep.color.x == std::numeric_limits<int>::lowest()) {

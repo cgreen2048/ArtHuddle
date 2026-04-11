@@ -24,14 +24,16 @@ class TextBox : public Box {
         TextBox& operator=(const TextBox& rhs) = default;
         bool operator==(TextBox rhs);
 		bool operator!=(TextBox rhs);
-        void draw(Screen *screen);
+        void drawOverlay(Screen *screen);
         void setActive(bool value);
         bool isActive() const;
         void appendText(const std::string& s);
         void backspace();
         bool containsPoint(int x, int y) const;
+        bool shouldShowCursor() const;
+        std::string getVisibleText() const;
+        ivec2 getCursorPosition() const;
 
-        // bool resolveEvent(Event* event);
         void writeXml(std::ostream& out, int depth) const;
         bool isValid(ElementParameters ep);
         const std::string& getText() const;

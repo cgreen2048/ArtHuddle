@@ -13,7 +13,7 @@ bool TextBox::operator==(TextBox rhs) {
     if (!Box::operator==(rhs)) {
         return false;
     }
-    if (textColor != rhs.textColor){
+    if ((textColor != rhs.textColor) || (this->textColorType != rhs.textColorType)){
         return false;
     }
     return true;
@@ -29,15 +29,52 @@ TextBox::TextBox(ElementParameters ep) : Box(ep) {
     }
     this->text = ep.text;
     this->textColor = ep.textColor;
+    this->textColorType = ep.textColorType;
 }
 
-void TextBox::draw(Screen *screen) {
-    // Draw the rectangle from Box
-    Box::draw(screen);
 
-    // Draw left-aligned text with small padding
-    ivec2 textPos{min.x + 5, min.y + 5};
-    screen->drawText(textPos, text, textColor);
+
+void TextBox::drawOverlay(Screen *screen) {
+    // Draws clipped text
+    screen->drawTextClipped(min, max, text, textColor);
+
+    // Draws a blinking cursor on where the current character is.
+    if (shouldShowCursor()) {
+        screen->drawCursor(getCursorPosition(), textColor);
+    }
+}
+
+bool TextBox::shouldShowCursor() const {
+    if (!active) {
+        return false;
+    }
+
+    Uint64 ticks = SDL_GetTicks();
+    return ((ticks / 500) % 2 == 0);
+}
+
+std::string TextBox::getVisibleText() const {
+    int padding = 5;
+    int boxWidth = max.x - min.x;
+    int usableWidth = boxWidth - 2 * padding;
+    int maxChars = usableWidth / 8;
+
+    std::string visibleText = text;
+    if (static_cast<int>(visibleText.size()) > maxChars) {
+        visibleText = visibleText.substr(visibleText.size() - maxChars);
+    }
+
+    return visibleText;
+}
+
+ivec2 TextBox::getCursorPosition() const {
+    int padding = 5;
+    std::string visibleText = getVisibleText();
+
+    int cursorX = min.x + padding + static_cast<int>(visibleText.size()) * 8;
+    int cursorY = min.y + padding;
+
+    return ivec2(cursorX, cursorY);
 }
 
 void TextBox::setActive(bool value) { 
@@ -62,17 +99,6 @@ bool TextBox::containsPoint(int x, int y) const {
     return x >= min.x && x <= max.x && y >= min.y && y <= max.y;
 }
 
-
-// bool Button::resolveEvent(Event* event) {
-//     if (event->getType() == EventType::CLICK) {
-//         ClickEvent* clickEvent = dynamic_cast<ClickEvent*>(const_cast<Event*>(event));
-//         if (this->inBounds(ivec2(clickEvent->getMouseX(), clickEvent->getMouseY()))) {
-//             onClick();
-//             return true;
-//         }
-//     }
-//     return false;
-// }
 
 void TextBox::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
@@ -113,29 +139,18 @@ void TextBox::writeXml(std::ostream& out, int depth) const {
 }
 
 bool TextBox::isValid(ElementParameters ep) {
-    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
-        return false;
-    }
-    if ((ep.point2.x == std::numeric_limits<int>::lowest()) || (ep.point2.y == std::numeric_limits<int>::lowest())) {
-        return false;
-    }
-    if (ep.color.x == std::numeric_limits<int>::lowest()) {
-        ep.color.x = 125;
-    }
-    if (ep.color.y == std::numeric_limits<int>::lowest()) {
-        ep.color.y = 125;
-    }
+    Box::isValid(ep);
     if (ep.textColor.z == std::numeric_limits<int>::lowest()) {
-        ep.color.z = 125;
+        ep.textColor.z = 125;
     }
     if (ep.textColor.x == std::numeric_limits<int>::lowest()) {
-        ep.color.x = 125;
+        ep.textColor.x = 125;
     }
     if (ep.textColor.y == std::numeric_limits<int>::lowest()) {
-        ep.color.y = 125;
+        ep.textColor.y = 125;
     }
     if (ep.textColor.z == std::numeric_limits<int>::lowest()) {
-        ep.color.z = 125;
+        ep.textColor.z = 125;
     }
 
     return true;

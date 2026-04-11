@@ -13,7 +13,7 @@ MAC_CXXFLAGS := -std=c++17 -Wall
 MAC_LDFLAGS := -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks
 MAC_LDLIBS := -framework sdl3
 
-FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../TextBox.cpp 
+FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp ../TextBox.cpp  ../Ellipse.cpp ../Arrow.cpp
 EVENT_ELEMENTS := ../Event.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp
 
 test:
@@ -49,8 +49,20 @@ test:
 	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp Milestone006Demo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006Demo
 	
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../TextboxDemo.cpp \
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextboxDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o textboxdemo
+	
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ArrowDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o arrowDemo
+
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) EllipseDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o ellipseDemo
+	
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextboxDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o textboxdemo
+	
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextInButtonDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o textinbuttondemo
 
 
 studentMachine:
@@ -85,9 +97,18 @@ studentMachine:
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp Milestone006Demo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006Demo
+
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) EllipseDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o ellipseDemo
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ArrowDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o arrowDemo
 	
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextboxDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textboxdemo
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextInButtonDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textinbuttondemo
 	
 
 mac:
@@ -125,6 +146,18 @@ mac:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp Milestone006Demo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone006Demo
 
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) EllipseDemo.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o ellipseDemo
+
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ArrowDemo.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o arrowDemo
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextboxDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textboxdemo
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextInButtonDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textinbuttondemo
+
 clean:
 	rm a.out
 	rm milestone001
@@ -138,5 +171,9 @@ clean:
 	rm layoutDemo
 	rm milestone006
 	rm milestone006Demo
+	rm ellipseDemo
+	rm arrowDemo
+	rm textboxdemo
+	rm textinbuttondemo
 
 

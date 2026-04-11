@@ -12,9 +12,9 @@ Point::Point(ElementParameters ep) {
     if (!isValid(ep)) {
         throw -1;
     }
-    this->coords = ep.point1;
+    this->coords = ep.coords;
     this->color = ep.color;
-    this->coordsType = ep.point1Type;
+    this->coordsType = ep.coordsType;
     this->colorType = ep.colorType;
     this->name = ep.name;
 }
@@ -37,7 +37,7 @@ Point& Point::operator=(const Point& cp) {
 }
 
 bool Point::operator==(Point rhs) {
-    if ((this->coords != rhs.coords) || (this->color != rhs.color)) {
+    if ((this->coords != rhs.coords) || (this->color != rhs.color) || (this->colorType != rhs.colorType)) {
         return false;
     }
     return true;
@@ -83,7 +83,7 @@ void Point::writeXml(std::ostream& out, int depth) const {
 }
 
 bool Point::isValid(ElementParameters ep) {
-    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
+    if ((ep.coords.x == std::numeric_limits<int>::lowest()) || (ep.coords.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
     if (ep.color.x == std::numeric_limits<int>::lowest()) {

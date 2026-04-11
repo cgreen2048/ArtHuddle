@@ -32,6 +32,7 @@ class Layout : public GuiElement {
         bool isActive();
         void addElement(GuiElement *element);
         void draw(Screen *screen);
+        void drawOverlay(Screen *screen);
         void writeXml(std::ostream& out, int depth = 0) const;
         bool resolveEvent(Event* e);
         const std::vector<GuiElement*>& getElements() const;

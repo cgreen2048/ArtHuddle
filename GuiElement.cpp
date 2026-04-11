@@ -9,6 +9,9 @@ GuiElement::~GuiElement() {
 void GuiElement::draw(Screen *screen){
     
 }
+void GuiElement::drawOverlay(Screen *screen){
+    
+}
 void GuiElement::writeXml(std::ostream& out, int depth) const{
 
 }

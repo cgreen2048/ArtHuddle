@@ -6,6 +6,21 @@ Button::Button() : Box(), onClick([](){}), callbackName(""), text("") {}
 
 Button::Button(const Button& cp) : Box(cp.min, cp.max, cp.color), onClick(cp.onClick), callbackName(cp.callbackName), text(cp.text) {}
 
+bool Button::operator==(Button rhs) {
+    if (!Box::operator==(rhs)) {
+        return false;
+    }
+    if ((textColor != rhs.textColor) || (this->textColorType != rhs.textColorType)){
+        return false;
+    }
+    return true;
+}
+
+bool Button::operator!=(Button rhs) {
+    return !(*this == rhs);
+}
+
+
 Button::Button(ElementParameters ep) : Box(ep) {
     if (!isValid(ep)) {
         throw -1;
@@ -14,6 +29,12 @@ Button::Button(ElementParameters ep) : Box(ep) {
     this->onClick = ep.callback;
     this->callbackName = ep.callbackName;
     this->text = ep.text;
+    this->textColor = ep.textColor;
+    this->textColorType = ep.textColorType;
+}
+
+void Button::drawOverlay(Screen *screen){
+    screen->drawTextCentered(min, max, text, textColor);
 }
 
 Button::Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, const std::string& callbackName, const std::string& text = "") : Box(min, max, color), onClick(callback), callbackName(callbackName), text(text) {}
@@ -52,23 +73,28 @@ void Button::writeXml(std::ostream& out, int depth) const {
     else {
         writeVec3(out, toVec3(color), pad);
     }
+
+    if (textColorType == TagType::IVec) {
+        writeIVec3(out, textColor, pad);
+    } 
+    else {
+        writeVec3(out, toVec3(textColor), pad);
+    }
     out << pad << "</button>\n";
 }
 
 bool Button::isValid(ElementParameters ep) {
-    if ((ep.point1.x == std::numeric_limits<int>::lowest()) || (ep.point1.y == std::numeric_limits<int>::lowest())) {
-        return false;
+    Box::isValid(ep);
+    if (ep.textColor.z == std::numeric_limits<int>::lowest()) {
+        ep.color.z = 125;
     }
-    if ((ep.point2.x == std::numeric_limits<int>::lowest()) || (ep.point2.y == std::numeric_limits<int>::lowest())) {
-        return false;
-    }
-    if (ep.color.x == std::numeric_limits<int>::lowest()) {
+    if (ep.textColor.x == std::numeric_limits<int>::lowest()) {
         ep.color.x = 125;
     }
-    if (ep.color.y == std::numeric_limits<int>::lowest()) {
+    if (ep.textColor.y == std::numeric_limits<int>::lowest()) {
         ep.color.y = 125;
     }
-    if (ep.color.z == std::numeric_limits<int>::lowest()) {
+    if (ep.textColor.z == std::numeric_limits<int>::lowest()) {
         ep.color.z = 125;
     }
     if (ep.callbackName == "") {

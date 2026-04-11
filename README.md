@@ -12,7 +12,10 @@
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
 - [Layout Class](#layout)
+- [Ellipse Class](#ellipse)
+- [TextBox Class](#textbox)
 - [Triangle Class](#triangle)
+- [Arrow Class](#arrow)
 - [Box Class](#box)
 - [Button Class](#button)
 - [Line Class](#line)
@@ -365,26 +368,62 @@ The desired name of the object
 
 ---
 
-### `ivec2 point1`
-The coordinates of the first point of an object
+### `ivec2 coords`
+The coordinates for a `Point` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
 
-### `ivec2 point2`
-The coordinates of the second point of an object
+### `ivec2 start`
+The coordinates of the starting point of a `Line` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
 
-### `ivec2 point3`
-The coordinates of the third point of an object
+### `ivec2 end`
+The coordinates of the ending point of a `Line` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 min`
+The coordinates of the minimum point of a `Box` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 max`
+The coordinates of the maximum point of a `Box` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 pointA`
+The coordinates of the first point of a `Triangle` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 pointB`
+The coordinates of the second point of a `Triangle` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec2 pointC`
+The coordinates of the third point of a `Triangle` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
 
 ### `ivec3 color`
 The values for an object's color
+- Initialized to `ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `ivec3 textColor`
+The values for an object's text color
 - Initialized to `ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
@@ -430,26 +469,62 @@ Indicates whether a new `Layout` object is visible
 
 ---
 
-### `TagType point1Type`
-The type of mathematical vector that `point1` is. Can be `TagType::Vec` or `TagType::IVec`
+### `TagType coordsType`
+The type of mathematical vector that `coords` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
 
-### `TagType point2Type`
-The type of mathematical vector that `point2` is. Can be `TagType::Vec` or `TagType::IVec`
+### `TagType startType`
+The type of mathematical vector that `start` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
 
-### `TagType point3Type`
-The type of mathematical vector that `point3` is. Can be `TagType::Vec` or `TagType::IVec`
+### `TagType endType`
+The type of mathematical vector that `end` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType minType`
+The type of mathematical vector that `min` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType maxType`
+The type of mathematical vector that `max` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType pointAType`
+The type of mathematical vector that `pointA` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType pointBType`
+The type of mathematical vector that `pointB` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType pointCType`
+The type of mathematical vector that `pointC` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
 
 ### `TagType colorType`
 The type of mathematical vector that `color` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
+### `TagType textColorType`
+The type of mathematical vector that `textColor` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
 ---
@@ -478,7 +553,28 @@ The name of the callback function for a `Button` object. Used to identify the ca
 ---
 
 ### `std::string text`
-The text label for a `Button` object. Used to display text on the button and also written as a parameter in an XML layout file
+The text label for a `Button` and `TextBox` object. Used to display text on the button and also written as a parameter in an XML layout file
+
+---
+
+### `ivec2 center`
+The center point of an ellipse
+
+---
+
+### `int radiusX`
+The length of the radius of the ellipse along the x-axis
+
+---
+
+### `int radiusY`
+The length of the radius of the ellipse along the y-axis
+
+---
+
+### `TagType centerType`
+The type of mathematical vector that `center` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
 
 ---
 
@@ -500,6 +596,10 @@ It defines a common interface used by all graphical objects such as:
 - `Line`
 - `Box`
 - `Triangle`
+- `Button`
+- `Ellipse`
+- `Arrow`
+- `TextBox`
 
 The class allows these derived types to be handled **polymorphically**, meaning they can be stored and manipulated using a `GuiElement*`.
 
@@ -514,7 +614,7 @@ This enumeration identifies the type of GUI element being created.
 It is primarily used by the **Factory** to determine which object to instantiate.
 
 ```cpp
-enum class guiElement { LAYOUOT, POINT, LINE, BOX, TRIANGLE, BUTTON };
+enum class guiElement { LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, TEXTBOX, ELLIPSE, ARROW };
 ```
 
 ---
@@ -559,8 +659,24 @@ Each derived class implements its own drawing behavior:
 | `Box` | `drawBox()` |
 | `Triangle` | `drawTriangle()` |
 | `Button` | `drawBox()` |
+| `Ellipse` | `drawEllipse()` |
+| `Arrow` | `drawArrow()` |
+| `TextBox` | `drawBox()` |
 
 In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will call `draw()` on all children of that parent
+
+---
+
+### `void drawOverlay(Screen *screen)`
+Virtual drawOverlay method intended to be **overridden by derived classes**.
+Each derived class implements its own drawing behavior:
+
+| Class | Screen Function Used |
+|------|------|
+| `Button` | `drawTextCentered(min, max, text, textColor)` |
+| `TextBox` | `drawTextClipped(min, max, text, textColor) & drawCursor(getCursorPosition(), textColor)` |
+
+In addition, calling `drawOverlay()` in a parent-type GUI Element (ex. `Layout`) will call `drawOverlay()` on all children of that parent
 
 ---
 
@@ -652,13 +768,16 @@ Creates a new GUI element based on the `guiElement` enum value.
 | `guiElement::BOX` | `Box` |
 | `guiElement::TRIANGLE` | `Triangle` |
 | `guiElement::BUTTON` | `Button` |
+| `guiElement::ELLIPSE` | `Ellipse` |
+| `guiElement::ARROW` | `Arrow` |
+| `guiElement::TEXTBOX` | `Textbox` |
 
 ---
 
 ## Example Usage
 
 ```cpp
-GuiElement* element = factory(guiElement::LINE);
+GuiElement* element = factory(guiElement::LINE, elementParametersStruct);
 element->draw(&screen);
 ```
 
@@ -804,6 +923,206 @@ Checks whether `ep.layoutStart` or `ep.layoutEnd` have been set
 
 ---
 
+# Ellipse
+
+## Description
+`Ellipse` is a class used for storing and drawing a filled ellipse to a `Screen` object.
+It inherits from the `GuiELement` class
+
+## Data Members
+
+### `ivec2 center`
+The coordinates of the center of the ellipse
+
+### `int radiusX`
+The x radius length of the ellipse
+
+### `int radiusY`
+The y radius length of the ellipse
+
+### `ivec3 color`
+The fill color of the ellipse
+
+### `TagType centerType`
+The type of the tag for the `center` attribute for XML parsing
+
+---
+
+## Methods
+
+### `Ellipse()`
+Default constructor. Initializes `center`, `radiusX`, `radiusY`, and `color` to zeros
+
+### `Ellipse(ivec2 center, int radius, ivec3 color)`
+Circle constructor. Sets `center` to `center`, `color` to `color`, and both `radiusX` and `radiusY` to `radius`
+
+### `Ellipse(ivec2 center, int radiusX, int radiusY, ivec3 color)`
+Ellipse constructor. Sets `center` to `center`, `color` to `color`, and `radiusX` to `radiusX`, and `radiusY` to `radiusY`
+
+### `Ellipse(const Ellipse& cp)`
+Copy constructor using attributes from `cp` to create a new `Ellipse`
+
+### `Ellipse& operator=(const Ellipse& rhs)`
+Assignment operator overload that uses attributes from `rhs` to create a new `Ellipse`
+
+### `Ellipse(ElementParameters ep)`
+Constructor taking in an `ElementParameters` struct to check if the attempted construction
+has the required attributes for `Ellipse` via `isValid(ep)`
+
+### `~Ellipse()`
+Default destructor
+
+### `void draw(Screen* screen)`
+Calls `screen->drawEllipse()` to draw `Ellipse` object to `screen`'s SDL_Surface
+
+### `void writeXml(std::ostream& out, int depth) const`
+Writes an `Ellipse` object to XML using standard XML formatting in the following way:
+- After writing padding, writes `<ellipse>` with its parameters `name="name" rx="radiusX" ry="radiusY"`
+- Writes the corresponding `<ivec2>` or `<vec2>` tag based on `centerType` for `center` using ``writeIVec2()`/`writeVec2()`
+- Writes the corresponding `<ivec3>` or `<vec3>` tag based on `colorType` for `color` using `writeIVec3()`/`writeVec3()`
+- Writes a closing `</ellipse>` tag after some padding
+
+### `bool resolveEvent(Event *e)`
+Attempts to resolve `ClickEvent`s to select the `Ellipse` object, handling the event if the click is within the `Ellipse`'s bounds, and returning true if so.
+
+### `bool isValid(ElementParameters ep)`
+Checks if `ep` has the required attributes needed to construct an `Ellipse` object:
+- `ivec2 center`
+- `int radiusX`
+- `int radiusY`
+- Sets `color` to default values if not included
+Returns true if all of the above are included, false if not
+
+### `bool isPointInside(ivec2 point)`
+Checks if `point` is within the bounds of the ellipse
+
+---
+
+# TextBox
+
+## Description
+`TextBox` is a class used for storing and drawing a text box to a `Screen` object.
+It inherits from the `Box` class.
+
+## Data Members
+
+### `std::string text`
+The text currently stored inside the text box.
+
+### `ivec3 textColor`
+The color used to draw the text and cursor.
+
+### `bool active`
+Indicates whether the text box is currently active.  
+When active, the blinking cursor may be shown.
+
+### `TagType textColorType`
+The type of the tag for the `textColor` attribute for XML parsing.
+
+---
+
+## Methods
+
+### `TextBox()`
+Default constructor. Initializes the base `Box`, sets `textColor` to `{0,0,0}`, sets `text` to an empty string, and sets `active` to `false`.
+
+### `TextBox(const TextBox& cp)`
+Copy constructor. Creates a new `TextBox` using the values from `cp`.
+
+### `TextBox(ElementParameters ep)`
+Constructor taking in an `ElementParameters` struct.  
+Calls the `Box(ep)` constructor, checks validity with `isValid(ep)`, and then sets:
+- `text` from `ep.text`
+- `textColor` from `ep.textColor`
+- `textColorType` from `ep.textColorType`
+
+Throws `-1` if `isValid(ep)` returns `false`.
+
+### `TextBox(ivec2 min, ivec2 max, ivec3 color, ivec3 textColor, const std::string& text)`
+Constructor that initializes:
+- the `Box` portion using `min`, `max`, and `color`
+- `textColor` using `textColor`
+- `text` using `text`
+- `active` to `false`
+
+### `bool operator==(TextBox rhs)`
+Equality operator overload.  
+Returns `true` if:
+- the base `Box` objects are equal
+- `textColor` matches
+- `textColorType` matches
+
+Returns `false` otherwise.
+
+### `bool operator!=(TextBox rhs)`
+Inequality operator overload.  
+Returns the opposite of `operator==`.
+
+### `void drawOverlay(Screen* screen)`
+Draws the text content and, if appropriate, a blinking cursor:
+- Calls `screen->drawTextClipped(min, max, text, textColor)` to draw the text
+- Calls `screen->drawCursor(getCursorPosition(), textColor)` if `shouldShowCursor()` returns `true`
+
+### `bool shouldShowCursor() const`
+Returns `true` only if:
+- the text box is active
+- the SDL tick count indicates the cursor should currently be visible
+
+This creates a blinking cursor effect.
+
+### `std::string getVisibleText() const`
+Returns the portion of `text` that fits inside the text box width.
+Uses:
+- `5` pixels of padding on each side
+- `8` pixels per character
+
+If the full text is too long, only the ending visible portion is returned.
+
+### `ivec2 getCursorPosition() const`
+Returns the position where the blinking cursor should be drawn.
+The cursor is placed:
+- near the top-left of the box
+- after the currently visible text
+- with `5` pixels of padding
+
+### `void setActive(bool value)`
+Sets whether the text box is active.
+
+### `bool isActive() const`
+Returns whether the text box is currently active.
+
+### `void appendText(const std::string& s)`
+Appends the string `s` to the end of `text`.
+
+### `void backspace()`
+Removes the last character from `text` if `text` is not empty.
+
+### `bool containsPoint(int x, int y) const`
+Checks whether the point `(x, y)` lies within the rectangular bounds of the text box.
+
+### `void writeXml(std::ostream& out, int depth) const`
+Writes a `TextBox` object to XML using standard XML formatting in the following way:
+- Writes an opening `<textbox>` tag with:
+  - `name="name"`
+  - `text="text"`
+- Writes `min` using either `<ivec2>` or `<vec2>` depending on `minType`
+- Writes `max` using either `<ivec2>` or `<vec2>` depending on `maxType`
+- Writes `color` using either `<ivec3>` or `<vec3>` depending on `colorType`
+- Writes `textColor` using either `<ivec3>` or `<vec3>` depending on `textColorType`
+- Writes a closing `</textbox>` tag
+
+### `bool isValid(ElementParameters ep)`
+Calls `Box::isValid(ep)` and then checks `ep.textColor`.
+
+Based on the current code, this function always returns `true`.  
+It also appears intended to assign default values when `textColor` is missing, although the current implementation writes to `ep.color` instead of `ep.textColor`.
+
+### `const std::string& getText() const`
+Returns a constant reference to the current text stored in the text box.
+
+---
+
+
 # Triangle
 
 ## Description
@@ -945,6 +1264,171 @@ This allows the triangle to preserve whether the original data used floating-poi
 Checks whether `ep.point1`, `ep.point2`, and `ep.point3` have been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1`, `ep.point2`, or `ep.point3` have not been set
 - Sets any missing color value to `125`
+
+---
+
+# Arrow
+
+## Description
+`Arrow` is a class used for storing and drawing a filled arrow to a `Screen` object. It inherits from the `GuiElement` class
+
+---
+
+## Data Members
+
+### `ivec2 min`
+The coordinates for the minimum point or the arrow's stem box
+
+---
+
+### `ivec2 max`
+The coordinates for the maximum point or the arrow's stem box
+
+---
+
+### `ivec2 pointA`
+The coordinates for a vertex on the arrow's triangular point
+
+---
+
+### `ivec2 pointB`
+The coordinates for a vertex on the arrow's triangular point
+
+---
+
+### `ivec2 pointC`
+The coordinates for a vertex on the arrow's triangular point
+
+---
+
+### `ivec3 color`
+The color of the vector in RGB order
+
+---
+
+### `TagType minType`
+The type of tag for the `min` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType maxType`
+The type of tag for the `max` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType pointAType`
+The type of tag for the `pointA` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType pointBType`
+The type of tag for the `pointB` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType pointCType`
+The type of tag for the `pointC` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+### `TagType colorType`
+The type of tag for the `color` attribute. Signifies whether the data passed from an XML file was a float or integer vector
+
+---
+
+## Methods
+
+### `Arrow()`
+Default constructor. Sets all points and `color` to zeros
+
+---
+
+### `Arrow(ivec2 min, ivec2 max, ivec2 a, ivec2 b, ivec2 c, ivec3 color)`
+Parameterized constructor. Sets `this->min` to `min`, `this->max` to `max`, `this->pointA` to `a`, `this->pointB` to `b`, `this->pointC` to `c`, and `this->color` to `color`
+
+---
+
+### `Arrow(ElementParameters ep)`
+Constructor that takes in an `ElementParameters` struct. Called via `Factory`
+- Calls `isValid` on `ep`
+  - Throws an exception if `isValid` returns `false` to prevent the object from being created
+- Sets the `min`, `max`, `pointA`, `pointB`, `pointC`, `color`, `minType`, `maxType`, `pointAType`, `pointBType`, `pointCType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
+
+---
+
+### `Arrow(const Arrow& cp)`
+Copy assignment operator. Takes attributes from `cp` and creates a new `Arrow`
+
+---
+
+### `Arrow& operator=(const Arrow& rhs)`
+Assignment operator. Sets the current `Arrow`'s attributes equal to corresponding attributes from `cp`
+
+---
+
+### `bool operator==(Arrow rhs)`
+The equality operator. Checks that `min`, `max`, `pointA`, `pointB`, `pointC`, and color attributes match between this `Arrow` and `rhs`
+- Returns true if attributes match
+- Returns false otherwise
+
+---
+
+### `bool operator!=(Arrow rhs)`
+The innequality operator. Checks for innequality
+- Returns the inverse of the equality operator
+
+---
+
+### `~Arrow()`
+Default destructor
+
+---
+
+### `void draw(Screen* screen)`
+Calls the `drawArrow()` method from the passed `Screen` pointer
+
+---
+
+### `void writeXml(std::ostream& out, int depth) const`
+Writes this arrow's data to the specified output stream in XML format
+
+Behavior:
+- Writes an `<arrow>` tag with the name parameter to the output stream
+- Writes the minimum corner (`min`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the maximum corner (`max`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes a triangle corner (`pointA`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes a triangle corner (`pointB`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes a triangle corner (`pointC`)
+  - `<vec2>` if the stored `TagType` is `TagType::Vec`
+  - `<ivec2>` if the stored `TagType` is `TagType::IVec`
+- Writes the box color (`color`)
+  - `<vec3>` if `TagType::Vec`
+  - `<ivec3>` if `TagType::IVec`
+- Closes the `<arrow>` tag
+
+This ensures the XML output preserves whether integer or floating-point vector tags were used.
+
+---
+
+### `bool isValid(ElementParameters ep)`
+Checks whether the passed `ElementParameters` struct contains valid data to create an `Arrow` object
+- Checks if all points have been set
+  - Returns false if not
+- Checks if the color `vec3` has been set
+  - Sets any unset member of color to a default value of 125
+
+---
+
+## UML Diagram
+![UML Diagram](images/Arrow_UML.png)
 
 ---
 
@@ -1095,6 +1579,12 @@ The default constructor. Initializes `text` and `callbackName` to empty strings 
 
 ### `Button(const Button& cp)`
 Copy assignment operator. Takes attributes from `cp` to pass into `Box` default constructor and set `text`, `callbackName`, and `callback` for this new `Button`
+
+### `bool operator==(Button rhs)`
+Equality operator. Returns false if attributes from current `Button` do not match attributes for `rhs`
+
+### `bool operator!=(Button rhs)`
+Inequlity operator. Returns the inverse of the equality operator
 
 ### `Button(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
@@ -1706,13 +2196,16 @@ Supports:
 - `Line`  
 - `Box`  
 - `Triangle`
-- `Button`  
+- `Button`
+- `Arrow`
+- `Ellipse`
+- `TextBox`
 
 Behavior:
 - Determines type from opening tag
 - Creates a new `ElementParameters` struct to hold data before object creations
 - Extracts and sets the element `name` attribute
-- Parses coordinate and color data
+- Parses coordinate and color/textColor data
 - Stores tag type (vec vs ivec)
 - Uses vector parsing helpers
 - Preserves original tag types for XML output
@@ -1879,6 +2372,7 @@ Used during parsing:
 - `getFloatAttribute()` → extracts float attributes
 - `getStringAttribute()` → extracts string attributes
 - `setNameFromTag()` → assigns element names  
+- `setTextFromTag()` → assigns element text  
 - `isLayoutOpen()` / `isLayoutClose()` → layout tag checks  
 - `isElementOpen()` → element detection  
 - `isMatchingElementClose()` → validates closing tags
@@ -1955,6 +2449,15 @@ Draws a line to the Target Screen object's SDL_Surface using the Bresenham algor
 - Uses 2D mathematical vectors to store the start and end points of the line
 - Will only draw on pixels that exist in the surface
 - Calls `colorOnePixel` for each pixel that exists on the line
+
+### `drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
+Draws an ellipse to the target Screen object's SDL_Surface
+- Centers the ellipse on `center`
+- Draws along x and y axes based on `radiusX` and `radiusY`
+
+### `drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd)`
+Draws an arrow to the target Screen object's SDL_Surface
+- Internally calls `drawBox()` and `drawTriangle()` to draw the stem and point of the arrow respectively
 
 ### `clear(ivec3 color)`
 Clears the Target Screen object's `SDL_Surface` by filling the entire surface with the given color
