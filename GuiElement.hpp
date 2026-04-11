@@ -39,6 +39,8 @@ class GuiElement {
 		const std::string& getName() const;
 
 		virtual bool isValid(ElementParameters ep) = 0;
+		
+		virtual bool isInside(ivec2 coordinates) = 0;
 };
 
 

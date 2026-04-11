@@ -153,3 +153,24 @@ bool Triangle::isValid(ElementParameters ep) {
     }
     return true;
 }
+
+bool Triangle::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    ivec2 ap = coordinates - this->a;
+    ivec2 ab = this->b - this->a;
+    ivec2 bp = coordinates - this->b;
+    ivec2 bc = this->c - this->b;
+    ivec2 cp = coordinates - this->c;
+    ivec2 ca = this->a - this->c;
+
+    int crossApAb = ap.cross(ab);
+    int crossBpBc = bp.cross(bc);
+    int crossCpCa = cp.cross(ca);
+
+    bool hasPositive = crossApAb > 0 || crossBpBc > 0 || crossCpCa > 0;
+    bool hasNegative = crossApAb < 0 || crossBpBc < 0 || crossCpCa < 0;
+
+    return !(hasPositive && hasNegative);
+}

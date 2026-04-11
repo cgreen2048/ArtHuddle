@@ -153,3 +153,53 @@ bool Arrow::isValid(ElementParameters ep) {
 
     return true;
 }
+
+bool Arrow::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+
+    bool insideBox = true;
+    bool insideTriangle = true;
+    if ((coordinates.x < min.x) || (coordinates.x > max.x) || (coordinates.y < min.y) || (coordinates.y > max.y)) {
+        insideBox = false;
+    }
+
+    ivec2 ap = coordinates - this->pointA;
+    ivec2 ab = this->pointB - this->pointA;
+    ivec2 bp = coordinates - this->pointB;
+    ivec2 bc = this->pointC - this->pointB;
+    ivec2 cp = coordinates - this->pointC;
+    ivec2 ca = this->pointA - this->pointC;
+
+    int crossApAb = ap.cross(ab);
+    int crossBpBc = bp.cross(bc);
+    int crossCpCa = cp.cross(ca);
+
+    bool hasPositive = crossApAb > 0 || crossBpBc > 0 || crossCpCa > 0;
+    bool hasNegative = crossApAb < 0 || crossBpBc < 0 || crossCpCa < 0;
+
+    insideTriangle = !(hasPositive && hasNegative);
+
+    return insideBox || insideTriangle;
+}
+
+ivec2 Arrow::getMin() {
+    return this->min;
+}
+
+ivec2 Arrow::getMax() {
+    return this->max;
+}
+
+ivec2 Arrow::getA() {
+    return this->pointA;
+}
+
+ivec2 Arrow::getB() {
+    return this->pointB;
+}
+
+ivec2 Arrow::getC() {
+    return this->pointC;
+}

@@ -80,12 +80,12 @@ void Box::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
-ivec2 Box::getMin(){
-    return min;
+ivec2 Box::getMin() {
+    return this->min;
 }
 
-ivec2 Box::getMax(){
-    return max;
+ivec2 Box::getMax() {
+    return this->max;
 }
 
 void Box::writeXml(std::ostream& out, int depth) const {
@@ -139,4 +139,11 @@ bool Box::inBounds(const ivec2& point) const {
         return false;
     }
     return true;
+}
+
+bool Box::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    return this->inBounds(coordinates);
 }

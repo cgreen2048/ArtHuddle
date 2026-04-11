@@ -9,6 +9,7 @@
 - [SoundState Struct](#soundstate-struct)
 - [SoundPlayer Class](#soundplayer)
 - [ElementParameters Struct](#elementparameters-struct)
+- [Selected Class](#selected)
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
 - [Layout Class](#layout)
@@ -583,6 +584,86 @@ The type of mathematical vector that `center` is. Can be `TagType::Vec` or `TagT
 
 ---
 
+# Selected
+
+## Description
+A singleton class that holds the last `GuiElement` clicked on by the user
+- Gets the coordinates of the `GuiElement` and determines the minimum and maximum `x` and `y` values
+- Draws a blue bounding box around the element using four `Line` objects
+
+---
+
+## Data Members
+
+### `GuiElement* selectedElement`
+A pointer to the last selected element
+- Can be `nullptr` if no element is selected
+
+---
+
+### `Layout* selectedLayout`
+A layout to draw a bounding box around the currently selected element
+
+---
+
+### `ivec2 minBound`
+The minimum `x` and `y` coordinates of the currently selected shape. Used to draw the bounding box
+
+---
+
+### `ivec2 maxBound`
+The maximum `x` and `y` coordinates of the currently selected shape. Used to draw the bounding box
+
+---
+
+## Methods
+
+### `Selected()`
+Default constructor (private)
+
+---
+
+`~Selected()`
+Default destructor (private)
+
+---
+
+### `static Selected& getInstance()`
+Returns the instance of the singleton
+
+---
+### `void setSelectedElement(GuiElement* updatedElement)`
+Sets the `selectedElement` attribute
+- Gets the minimum and maximum `x` and `y` values from the passed element
+- Calls `drawBoundingBox()` to draw a box around the element
+- Immediately clears `selectedLayout` if `updatedElement` is `nullptr`
+
+---
+
+### `GuiElement* getSelectedElement()`
+Returns the `GuiElement*` held in the `selectedElement` attribute
+
+---
+
+### `void setSelectedLayout(Layout* boundingBoxLayout)`
+Sets the `selectedLayout` attribute to the passed `Layout*` argument
+- Allows the bounding box to be drawn and cleared without interfering with other elements
+
+---
+
+### `void drawBoundingBox()`
+Draws a bounding box around the currently selected element
+- Clears `selectedLayout` using the `clearElements` method from `Layout`
+- Creates four `Line` objects using `minBound` and `maxBound` to form a box that fully contains the element
+- Adds the newly created lines to `selectedLayout` to be drawn on the next iteration of the main loop
+
+---
+
+## UML Diagram
+![UML Diagram](images/Selected_UML.png)
+
+---
+
 # GuiElement
 
 ## Description
@@ -731,6 +812,11 @@ A pure virtual function. Implemented by inherited classes to ensure the data pas
 
 ---
 
+### `virtual bool isInside(ivec2 coordinates)`
+A pure virtual function. Implemented by inherited classes to check if the passed coordinates are inside of the bounds of the object
+
+---
+
 # Factory
 
 ## Description
@@ -876,6 +962,10 @@ Handles and propagates an event through this Layout’s hierarchy
 - Otherwise, iterates through all child elements:
   - Calls `child->resolveEvent(e)`
   - Stops early if a child returns `true`
+- Checks for `CLICK` events if no `SHOW` events trigger
+  - Iterates through child elements in reverse and determines if the mouse coordinates are within the bounds of each
+    - Uses the reverse direction as later elements will be drawn on top of earlier elements
+  - Sets the selected element in the `Selected` class if any child elements contain the mouse coordinates
 - Returns:
   - `true` → event was handled by a child  
   - `false` → event was not handled  
@@ -920,6 +1010,17 @@ Returns the absolute ending **y** position of this `Layout`
 ### `bool isValid(ElementParameters ep)`
 Checks whether `ep.layoutStart` or `ep.layoutEnd` have been set
 - Returns false if `x` or `y` in `ep.layoutStart` or `ep.layoutEnd` have not been set
+
+---
+
+### `bool isInside(ivec2 coordinates)`
+Checks whether the passed coordinates are within the bounds of the `Layout` object and its parent (if applicable)
+- Uses `getAbsoluteStartX()`, `getAbsoluteStartY()`, `getAbsoluteEndX()`, and `getAbsoluteEndY()` to get coordinate values for the `Layout` bounds
+
+---
+
+### `clearElements()`
+Clears the `elements` vector so that no previous elements will be drawn
 
 ---
 
@@ -1000,6 +1101,28 @@ Returns true if all of the above are included, false if not
 
 ### `bool isPointInside(ivec2 point)`
 Checks if `point` is within the bounds of the ellipse
+
+---
+
+### `ivec2 getCenter()`
+Returns the `ivec2` in the ellipse's `center` attribute
+
+---
+
+### `int getRadiusX()`
+Returns the integer in the ellipse's `radiusX` attribute
+
+---
+
+### `int getRadiusY()`
+Returns the integer in the ellipse's `radiusY` attribute
+
+---
+
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are within the bounds of the `Ellipse` object
+- Returns the result of `isPointInside()`
+- Ensures the passed coordinates are within this object's parent's bounds
 
 ---
 
@@ -1126,7 +1249,6 @@ It also appears intended to assign default values when `textColor` is missing, a
 Returns a constant reference to the current text stored in the text box.
 
 ---
-
 
 # Triangle
 
@@ -1269,6 +1391,14 @@ This allows the triangle to preserve whether the original data used floating-poi
 Checks whether `ep.point1`, `ep.point2`, and `ep.point3` have been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1`, `ep.point2`, or `ep.point3` have not been set
 - Sets any missing color value to `125`
+
+---
+
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are within the bounds of the triangle using `a`, `b`, and `c`
+- Uses the same logic as `Screen`'s `pointInTriangle()` method
+  - Performs cross-product calculations based on the triangle's bounds and the passed `coordinates`
+- Ensures the passed coordinates are within this object's parent's bounds
 
 ---
 
@@ -1432,6 +1562,39 @@ Checks whether the passed `ElementParameters` struct contains valid data to crea
 
 ---
 
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are within the bounds of an `Arrow` object
+- Returns true if the coordinates are within the arrow, false otherwise
+  - Combines logic from the `isInside()` methods from `Box` and `Triangle` and returns the logical OR of the the results
+- Ensures the passed coordinates are within this object's parent's bounds
+
+---
+
+`ivec2 getMin()`
+Returns the `ivec2` in the `min` attribute of the `Arrow` object
+
+---
+
+`ivec2 getMax()`
+Returns the `ivec2` in the `max` attribute of the `Arrow` object
+
+---
+
+`ivec2 getA()`
+Returns the `ivec2` in the `pointA` attribute of the `Arrow` object
+
+---
+
+`ivec2 getB()`
+Returns the `ivec2` in the `pointB` attribute of the `Arrow` object
+
+---
+
+`ivec2 getC()`
+Returns the `ivec2` in the `pointC` attribute of the `Arrow` object
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/Arrow_UML.png)
 
@@ -1530,6 +1693,16 @@ Method to set the `color` and `colorType` attributes of a `Box` object
 
 ---
 
+### `ivec2 getMin()`
+Returns the `ivec2` in the `min` attribute of a `Box` object
+
+---
+
+### `ivec2 getMax()`
+Returns the `ivec2` in the `max` attribute of a `Box` object
+
+---
+
 ### `void writeXml(std::ostream& out) const`
 Writes the box to an XML layout file.
 
@@ -1558,6 +1731,14 @@ Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep
 ### `bool inBounds(const ivec2& point)`
 Checks whether the given point is within the bounds of this `Box`
 - Returns true if the point is within the bounds of the box and false otherwise
+
+---
+
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are within the bounds of the box object
+- Returns the result of `inBounds()` returns true
+- Ensures the passed coordinates are within this object's parent's bounds
+
 ---
 
 # Button
@@ -1710,6 +1891,16 @@ Method to set the `color` and `colorType` attributes of a `Line` object
 
 ---
 
+### `ivec2 getStart()`
+Returns the `ivec2` in the `start` attribute of this line
+
+---
+
+### `ivec2 getEnd()`
+Returns the `ivec2` in the `end` attribute of this line
+
+---
+
 ### `void writeXml(std::ostream& out) const`
 Writes the line to an XML layout file.
 
@@ -1734,6 +1925,13 @@ This allows the line to maintain the same vector type used in the original layou
 Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` or `ep.point2` have not been set
 - Sets any missing color value to `125`
+
+---
+
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are on the line using the `start` and `end` attributes
+- Returns true if the coordinates are on the line, false otherwise
+- Ensures the passed coordinates are within this object's parent's bounds
 
 ---
 
@@ -1814,6 +2012,11 @@ Method to set the `coords` and `coordsType` attributes of a point object
 
 ---
 
+### `ivec2 getCoords()`
+Returns the `ivec2` in the `coords`attribute of a point object
+
+---
+
 ### `void setColor(const ivec3& v, TagType t)`
 Method to set the `color` and `colorType` attributes of a point object
 
@@ -1843,6 +2046,12 @@ Checks whether `ep.point1` has been initialized and whether `ep.color` is comple
 
 ---
 
+`bool isInside(ivec2 coordinates)`
+Checks whether the given coordinates are equal to the coordinates in the `coords` attribute
+- Returns true if the coordinates are equal, false otherwise
+- Ensures the passed coordinates are within this object's parent's bounds
+
+---
 
 # EventSystem
 

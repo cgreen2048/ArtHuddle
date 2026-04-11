@@ -63,6 +63,10 @@ void Point::setColor(const ivec3& v, TagType t){
     this->colorType = t;
 }
 
+ivec2 Point::getCoords() {
+    return this->coords;
+}
+
 void Point::writeXml(std::ostream& out, int depth) const {
     std::string pad = std::string(depth * 2, ' ');
 
@@ -96,4 +100,14 @@ bool Point::isValid(ElementParameters ep) {
         ep.color.z = 125;
     }
     return true;
+}
+
+bool Point::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    if (this->coords == coordinates) {
+        return true;
+    }
+    return false;
 }
