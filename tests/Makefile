@@ -104,10 +104,10 @@ studentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp ArrowDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o arrowDemo
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextboxDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp  TextboxDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textboxdemo
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextInButtonDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp  TextInButtonDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textinbuttondemo
 		
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp SelectedDemo.cpp \
@@ -155,10 +155,10 @@ mac:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp ArrowDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o arrowDemo
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextboxDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp TextboxDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textboxdemo
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) TextInButtonDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp TextInButtonDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textinbuttondemo
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp SelectedDemo.cpp \
