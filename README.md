@@ -859,6 +859,11 @@ If the `Layout` is active and contains both starting and ending parent bounds, i
 
 ---
 
+### `void drawOverlay(Screen *screen)`
+If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `drawOverlay()` functions, drawing every child element's overlay items like text in a button
+
+---
+
 ### `void writeXml(std::ostream& out)`
 Similar to `draw()` except first printing the proper `<layout>` tag with parameters and then writing to an XML by calling each child `GuiElement*`'s `writeXml()` function.
 
@@ -2410,6 +2415,7 @@ These ensure the correct internal representation while preserving original XML t
 `Screen` is a class representing an SDL_Surface with methods to draw to and color pixels on the surface. The surface can then be displayed using an SDL_Window.
 - `uint32_t width, height`: The width and height of the surface
 - `SDL_Surface* surface`: Holds a pointer to the SDL_Surface object
+- `SDL_Renderer* renderer`: Holds a pointer to the SDL_Renderer object
 
 ## Methods
 
@@ -2465,6 +2471,69 @@ Clears the Target Screen object's `SDL_Surface` by filling the entire surface wi
 - Overwrites all previously drawn pixels in the surface
 - Intended to be called at the start of each frame before drawing new elements
 
+### `void renderToRenderer()`
+Renders the current `Screen` surface to the SDL renderer.
+
+- Verifies that both the `renderer` and `surface` exist
+- Creates a temporary `SDL_Texture` from the internal `SDL_Surface`
+- Uses `SDL_RenderTexture` to copy the texture to the renderer
+- Destroys the temporary texture after rendering
+
+#### Important Rendering Note
+This method is required when using the **SDL_Renderer pipeline**.
+
+- This project uses a **hybrid approach**:
+  - All shapes are drawn to an `SDL_Surface`
+  - The surface is then copied to the renderer for display
+
+- Because of this:
+  - `blitTo()` + `SDL_UpdateWindowSurface()` should NOT be used when a renderer exists
+  - `renderToRenderer()` + `SDL_RenderPresent()` must be used instead
+
+- Mixing surface-based rendering and renderer-based rendering will cause incorrect or undefined behavior
+
+### `void drawTextClipped(ivec2 min, ivec2 max, const std::string& text, ivec3 color)`
+Draws text inside a bounded rectangular region.
+
+- Applies a padding of `5` pixels on each side
+- Computes available width inside the box
+- Limits the number of visible characters based on:
+  - `usableWidth / 8` (each character is ~8 pixels wide)
+- If the text exceeds the visible width:
+  - Only the rightmost portion of the text is displayed
+- Calls `drawText()` to render the clipped text
+
+### `void drawCursor(ivec2 pos, ivec3 color)`
+Draws a text cursor (`|`) at the specified position.
+
+- Uses `drawText()` internally
+- Intended for use in interactive components like `TextBox`
+- Typically paired with a blinking condition (e.g., time-based toggle)
+
+### `void drawText(Tvec2<T1> pos, const std::string& text, Tvec3<T2> textColors)`
+Draws text to the screen using the SDL renderer.
+
+- Returns immediately if:
+  - `renderer` is null
+  - `text` is empty
+- Converts RGB values into `SDL_Color`
+  - Values are clamped between valid color ranges
+- Uses:
+  - `SDL_SetRenderDrawColor` to set text color
+  - `SDL_RenderDebugText` to draw the string at `(pos.x, pos.y)`
+
+#### Note
+This function draws **directly to the renderer**, not the surface.
+
+### `void drawTextCentered(Tvec2<T1> min, Tvec2<T1> max, const std::string& text, Tvec3<T2> textColors)`
+Draws centered text within a rectangular region.
+
+- Computes:
+  - Text width using `text.size() * SDL_DEBUG_FONT_WIDTH`
+  - Text height using `SDL_DEBUG_FONT_HEIGHT`
+- Computes the center of the bounding box
+- Calls `drawText()` with computed centered coordinates
+
 ### `SDL_Surface* getSurface()`
 Returns the surface for comparisons
 
@@ -2502,6 +2571,32 @@ Compares two Screen objects
 
 ### `~Screen()`
 Destructor method. Checks if Screen object has a valid SDL_Surface before calling `SDL_DestroySurface`
+
+## Rendering Pipeline Summary
+
+The rendering system follows this order each frame:
+
+1. `clear()`  
+   → Clears the surface
+
+2. `layout->draw(screen)`  
+   → Draws shapes to the **surface**
+
+3. `renderToRenderer()`  
+   → Copies surface → renderer (GPU step)
+
+4. `layout->drawOverlay(screen)`  
+   → Draws text/cursor (uses renderer)
+
+5. `SDL_RenderPresent(renderer)`  
+   → Displays final frame
+
+### Key Rule
+> The system uses the **renderer pipeline**, so all final output must go through `renderToRenderer()` and `SDL_RenderPresent()`.
+
+Do not mix with:
+- `SDL_GetWindowSurface`
+- `SDL_UpdateWindowSurface`
 
 ---
 
