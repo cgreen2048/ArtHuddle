@@ -219,7 +219,6 @@ void Layout::clearElements() {
 void Layout::deleteElement(const std::string& name) {
     for (auto it = elements.begin(); it != elements.end(); ++it) {
         if ((*it)->getName() == name) {
-            std::cout << "found name: " << (*it)->getName() << "\n";
             EventSystem& eventSystem = EventSystem::getInstance();
             GuiElement* target = eventSystem.getTargetedElement();
 

@@ -12,12 +12,10 @@
 
 Freehand::Freehand() : points{}, lastDrawnPoint{0,0}, color{0,0,0} {
     setName(generateElementName());
-    std::cout << getName() << "\n";
 }
 
 Freehand::Freehand(ivec3 color, bool isFreehandShape) : points{}, lastDrawnPoint{0,0}, color{color}, isFreehandShape{isFreehandShape} {
     setName(generateElementName());
-    std::cout << getName() << "\n";
 }
 
 Freehand::Freehand(const Freehand& cp) : Freehand() {
