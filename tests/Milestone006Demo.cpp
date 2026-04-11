@@ -22,7 +22,7 @@ void spawnEvents();
 int main() {
     std::cout << "Milestone 006 Demo\n";
 
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         return 1;
     }
@@ -34,15 +34,8 @@ int main() {
         return 1;
     }
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
-    if (!renderer) {
-        std::cerr << "Failed to create renderer: " << SDL_GetError() << '\n';
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
-
-    Screen* screen = new Screen(X, Y, renderer);
+    Screen *screen = new Screen(X, Y);
+    std::cout << "surface = " << screen->getSurface() << '\n';
 
     int failure = eventDemo(screen, window);
 

@@ -29,15 +29,7 @@ int main() {
         return 1;
     }
     SDL_Event event;
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
-    if (!renderer) {
-        std::cerr << "Failed to create renderer: " << SDL_GetError() << '\n';
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
-
-    Screen *screen = new Screen(X, Y, renderer);
+    Screen *screen = new Screen(X, Y);
 
     ElementParameters arrowParam;
     arrowParam.min = ivec2(250, 250);

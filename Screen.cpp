@@ -1,57 +1,74 @@
 #include "Screen.hpp"
 
-Screen::Screen() : width{0}, height{0} {}
+Screen::Screen() : width{0}, height{0}, surface{nullptr}, renderer{nullptr} {}
 
+// Renderer-enabled constructor
 Screen::Screen(uint32_t w, uint32_t h, SDL_Renderer* renderer) : Screen() {
     this->width = w;
     this->height = h;
     this->renderer = renderer;
     this->surface = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGBA32);
+
     if (!this->surface) {
         std::cerr << SDL_GetError();
         return;
     }
+
     this->drawBox(ivec2(0, 0), ivec2(this->width, this->height), ivec3(0, 0, 0), ivec2(0, 0), ivec2(this->width, this->height));
 }
+
+// Surface-only constructor
+Screen::Screen(uint32_t w, uint32_t h) : Screen(w, h, nullptr) {}
 
 Screen::Screen(const Screen& cp) : Screen() {
     this->width = cp.width;
     this->height = cp.height;
     this->renderer = cp.renderer;
     this->surface = SDL_CreateSurface(this->width, this->height, SDL_PIXELFORMAT_RGBA32);
+
     if (!this->surface) {
         std::cerr << SDL_GetError();
         return;
     }
-    
-    if (this->surface) {
-        cp.blitTo(this->surface);
-    }
+
+    cp.blitTo(this->surface);
 }
+
 
 Screen::~Screen() {
     if (this->surface != nullptr) {
         SDL_DestroySurface(this->surface);
+        this->surface = nullptr;
     }
 }
 
 
 Screen& Screen::operator=(const Screen& cp) {
-    if ((this->surface->format != cp.surface->format) || (this->width != cp.width) || (this->height != cp.height)) {
+     if ((this->surface->format != cp.surface->format) || (this->width != cp.width) || (this->height != cp.height)) {
         std::cerr << "Surfaces not compatible\n";
+        return *this;
+    }
+
+    if (this == &cp) {
         return *this;
     }
 
     this->width = cp.width;
     this->height = cp.height;
+    this->renderer = cp.renderer;
+
+    if (this->surface != nullptr) {
+        SDL_DestroySurface(this->surface);
+        this->surface = nullptr;
+    }
+
     this->surface = SDL_CreateSurface(this->width, this->height, SDL_PIXELFORMAT_RGBA32);
     if (!this->surface) {
         std::cerr << SDL_GetError();
         return *this;
     }
-    
+
     cp.blitTo(this->surface);
-    
     return *this;
 }
 

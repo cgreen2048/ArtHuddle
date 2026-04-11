@@ -12,7 +12,7 @@
 const int X = 960;
 const int Y = 540;
 
-int layoutDemo(Screen*, SDL_Window*);
+int layoutDemo(Screen*, SDL_Window*, SDL_Renderer*);
 
 int main() {
     std::cout << "Layout Class Demo\n";
@@ -39,7 +39,7 @@ int main() {
 
     Screen* screen = new Screen(X, Y, renderer);
 
-    int failure = layoutDemo(screen, window);
+    int failure = layoutDemo(screen, window, renderer);
 
     SDL_Quit();
 
@@ -53,7 +53,7 @@ int main() {
     return failure;
 }
 
-int layoutDemo(Screen* screen, SDL_Window *window) {
+int layoutDemo(Screen* screen, SDL_Window *window, SDL_Renderer* renderer) {
     bool end = false;
     int failure = 0;
     SDL_Event event;
@@ -230,8 +230,14 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
         screen->clear(ivec3(255,255,255));
 
         layout->draw(screen);
-        screen->blitTo(SDL_GetWindowSurface(window));
-		SDL_UpdateWindowSurface(window);
+        // screen->blitTo(SDL_GetWindowSurface(window));
+		// SDL_UpdateWindowSurface(window);
+
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderClear(renderer);
+
+        screen->renderToRenderer();
+        SDL_RenderPresent(renderer);
     }
     delete layout;
 

@@ -67,52 +67,52 @@ test:
 
 
 studentMachine:
-	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
+# 	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
 
-	$(CXX) ../Matrix.cpp Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone001
+# 	$(CXX) ../Matrix.cpp Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone001
 
-	$(CXX) ../Screen.cpp Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone002
+# 	$(CXX) ../Screen.cpp Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone002
 
-	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
+# 	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
 
-	$(CXX) Milestone003Tests.cpp $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone003
+# 	$(CXX) Milestone003Tests.cpp $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone003
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone004Tests.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone004
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone004Tests.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone004
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone005LayoutTests.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005LayoutTests
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone005LayoutTests.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005LayoutTests
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone005Tests.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone005Tests.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) layoutDemo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDemo
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) layoutDemo.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDemo
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Tests.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Tests.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006
 
-	$(CXX) $(EVENT_ELEMENTS) ${FACTORY_ELEMENTS}  $(UTILITY_ELEMENTS) Milestone006EventSystem.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006EventSystem
+# 	$(CXX) $(EVENT_ELEMENTS) ${FACTORY_ELEMENTS}  $(UTILITY_ELEMENTS) Milestone006EventSystem.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006EventSystem
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Demo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006Demo
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) EllipseDemo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o ellipseDemo
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) EllipseDemo.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o ellipseDemo
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ArrowDemo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o arrowDemo
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ArrowDemo.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o arrowDemo
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)  TextboxDemo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textboxdemo
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)  TextboxDemo.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textboxdemo
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)  TextInButtonDemo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textinbuttondemo
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)  TextInButtonDemo.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textinbuttondemo
 		
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) SelectedDemo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o selectedDemo
+# 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) SelectedDemo.cpp \
+# 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o selectedDemo
 	
 
 mac:

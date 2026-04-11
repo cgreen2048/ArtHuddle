@@ -35,22 +35,10 @@ int main(int argc, char** argv) {
         failure = 1;
     }
 
-
-
+    Screen screen = Screen(X, Y);
     
 
 	SDL_Window *window = SDL_CreateWindow("Hello Window", X, Y, 0);
-
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
-    if (!renderer) {
-        std::cerr << "Failed to create renderer: " << SDL_GetError() << '\n';
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
-
-        Screen screen = Screen(X, Y, renderer);
-
 
     int box = drawBoxTest(screen, window);
     if (box) {

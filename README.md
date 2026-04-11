@@ -2764,6 +2764,11 @@ Default constructor. Initializes `width` and `height` to 0
 Constructor that takes in values for width and height. Calls SDL_CreateSurface to create an SDL_Surface for the object
 - Calls drawBox() to fill the entire screen with a black box as a way of clearing garbage values
 
+### `Screen(uint32_t w, uint_32 h, SDL_Renderer* renderer)`
+Constructor that takes in values for width, height, and renderer. 
+Calls SDL_CreateSurface to create an SDL_Surface for the object
+- Calls drawBox() to fill the entire screen with a black box as a way of clearing garbage values
+
 ### `Screen(const Screen& cp)`
 Copy constructor. Creates a new Screen with the same values as `cp`
 - Calls `cp.blitTo(this->surface)` to blit existing surface to the new surface

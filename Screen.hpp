@@ -21,6 +21,7 @@ class Screen {
         
     public:
         Screen();
+        Screen(uint32_t w, uint32_t h);
         Screen(uint32_t w, uint32_t h, SDL_Renderer* renderer);
         Screen(const Screen& cp);
         ~Screen();
