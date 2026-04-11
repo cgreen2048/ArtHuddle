@@ -156,6 +156,7 @@ bool Freehand::resolveEvent(Event *e) {
     }
 
     if (e->getType() == EventType::MOUSE_UP) {
+        std::cout << "reached mouse up\n";
         MouseUpEvent* mu = static_cast<MouseUpEvent*>(e);
 
         ivec2 current = mu->getCoords();
@@ -175,7 +176,6 @@ bool Freehand::resolveEvent(Event *e) {
             this->points.push_back(points[0]);
             lastDrawnPoint = points[0];
         }
-        
         return true;
     }
 
