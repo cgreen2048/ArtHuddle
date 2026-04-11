@@ -4,18 +4,10 @@
 #include "Event.hpp"
 #include <queue>
 #include <memory>
-#include "Layout.hpp"
-#include "Freehand.hpp"
-#include "Sound.hpp"
-#include "SoundState.hpp"
-#include "SoundPlayer.hpp"
-#include "SoundEvent.hpp"
-#include "ClickEvent.hpp"
-#include "ShowEvent.hpp"
-#include "MouseDownEvent.hpp"
-#include "MouseUpEvent.hpp"
-#include "MouseMotionEvent.hpp"
 
+class GuiElement;
+class Layout;
+class SoundPlayer;
 
 class EventSystem{
     public:

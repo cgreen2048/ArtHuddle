@@ -2,17 +2,8 @@
 #define __FREEHAND_HPP__
 
 #include "GuiElement.hpp"
-#include "Point.hpp"
-#include "Line.hpp"
 #include "Event.hpp"
-#include "ClickEvent.hpp"
-#include "MouseDownEvent.hpp"
-#include "MouseUpEvent.hpp"
-#include "MouseMotionEvent.hpp"
 #include "ElementParameters.hpp"
-#include "XmlWriteHelpers.hpp"
-#include <limits>
-#include <stack>
 
 #define PIXEL_DRAW_DIST_THRESHOLD 3
 #define SHAPE_COMPLETION_DIST_THRESHOLD 10
@@ -25,6 +16,9 @@ class Freehand : public GuiElement {
         bool finished = false;
         bool isFreehandShape = false;
         ivec3 color;
+        ivec2 minBound;
+        ivec2 maxBound;
+        bool hasBounds = false;
     public:
         Freehand();
         Freehand(ivec3 color, bool isFreehandShape = false);
@@ -32,6 +26,7 @@ class Freehand : public GuiElement {
         Freehand(ElementParameters ep);
         void draw(Screen *screen);
         void floodFill(ivec2 start, Screen* screen);
+        void updateBounds(const ivec2& point);
         GuiElement* clone() const;
         void writeXml(std::ostream& out, int depth) const;
         bool resolveEvent(Event *e);
@@ -39,6 +34,10 @@ class Freehand : public GuiElement {
         bool isInside(ivec2 coordinates);
         bool isFinished() const;
         bool isFreehandShapeMode() const;
+        const std::vector<ivec2>& getPoints() const;
+        ivec2 getMinBound() const;
+        ivec2 getMaxBound() const;
+        bool hasDrawBounds() const;
 };
 
 #endif

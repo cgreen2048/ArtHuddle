@@ -1,4 +1,15 @@
 #include "EventSystem.hpp"
+#include "Freehand.hpp"
+#include "Sound.hpp"
+#include "SoundPlayer.hpp"
+#include "SoundState.hpp"
+#include "SoundEvent.hpp"
+#include "ClickEvent.hpp"
+#include "ShowEvent.hpp"
+#include "MouseDownEvent.hpp"
+#include "MouseUpEvent.hpp"
+#include "MouseMotionEvent.hpp"
+#include "Layout.hpp"
 #include <iostream>
 
 
@@ -56,7 +67,7 @@ void EventSystem::processEvents(Layout *root){
                     bool success = fr->resolveEvent(e.get());
 
                     if (!success && fr->isFinished()) {
-                        // ADD ROOT DELETE FUNCTON TO DELETE INCOMPLETE FREEHAND
+                        root->deleteElement(fr->getName());
                     }
 
                     if (e->getType() == EventType::MOUSE_UP) {

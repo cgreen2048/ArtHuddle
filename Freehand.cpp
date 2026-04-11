@@ -1,9 +1,24 @@
 #include "Freehand.hpp"
+#include "ClickEvent.hpp"
+#include "MouseDownEvent.hpp"
+#include "MouseUpEvent.hpp"
+#include "MouseMotionEvent.hpp"
+#include "XmlWriteHelpers.hpp"
+#include "helperFunctions.hpp"
+#include "Selected.hpp"
 #include <iostream>
+#include <limits>
+#include <stack>
 
-Freehand::Freehand() : points{}, lastDrawnPoint{0,0}, color{0,0,0} {}
+Freehand::Freehand() : points{}, lastDrawnPoint{0,0}, color{0,0,0} {
+    setName(generateElementName());
+    std::cout << getName() << "\n";
+}
 
-Freehand::Freehand(ivec3 color, bool isFreehandShape) : points{}, lastDrawnPoint{0,0}, color{color}, isFreehandShape{isFreehandShape} {}
+Freehand::Freehand(ivec3 color, bool isFreehandShape) : points{}, lastDrawnPoint{0,0}, color{color}, isFreehandShape{isFreehandShape} {
+    setName(generateElementName());
+    std::cout << getName() << "\n";
+}
 
 Freehand::Freehand(const Freehand& cp) : Freehand() {
     this->hasFirstPoint = cp.hasFirstPoint;
@@ -76,6 +91,7 @@ void Freehand::floodFill(ivec2 start, Screen* screen) {
         }
 
         screen->colorOnePixel(p, this->color, this->parentStart, this->parentEnd);
+        updateBounds(p);
 
         st.push(ivec2(x + 1, y));
         st.push(ivec2(x - 1, y));
@@ -84,82 +100,85 @@ void Freehand::floodFill(ivec2 start, Screen* screen) {
     }
 }
 
+void Freehand::updateBounds(const ivec2& coords) {
+    if (!hasBounds) {
+        minBound = coords;
+        maxBound = coords;
+        hasBounds = true;
+        return;
+    }
+    minBound.x = std::min(minBound.x, coords.x);
+    minBound.y = std::min(minBound.y, coords.y);
+    maxBound.x = std::max(maxBound.x, coords.x);
+    maxBound.y = std::max(maxBound.y, coords.y);
+}
+
 GuiElement* Freehand::clone() const {
     return new Freehand(*this);
 }
 
 bool Freehand::resolveEvent(Event *e) {
-    if (this->finished) {
-        if (e->getType() == EventType::CLICK) {
-            ClickEvent* click = static_cast<ClickEvent*>(e);
-            // run selection logic
+    if (e->getType() == EventType::MOUSE_DOWN) {
+        MouseDownEvent* md = static_cast<MouseDownEvent*>(e);
+
+        if (!hasFirstPoint) {
+            lastDrawnPoint = md->getCoords();
+            hasFirstPoint = true;
+            this->points.push_back(ivec2{lastDrawnPoint});
             return true;
         }
+
         return false;
     }
-    else {
-        if (e->getType() == EventType::MOUSE_DOWN) {
-            MouseDownEvent* md = static_cast<MouseDownEvent*>(e);
 
-            if (!hasFirstPoint) {
-                lastDrawnPoint = md->getCoords();
-                hasFirstPoint = true;
-                this->points.push_back(ivec2{lastDrawnPoint});
-                return true;
-            }
+        if (e->getType() == EventType::MOUSE_MOTION) {
+        
+        MouseMotionEvent* mm = static_cast<MouseMotionEvent*>(e);
 
-            return false;
-        }
-
-         if (e->getType() == EventType::MOUSE_MOTION) {
-            
-            MouseMotionEvent* mm = static_cast<MouseMotionEvent*>(e);
-
-            if (!hasFirstPoint || !mm->isMouseDown()) {
-                return true;
-            }
-
-            ivec2 current = mm->getCoords();
-
-            if (current == lastDrawnPoint) {
-                return true;
-            }
-
-            int dx = current.x - lastDrawnPoint.x;
-            int dy = current.y - lastDrawnPoint.y;
-
-            if (dx * dx + dy * dy < PIXEL_DRAW_DIST_THRESHOLD * PIXEL_DRAW_DIST_THRESHOLD) {  
-                return true;
-            }
-
-            this->points.push_back(ivec2{lastDrawnPoint});
-            lastDrawnPoint = current;
+        if (!hasFirstPoint || !mm->isMouseDown()) {
             return true;
         }
 
-        if (e->getType() == EventType::MOUSE_UP) {
-            MouseUpEvent* mu = static_cast<MouseUpEvent*>(e);
+        ivec2 current = mm->getCoords();
 
-            ivec2 current = mu->getCoords();
-            this->points.push_back(ivec2{lastDrawnPoint});
-            this->finished = true;
-
-            if (isFreehandShape) {
-                int dx = current.x - points[0].x;
-                int dy = current.y - points[0].y;
-
-                if (dx * dx + dy * dy > SHAPE_COMPLETION_DIST_THRESHOLD * SHAPE_COMPLETION_DIST_THRESHOLD) {  
-                    this->points.clear();
-                    lastDrawnPoint = current;
-                    return false;
-                }
-
-                this->points.push_back(points[0]);
-                lastDrawnPoint = points[0];
-            }
-            
+        if (current == lastDrawnPoint) {
             return true;
-        } 
+        }
+
+        int dx = current.x - lastDrawnPoint.x;
+        int dy = current.y - lastDrawnPoint.y;
+
+        if (dx * dx + dy * dy < PIXEL_DRAW_DIST_THRESHOLD * PIXEL_DRAW_DIST_THRESHOLD) {  
+            return true;
+        }
+
+        this->points.push_back(ivec2{lastDrawnPoint});
+        lastDrawnPoint = current;
+        return true;
+    }
+
+    if (e->getType() == EventType::MOUSE_UP) {
+        MouseUpEvent* mu = static_cast<MouseUpEvent*>(e);
+
+        ivec2 current = mu->getCoords();
+        this->points.push_back(ivec2{lastDrawnPoint});
+        this->finished = true;
+
+        if (isFreehandShape) {
+            int dx = current.x - points[0].x;
+            int dy = current.y - points[0].y;
+
+            if (dx * dx + dy * dy > SHAPE_COMPLETION_DIST_THRESHOLD * SHAPE_COMPLETION_DIST_THRESHOLD) {  
+                this->points.clear();
+                lastDrawnPoint = current;
+                return false;
+            }
+
+            this->points.push_back(points[0]);
+            lastDrawnPoint = points[0];
+        }
+        
+        return true;
     }
 
     return false;
@@ -208,13 +227,35 @@ bool Freehand::validateAndNormalize(ElementParameters& ep) {
 }
 
 bool Freehand::isInside(ivec2 coordinates) {
+    ivec2 center(0, 0);
     for (const ivec2& point : this->points) {
         int dx = coordinates.x - point.x;
         int dy = coordinates.y - point.y;
+        center.x += point.x;
+        center.y += point.y;
         if (dx * dx + dy * dy <= PIXEL_DRAW_DIST_THRESHOLD * PIXEL_DRAW_DIST_THRESHOLD) {
             return true;
         }
     }
+    if (this->isFreehandShape) {
+        bool inside = false;
+        size_t n = points.size();
+
+        for (size_t i = 0, j = n - 1; i < n; j = i++) {
+            const ivec2& pi = points[i];
+            const ivec2& pj = points[j];
+
+            bool intersects =
+                ((pi.y > coordinates.y) != (pj.y > coordinates.y)) &&
+                (coordinates.x < (pj.x - pi.x) * (coordinates.y - pi.y) / static_cast<double>(pj.y - pi.y) + pi.x);
+
+            if (intersects) {
+                inside = !inside;
+            }
+        }
+        return inside;
+    }
+        
     return false;
 }
 
@@ -224,4 +265,20 @@ bool Freehand::isFinished() const {
 
 bool Freehand::isFreehandShapeMode() const {
     return isFreehandShape;
+}
+
+const std::vector<ivec2>& Freehand::getPoints() const {
+    return points;
+}
+
+ivec2 Freehand::getMinBound() const {
+    return minBound;
+}
+
+ivec2 Freehand::getMaxBound() const {
+    return maxBound;
+}
+
+bool Freehand::hasDrawBounds() const {
+    return hasBounds;
 }

@@ -8,9 +8,6 @@
 #include "GuiElement.hpp"
 #include "vec2.hpp"
 #include "Event.hpp"
-#include "ClickEvent.hpp"
-#include "ShowEvent.hpp"
-#include "Selected.hpp"
 
 class Layout : public GuiElement {
     private:

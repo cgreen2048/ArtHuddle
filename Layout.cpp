@@ -1,4 +1,9 @@
 #include "Layout.hpp"
+#include "ClickEvent.hpp"
+#include "ShowEvent.hpp"
+#include "Selected.hpp"
+#include "EventSystem.hpp"
+
 
 Layout::Layout() : active{false} {}
 
@@ -126,12 +131,6 @@ bool Layout::resolveEvent(Event* e) {
         return false;
     }
 
-    for (GuiElement* child : elements) {
-        if (child->resolveEvent(e)) {
-            return true;
-        }
-    }
-
     if (e->getType() == EventType::CLICK) {
         for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
             GuiElement* object = *ritr;
@@ -149,9 +148,16 @@ bool Layout::resolveEvent(Event* e) {
                 }
             }
         }
+
+        Selected::getInstance().setSelectedElement(nullptr);
+        return false;
     }
-    
-    Selected::getInstance().setSelectedElement(nullptr);
+
+    for (GuiElement* child : elements) {
+        if (child->resolveEvent(e)) {
+            return true;
+        }
+    }
 
     return false;
 }
@@ -213,12 +219,19 @@ void Layout::clearElements() {
 void Layout::deleteElement(const std::string& name) {
     for (auto it = elements.begin(); it != elements.end(); ++it) {
         if ((*it)->getName() == name) {
-            // EventSystem& eventSystem = EventSystem::getInstance();
-            // GuiElement* e = eventSystem.getTargetedElement();
+            std::cout << "found name: " << (*it)->getName() << "\n";
+            EventSystem& eventSystem = EventSystem::getInstance();
+            GuiElement* target = eventSystem.getTargetedElement();
 
-            // if (e != nullptr && e->getName() == name) {
-            //     eventSystem.setTargetedElement(nullptr);
-            // }
+            if (target != nullptr && target->getName() == name) {
+                eventSystem.setTargetedElement(nullptr);
+            }
+
+            Selected& selectedSystem = Selected::getInstance();
+            GuiElement* selected = selectedSystem.getSelectedElement();
+            if (selected != nullptr && selected->getName() == name) {
+                selectedSystem.setSelectedElement(nullptr);
+            }
 
             delete *it;
             elements.erase(it);

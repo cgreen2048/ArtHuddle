@@ -10,6 +10,7 @@
 #include "Button.hpp"
 #include "Ellipse.hpp"
 #include "Arrow.hpp"
+#include "Freehand.hpp"
 #include "ElementParameters.hpp"
 
 extern GuiElement* factory(guiElement e, ElementParameters ep);

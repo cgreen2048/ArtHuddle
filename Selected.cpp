@@ -1,4 +1,14 @@
 #include "Selected.hpp"
+#include "GuiElement.hpp"
+#include "Point.hpp"
+#include "Line.hpp"
+#include "Box.hpp"
+#include "Triangle.hpp"
+#include "Ellipse.hpp"
+#include "Arrow.hpp"
+#include "Freehand.hpp"
+#include "Layout.hpp"
+#include "Factory.hpp"
 
 Selected::Selected() {}
 
@@ -105,6 +115,35 @@ void Selected::setSelectedElement(GuiElement* updatedElement) {
 
         this->drawBoundingBox();
         return;
+    }
+
+    Freehand* freehand = dynamic_cast<Freehand*>(this->selectedElement);
+    if (freehand) {
+        if (freehand->hasDrawBounds()) {
+            this->minBound = freehand->getMinBound();
+            this->maxBound = freehand->getMaxBound();
+        }
+        else {
+            const std::vector<ivec2>& points = freehand->getPoints();
+
+            int minX = points[0].x;
+            int maxX = points[0].x;
+            int minY = points[0].y;
+            int maxY = points[0].y;
+
+            for (const ivec2& point : points) {
+                minX = std::min(point.x, minX);
+                maxX = std::max(point.x, maxX);
+                minY = std::min(point.y, minY);
+                maxY = std::max(point.y, minY);
+            }
+
+            this->minBound = ivec2{minX, minY};
+            this->maxBound = ivec2{maxX, maxY};
+        }
+        this->drawBoundingBox();
+        return;
+        
     }
 }
 
