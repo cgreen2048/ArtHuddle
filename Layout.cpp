@@ -79,16 +79,14 @@ void Layout::draw(Screen *screen) {
     }
 }
 
-void Layout::drawTextOverlay(Screen *screen){
+void Layout::drawOverlay(Screen *screen){
      if (!this->active || !this->hasParentStart || !this->hasParentEnd) {
         return;
     }
 
-    if
-
     for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
         if (dynamic_cast<Button*>(*start) || dynamic_cast<TextBox*>(*start)) {
-            (*start)->drawTextOverlay(screen);
+            (*start)->drawOverlay(screen);
         }
     }
 }

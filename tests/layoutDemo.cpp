@@ -236,6 +236,9 @@ int layoutDemo(Screen* screen, SDL_Window *window, SDL_Renderer* renderer) {
         SDL_RenderClear(renderer);
 
         screen->renderToRenderer();
+        layout->drawOverlay(screen);
+
+        
         SDL_RenderPresent(renderer);
     }
     delete layout;

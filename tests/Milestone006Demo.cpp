@@ -16,7 +16,7 @@
 
 const int X = 960, Y = 540;
 
-int eventDemo(Screen *screen, SDL_Window *window);
+int eventDemo(Screen *screen, SDL_Window *window, SDL_Renderer *renderer);
 void spawnEvents();
 
 int main() {
@@ -42,10 +42,10 @@ int main() {
         return 1;
     }
 
-    Screen *screen = new Screen(X, Y);
+    Screen *screen = new Screen(X, Y, renderer);
     std::cout << "surface = " << screen->getSurface() << '\n';
 
-    int failure = eventDemo(screen, window);
+    int failure = eventDemo(screen, window, renderer);
 
     if (failure == 1) {
         std::cout << "Demo did not execute successfully\n";
@@ -59,7 +59,7 @@ int main() {
 
 }
 
-int eventDemo(Screen *screen, SDL_Window *window) {
+int eventDemo(Screen *screen, SDL_Window *window, SDL_Renderer *renderer) {
     bool end = false;
     int failure = 0;
     SDL_Event event;
@@ -84,6 +84,7 @@ int eventDemo(Screen *screen, SDL_Window *window) {
     buttonParam.maxType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
     buttonParam.name = "button1";
+    buttonParam.text = "Clickme";
     buttonParam.callback = spawnEvents;
     buttonParam.callbackName = "spawnEvents";
     Button* button = dynamic_cast<Button*>(factory(guiElement::BUTTON, buttonParam));
@@ -133,7 +134,7 @@ int eventDemo(Screen *screen, SDL_Window *window) {
         SDL_RenderClear(renderer);
 
         screen->renderToRenderer();
-        layout->drawTextOverlay(screen);
+        layout->drawOverlay(screen);
 
         SDL_RenderPresent(renderer);
 

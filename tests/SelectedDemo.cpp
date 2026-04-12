@@ -15,7 +15,7 @@
 
 const int X = 960, Y = 540;
 
-int selectedDemo(Screen *screen, SDL_Window *window);
+int selectedDemo(Screen *screen, SDL_Window *window, SDL_Renderer *renderer);
 void spawnEvents();
 
 int main()
@@ -45,9 +45,9 @@ int main()
         return 1;
     }
 
-    Screen *screen = new Screen(X, Y);
+    Screen *screen = new Screen(X, Y, renderer);
 
-    int failure = selectedDemo(screen, window);
+    int failure = selectedDemo(screen, window, renderer);
 
     if (failure == 1)
     {
@@ -62,7 +62,7 @@ int main()
     return failure;
 }
 
-int selectedDemo(Screen *screen, SDL_Window *window)
+int selectedDemo(Screen *screen, SDL_Window *window, SDL_Renderer *renderer)
 {
     bool end = false;
     int failure = 0;
@@ -198,7 +198,7 @@ int selectedDemo(Screen *screen, SDL_Window *window)
         SDL_RenderClear(renderer);
 
         screen->renderToRenderer();
-        layout->drawTextOverlay(screen);
+        layout->drawOverlay(screen);
 
         SDL_RenderPresent(renderer);
 

@@ -748,8 +748,8 @@ In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will c
 
 ---
 
-### `void drawTextOverlay(Screen *screen)`
-Virtual drawTextOverlay method intended to be **overridden by derived classes**.
+### `void drawOverlay(Screen *screen)`
+Virtual drawOverlay method intended to be **overridden by derived classes**.
 Each derived class implements its own drawing behavior:
 
 | Class | Screen Function Used |
@@ -757,7 +757,7 @@ Each derived class implements its own drawing behavior:
 | `Button` | `drawTextCentered(min, max, text, textColor)` |
 | `TextBox` | `drawTextClipped(min, max, text, textColor) & drawCursor(getCursorPosition(), textColor)` |
 
-In addition, calling `drawTextOverlay()` in a parent-type GUI Element (ex. `Layout`) will call `drawTextOverlay()` on all children of that parent
+In addition, calling `drawOverlay()` in a parent-type GUI Element (ex. `Layout`) will call `drawOverlay()` on all children of that parent
 
 ---
 
@@ -945,8 +945,8 @@ If the `Layout` is active and contains both starting and ending parent bounds, i
 
 ---
 
-### `void drawTextOverlay(Screen *screen)`
-If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `drawTextOverlay()` functions, drawing every child element's overlay items like text in a button
+### `void drawOverlay(Screen *screen)`
+If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `drawOverlay()` functions, drawing every child element's overlay items like text in a button
 
 ---
 
@@ -1186,7 +1186,7 @@ Returns `false` otherwise.
 Inequality operator overload.  
 Returns the opposite of `operator==`.
 
-### `void drawTextOverlay(Screen* screen)`
+### `void drawOverlay(Screen* screen)`
 Draws the text content and, if appropriate, a blinking cursor:
 - Calls `screen->drawTextClipped(min, max, text, textColor)` to draw the text
 - Calls `screen->drawCursor(getCursorPosition(), textColor)` if `shouldShowCursor()` returns `true`
@@ -2799,7 +2799,7 @@ The rendering system follows this order each frame:
 3. `renderToRenderer()`  
    → Copies surface → renderer (GPU step)
 
-4. `layout->drawTextOverlay(screen)`  
+4. `layout->drawOverlay(screen)`  
    → Draws text/cursor (uses renderer)
 
 5. `SDL_RenderPresent(renderer)`  

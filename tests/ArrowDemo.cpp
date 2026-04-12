@@ -36,9 +36,9 @@ int main() {
         SDL_Quit();
         return 1;
     }
-    
+
     SDL_Event event;
-    Screen *screen = new Screen(X, Y);
+    Screen *screen = new Screen(X, Y, renderer);
 
     ElementParameters arrowParam;
     arrowParam.min = ivec2(250, 250);
@@ -81,7 +81,7 @@ int main() {
         SDL_RenderClear(renderer);
 
         screen->renderToRenderer();
-        layout->drawTextOverlay(screen);
+        layout->drawOverlay(screen);
 
         SDL_RenderPresent(renderer);
        

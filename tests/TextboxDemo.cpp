@@ -39,7 +39,7 @@
 //   1. screen->clear()
 //   2. layout->draw()            → draw shapes to surface
 //   3. screen->renderToRenderer() → copy surface → renderer
-//   4. layout->drawTextOverlay()     → draw text/cursor (still uses screen abstraction)
+//   4. layout->drawOverlay()     → draw text/cursor (still uses screen abstraction)
 //   5. SDL_RenderPresent()       → display final frame
 //
 // ================================================================
@@ -145,7 +145,7 @@ int main() {
         SDL_RenderClear(renderer);
 
         screen->renderToRenderer();
-        layout->drawTextOverlay(screen);
+        layout->drawOverlay(screen);
 
 
         SDL_RenderPresent(renderer);

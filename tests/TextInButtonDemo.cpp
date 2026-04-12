@@ -91,7 +91,7 @@ int main() {
         screen->renderToRenderer();
 
         // Second pass: overlay text to renderer
-        layout->drawTextOverlay(screen);
+        layout->drawOverlay(screen);
 
         // Present final frame
         SDL_RenderPresent(renderer);

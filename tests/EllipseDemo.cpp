@@ -38,7 +38,7 @@ int main() {
     }
 
     SDL_Event event;
-    Screen *screen = new Screen(X, Y);
+    Screen *screen = new Screen(X, Y, renderer);
 
     ElementParameters ellipseParam;
     ellipseParam.center = ivec2(X/2, Y/2);
@@ -73,7 +73,7 @@ int main() {
         SDL_RenderClear(renderer);
 
         screen->renderToRenderer();
-        layout->drawTextOverlay(screen);
+        layout->drawOverlay(screen);
 
         SDL_RenderPresent(renderer);
        
