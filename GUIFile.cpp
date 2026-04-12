@@ -102,6 +102,8 @@ static bool isElementOpen(const std::string& tag) {
            tag.rfind("<line", 0) == 0 ||
            tag.rfind("<box", 0) == 0 ||
            tag.rfind("<button", 0) == 0 ||
+           tag.rfind("<textbox", 0) == 0 ||
+           tag.rfind("<triangle", 0) == 0 ||
            tag.rfind("<triangle", 0) == 0 ||
            tag.rfind("<ellipse", 0) == 0 ||
            tag.rfind("<arrow", 0) == 0 ||
@@ -123,6 +125,9 @@ static guiElement determineGuiElementOpenerType(const std::string& tag) {
     }
     if (tag.rfind("<button", 0) == 0) {
         return guiElement::BUTTON;
+    }
+    if (tag.rfind("<textbox", 0) == 0) {
+        return guiElement::TEXTBOX;
     }
     if (tag.rfind("<ellipse", 0) == 0) {
         return guiElement::ELLIPSE;
@@ -153,6 +158,9 @@ static bool isMatchingElementClose(const std::string& tag, guiElement type) {
     }
     if (type == guiElement::BUTTON) {
         return tag == BUTTON_CLOSE;
+    }
+    if (type == guiElement::TEXTBOX) {
+        return tag == TEXTBOX_CLOSE;
     }
     if (type == guiElement::ELLIPSE) {
         return tag == ELLIPSE_CLOSE;
@@ -472,6 +480,11 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
         }
     }
 
+    if(type == guiElement::TEXTBOX){
+        if(!setTextFromTag(elementOpenTag, &ep)){
+            return nullptr;
+        }
+    }
     if (type == guiElement::ELLIPSE) {
         if (!setRadiusFromTag(elementOpenTag, &ep)) {
             return nullptr;
@@ -486,6 +499,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
     int lineVec2Index = 0;
     int boxVec2Index = 0;
     int triangleVec2Index = 0;
+    int textBoxVec3Index = 0;
     bool parsedArrowStem = false;
     bool parsedArrowPoint = false;
 
@@ -526,7 +540,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX || type == guiElement::BUTTON || (type == guiElement::ARROW && parsedArrowStem == false)) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON || (type == guiElement::ARROW && parsedArrowStem == false) || type == guiElement::TEXTBOX) {
                 if (boxVec2Index == 0) {
                     ep.min = v;
                     ep.minType = TagType::Vec;
@@ -583,7 +597,7 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
                 }
                 lineVec2Index++;
             }
-            else if (type == guiElement::BOX || type == guiElement::BUTTON || (type == guiElement::ARROW && parsedArrowStem == false)) {
+            else if (type == guiElement::BOX || type == guiElement::BUTTON || (type == guiElement::ARROW && parsedArrowStem == false) || type == guiElement::TEXTBOX) {
                 if (boxVec2Index == 0) {
                     ep.min = v;
                     ep.minType = TagType::IVec;
@@ -628,19 +642,44 @@ static GuiElement* parseElement(std::ifstream& inFile, const std::string& elemen
             if (!parseVec3(inFile, temp)) {
                 return nullptr;
             }
-
             ivec3 c = toIVec3(temp);
 
-            ep.color = c;
-            ep.colorType = TagType::Vec;
+            if (type == guiElement::TEXTBOX || type == guiElement::BUTTON) {
+                if (textBoxVec3Index == 0) {
+                    ep.color = c;
+                    ep.colorType = TagType::Vec;
+                }
+                else {
+                    ep.textColor = c;
+                    ep.textColorType = TagType::Vec;
+                }
+                textBoxVec3Index++;
+            }
+            else{
+                ep.color = c;
+                ep.colorType = TagType::Vec;
+            }
         }
         else if (tag == IVEC3_OPEN) {
             ivec3 c;
             if (!parseIVec3(inFile, c)) {
                 return nullptr;
             }
-            ep.color = c;
-            ep.colorType = TagType::IVec;
+            if (type == guiElement::TEXTBOX || type == guiElement::BUTTON) {
+                if (textBoxVec3Index == 0) {
+                    ep.color = c;
+                    ep.colorType = TagType::IVec;
+                }
+                else {
+                    ep.textColor = c;
+                    ep.textColorType = TagType::IVec;
+                }
+                textBoxVec3Index++;
+            }
+            else{
+                ep.color = c;
+                ep.colorType = TagType::IVec;
+            }
         }
         else {
             std::cerr << "Malformed XML\n";

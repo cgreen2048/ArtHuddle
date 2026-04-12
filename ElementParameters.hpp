@@ -23,6 +23,7 @@ struct ElementParameters {
     ivec2 pointB = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 pointC = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec3 color = ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec3 textColor = ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     Screen* screen = nullptr;
     ivec2 parentStart = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 parentEnd = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
@@ -39,7 +40,11 @@ struct ElementParameters {
     TagType pointBType = TagType::Vec;
     TagType pointCType = TagType::Vec;
     TagType colorType = TagType::Vec;
+<<<<<<< HEAD
     
+=======
+    TagType textColorType = TagType::Vec;
+>>>>>>> main
     vec2 layoutStart = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     vec2 layoutEnd = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     

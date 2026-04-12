@@ -172,6 +172,23 @@ int compareSingleElement(GuiElement* actual, GuiElement* expected) {
         return 0;
     }
 
+    if (auto* aTextBox = dynamic_cast<TextBox*>(actual)) {
+        auto* eTextBox = dynamic_cast<TextBox*>(expected);
+        if (!eTextBox) {
+            return 1;
+        }
+        if (*aTextBox != *eTextBox) {
+            return 1;
+        }
+        if (aTextBox->getName() != eTextBox->getName()) {
+            return 1;
+        }
+        if (aTextBox->getText() != eTextBox->getText()) {
+            return 1;
+        }
+        return 0;
+    }
+
     if (auto* aEllipse = dynamic_cast<Ellipse*>(actual)) {
         auto* eEllipse = dynamic_cast<Ellipse*>(expected);
 
@@ -285,10 +302,10 @@ int readTest1() {
     lineParam.start = toIVec2(50.5f, 902.47f);
     lineParam.end = toIVec2(75.6f, 1024.6f);
     lineParam.color = toIVec3(244.0f, 245.0f, 103.3f);
-    lineParam.startType = TagType::IVec;
-    lineParam.endType = TagType::IVec;
-    lineParam.colorType = TagType::IVec;
     lineParam.name = "l1";
+    lineParam.startType = TagType::Vec;
+    lineParam.endType = TagType::Vec;
+    lineParam.colorType = TagType::Vec;
     GuiElement* l = factory(guiElement::LINE, lineParam);
     expectedRoot->addElement(l);
 
@@ -310,9 +327,11 @@ int readTest1() {
     buttonParam.min = ivec2(50, 50);
     buttonParam.max = ivec2(150, 100);
     buttonParam.color = ivec3(255, 0, 0);
+    buttonParam.textColor = ivec3(255, 0, 0);
     buttonParam.minType = TagType::IVec;
     buttonParam.maxType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
+    buttonParam.textColorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     expectedRoot->addElement(btn);
 
@@ -320,10 +339,10 @@ int readTest1() {
     boxParam.min = toIVec2(250.3f, 122.5f);
     boxParam.max = toIVec2(420.34f, 254.9f);
     boxParam.color = ivec3(212, 22, 124);
-    boxParam.minType = TagType::IVec;
-    boxParam.maxType = TagType::IVec;
-    boxParam.colorType = TagType::IVec;
     boxParam.name = "box1";
+    boxParam.minType = TagType::Vec;
+    boxParam.maxType = TagType::Vec;
+    boxParam.colorType = TagType::Vec;
     GuiElement* b = factory(guiElement::BOX, boxParam);
     expectedRoot->addElement(b);
 
@@ -348,6 +367,19 @@ int readTest1() {
     triangleParam.name = "t1";
     GuiElement* t = factory(guiElement::TRIANGLE, triangleParam);
     expectedRoot->addElement(t);
+
+
+    ElementParameters textBoxParam;
+    textBoxParam.min = ivec2(100, 100);
+    textBoxParam.max = ivec2(300, 150);
+    textBoxParam.color = ivec3(255, 255, 255);
+    textBoxParam.textColor = ivec3(0, 0, 0);
+    textBoxParam.minType = TagType::IVec;
+    textBoxParam.maxType = TagType::IVec;
+    textBoxParam.colorType = TagType::IVec;
+    textBoxParam.textColorType = TagType::IVec;
+    GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
+    expectedRoot->addElement(tb);
 
     ElementParameters arrowParam;
     arrowParam.min = ivec2(250, 250);
@@ -431,10 +463,10 @@ int readTest2() {
     boxParam.min = toIVec2(250.3f, 122.5f);
     boxParam.max = toIVec2(420.34f, 254.9f);
     boxParam.color = ivec3(212, 22, 124);
-    boxParam.minType = TagType::IVec;
-    boxParam.maxType = TagType::IVec;
-    boxParam.colorType = TagType::IVec;
     boxParam.name = "box1";
+    boxParam.minType = TagType::Vec;
+    boxParam.maxType = TagType::Vec;
+    boxParam.colorType = TagType::Vec;
     GuiElement* b = factory(guiElement::BOX, boxParam);
     nested->addElement(b);
 
@@ -445,11 +477,25 @@ int readTest2() {
     buttonParam.min = ivec2(50, 50);
     buttonParam.max = ivec2(150, 100);
     buttonParam.color = ivec3(255, 0, 0);
+    buttonParam.textColor = ivec3(255, 0, 0);
     buttonParam.minType = TagType::IVec;
     buttonParam.maxType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
+    buttonParam.textColorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     nested->addElement(btn);
+
+    ElementParameters textBoxParam;
+    textBoxParam.min = ivec2(100, 100);
+    textBoxParam.max = ivec2(300, 150);
+    textBoxParam.color = ivec3(255, 255, 255);
+    textBoxParam.textColor = ivec3(0, 0, 0);
+    textBoxParam.minType = TagType::IVec;
+    textBoxParam.maxType = TagType::IVec;
+    textBoxParam.colorType = TagType::IVec;
+    textBoxParam.textColorType = TagType::IVec;
+    GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
+    nested->addElement(tb);
 
     ElementParameters arrowParam;
     arrowParam.min = ivec2(250, 250);
@@ -678,11 +724,26 @@ int writeTest1() {
     buttonParam.min = ivec2(50, 50);
     buttonParam.max = ivec2(150, 100);
     buttonParam.color = ivec3(255, 0, 0);
+    buttonParam.textColor = ivec3(255, 0, 0);
     buttonParam.startType = TagType::IVec;
     buttonParam.endType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
+    buttonParam.textColorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     root->addElement(btn);
+
+    ElementParameters textBoxParam;
+    textBoxParam.min = ivec2(100, 100);
+    textBoxParam.max = ivec2(300, 150);
+    textBoxParam.color = ivec3(255, 255, 255);
+    textBoxParam.textColor = ivec3(0, 0, 0);
+    textBoxParam.minType = TagType::IVec;
+    textBoxParam.maxType = TagType::IVec;
+    textBoxParam.colorType = TagType::IVec;
+    textBoxParam.textColorType = TagType::IVec;
+    textBoxParam.name = "text1";
+    GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
+    root->addElement(tb);
 
     ElementParameters arrowParam;
     arrowParam.min = ivec2(250, 250);
@@ -760,12 +821,28 @@ int writeTest1() {
     expectedButtonParam.min = ivec2(50, 50);
     expectedButtonParam.max = ivec2(150, 100);
     expectedButtonParam.color = ivec3(255, 0, 0);
+    expectedButtonParam.textColor = ivec3(255, 0, 0);
     expectedButtonParam.minType = TagType::IVec;
     expectedButtonParam.maxType = TagType::IVec;
     expectedButtonParam.colorType = TagType::IVec;
+    expectedButtonParam.textColorType = TagType::IVec;
     GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
     expectedRoot->addElement(expectedButton);
 
+    ElementParameters expectedTextBoxParam;
+    expectedTextBoxParam.min = ivec2(100, 100);
+    expectedTextBoxParam.max = ivec2(300, 150);
+    expectedTextBoxParam.color = ivec3(255, 255, 255);
+    expectedTextBoxParam.textColor = ivec3(0, 0, 0);
+    expectedTextBoxParam.minType = TagType::IVec;
+    expectedTextBoxParam.maxType = TagType::IVec;
+    expectedTextBoxParam.colorType = TagType::IVec;
+    expectedTextBoxParam.textColorType = TagType::IVec;
+    expectedTextBoxParam.name = "text1";
+    GuiElement* etb = factory(guiElement::TEXTBOX, expectedTextBoxParam);
+    expectedRoot->addElement(etb);
+
+    
     ElementParameters expectedArrowParam;
     expectedArrowParam.min = ivec2(250, 250);
     expectedArrowParam.max = ivec2(500, 400);
@@ -898,12 +975,27 @@ int writeTest3() {
     buttonParam.min = ivec2(200, 200);
     buttonParam.max = ivec2(280, 240);
     buttonParam.color = ivec3(0, 0, 255);
+    buttonParam.textColor = ivec3(0, 0, 255);
     buttonParam.minType = TagType::IVec;
     buttonParam.maxType = TagType::IVec;
     buttonParam.colorType = TagType::IVec;
+    buttonParam.textColorType = TagType::IVec;
     GuiElement* btn = factory(guiElement::BUTTON, buttonParam);
     nested2->addElement(btn);
 
+    ElementParameters textBoxParam;
+    textBoxParam.min = ivec2(100, 100);
+    textBoxParam.max = ivec2(300, 150);
+    textBoxParam.color = ivec3(255, 255, 255);
+    textBoxParam.textColor = ivec3(0, 0, 0);
+    textBoxParam.minType = TagType::IVec;
+    textBoxParam.maxType = TagType::IVec;
+    textBoxParam.colorType = TagType::IVec;
+    textBoxParam.textColorType = TagType::IVec;
+    textBoxParam.name = "text1";
+    GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
+    nested2->addElement(tb);
+    
     ElementParameters arrowParam;
     arrowParam.min = ivec2(250, 250);
     arrowParam.max = ivec2(500, 400);
@@ -972,12 +1064,27 @@ int writeTest3() {
     expectedButtonParam.min = ivec2(200, 200);
     expectedButtonParam.max = ivec2(280, 240);
     expectedButtonParam.color = ivec3(0, 0, 255);
+    expectedButtonParam.textColor = ivec3(0, 0, 255);
     expectedButtonParam.minType = TagType::IVec;
     expectedButtonParam.maxType = TagType::IVec;
     expectedButtonParam.colorType = TagType::IVec;
+    expectedButtonParam.textColorType = TagType::IVec;
     GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
     expectedNested2->addElement(expectedButton);
 
+    ElementParameters expectedTextBoxParam;
+    expectedTextBoxParam.min = ivec2(100, 100);
+    expectedTextBoxParam.max = ivec2(300, 150);
+    expectedTextBoxParam.color = ivec3(255, 255, 255);
+    expectedTextBoxParam.textColor = ivec3(0, 0, 0);
+    expectedTextBoxParam.minType = TagType::IVec;
+    expectedTextBoxParam.maxType = TagType::IVec;
+    expectedTextBoxParam.colorType = TagType::IVec;
+    expectedTextBoxParam.textColorType = TagType::IVec;
+    expectedTextBoxParam.name = "text1";
+    GuiElement* etb = factory(guiElement::TEXTBOX, expectedTextBoxParam);
+    expectedNested2->addElement(etb);
+    
     ElementParameters expectedArrowParam;
     expectedArrowParam.min = ivec2(250, 250);
     expectedArrowParam.max = ivec2(500, 400);

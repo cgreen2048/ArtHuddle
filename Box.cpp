@@ -49,7 +49,7 @@ Box& Box::operator=(const Box& cp) {
 }
 
 bool Box::operator==(Box rhs) {
-    if ((this->min != rhs.min) || (this->max != rhs.max) || (this->color != rhs.color)) {
+    if ((this->min != rhs.min) || (this->max != rhs.max) || (this->color != rhs.color) || (this->colorType != rhs.colorType)) {
         return false;
     }
     return true;

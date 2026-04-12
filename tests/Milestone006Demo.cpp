@@ -35,6 +35,7 @@ int main() {
     }
 
     Screen *screen = new Screen(X, Y);
+    std::cout << "surface = " << screen->getSurface() << '\n';
 
     int failure = eventDemo(screen, window);
 

@@ -37,7 +37,7 @@ Point& Point::operator=(const Point& cp) {
 }
 
 bool Point::operator==(Point rhs) {
-    if ((this->coords != rhs.coords) || (this->color != rhs.color)) {
+    if ((this->coords != rhs.coords) || (this->color != rhs.color) || (this->colorType != rhs.colorType)) {
         return false;
     }
     return true;

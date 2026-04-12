@@ -17,7 +17,13 @@
 - [GuiElement Class](#guielement)
 - [Factory Class](#factory)
 - [Layout Class](#layout)
+<<<<<<< HEAD
 - [Freehand Class](#freehand)
+=======
+- [Ellipse Class](#ellipse)
+- [TextBox Class](#textbox)
+- [Triangle Class](#triangle)
+>>>>>>> main
 - [Arrow Class](#arrow)
 - [Ellipse Class](#ellipse)
 - [Triangle Class](#triangle)
@@ -513,6 +519,12 @@ The values for an object's color
 
 ---
 
+### `ivec3 textColor`
+The values for an object's text color
+- Initialized to `ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
 ### `Screen* screen`
 A pointer to the `Screen` object the object should be drawn to
 - Initialized to `nullptr`
@@ -608,6 +620,12 @@ The type of mathematical vector that `color` is. Can be `TagType::Vec` or `TagTy
 
 ---
 
+### `TagType textColorType`
+The type of mathematical vector that `textColor` is. Can be `TagType::Vec` or `TagType::IVec`
+- Initialized to `TagType::Vec`
+
+---
+
 ### `vec2 layoutStart`
 The relative starting position of a `Layout` object
 - Initialized to `vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest())`
@@ -632,7 +650,7 @@ The name of the callback function for a `Button` object. Used to identify the ca
 ---
 
 ### `std::string text`
-The text label for a `Button` object. Used to display text on the button and also written as a parameter in an XML layout file
+The text label for a `Button` and `TextBox` object. Used to display text on the button and also written as a parameter in an XML layout file
 
 ---
 
@@ -773,6 +791,7 @@ It defines a common interface used by all graphical objects such as:
 - `Button`
 - `Ellipse`
 - `Arrow`
+- `TextBox`
 
 The class allows these derived types to be handled **polymorphically**, meaning they can be stored and manipulated using a `GuiElement*`.
 
@@ -787,7 +806,7 @@ This enumeration identifies the type of GUI element being created.
 It is primarily used by the **Factory** to determine which object to instantiate.
 
 ```cpp
-enum class guiElement { LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, ELLIPSE, ARROW };
+enum class guiElement { LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, TEXTBOX, ELLIPSE, ARROW };
 ```
 
 ---
@@ -834,8 +853,22 @@ Each derived class implements its own drawing behavior:
 | `Button` | `drawBox()` |
 | `Ellipse` | `drawEllipse()` |
 | `Arrow` | `drawArrow()` |
+| `TextBox` | `drawBox()` |
 
 In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will call `draw()` on all children of that parent
+
+---
+
+### `void drawOverlay(Screen *screen)`
+Virtual drawOverlay method intended to be **overridden by derived classes**.
+Each derived class implements its own drawing behavior:
+
+| Class | Screen Function Used |
+|------|------|
+| `Button` | `drawTextCentered(min, max, text, textColor)` |
+| `TextBox` | `drawTextClipped(min, max, text, textColor) & drawCursor(getCursorPosition(), textColor)` |
+
+In addition, calling `drawOverlay()` in a parent-type GUI Element (ex. `Layout`) will call `drawOverlay()` on all children of that parent
 
 ---
 
@@ -934,7 +967,8 @@ Creates a new GUI element based on the `guiElement` enum value.
 | `guiElement::TRIANGLE` | `Triangle` |
 | `guiElement::BUTTON` | `Button` |
 | `guiElement::ELLIPSE` | `Ellipse` |
-| `guiElement::Arrow` | `Arrow` |
+| `guiElement::ARROW` | `Arrow` |
+| `guiElement::TEXTBOX` | `Textbox` |
 
 ---
 
@@ -1020,6 +1054,11 @@ Adds `element` to `elements` as a child of this `Layout` and sets `element->pare
 
 ### `void draw(Screen *screen)`
 If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `draw()` functions, drawing every child element
+
+---
+
+### `void drawOverlay(Screen *screen)`
+If the `Layout` is active and contains both starting and ending parent bounds, iterates through every `GuiElement*` in `elements` to call their individual `drawOverlay()` functions, drawing every child element's overlay items like text in a button
 
 ---
 
@@ -1323,6 +1362,130 @@ Returns the integer in the ellipse's `radiusY` attribute
 Checks whether the given coordinates are within the bounds of the `Ellipse` object
 - Returns the result of `isPointInside()`
 - Ensures the passed coordinates are within this object's parent's bounds
+
+---
+
+# TextBox
+
+## Description
+`TextBox` is a class used for storing and drawing a text box to a `Screen` object.
+It inherits from the `Box` class.
+
+## Data Members
+
+### `std::string text`
+The text currently stored inside the text box.
+
+### `ivec3 textColor`
+The color used to draw the text and cursor.
+
+### `bool active`
+Indicates whether the text box is currently active.  
+When active, the blinking cursor may be shown.
+
+### `TagType textColorType`
+The type of the tag for the `textColor` attribute for XML parsing.
+
+---
+
+## Methods
+
+### `TextBox()`
+Default constructor. Initializes the base `Box`, sets `textColor` to `{0,0,0}`, sets `text` to an empty string, and sets `active` to `false`.
+
+### `TextBox(const TextBox& cp)`
+Copy constructor. Creates a new `TextBox` using the values from `cp`.
+
+### `TextBox(ElementParameters ep)`
+Constructor taking in an `ElementParameters` struct.  
+Calls the `Box(ep)` constructor, checks validity with `isValid(ep)`, and then sets:
+- `text` from `ep.text`
+- `textColor` from `ep.textColor`
+- `textColorType` from `ep.textColorType`
+
+Throws `-1` if `isValid(ep)` returns `false`.
+
+### `TextBox(ivec2 min, ivec2 max, ivec3 color, ivec3 textColor, const std::string& text)`
+Constructor that initializes:
+- the `Box` portion using `min`, `max`, and `color`
+- `textColor` using `textColor`
+- `text` using `text`
+- `active` to `false`
+
+### `bool operator==(TextBox rhs)`
+Equality operator overload.  
+Returns `true` if:
+- the base `Box` objects are equal
+- `textColor` matches
+- `textColorType` matches
+
+Returns `false` otherwise.
+
+### `bool operator!=(TextBox rhs)`
+Inequality operator overload.  
+Returns the opposite of `operator==`.
+
+### `void drawOverlay(Screen* screen)`
+Draws the text content and, if appropriate, a blinking cursor:
+- Calls `screen->drawTextClipped(min, max, text, textColor)` to draw the text
+- Calls `screen->drawCursor(getCursorPosition(), textColor)` if `shouldShowCursor()` returns `true`
+
+### `bool shouldShowCursor() const`
+Returns `true` only if:
+- the text box is active
+- the SDL tick count indicates the cursor should currently be visible
+
+This creates a blinking cursor effect.
+
+### `std::string getVisibleText() const`
+Returns the portion of `text` that fits inside the text box width.
+Uses:
+- `5` pixels of padding on each side
+- `8` pixels per character
+
+If the full text is too long, only the ending visible portion is returned.
+
+### `ivec2 getCursorPosition() const`
+Returns the position where the blinking cursor should be drawn.
+The cursor is placed:
+- near the top-left of the box
+- after the currently visible text
+- with `5` pixels of padding
+
+### `void setActive(bool value)`
+Sets whether the text box is active.
+
+### `bool isActive() const`
+Returns whether the text box is currently active.
+
+### `void appendText(const std::string& s)`
+Appends the string `s` to the end of `text`.
+
+### `void backspace()`
+Removes the last character from `text` if `text` is not empty.
+
+### `bool containsPoint(int x, int y) const`
+Checks whether the point `(x, y)` lies within the rectangular bounds of the text box.
+
+### `void writeXml(std::ostream& out, int depth) const`
+Writes a `TextBox` object to XML using standard XML formatting in the following way:
+- Writes an opening `<textbox>` tag with:
+  - `name="name"`
+  - `text="text"`
+- Writes `min` using either `<ivec2>` or `<vec2>` depending on `minType`
+- Writes `max` using either `<ivec2>` or `<vec2>` depending on `maxType`
+- Writes `color` using either `<ivec3>` or `<vec3>` depending on `colorType`
+- Writes `textColor` using either `<ivec3>` or `<vec3>` depending on `textColorType`
+- Writes a closing `</textbox>` tag
+
+### `bool isValid(ElementParameters ep)`
+Calls `Box::isValid(ep)` and then checks `ep.textColor`.
+
+Based on the current code, this function always returns `true`.  
+It also appears intended to assign default values when `textColor` is missing, although the current implementation writes to `ep.color` instead of `ep.textColor`.
+
+### `const std::string& getText() const`
+Returns a constant reference to the current text stored in the text box.
 
 ---
 
@@ -1841,6 +2004,12 @@ The default constructor. Initializes `text` and `callbackName` to empty strings 
 
 ### `Button(const Button& cp)`
 Copy assignment operator. Takes attributes from `cp` to pass into `Box` default constructor and set `text`, `callbackName`, and `callback` for this new `Button`
+
+### `bool operator==(Button rhs)`
+Equality operator. Returns false if attributes from current `Button` do not match attributes for `rhs`
+
+### `bool operator!=(Button rhs)`
+Inequlity operator. Returns the inverse of the equality operator
 
 ### `Button(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
@@ -2487,12 +2656,14 @@ Supports:
 - `Triangle`
 - `Button`
 - `Arrow`
+- `Ellipse`
+- `TextBox`
 
 Behavior:
 - Determines type from opening tag
 - Creates a new `ElementParameters` struct to hold data before object creations
 - Extracts and sets the element `name` attribute
-- Parses coordinate and color data
+- Parses coordinate and color/textColor data
 - Stores tag type (vec vs ivec)
 - Uses vector parsing helpers
 - Preserves original tag types for XML output
@@ -2659,6 +2830,7 @@ Used during parsing:
 - `getFloatAttribute()` → extracts float attributes
 - `getStringAttribute()` → extracts string attributes
 - `setNameFromTag()` → assigns element names  
+- `setTextFromTag()` → assigns element text  
 - `isLayoutOpen()` / `isLayoutClose()` → layout tag checks  
 - `isElementOpen()` → element detection  
 - `isMatchingElementClose()` → validates closing tags
@@ -2696,6 +2868,7 @@ These ensure the correct internal representation while preserving original XML t
 `Screen` is a class representing an SDL_Surface with methods to draw to and color pixels on the surface. The surface can then be displayed using an SDL_Window.
 - `uint32_t width, height`: The width and height of the surface
 - `SDL_Surface* surface`: Holds a pointer to the SDL_Surface object
+- `SDL_Renderer* renderer`: Holds a pointer to the SDL_Renderer object
 
 ## Methods
 
@@ -2751,6 +2924,69 @@ Clears the Target Screen object's `SDL_Surface` by filling the entire surface wi
 - Overwrites all previously drawn pixels in the surface
 - Intended to be called at the start of each frame before drawing new elements
 
+### `void renderToRenderer()`
+Renders the current `Screen` surface to the SDL renderer.
+
+- Verifies that both the `renderer` and `surface` exist
+- Creates a temporary `SDL_Texture` from the internal `SDL_Surface`
+- Uses `SDL_RenderTexture` to copy the texture to the renderer
+- Destroys the temporary texture after rendering
+
+#### Important Rendering Note
+This method is required when using the **SDL_Renderer pipeline**.
+
+- This project uses a **hybrid approach**:
+  - All shapes are drawn to an `SDL_Surface`
+  - The surface is then copied to the renderer for display
+
+- Because of this:
+  - `blitTo()` + `SDL_UpdateWindowSurface()` should NOT be used when a renderer exists
+  - `renderToRenderer()` + `SDL_RenderPresent()` must be used instead
+
+- Mixing surface-based rendering and renderer-based rendering will cause incorrect or undefined behavior
+
+### `void drawTextClipped(ivec2 min, ivec2 max, const std::string& text, ivec3 color)`
+Draws text inside a bounded rectangular region.
+
+- Applies a padding of `5` pixels on each side
+- Computes available width inside the box
+- Limits the number of visible characters based on:
+  - `usableWidth / 8` (each character is ~8 pixels wide)
+- If the text exceeds the visible width:
+  - Only the rightmost portion of the text is displayed
+- Calls `drawText()` to render the clipped text
+
+### `void drawCursor(ivec2 pos, ivec3 color)`
+Draws a text cursor (`|`) at the specified position.
+
+- Uses `drawText()` internally
+- Intended for use in interactive components like `TextBox`
+- Typically paired with a blinking condition (e.g., time-based toggle)
+
+### `void drawText(Tvec2<T1> pos, const std::string& text, Tvec3<T2> textColors)`
+Draws text to the screen using the SDL renderer.
+
+- Returns immediately if:
+  - `renderer` is null
+  - `text` is empty
+- Converts RGB values into `SDL_Color`
+  - Values are clamped between valid color ranges
+- Uses:
+  - `SDL_SetRenderDrawColor` to set text color
+  - `SDL_RenderDebugText` to draw the string at `(pos.x, pos.y)`
+
+#### Note
+This function draws **directly to the renderer**, not the surface.
+
+### `void drawTextCentered(Tvec2<T1> min, Tvec2<T1> max, const std::string& text, Tvec3<T2> textColors)`
+Draws centered text within a rectangular region.
+
+- Computes:
+  - Text width using `text.size() * SDL_DEBUG_FONT_WIDTH`
+  - Text height using `SDL_DEBUG_FONT_HEIGHT`
+- Computes the center of the bounding box
+- Calls `drawText()` with computed centered coordinates
+
 ### `SDL_Surface* getSurface()`
 Returns the surface for comparisons
 
@@ -2772,6 +3008,11 @@ Default constructor. Initializes `width` and `height` to 0
 Constructor that takes in values for width and height. Calls SDL_CreateSurface to create an SDL_Surface for the object
 - Calls drawBox() to fill the entire screen with a black box as a way of clearing garbage values
 
+### `Screen(uint32_t w, uint_32 h, SDL_Renderer* renderer)`
+Constructor that takes in values for width, height, and renderer. 
+Calls SDL_CreateSurface to create an SDL_Surface for the object
+- Calls drawBox() to fill the entire screen with a black box as a way of clearing garbage values
+
 ### `Screen(const Screen& cp)`
 Copy constructor. Creates a new Screen with the same values as `cp`
 - Calls `cp.blitTo(this->surface)` to blit existing surface to the new surface
@@ -2788,6 +3029,32 @@ Compares two Screen objects
 
 ### `~Screen()`
 Destructor method. Checks if Screen object has a valid SDL_Surface before calling `SDL_DestroySurface`
+
+## Rendering Pipeline Summary
+
+The rendering system follows this order each frame:
+
+1. `clear()`  
+   → Clears the surface
+
+2. `layout->draw(screen)`  
+   → Draws shapes to the **surface**
+
+3. `renderToRenderer()`  
+   → Copies surface → renderer (GPU step)
+
+4. `layout->drawOverlay(screen)`  
+   → Draws text/cursor (uses renderer)
+
+5. `SDL_RenderPresent(renderer)`  
+   → Displays final frame
+
+### Key Rule
+> The system uses the **renderer pipeline**, so all final output must go through `renderToRenderer()` and `SDL_RenderPresent()`.
+
+Do not mix with:
+- `SDL_GetWindowSurface`
+- `SDL_UpdateWindowSurface`
 
 ---
 

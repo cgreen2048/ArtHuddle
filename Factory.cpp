@@ -17,7 +17,6 @@ GuiElement* factory(guiElement e, ElementParameters ep) {
 			}
 			case guiElement::LINE: {
 				return new Line(ep);
-
 			}
 			case guiElement::BOX: {
 				return new Box(ep);
@@ -37,10 +36,13 @@ GuiElement* factory(guiElement e, ElementParameters ep) {
 			case guiElement::FREEHAND: {
 				return new Freehand(ep);
 			}
+			case guiElement::TEXTBOX: {
+				return new TextBox(ep);
+			}
 			default: {
 				return nullptr;
 			}
-		}
+		}	
 	}
 	catch (...) {
 		std::cerr << "Invalid parameters for element type " << static_cast<int>(e) << "\n";

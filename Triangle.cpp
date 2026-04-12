@@ -53,7 +53,7 @@ Triangle& Triangle::operator=(const Triangle& cp) {
 }
 
 bool Triangle::operator==(Triangle rhs) {
-    if ((this->a != rhs.a) || (this->b != rhs.b) || (this->c != rhs.c) || (this->color != rhs.color)) {
+    if ((this->a != rhs.a) || (this->b != rhs.b) || (this->c != rhs.c) || (this->color != rhs.color) || (this->colorType != rhs.colorType)) {
         return false;
     }
     return true;
