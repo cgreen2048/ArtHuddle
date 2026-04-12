@@ -34,6 +34,14 @@ int main() {
         return 1;
     }
 
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
+    if (!renderer) {
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << '\n';
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+
     Screen *screen = new Screen(X, Y);
     std::cout << "surface = " << screen->getSurface() << '\n';
 
@@ -120,8 +128,14 @@ int eventDemo(Screen *screen, SDL_Window *window) {
         screen->clear(ivec3(255,255,255));
 
         layout->draw(screen);
-        screen->blitTo(SDL_GetWindowSurface(window));
-		SDL_UpdateWindowSurface(window);
+        
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderClear(renderer);
+
+        screen->renderToRenderer();
+        layout->drawTextOverlay(screen);
+
+        SDL_RenderPresent(renderer);
 
         eventSystem.processEvents(layout);
 
