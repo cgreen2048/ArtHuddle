@@ -79,6 +79,16 @@ void Layout::draw(Screen *screen) {
     }
 }
 
+void Layout::drawOverlay(Screen *screen){
+     if (!this->active || !this->hasParentStart || !this->hasParentEnd) {
+        return;
+    }
+
+    for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
+        (*start)->drawOverlay(screen);
+    }
+}
+
 static std::string indent(int depth) {
     return std::string(depth * 2, ' ');  // 2 spaces per level
 }

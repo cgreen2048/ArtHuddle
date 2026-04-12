@@ -6,7 +6,7 @@
 #include "ElementParameters.hpp"
 #include "Event.hpp"
 
-enum class guiElement {UNKNOWN, LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, ELLIPSE, ARROW};
+enum class guiElement {UNKNOWN, LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, TEXTBOX, ELLIPSE, ARROW};
 
 class GuiElement {
 	protected:
@@ -19,6 +19,8 @@ class GuiElement {
 		virtual ~GuiElement();
 		
 		virtual void draw(Screen*);
+
+		virtual void drawOverlay(Screen*);
 
 		virtual void writeXml(std::ostream& out, int depth) const;
 

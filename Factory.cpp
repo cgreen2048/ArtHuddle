@@ -12,7 +12,6 @@ GuiElement* factory(guiElement e, ElementParameters ep) {
 			}
 			case guiElement::LINE: {
 				return new Line(ep);
-
 			}
 			case guiElement::BOX: {
 				return new Box(ep);
@@ -29,10 +28,13 @@ GuiElement* factory(guiElement e, ElementParameters ep) {
 			case guiElement::ARROW: {
 				return new Arrow(ep);
 			}
+			case guiElement::TEXTBOX: {
+				return new TextBox(ep);
+			}
 			default: {
 				return nullptr;
 			}
-		}
+		}	
 	}
 	catch (...) {
 		std::cerr << "Invalid parameters for element type " << static_cast<int>(e) << "\n";
