@@ -189,13 +189,14 @@ int layoutDemo(Screen* screen, SDL_Window *window, SDL_Renderer* renderer) {
         screen->clear(ivec3(255,255,255));
 
         layout->draw(screen);
-        // screen->blitTo(SDL_GetWindowSurface(window));
-		// SDL_UpdateWindowSurface(window);
+       
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
         screen->renderToRenderer();
+
+        
         SDL_RenderPresent(renderer);
     }
     delete layout;

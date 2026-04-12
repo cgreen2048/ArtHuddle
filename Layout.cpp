@@ -3,6 +3,8 @@
 #include "ShowEvent.hpp"
 #include "Selected.hpp"
 #include "EventSystem.hpp"
+#include "Button.hpp"
+#include "TextBox.hpp"
 
 
 Layout::Layout() : active{false} {}
@@ -94,7 +96,9 @@ void Layout::drawOverlay(Screen *screen) {
     }
 
     for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
-        (*start)->drawOverlay(screen);
+        if (dynamic_cast<Button*>(*start) || dynamic_cast<TextBox*>(*start)) {
+            (*start)->drawOverlay(screen);
+        }
     }
 }
 

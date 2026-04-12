@@ -851,6 +851,7 @@ Each derived class implements its own drawing behavior:
 | `Ellipse` | `drawEllipse()` |
 | `Arrow` | `drawArrow()` |
 | `TextBox` | `drawBox()` |
+| `Freehand` | `colorOnePixel()` + `drawBresenhamLine()` |
 
 In addition, calling `draw()` in a parent-type GUI Element (ex. `Layout`) will call `draw()` on all children of that parent
 

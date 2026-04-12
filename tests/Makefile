@@ -73,80 +73,83 @@ test:
 
 
 
-studentMachine: testsSM freehandDemoSM milestone001SM milestone002SM screenDemoSM \
-	milestone003SM milestone004SM milestone005LayoutTestsSM milestone005SM layoutDemoSM \
-	milestone006SM milestone006EventSystemSM milestone006DemoSM ellipseDemoSM arrowDemoSM \
-	textBoxDemoSM textInButtonDemoSM selectedDemoSM layoutDeleteSM
+studentMachine: testsStudentMachine freehandDemoStudentMachine milestone001StudentMachine \
+ 	milestone002StudentMachine screenDemoStudentMachine milestone003StudentMachine \
+	milestone004StudentMachine milestone005LayoutTestsStudentMachine milestone005StudentMachine \
+	layoutDemoStudentMachine milestone006StudentMachine milestone006EventSystemStudentMachine \
+	milestone006DemoStudentMachine ellipseDemoStudentMachine arrowDemoStudentMachine \
+	textBoxDemoStudentMachine textInButtonDemoStudentMachine selectedDemoStudentMachine \
+	layoutDeleteStudentMachine
 
-testsSM:
+testsStudentMachine:
 	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
 
-milestone001SM:
+milestone001StudentMachine:
 	$(CXX) ../Matrix.cpp Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone001
 
-milestone002SM:
+milestone002StudentMachine:
 	$(CXX) ../Screen.cpp Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone002
 
-screenDemoSM:
+screenDemoStudentMachine:
 	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
 
-milestone003SM:
+milestone003StudentMachine:
 	$(CXX) Milestone003Tests.cpp $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone003
 
-milestone004SM:
+milestone004StudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone004Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone004
 
-milestone005LayoutTestsSM:
+milestone005LayoutTestsStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone005LayoutTests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005LayoutTests
 
-milestone005SM:
+milestone005StudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone005Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005
 
-layoutDemoSM:
+layoutDemoStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) layoutDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDemo
 
-milestone006SM:
+milestone006StudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006
 
-milestone006EventSystemSM:
+milestone006EventSystemStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) ${FACTORY_ELEMENTS} $(UTILITY_ELEMENTS) Milestone006EventSystem.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006EventSystem
 
-milestone006DemoSM:
+milestone006DemoStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Demo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006Demo
 
-ellipseDemoSM:
+ellipseDemoStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) EllipseDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o ellipseDemo
 
-arrowDemoSM:
+arrowDemoStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ArrowDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o arrowDemo
 
-freehandDemoSM:
+freehandDemoStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) freehandDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o freehandDemo
 
-textBoxDemoSM:
+textBoxDemoStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)  TextboxDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textBoxDemo
 
-textInButtonDemoSM:
+textInButtonDemoStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)  TextInButtonDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textInButtonDemo
 
-selectedDemoSM:
+selectedDemoStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) SelectedDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o selectedDemo
 
-layoutDeleteSM:
+layoutDeleteStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) LayoutDeleteTest.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDelete
 	
@@ -220,6 +223,7 @@ arrowDemoMac:
 textBoxDemoMac:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) TextboxDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textBoxDemo
+		
 textInButtonDemoMac:	
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) TextInButtonDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textInButtonDemo
