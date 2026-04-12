@@ -13,67 +13,80 @@
 #include "../GuiElement.hpp"
 #include "../Selected.hpp"
 
-
 const int X = 960, Y = 540;
 
-int selectedDemo(Screen *screen, SDL_Window *window);
+int selectedDemo(Screen *screen, SDL_Window *window, SDL_Renderer *renderer);
 void spawnEvents();
 
-int main() {
+int main()
+{
     std::cout << "Selected Singleton Demo\n";
 
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
+    {
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         return 1;
     }
 
     SDL_Window *window = SDL_CreateWindow("Selected Singleton Demo", X, Y, 0);
-    if (!window) {
+    if (!window)
+    {
         std::cerr << "Failed to create window: " << SDL_GetError() << '\n';
         SDL_Quit();
         return 1;
     }
 
-    Screen *screen = new Screen(X, Y);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, NULL);
+    if (!renderer)
+    {
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << '\n';
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
 
-    int failure = selectedDemo(screen, window);
+    Screen *screen = new Screen(X, Y, renderer);
 
-    if (failure == 1) {
+    int failure = selectedDemo(screen, window, renderer);
+
+    if (failure == 1)
+    {
         std::cout << "Demo did not execute successfully\n";
     }
-    else {
+    else
+    {
         std::cout << "Demo succeeded and window closed\n";
     }
 
     SDL_Quit();
     return failure;
-
 }
 
-int selectedDemo(Screen *screen, SDL_Window *window) {
+int selectedDemo(Screen *screen, SDL_Window *window, SDL_Renderer *renderer)
+{
     bool end = false;
     int failure = 0;
     SDL_Event event;
-    EventSystem& eventSystem = EventSystem::getInstance();
-    Selected& selectedSingleton = Selected::getInstance();
+    EventSystem &eventSystem = EventSystem::getInstance();
+    Selected &selectedSingleton = Selected::getInstance();
     SoundPlayer player;
     eventSystem.setSoundPlayer(&player);
 
     ElementParameters rootLayout;
-    rootLayout.layoutStart = vec2(0.0,0.0);
+    rootLayout.layoutStart = vec2(0.0, 0.0);
     rootLayout.layoutEnd = vec2(1.0, 1.0);
-    rootLayout.parentStart = ivec2(0,0);
-    rootLayout.parentEnd = ivec2(X,Y);
+    rootLayout.parentStart = ivec2(0, 0);
+    rootLayout.parentEnd = ivec2(X, Y);
     rootLayout.active = true;
     rootLayout.name = "rootLayout";
-    Layout *layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, rootLayout));
+    Layout *layout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, rootLayout));
 
     ElementParameters pointParam;
     pointParam.coords = ivec2(500, 500);
     pointParam.color = ivec3(20, 255, 20);
     pointParam.coordsType = TagType::IVec;
     pointParam.name = "point1";
-    Point* point = dynamic_cast<Point*>(factory(guiElement::POINT, pointParam));
+    Point *point = dynamic_cast<Point *>(factory(guiElement::POINT, pointParam));
     layout->addElement(point);
 
     ElementParameters lineParam;
@@ -83,7 +96,7 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     lineParam.startType = TagType::IVec;
     lineParam.endType = TagType::IVec;
     lineParam.name = "line1";
-    Line* line = dynamic_cast<Line*>(factory(guiElement::LINE, lineParam));
+    Line *line = dynamic_cast<Line *>(factory(guiElement::LINE, lineParam));
     layout->addElement(line);
 
     ElementParameters boxParam;
@@ -93,7 +106,7 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     boxParam.minType = TagType::IVec;
     boxParam.maxType = TagType::IVec;
     boxParam.name = "box1";
-    Box* box = dynamic_cast<Box*>(factory(guiElement::BOX, boxParam));
+    Box *box = dynamic_cast<Box *>(factory(guiElement::BOX, boxParam));
     layout->addElement(box);
 
     ElementParameters triangleParam;
@@ -105,7 +118,7 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     triangleParam.pointBType = TagType::IVec;
     triangleParam.pointCType = TagType::IVec;
     triangleParam.name = "triangle1";
-    Triangle* triangle = dynamic_cast<Triangle*>(factory(guiElement::TRIANGLE, triangleParam));
+    Triangle *triangle = dynamic_cast<Triangle *>(factory(guiElement::TRIANGLE, triangleParam));
     layout->addElement(triangle);
 
     ElementParameters ellipseParam;
@@ -115,12 +128,12 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     ellipseParam.color = ivec3(20, 255, 20);
     ellipseParam.centerType = TagType::IVec;
     ellipseParam.name = "ellipse1";
-    Ellipse* ellipse = dynamic_cast<Ellipse*>(factory(guiElement::ELLIPSE, ellipseParam));
+    Ellipse *ellipse = dynamic_cast<Ellipse *>(factory(guiElement::ELLIPSE, ellipseParam));
     layout->addElement(ellipse);
-    
+
     ElementParameters buttonParam;
-    buttonParam.min = ivec2(X/4, Y/4);
-    buttonParam.max = ivec2(X/2, Y/2);
+    buttonParam.min = ivec2(X / 4, Y / 4);
+    buttonParam.max = ivec2(X / 2, Y / 2);
     buttonParam.color = ivec3(255, 0, 0);
     buttonParam.minType = TagType::IVec;
     buttonParam.maxType = TagType::IVec;
@@ -128,7 +141,7 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     buttonParam.name = "button1";
     buttonParam.callback = spawnEvents;
     buttonParam.callbackName = "spawnEvents";
-    Button* button = dynamic_cast<Button*>(factory(guiElement::BUTTON, buttonParam));
+    Button *button = dynamic_cast<Button *>(factory(guiElement::BUTTON, buttonParam));
     layout->addElement(button);
 
     ElementParameters arrowParam;
@@ -145,49 +158,60 @@ int selectedDemo(Screen *screen, SDL_Window *window) {
     arrowParam.color = ivec3(125, 125, 125);
     arrowParam.colorType = TagType::IVec;
     arrowParam.name = "arrow1";
-    Arrow* arrow = dynamic_cast<Arrow*>(factory(guiElement::ARROW, arrowParam));
+    Arrow *arrow = dynamic_cast<Arrow *>(factory(guiElement::ARROW, arrowParam));
     layout->addElement(arrow);
 
     ElementParameters boundingLayoutParam;
-    boundingLayoutParam.layoutStart = vec2(0.0,0.0);
+    boundingLayoutParam.layoutStart = vec2(0.0, 0.0);
     boundingLayoutParam.layoutEnd = vec2(1.0, 1.0);
-    boundingLayoutParam.parentStart = ivec2(0,0);
-    boundingLayoutParam.parentEnd = ivec2(X,Y);
+    boundingLayoutParam.parentStart = ivec2(0, 0);
+    boundingLayoutParam.parentEnd = ivec2(X, Y);
     boundingLayoutParam.active = true;
     boundingLayoutParam.name = "boundingLayout";
-    Layout *boundingLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, boundingLayoutParam));
+    Layout *boundingLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, boundingLayoutParam));
     selectedSingleton.setSelectedLayout(boundingLayout);
     layout->addElement(boundingLayout);
 
-    while (!end) {
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_EVENT_QUIT: {
-                    end = true;
-                    break;
-                }
-                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-                    eventSystem.push(std::make_unique<ClickEvent>(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
-                    break;
-                }
+    while (!end)
+    {
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+            case SDL_EVENT_QUIT:
+            {
+                end = true;
+                break;
+            }
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            {
+                eventSystem.push(std::make_unique<ClickEvent>(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
+                break;
+            }
             }
         }
-        screen->clear(ivec3(255,255,255));
+        screen->clear(ivec3(255, 255, 255));
 
         layout->draw(screen);
-        screen->blitTo(SDL_GetWindowSurface(window));
-		SDL_UpdateWindowSurface(window);
+        
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderClear(renderer);
+
+        screen->renderToRenderer();
+        layout->drawOverlay(screen);
+
+        SDL_RenderPresent(renderer);
 
         eventSystem.processEvents(layout);
-
     }
 
     return failure;
 }
 
-void spawnEvents() {
+void spawnEvents()
+{
     std::cout << "Button clicked, spawning events\n";
-    EventSystem& eventSystem = EventSystem::getInstance();
+    EventSystem &eventSystem = EventSystem::getInstance();
     eventSystem.push(std::make_unique<ShowEvent>("nestedLayout", ShowActionType::SHOW));
     eventSystem.push(std::make_unique<SoundEvent>("../SFX/song.wav", SoundActionType::PLAY, false));
 }

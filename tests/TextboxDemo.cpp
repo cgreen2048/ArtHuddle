@@ -140,8 +140,6 @@ int main() {
 
         layout->draw(screen);
 
-        // screen->blitTo(SDL_GetWindowSurface(window));
-        // SDL_UpdateWindowSurface(window);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
@@ -149,31 +147,6 @@ int main() {
         screen->renderToRenderer();
         layout->drawOverlay(screen);
 
-        // // Draw clipped textbox text
-        // screen->drawTextClipped(textBox->getMin(), textBox->getMax(), textBox->getText(), ivec3(0, 0, 0));
-
-        // // Draw cursor
-        // if (textBox->isActive()) {
-        //      int padding = 5;
-        //     ivec2 min = textBox->getMin();
-        //     ivec2 max = textBox->getMax();
-
-        //     int boxWidth = max.x - min.x;
-        //     int usableWidth = boxWidth - 2 * padding;
-        //     int maxChars = usableWidth / 8;
-
-        //     std::string visibleText = textBox->getText();
-        //     if ((int)visibleText.size() > maxChars) {
-        //         visibleText = visibleText.substr(visibleText.size() - maxChars);
-        //     }
-
-        //     ivec2 textPos(min.x + padding, min.y + padding);
-
-        //     int cursorX = textPos.x + (int)visibleText.size() * 8;
-        //     int cursorY = textPos.y;
-
-        //     screen->drawText(ivec2(cursorX, cursorY), "|", ivec3(0, 0, 0));
-        // }
 
         SDL_RenderPresent(renderer);
     }

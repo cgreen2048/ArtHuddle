@@ -85,7 +85,9 @@ void Layout::drawOverlay(Screen *screen){
     }
 
     for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
-        (*start)->drawOverlay(screen);
+        if (dynamic_cast<Button*>(*start) || dynamic_cast<TextBox*>(*start)) {
+            (*start)->drawOverlay(screen);
+        }
     }
 }
 
