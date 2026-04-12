@@ -40,11 +40,8 @@ struct ElementParameters {
     TagType pointBType = TagType::Vec;
     TagType pointCType = TagType::Vec;
     TagType colorType = TagType::Vec;
-<<<<<<< HEAD
     
-=======
     TagType textColorType = TagType::Vec;
->>>>>>> main
     vec2 layoutStart = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     vec2 layoutEnd = vec2(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     

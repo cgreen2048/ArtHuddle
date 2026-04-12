@@ -88,7 +88,7 @@ void Button::writeXml(std::ostream& out, int depth) const {
 }
 
 bool Button::validateAndNormalize(ElementParameters& ep) {
-    Box::isValid(ep);
+    Box::validateAndNormalize(ep);
     if ((ep.min.x == std::numeric_limits<int>::lowest()) || (ep.min.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

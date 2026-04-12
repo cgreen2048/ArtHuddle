@@ -378,6 +378,7 @@ int readTest1() {
     textBoxParam.maxType = TagType::IVec;
     textBoxParam.colorType = TagType::IVec;
     textBoxParam.textColorType = TagType::IVec;
+    textBoxParam.name = "text1";
     GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
     expectedRoot->addElement(tb);
 
@@ -494,6 +495,7 @@ int readTest2() {
     textBoxParam.maxType = TagType::IVec;
     textBoxParam.colorType = TagType::IVec;
     textBoxParam.textColorType = TagType::IVec;
+    textBoxParam.name = "text1";
     GuiElement* tb = factory(guiElement::TEXTBOX, textBoxParam);
     nested->addElement(tb);
 

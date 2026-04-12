@@ -1074,7 +1074,7 @@ int writeTest3() {
     GuiElement* expectedButton = factory(guiElement::BUTTON, expectedButtonParam);
     expectedNested2->addElement(expectedButton);
 
-    ElementParameters expectedtextBoxParam;
+    ElementParameters expectedTextBoxParam;
     expectedTextBoxParam.min = ivec2(100, 100);
     expectedTextBoxParam.max = ivec2(300, 150);
     expectedTextBoxParam.color = ivec3(255, 255, 255);
@@ -1084,7 +1084,7 @@ int writeTest3() {
     expectedTextBoxParam.colorType = TagType::IVec;
     expectedTextBoxParam.textColorType = TagType::IVec;
     expectedTextBoxParam.name = "text1";
-    GuiElement* etb = factory(guiElement::TEXTBOX, expectedtextBoxParam);
+    GuiElement* etb = factory(guiElement::TEXTBOX, expectedTextBoxParam);
     expectedNested2->addElement(etb);
     
     ElementParameters expectedArrowParam;
