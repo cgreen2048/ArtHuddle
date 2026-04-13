@@ -32,7 +32,9 @@ std::unique_ptr<Event> EventSystem::poll() {
     return e;
 }
 
-void EventSystem::processEvents(Layout *root){
+bool EventSystem::processEvents(Layout *root){
+    bool handled = false;
+
     while(!eventQueue.empty()){
         std::unique_ptr<Event> e = poll();
 
@@ -66,6 +68,10 @@ void EventSystem::processEvents(Layout *root){
                 if (fr != nullptr) {
                     bool success = fr->resolveEvent(e.get());
 
+                    if (success) {
+                        handled = true;
+                    }
+
                     if (!success && fr->isFinished()) {
                         root->deleteElement(fr->getName());
                     }
@@ -77,10 +83,14 @@ void EventSystem::processEvents(Layout *root){
 
             }
             else {
-                root->resolveEvent(e.get());
+                bool success = root->resolveEvent(e.get());
+                if (success) {
+                    handled = true;  
+                }
             }
         }
     }
+    return handled;
 }
 
 void EventSystem::setSoundPlayer(SoundPlayer* soundPlayer) {
