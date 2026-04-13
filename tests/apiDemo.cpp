@@ -251,6 +251,11 @@ int main() {
                                 resetPoints(point, point1, point2, point3);
                                 break;
                             }
+                            case SDL_SCANCODE_0: {
+                                type = 9;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
                             case SDL_SCANCODE_ESCAPE: {
                                 type = -1;
                                 resetPoints(point, point1, point2, point3);
