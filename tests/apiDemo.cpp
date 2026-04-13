@@ -1,10 +1,18 @@
 #include "../API.hpp"
+#include "../Global.hpp"
+#include <memory>
+#include "../Layout.hpp"
+#include "../EventSystem.hpp"
+#include "../Freehand.hpp"
+#include "../MouseDownEvent.hpp"
+#include "../MouseMotionEvent.hpp"
+#include "../MouseUpEvent.hpp"
 
 void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 
 int main() {
     std::cout << "API Demo\n";
-    initialize();
+    Layout* layout = initialize();
     loadSound("../SFX/song.wav");
     playSound("../SFX/song.wav", true);
     int type = 0;
@@ -17,6 +25,7 @@ int main() {
     
     int numKeys;
     SDL_Event event;
+    EventSystem& eventSystem = EventSystem::getInstance();
     bool end = false;
     while (!end) {
         while (SDL_PollEvent(&event)) {
@@ -146,10 +155,45 @@ int main() {
                             }
                             break;
                         }
+                        case 7: {
+                            Freehand* freehand = new Freehand(color, false);
+                            layout->addElement(freehand);
+                            eventSystem.setTargetedElement(freehand);
+                            ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                            
+                            eventSystem.push(std::make_unique<MouseDownEvent>(point));
+                            break;
+                        }
+                        case 8: {
+                            Freehand* freehand = new Freehand(color, true);
+                            layout->addElement(freehand);
+                            eventSystem.setTargetedElement(freehand);
+                            ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                            
+                            eventSystem.push(std::make_unique<MouseDownEvent>(point));
+                            break;
+                        }
                         default: {
                             clicked(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
                             break;
                         }
+                    }
+                    break;
+                }
+                case SDL_EVENT_MOUSE_MOTION: {
+                    if ((type == 7 || type == 8) && event.motion.state != 0) {
+                        ivec2 point(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y));
+
+                        eventSystem.push(std::make_unique<MouseMotionEvent>(point, true));
+                        break;
+                    }
+                    break;
+                }
+                case SDL_EVENT_MOUSE_BUTTON_UP: {
+                    if (type == 7 || type == 8) {
+                        ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+
+                        eventSystem.push(std::make_unique<MouseUpEvent>(point));
                     }
                     break;
                 }
@@ -197,6 +241,16 @@ int main() {
                                 resetPoints(point, point1, point2, point3);
                                 break;
                             }
+                            case SDL_SCANCODE_8: {
+                                type = 7;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
+                            case SDL_SCANCODE_9: {
+                                type = 8;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
                             case SDL_SCANCODE_ESCAPE: {
                                 type = -1;
                                 resetPoints(point, point1, point2, point3);
@@ -206,7 +260,7 @@ int main() {
                             case SDL_SCANCODE_BACKSPACE: {
                                 type = -1;
                                 deleteShape();
-                                
+                                break;
                             }
                             case SDL_SCANCODE_R: {
                                 color.x += 1;

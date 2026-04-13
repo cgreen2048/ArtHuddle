@@ -27,7 +27,7 @@ void createScreen() {
     screen = new Screen(X, Y, renderer);
 }
 
-void createRootLayout() {
+Layout* createRootLayout() {
     ElementParameters root;
     root.layoutStart = vec2(0.0,0.0);
     root.layoutEnd = vec2(1.0, 1.0);
@@ -58,6 +58,8 @@ void createRootLayout() {
     Layout *boundingLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, boundingLayoutParam));
     selectedSingleton.setSelectedLayout(boundingLayout);
     rootLayout->addElement(boundingLayout);
+
+    return rootLayout;
 }
 
 void setEventSystem() {

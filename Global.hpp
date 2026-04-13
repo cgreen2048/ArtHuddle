@@ -14,11 +14,15 @@
 #include "Layout.hpp"
 #include "Line.hpp"
 #include "Point.hpp"
+#include "Freehand.hpp"
 #include "Screen.hpp"
 #include "ShowEvent.hpp"
 #include "Sound.hpp"
 #include "SoundEvent.hpp"
+#include "MouseEvent.hpp"
 #include "MouseDownEvent.hpp"
+#include "MouseMotionEvent.hpp"
+#include "MouseUpEvent.hpp" 
 #include "SoundPlayer.hpp"
 #include "SoundState.hpp"
 #include "Triangle.hpp"
@@ -36,7 +40,7 @@ extern SDL_Renderer* renderer;
 
 void createWindow();
 void createScreen();
-void createRootLayout();
+Layout* createRootLayout();
 void setEventSystem();
 
 #endif
