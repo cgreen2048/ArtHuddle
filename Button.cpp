@@ -44,11 +44,14 @@ GuiElement* Button::clone() const {
 }
 
 bool Button::resolveEvent(Event* event) {
+    std::cout << "resolving in button " << this->getName() << "\n";
     if (event->getType() == EventType::CLICK) {
         ClickEvent* clickEvent = dynamic_cast<ClickEvent*>(const_cast<Event*>(event));
         if (this->inBounds(ivec2(clickEvent->getMouseX(), clickEvent->getMouseY()))) {
-            onClick();
-            return true;
+            if (onClick) {
+                onClick();
+                return true;
+            }
         }
     }
     return false;

@@ -9,6 +9,7 @@
 #include "Freehand.hpp"
 #include "Layout.hpp"
 #include "Factory.hpp"
+#include <iostream>
 
 Selected::Selected() {}
 
@@ -25,7 +26,9 @@ void Selected::setSelectedElement(GuiElement* updatedElement) {
     this->selectedElement = updatedElement;
 
     if (!this->selectedElement) {
-        this->selectedLayout->clearElements();
+        if (this->selectedLayout != nullptr) {
+            this->selectedLayout->clearElements();
+        }
         return;
     }
 
@@ -156,6 +159,10 @@ void Selected::setSelectedLayout(Layout* boundingBoxLayout) {
 }
 
 void Selected::drawBoundingBox() {
+    if (!this->selectedLayout) {
+        return;
+    }
+
     this->selectedLayout->clearElements();
     this->minBound.x -= 5;
     this->minBound.y -= 5;

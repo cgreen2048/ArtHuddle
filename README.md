@@ -894,6 +894,8 @@ Returns:
 - `true` if the element handles and consumes the event
 - `false` if the element does not handle the event and propagation should continue
 
+By default, `resolveEvent` will attempt to select the `GuiElement` via the `Selected` singleton class if the individual `GuiElement` subclass does not implement this method
+
 ---
 
 ### `void setName(const std::string& n)`
@@ -1075,7 +1077,6 @@ Handles and propagates an event through this Layout’s hierarchy
 - Checks for `CLICK` events if no `SHOW` events trigger
   - Iterates through child elements in reverse and determines if the mouse coordinates are within the bounds of each
     - Uses the reverse direction as later elements will be drawn on top of earlier elements
-  - Sets the selected element in the `Selected` class if any child elements contain the mouse coordinates
 - Returns:
   - `true` → event was handled by a child  
   - `false` → event was not handled  

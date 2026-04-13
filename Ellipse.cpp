@@ -68,17 +68,6 @@ void Ellipse::writeXml(std::ostream& out, int depth) const {
     out << pad << "</ellipse>\n";
 }
 
-bool Ellipse::resolveEvent(Event* e) {
-    if (e->getType() == EventType::CLICK) {
-        ClickEvent* click = dynamic_cast<ClickEvent*>(e);
-        if (isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
-            // Handle selecting the element
-            // Try selecting child components of element first for greater specificity
-        }
-    }
-    return false;
-}
-
 bool Ellipse::validateAndNormalize(ElementParameters& ep) {
     if ((ep.center.x == std::numeric_limits<int>::lowest()) || (ep.center.y == std::numeric_limits<int>::lowest())) {
         return false;

@@ -12,6 +12,7 @@
 #include "../Button.hpp"
 #include "../Screen.hpp"
 #include "../GuiElement.hpp"
+#include "../Selected.hpp"
 
 
 const int X = 960, Y = 540;
@@ -64,6 +65,7 @@ int eventDemo(Screen *screen, SDL_Window *window, SDL_Renderer *renderer) {
     int failure = 0;
     SDL_Event event;
     EventSystem& eventSystem = EventSystem::getInstance();
+    Selected& selectedSingleton = Selected::getInstance();
     SoundPlayer player;
     eventSystem.setSoundPlayer(&player);
 
@@ -111,7 +113,16 @@ int eventDemo(Screen *screen, SDL_Window *window, SDL_Renderer *renderer) {
     Box* nestedBox = dynamic_cast<Box*>(factory(guiElement::BOX, nestedBoxParam));
     nestedLayout->addElement(nestedBox);
 
-
+    ElementParameters boundingLayoutParam;
+    boundingLayoutParam.layoutStart = vec2(0.0,0.0);
+    boundingLayoutParam.layoutEnd = vec2(1.0, 1.0);
+    boundingLayoutParam.parentStart = ivec2(0,0);
+    boundingLayoutParam.parentEnd = ivec2(X,Y);
+    boundingLayoutParam.active = true;
+    boundingLayoutParam.name = "boundingLayout";
+    Layout *boundingLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, boundingLayoutParam));
+    selectedSingleton.setSelectedLayout(boundingLayout);
+    layout->addElement(boundingLayout);
 
     while (!end) {
         while (SDL_PollEvent(&event)) {

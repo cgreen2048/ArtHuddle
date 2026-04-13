@@ -116,6 +116,11 @@ GuiElement* Freehand::clone() const {
 }
 
 bool Freehand::resolveEvent(Event *e) {
+    if (e->getType() == EventType::CLICK) {
+        Selected::getInstance().setSelectedElement(this);
+        return true;
+    }
+
     if (e->getType() == EventType::MOUSE_DOWN) {
         MouseDownEvent* md = static_cast<MouseDownEvent*>(e);
 
@@ -130,7 +135,7 @@ bool Freehand::resolveEvent(Event *e) {
         return false;
     }
 
-        if (e->getType() == EventType::MOUSE_MOTION) {
+    if (e->getType() == EventType::MOUSE_MOTION) {
         
         MouseMotionEvent* mm = static_cast<MouseMotionEvent*>(e);
 

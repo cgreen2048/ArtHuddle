@@ -146,18 +146,11 @@ bool Layout::resolveEvent(Event* e) {
     }
 
     if (e->getType() == EventType::CLICK) {
+        ClickEvent* click = static_cast<ClickEvent*>(e);
         for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
             GuiElement* object = *ritr;
-            ClickEvent* click = dynamic_cast<ClickEvent*>(e);
             if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
-                Layout* downcast = dynamic_cast<Layout*>(object);
-                if (downcast) {
-                    if (downcast->resolveEvent(e)) {
-                        return true;
-                    }
-                }
-                else {
-                    Selected::getInstance().setSelectedElement(object);
+                if (object->resolveEvent(e)) {
                     return true;
                 }
             }
@@ -167,8 +160,8 @@ bool Layout::resolveEvent(Event* e) {
         return false;
     }
 
-    for (GuiElement* child : elements) {
-        if (child->resolveEvent(e)) {
+    for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
+        if ((*ritr)->resolveEvent(e)) {
             return true;
         }
     }
