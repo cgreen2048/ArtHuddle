@@ -13,8 +13,9 @@ MAC_CXXFLAGS := -std=c++17 -Wall
 MAC_LDFLAGS := -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks
 MAC_LDLIBS := -framework sdl3
 
-FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp ../Ellipse.cpp ../Arrow.cpp
-EVENT_ELEMENTS := ../Event.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp
+FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../helperFunctions.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../Ellipse.cpp ../TextBox.cpp ../Arrow.cpp ../Freehand.cpp 
+EVENT_ELEMENTS := ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp ../MouseEvent.cpp ../MouseUpEvent.cpp ../MouseDownEvent.cpp ../MouseMotionEvent.cpp
+UTILITY_ELEMENTS := ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../GUIFile.cpp
 
 test:
 	g++ tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3
@@ -25,150 +26,233 @@ test:
 
 	g++ ../Screen.cpp screenDemo.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o screenDemo
 
-	g++ Milestone003Tests.cpp ../GUIFile.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) ../Selected.cpp \
+	g++ Milestone003Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS) \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone003
 
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp Milestone004Tests.cpp \
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone004Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone004
 
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../GUIFile.cpp Milestone005LayoutTests.cpp ../Selected.cpp \
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)  Milestone005LayoutTests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone005LayoutTests
 
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) Milestone005Tests.cpp ../Selected.cpp \
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone005Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone005
 
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) layoutDemo.cpp ../Selected.cpp \
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) layoutDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o layoutDemo
 
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../SoundPlayer.cpp ../Sound.cpp Milestone006Tests.cpp ../Selected.cpp \
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Tests.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006
 
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp Milestone006EventSystem.cpp \
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006EventSystem.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006EventSystem
 
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp Milestone006Demo.cpp \
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Demo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone006Demo
-		
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp ArrowDemo.cpp \
+	
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) TextboxDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o textBoxDemo
+	
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) TextInButtonDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o textInButtonDemo
+	
+	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ArrowDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o arrowDemo
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp EllipseDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) EllipseDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o ellipseDemo
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp SelectedDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) SelectedDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o selectedDemo
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)   freehandDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o freehandDemo
 
-	g++ $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Global.cpp ../API.cpp ApiDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)   LayoutDeleteTest.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o layoutDelete
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) apiDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o apiDemo
 
 
-studentMachine:
+
+studentMachine: testsStudentMachine freehandDemoStudentMachine milestone001StudentMachine \
+ 	milestone002StudentMachine screenDemoStudentMachine milestone003StudentMachine \
+	milestone004StudentMachine milestone005LayoutTestsStudentMachine milestone005StudentMachine \
+	layoutDemoStudentMachine milestone006StudentMachine milestone006EventSystemStudentMachine \
+	milestone006DemoStudentMachine ellipseDemoStudentMachine arrowDemoStudentMachine \
+	textBoxDemoStudentMachine textInButtonDemoStudentMachine selectedDemoStudentMachine \
+	layoutDeleteStudentMachine
+
+testsStudentMachine:
 	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
 
+milestone001StudentMachine:
 	$(CXX) ../Matrix.cpp Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone001
 
+milestone002StudentMachine:
 	$(CXX) ../Screen.cpp Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone002
 
+screenDemoStudentMachine:
 	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
 
-	$(CXX) Milestone003Tests.cpp $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../GUIFile.cpp ../Selected.cpp \
+milestone003StudentMachine:
+	$(CXX) Milestone003Tests.cpp $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone003
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp Milestone004Tests.cpp \
+milestone004StudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone004Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone004
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../GUIFile.cpp ../Selected.cpp Milestone005LayoutTests.cpp \
+milestone005LayoutTestsStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone005LayoutTests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005LayoutTests
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp Milestone005Tests.cpp \
+milestone005StudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone005Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone005
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp layoutDemo.cpp \
+layoutDemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) layoutDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDemo
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../SoundPlayer.cpp ../Sound.cpp ../Selected.cpp Milestone006Tests.cpp \
+milestone006StudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Tests.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006
 
-	$(CXX) $(EVENT_ELEMENTS) ${FACTORY_ELEMENTS}  ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp Milestone006EventSystem.cpp \
+milestone006EventSystemStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) ${FACTORY_ELEMENTS} $(UTILITY_ELEMENTS) Milestone006EventSystem.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006EventSystem
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp Milestone006Demo.cpp \
+milestone006DemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Demo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone006Demo
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp EllipseDemo.cpp \
+ellipseDemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) EllipseDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o ellipseDemo
-	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp ArrowDemo.cpp \
+
+arrowDemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ArrowDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o arrowDemo
-	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp SelectedDemo.cpp \
+
+freehandDemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) freehandDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o freehandDemo
+
+textBoxDemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)  TextboxDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textBoxDemo
+
+textInButtonDemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)  TextInButtonDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textInButtonDemo
+
+selectedDemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) SelectedDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o selectedDemo
-	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Global.cpp ../API.cpp ApiDemo.cpp \
+
+layoutDeleteStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) LayoutDeleteTest.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDelete
+
+apiDemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) apiDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o apiDemo
 	
 
-mac:
+
+# MAC IMPLEMENTATION
+
+mac: testsMac freehandDemoMac milestone001Mac milestone002Mac screenDemoMac \
+	milestone003Mac milestone004Mac milestone005LayoutTestsMac milestone005Mac \
+	layoutDemoMac milestone006Mac milestone006EventSystemMac milestone006DemoMac \
+	ellipseDemoMac arrowDemoMac textBoxDemoMac textInButtonDemoMac selectedDemoMac
+
+testsMac:
 	$(CXX) tests.cpp $(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS)
 
+freehandDemoMac:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) freehandDemo.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o freehandDemo
+
+milestone001Mac:
 	$(CXX) ../Matrix.cpp Milestone001Tests.cpp -Wall -o milestone001
 
+milestone002Mac:
 	$(CXX) ../Screen.cpp Milestone002Tests.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone002
 
+screenDemoMac:
 	$(CXX) ../Screen.cpp screenDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o screenDemo
 
-	$(CXX) Milestone003Tests.cpp ../GUIFile.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) ../Selected.cpp \
+milestone003Mac:
+	$(CXX) Milestone003Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS) \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone003
 
-	$(CXX) Milestone004Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) ../Selected.cpp \
+milestone004Mac:
+	$(CXX) Milestone004Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS) \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone004
 
-	$(CXX) Milestone005LayoutTests.cpp ../GUIFile.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) ../Selected.cpp \
+milestone005LayoutTestsMac:
+	$(CXX) Milestone005LayoutTests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS) \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone005LayoutTests
 
-	$(CXX) Milestone005Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) ../Selected.cpp \
+milestone005Mac:
+	$(CXX) Milestone005Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS) \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone005
 
-	$(CXX) layoutDemo.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) ../Selected.cpp \
+layoutDemoMac:
+	$(CXX) layoutDemo.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS)  \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o layoutDemo
 
-	$(CXX) Milestone006Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) ../SoundPlayer.cpp ../Sound.cpp ../Selected.cpp \
+milestone006Mac:
+	$(CXX) Milestone006Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS)  \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone006
 
-	$(CXX) Milestone006EventSystem.cpp $(FACTORY_ELEMENTS) ../EventSystem.cpp ../Sound.cpp ../SoundPlayer.cpp $(EVENT_ELEMENTS) ../Selected.cpp \
+milestone006EventSystemMac:
+	$(CXX) Milestone006EventSystem.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS) \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone006EventSystem
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp Milestone006Demo.cpp \
+milestone006DemoMac:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) Milestone006Demo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone006Demo
-	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp EllipseDemo.cpp \
+
+ellipseDemoMac:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) EllipseDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o ellipseDemo
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp ArrowDemo.cpp \
+arrowDemoMac:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ArrowDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o arrowDemo
 
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Selected.cpp SelectedDemo.cpp \
-			$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o selectedDemo
+textBoxDemoMac:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) TextboxDemo.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o textBoxDemo
 		
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../EventSystem.cpp ../Global.cpp ../API.cpp ApiDemo.cpp \
+textInButtonDemoMac:	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) TextInButtonDemo.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o textInButtonDemo
+
+selectedDemoMac:	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) SelectedDemo.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o selectedDemo
+
+layoutDeleteMac:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) LayoutDeleteTest.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o layoutDelete
+	
+apiDemoMac:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) apiDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o apiDemo
 
+
 clean:
-	rm a.out
-	rm milestone001
-	rm milestone002
-	rm screenDemo
-	rm milestone003
-	rm milestone004
-	rm milestone005
-	rm milestone005LayoutTests
-	rm milestone006EventSystem
-	rm layoutDemo
-	rm milestone006
-	rm milestone006Demo
-	rm ellipseDemo
-	rm arrowDemo
-	rm selectedDemo
-	rm apiDemo
+	rm -f a.out freehandDemo milestone001 milestone002 screenDemo \
+		milestone003 milestone004 milestone005 milestone005LayoutTests \
+		milestone006 milestone006EventSystem milestone006Demo \
+		layoutDemo ellipseDemo arrowDemo textBoxDemo textInButtonDemo \
+		selectedDemo layoutDelete apiDemo
+
+

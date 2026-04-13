@@ -11,7 +11,7 @@ Triangle::Triangle(ivec2 a, ivec2 b, ivec2 c, ivec3 color) {
 }
 
 Triangle::Triangle(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->a = ep.pointA;
@@ -53,7 +53,7 @@ Triangle& Triangle::operator=(const Triangle& cp) {
 }
 
 bool Triangle::operator==(Triangle rhs) {
-    if ((this->a != rhs.a) || (this->b != rhs.b) || (this->c != rhs.c) || (this->color != rhs.color)) {
+    if ((this->a != rhs.a) || (this->b != rhs.b) || (this->c != rhs.c) || (this->color != rhs.color) || (this->colorType != rhs.colorType)) {
         return false;
     }
     return true;
@@ -65,6 +65,10 @@ bool Triangle::operator!=(Triangle rhs) {
 
 void Triangle::draw(Screen *screen) {
     screen->drawTriangle(this->a, this->b, this->c, this->color, this->getParentStart(), this->getParentEnd());
+}
+
+GuiElement* Triangle::clone() const {
+    return new Triangle(*this);
 }
 
 void Triangle::setA(const ivec2& v, TagType t){
@@ -132,7 +136,7 @@ ivec2 Triangle::getC() {
     return this->c;
 }
 
-bool Triangle::isValid(ElementParameters ep) {
+bool Triangle::validateAndNormalize(ElementParameters& ep) {
     if ((ep.pointA.x == std::numeric_limits<int>::lowest()) || (ep.pointA.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

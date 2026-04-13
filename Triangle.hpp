@@ -26,6 +26,7 @@ class Triangle : public GuiElement {
         bool operator!=(Triangle rhs);
         ~Triangle();
         void draw(Screen *screen);
+        GuiElement* clone() const;
         void setA(const ivec2& v, TagType t);
 		void setB(const ivec2& v, TagType t);
         void setC(const ivec2& v, TagType t);
@@ -34,8 +35,8 @@ class Triangle : public GuiElement {
         ivec2 getA();
         ivec2 getB();
         ivec2 getC();
-        bool isValid(ElementParameters ep);
         bool isInside(ivec2 coordinates);
+        bool validateAndNormalize(ElementParameters& ep);
 };
 
 #endif

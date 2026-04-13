@@ -24,7 +24,7 @@ Ellipse& Ellipse::operator=(const Ellipse& rhs) {
 }
 
 Ellipse::Ellipse(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
 
@@ -39,6 +39,10 @@ Ellipse::~Ellipse() {}
     
 void Ellipse::draw(Screen* screen) {
     screen->drawEllipse(center, radiusX, radiusY, color, parentStart, parentEnd);
+}
+
+GuiElement* Ellipse::clone() const {
+    return new Ellipse(*this);
 }
 
 void Ellipse::writeXml(std::ostream& out, int depth) const {
@@ -64,18 +68,7 @@ void Ellipse::writeXml(std::ostream& out, int depth) const {
     out << pad << "</ellipse>\n";
 }
 
-bool Ellipse::resolveEvent(Event* e) {
-    if (e->getType() == EventType::CLICK) {
-        ClickEvent* click = dynamic_cast<ClickEvent*>(e);
-        if (isPointInside(ivec2(click->getMouseX(), click->getMouseY()))) {
-            // Handle selecting the element
-            // Try selecting child components of element first for greater specificity
-        }
-    }
-    return false;
-}
-
-bool Ellipse::isValid(ElementParameters ep) {
+bool Ellipse::validateAndNormalize(ElementParameters& ep) {
     if ((ep.center.x == std::numeric_limits<int>::lowest()) || (ep.center.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
@@ -97,15 +90,6 @@ bool Ellipse::isValid(ElementParameters ep) {
     return true;
 }
 
-bool Ellipse::isPointInside(ivec2 point) {
-    return (
-        (point.x > center.x - radiusX) 
-        && (point.x < center.x + radiusX)
-        && (point.y > center.y - radiusY)
-        && (point.y < center.y + radiusY)
-    );
-}
-
 ivec2 Ellipse::getCenter() {
     return this->center;
 }
@@ -122,5 +106,10 @@ bool Ellipse::isInside(ivec2 coordinates) {
     if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
         return false;
     }
-    return this->isPointInside(coordinates);
+    return (
+        (coordinates.x > center.x - radiusX) 
+        && (coordinates.x < center.x + radiusX)
+        && (coordinates.y > center.y - radiusY)
+        && (coordinates.y < center.y + radiusY)
+    );
 }

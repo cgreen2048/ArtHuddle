@@ -13,7 +13,7 @@ Arrow::Arrow(ivec2 min, ivec2 max, ivec2 a, ivec2 b, ivec2 c, ivec3 color) {
 }
 
 Arrow::Arrow(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->min = ep.min;
@@ -65,7 +65,7 @@ Arrow& Arrow::operator=(const Arrow& cp) {
 }
 
 bool Arrow::operator==(Arrow rhs) {
-    if ((this->min != rhs.min) || (this->max != rhs.max) || (this->pointA != rhs.pointA) || (this->pointB != rhs.pointB) || (this->pointC != rhs.pointC) || (this->color != rhs.color)) {
+    if ((this->min != rhs.min) || (this->max != rhs.max) || (this->pointA != rhs.pointA) || (this->pointB != rhs.pointB) || (this->pointC != rhs.pointC) || (this->color != rhs.color) || (this->colorType != rhs.colorType)) {
         return false;
     }
     return true;
@@ -79,6 +79,10 @@ Arrow::~Arrow() {}
 
 void Arrow::draw(Screen *screen) {
     screen->drawArrow(min, max, pointA, pointB, pointC, color, parentStart, parentEnd);
+}
+
+GuiElement* Arrow::clone() const {
+    return new Arrow(*this);
 }
 
 void Arrow::writeXml(std::ostream& out, int depth) const {
@@ -125,7 +129,7 @@ void Arrow::writeXml(std::ostream& out, int depth) const {
     out << pad << "</arrow>\n";
 }
 
-bool Arrow::isValid(ElementParameters ep) {
+bool Arrow::validateAndNormalize(ElementParameters& ep) {
     if ((ep.min.x == std::numeric_limits<int>::lowest()) || (ep.min.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

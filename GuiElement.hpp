@@ -6,7 +6,7 @@
 #include "ElementParameters.hpp"
 #include "Event.hpp"
 
-enum class guiElement {POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, BUTTON, LAYOUT, UNKNOWN};
+enum class guiElement {FREEHAND, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, POINT, BUTTON, LAYOUT, UNKNOWN};
 
 class GuiElement {
 	protected:
@@ -20,6 +20,8 @@ class GuiElement {
 		
 		virtual void draw(Screen*);
 
+		virtual void drawOverlay(Screen*);
+
 		virtual void writeXml(std::ostream& out, int depth) const;
 
 		virtual void setParentStart(const ivec2& start);
@@ -28,6 +30,8 @@ class GuiElement {
 
 		virtual bool resolveEvent(Event* e);
 
+		virtual GuiElement* clone() const = 0;
+
 		void setName(const std::string& n);
 
 		ivec2 getParentStart();
@@ -35,10 +39,10 @@ class GuiElement {
         ivec2 getParentEnd();
 
 		const std::string& getName() const;
-
-		virtual bool isValid(ElementParameters ep) = 0;
 		
 		virtual bool isInside(ivec2 coordinates) = 0;
+		
+		virtual bool validateAndNormalize(ElementParameters& ep) = 0;
 };
 
 

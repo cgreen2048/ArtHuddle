@@ -55,6 +55,7 @@ void screenDemo(Screen screen, SDL_Window *window) {
 		screen.drawTriangle(ivec2(X/4, Y/4), ivec2(X/4, Y/2), ivec2((3*X) / 4, Y/3), ivec3(100, 150, 50), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
 		screen.drawTriangle(ivec2(0, 0), ivec2(0, Y), ivec2(X,Y), ivec3(100, 150, 50), ivec2(0, 0), ivec2(screen.getWidth(), screen.getHeight()));
 
+		
 		screen.blitTo(SDL_GetWindowSurface(window));
 		SDL_UpdateWindowSurface(window);
 		offset += 1;

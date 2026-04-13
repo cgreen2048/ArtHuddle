@@ -1,4 +1,5 @@
 #include "GuiElement.hpp"
+#include "Selected.hpp"
 #include <iostream>
 GuiElement::GuiElement() {
     
@@ -9,10 +10,17 @@ GuiElement::~GuiElement() {
 void GuiElement::draw(Screen *screen){
     
 }
+void GuiElement::drawOverlay(Screen *screen){
+    
+}
 void GuiElement::writeXml(std::ostream& out, int depth) const{
 
 }
 bool GuiElement::resolveEvent(Event *e){
+    if (e->getType() == EventType::CLICK) {
+        Selected::getInstance().setSelectedElement(this);
+        return true;
+    }
     return false;
 }
 void GuiElement::setParentStart(const ivec2& start) {

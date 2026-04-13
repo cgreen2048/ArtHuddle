@@ -5,6 +5,9 @@ enum class EventType {
     CLICK,
     SHOW,
     SOUND,
+    MOUSE_DOWN,
+    MOUSE_UP,
+    MOUSE_MOTION
 };
 
 class Event {

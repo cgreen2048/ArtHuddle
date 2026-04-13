@@ -12,7 +12,7 @@
 const int X = 960;
 const int Y = 540;
 
-int layoutDemo(Screen*, SDL_Window*);
+int layoutDemo(Screen*, SDL_Window*, SDL_Renderer*);
 
 int main() {
     std::cout << "Layout Class Demo\n";
@@ -29,9 +29,17 @@ int main() {
         return 1;
     }
 
-    Screen *screen = new Screen(X, Y);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
+    if (!renderer) {
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << '\n';
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
 
-    int failure = layoutDemo(screen, window);
+    Screen* screen = new Screen(X, Y, renderer);
+
+    int failure = layoutDemo(screen, window, renderer);
 
     SDL_Quit();
 
@@ -45,7 +53,7 @@ int main() {
     return failure;
 }
 
-int layoutDemo(Screen* screen, SDL_Window *window) {
+int layoutDemo(Screen* screen, SDL_Window *window, SDL_Renderer* renderer) {
     bool end = false;
     int failure = 0;
     SDL_Event event;
@@ -57,13 +65,9 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     rootLayout.layoutEnd = vec2(1.0, 1.0);
     rootLayout.parentStart = ivec2(0, 0);
     rootLayout.parentEnd = ivec2(X, Y);
-    // Layout* layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT));
-    // layout->setStart(vec2{0.1,0.1});
-    // layout->setEnd(vec2{1.0, 1.0});
-    // layout->setParentStart(ivec2{0,0});
-    // layout->setParentEnd(ivec2{X,Y});
+    rootLayout.active = true;
+    Layout* layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, rootLayout));
 
-    
     
     ElementParameters triangleParam;
     triangleParam.pointA = ivec2(100, 100);
@@ -80,15 +84,9 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     ivec2 triangleC = triangleParam.pointC;
 
     Triangle* tri = dynamic_cast<Triangle*>(factory(guiElement::TRIANGLE, triangleParam));
-    // tri->setA(triangleA, Triangle::TagType::IVec);
-    // tri->setB(triangleB, Triangle::TagType::IVec);
-    // tri->setC(triangleC, Triangle::TagType::IVec);
-    // tri->setColor(ivec3(255, 0, 0), Triangle::TagType::IVec);
-    // layout->addElement(tri);
-    rootLayout.elements.push_back(tri);
+    layout->addElement(tri);
 
-    
-    
+
     ElementParameters boxParam;
     boxParam.min = ivec2(200, 200);
     boxParam.max = ivec2(400, 400);
@@ -97,21 +95,15 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     boxParam.maxType = TagType::IVec;
     boxParam.colorType = TagType::IVec;
     Box* b = dynamic_cast<Box*>(factory(guiElement::BOX, boxParam));
-    // b->setMin(ivec2(200,200), Box::TagType::IVec);
-    // b->setMax(ivec2(400,400), Box::TagType::IVec);
-    // b->setColor(ivec3(0, 255, 255), Box::TagType::IVec);
-    // layout->addElement(b);
-    rootLayout.elements.push_back(b);
+
+    layout->addElement(b);
 
 
     ElementParameters nestedLayoutParam;
     nestedLayoutParam.layoutStart = vec2(0.5, 0.5);
     nestedLayoutParam.layoutEnd = vec2(1.0, 1.0);
-    // Layout* nestedLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, nestedLayoutParam));
-    // nestedLayout->setStart(vec2{0.5, 0.5});
-    // nestedLayout->setEnd(vec2{1.0, 1.0});
-    // layout->addElement(nestedLayout);
-
+    Layout* nestedLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, nestedLayoutParam));
+    layout->addElement(nestedLayout);
 
     ElementParameters nestedVerticalParam;
     nestedVerticalParam.start = ivec2(X/2, Y/2);
@@ -121,11 +113,7 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     nestedVerticalParam.endType = TagType::IVec;
     nestedVerticalParam.colorType = TagType::IVec;
     Line* nestedLayoutVerticalBorder = dynamic_cast<Line*>(factory(guiElement::LINE, nestedVerticalParam));
-    // nestedLayoutVerticalBorder->setStart(ivec2(X/2, Y/2), Line::TagType::IVec);
-    // nestedLayoutVerticalBorder->setEnd(ivec2(X/2, Y), Line::TagType::IVec);
-    // nestedLayoutVerticalBorder->setColor(ivec3(0, 0, 0), Line::TagType::IVec);
-    // nestedLayout->addElement(nestedLayoutVerticalBorder);
-    nestedLayoutParam.elements.push_back(nestedLayoutVerticalBorder);
+    nestedLayout->addElement(nestedLayoutVerticalBorder);
 
     
     ElementParameters nestedHorizontalParam;
@@ -136,11 +124,7 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     nestedHorizontalParam.endType = TagType::IVec;
     nestedHorizontalParam.colorType = TagType::IVec;
     Line* nestedLayoutHorizontalBorder = dynamic_cast<Line*>(factory(guiElement::LINE, nestedHorizontalParam));
-    // nestedLayoutHorizontalBorder->setStart(ivec2(X/2, Y/2), Line::TagType::IVec);
-    // nestedLayoutHorizontalBorder->setEnd(ivec2(X, Y/2), Line::TagType::IVec);
-    // nestedLayoutHorizontalBorder->setColor(ivec3(0, 0, 0), Line::TagType::IVec);
-    // nestedLayout->addElement(nestedLayoutHorizontalBorder);
-    nestedLayoutParam.elements.push_back(nestedLayoutHorizontalBorder);
+    nestedLayout->addElement(nestedLayoutHorizontalBorder);
 
 
     ElementParameters nestedBoxParam;
@@ -151,11 +135,7 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     nestedBoxParam.maxType = TagType::IVec;
     nestedBoxParam.colorType = TagType::IVec;
     Box* nestedBox = dynamic_cast<Box*>(factory(guiElement::BOX, nestedBoxParam));
-    // nestedBox->setMin(ivec2(800,200), Box::TagType::IVec);      // intentionally cut off the top end of the box to show relative pos
-    // nestedBox->setMax(ivec2(900,500), Box::TagType::IVec);
-    // nestedBox->setColor(ivec3(255, 0, 0), Box::TagType::IVec);
-    // nestedLayout->addElement(nestedBox);
-    nestedLayoutParam.elements.push_back(nestedBox);
+    nestedLayout->addElement(nestedBox);
 
 
 
@@ -169,12 +149,7 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     nestedTriangleParam.pointCType = TagType::IVec;
     nestedTriangleParam.colorType = TagType::IVec;
     Triangle* nestedTri = dynamic_cast<Triangle*>(factory(guiElement::TRIANGLE, nestedTriangleParam));
-    // nestedTri->setA(ivec2(500, 530), Triangle::TagType::IVec);
-    // nestedTri->setB(ivec2(750, 510), Triangle::TagType::IVec);
-    // nestedTri->setC(ivec2(600, 460), Triangle::TagType::IVec);
-    // nestedTri->setColor(ivec3(255, 0, 255), Triangle::TagType::IVec);
-    // nestedLayout->addElement(nestedTri);
-    nestedLayoutParam.elements.push_back(nestedTri);
+    nestedLayout->addElement(nestedTri);
 
 
 
@@ -186,17 +161,9 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
     nestedLineParam.maxType = TagType::IVec;
     nestedLineParam.colorType = TagType::IVec;
     Line* nestedLine = dynamic_cast<Line*>(factory(guiElement::LINE, nestedLineParam));
-    // nestedLine->setStart(ivec2(480, 280), Line::TagType::IVec);
-    // nestedLine->setEnd(ivec2(940, 530), Line::TagType::IVec);
-    // nestedLine->setColor(ivec3(132, 231, 52), Line::TagType::IVec);
-    // nestedLayout->addElement(nestedLine);
-    nestedLayoutParam.elements.push_back(nestedLine);
-
-    // layout->setActive(true);
-    Layout* nestedLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, nestedLayoutParam));
-    rootLayout.elements.push_back(nestedLayout);
-    rootLayout.active = true;
-    Layout* layout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, rootLayout));
+    nestedLayout->addElement(nestedLine);
+    
+    
 
     while (!end) {
         while (SDL_PollEvent(&event)) {
@@ -222,8 +189,15 @@ int layoutDemo(Screen* screen, SDL_Window *window) {
         screen->clear(ivec3(255,255,255));
 
         layout->draw(screen);
-        screen->blitTo(SDL_GetWindowSurface(window));
-		SDL_UpdateWindowSurface(window);
+       
+
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderClear(renderer);
+
+        screen->renderToRenderer();
+
+        
+        SDL_RenderPresent(renderer);
     }
     delete layout;
 
