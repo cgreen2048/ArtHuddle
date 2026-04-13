@@ -1138,7 +1138,7 @@ Clears the `elements` vector so that no previous elements will be drawn
 Finds the element whose name = `elementName`, deleting if found
 
 ## UML Diagram
-![UML Diagram](images/Milestone005_UML.png)
+![UML Diagram](images/Layout_UML.png)
 
 ---
 
@@ -1266,6 +1266,9 @@ Returns the maximum bound for the `Freehand` element's drawn points
 ### `bool hasDrawBounds() const`
 Returns if the `Freehand` has drawn bounds `minBound` and `maxBound`
 
+## UML Diagram
+![UML Diagram](images/Freehand_UML.png)
+
 # Ellipse
 
 ## Description
@@ -1360,6 +1363,9 @@ Returns the integer in the ellipse's `radiusY` attribute
 Checks whether the given coordinates are within the bounds of the `Ellipse` object
 - Returns the result of `isPointInside()`
 - Ensures the passed coordinates are within this object's parent's bounds
+
+## UML Diagram
+![UML Diagram](images/Ellipse_UML.png)
 
 ---
 
@@ -1484,6 +1490,9 @@ It also appears intended to assign default values when `textColor` is missing, a
 
 ### `const std::string& getText() const`
 Returns a constant reference to the current text stored in the text box.
+
+## UML Diagram
+![UML Diagram](images/TextBox_UML.png)
 
 ---
 
@@ -2856,7 +2865,7 @@ These ensure the correct internal representation while preserving original XML t
  
 
 ## UML Diagram
-![UML Diagram](images/Milestone003_UML.png)
+![UML Diagram](images/GUIFile_UML.png)
 
 ---
 
