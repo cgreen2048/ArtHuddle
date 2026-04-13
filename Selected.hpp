@@ -2,16 +2,9 @@
 #define __SELECTED_HPP__
 
 #include <algorithm>
-#include "GuiElement.hpp"
-#include "Point.hpp"
-#include "Line.hpp"
-#include "Box.hpp"
-#include "Triangle.hpp"
-#include "Ellipse.hpp"
-#include "Arrow.hpp"
-#include "Layout.hpp"
-#include "Factory.hpp"
+#include "vec2.hpp"
 
+class GuiElement;
 class Layout;
 
 class Selected {

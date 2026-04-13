@@ -6,7 +6,7 @@
 #include "ElementParameters.hpp"
 #include "Event.hpp"
 
-enum class guiElement {UNKNOWN, LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, TEXTBOX, ELLIPSE, ARROW};
+enum class guiElement {UNKNOWN, LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, TEXTBOX, ELLIPSE, ARROW, FREEHAND};
 
 class GuiElement {
 	protected:
@@ -30,6 +30,8 @@ class GuiElement {
 
 		virtual bool resolveEvent(Event* e);
 
+		virtual GuiElement* clone() const = 0;
+
 		void setName(const std::string& n);
 
 		ivec2 getParentStart();
@@ -37,10 +39,10 @@ class GuiElement {
         ivec2 getParentEnd();
 
 		const std::string& getName() const;
-
-		virtual bool isValid(ElementParameters ep) = 0;
 		
 		virtual bool isInside(ivec2 coordinates) = 0;
+		
+		virtual bool validateAndNormalize(ElementParameters& ep) = 0;
 };
 
 

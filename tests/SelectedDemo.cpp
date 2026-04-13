@@ -4,6 +4,7 @@
 #include "../ClickEvent.hpp"
 #include "../ShowEvent.hpp"
 #include "../SoundEvent.hpp"
+#include "../SoundPlayer.hpp"
 #include "../EventSystem.hpp"
 #include "../Factory.hpp"
 #include "../Layout.hpp"
@@ -172,22 +173,27 @@ int selectedDemo(Screen *screen, SDL_Window *window, SDL_Renderer *renderer)
     selectedSingleton.setSelectedLayout(boundingLayout);
     layout->addElement(boundingLayout);
 
-    while (!end)
-    {
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
-            case SDL_EVENT_QUIT:
-            {
-                end = true;
-                break;
-            }
-            case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            {
-                eventSystem.push(std::make_unique<ClickEvent>(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
-                break;
-            }
+    while (!end) {
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_EVENT_QUIT: {
+                    end = true;
+                    break;
+                }
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+                    eventSystem.push(std::make_unique<ClickEvent>(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
+                    break;
+                }
+                case SDL_EVENT_KEY_DOWN: {
+                    if (event.key.key == SDLK_BACKSPACE) {
+                        GuiElement *selected = selectedSingleton.getSelectedElement();
+                        if (selected != nullptr) {
+                            layout->deleteElement(selected->getName());
+                            selectedSingleton.setSelectedElement(nullptr);
+                        }
+                    }
+                }
+                
             }
         }
         screen->clear(ivec3(255, 255, 255));

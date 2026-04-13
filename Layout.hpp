@@ -3,14 +3,11 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 #include "Screen.hpp"
 #include "GuiElement.hpp"
 #include "vec2.hpp"
 #include "Event.hpp"
-#include "ClickEvent.hpp"
-#include "ShowEvent.hpp"
-#include "Selected.hpp"
-
 
 class Layout : public GuiElement {
     private:
@@ -34,6 +31,7 @@ class Layout : public GuiElement {
         bool isActive();
         void addElement(GuiElement *element);
         void draw(Screen *screen);
+        GuiElement* clone() const;
         void drawOverlay(Screen *screen);
         void writeXml(std::ostream& out, int depth = 0) const;
         bool resolveEvent(Event* e);
@@ -42,9 +40,10 @@ class Layout : public GuiElement {
         int getAbsoluteStartY();
         int getAbsoluteEndX();
         int getAbsoluteEndY();
-        bool isValid(ElementParameters ep);
         bool isInside(ivec2 coordinates);
         void clearElements();
+        void deleteElement(const std::string& elementName);
+        bool validateAndNormalize(ElementParameters& ep);
 };
 
 #endif

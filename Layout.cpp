@@ -1,9 +1,16 @@
 #include "Layout.hpp"
+#include "ClickEvent.hpp"
+#include "ShowEvent.hpp"
+#include "Selected.hpp"
+#include "EventSystem.hpp"
+#include "Button.hpp"
+#include "TextBox.hpp"
+
 
 Layout::Layout() : active{false} {}
 
 Layout::Layout(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->start = ep.layoutStart;
@@ -79,7 +86,11 @@ void Layout::draw(Screen *screen) {
     }
 }
 
-void Layout::drawOverlay(Screen *screen){
+GuiElement* Layout::clone() const {
+    return new Layout(*this);
+}
+
+void Layout::drawOverlay(Screen *screen) {
      if (!this->active || !this->hasParentStart || !this->hasParentEnd) {
         return;
     }
@@ -134,32 +145,26 @@ bool Layout::resolveEvent(Event* e) {
         return false;
     }
 
-    for (GuiElement* child : elements) {
-        if (child->resolveEvent(e)) {
-            return true;
-        }
-    }
-
     if (e->getType() == EventType::CLICK) {
+        ClickEvent* click = static_cast<ClickEvent*>(e);
         for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
             GuiElement* object = *ritr;
-            ClickEvent* click = dynamic_cast<ClickEvent*>(e);
             if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
-                Layout* downcast = dynamic_cast<Layout*>(object);
-                if (downcast) {
-                    if (downcast->resolveEvent(e)) {
-                        return true;
-                    }
-                }
-                else {
-                    Selected::getInstance().setSelectedElement(object);
+                if (object->resolveEvent(e)) {
                     return true;
                 }
             }
         }
+
+        Selected::getInstance().setSelectedElement(nullptr);
+        return false;
     }
-    
-    Selected::getInstance().setSelectedElement(nullptr);
+
+    for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
+        if ((*ritr)->resolveEvent(e)) {
+            return true;
+        }
+    }
 
     return false;
 }
@@ -194,7 +199,7 @@ int Layout::getAbsoluteEndY() {
     return this->parentStart.y + static_cast<int>(this->end.y * (this->parentEnd.y - this->parentStart.y));
 }
 
-bool Layout::isValid(ElementParameters ep) {
+bool Layout::validateAndNormalize(ElementParameters& ep) {
     if ((ep.layoutStart.x == std::numeric_limits<float>::lowest()) || (ep.layoutStart.y == std::numeric_limits<float>::lowest())) {
         return false;
     }
@@ -216,4 +221,27 @@ bool Layout::isInside(ivec2 coordinates) {
 
 void Layout::clearElements() {
     this->elements.clear();
+}
+
+void Layout::deleteElement(const std::string& name) {
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        if ((*it)->getName() == name) {
+            EventSystem& eventSystem = EventSystem::getInstance();
+            GuiElement* target = eventSystem.getTargetedElement();
+
+            if (target != nullptr && target->getName() == name) {
+                eventSystem.setTargetedElement(nullptr);
+            }
+
+            Selected& selectedSystem = Selected::getInstance();
+            GuiElement* selected = selectedSystem.getSelectedElement();
+            if (selected != nullptr && selected->getName() == name) {
+                selectedSystem.setSelectedElement(nullptr);
+            }
+
+            delete *it;
+            elements.erase(it);
+            return;
+        }
+    }
 }

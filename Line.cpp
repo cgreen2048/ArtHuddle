@@ -10,7 +10,7 @@ Line::Line(ivec2 start, ivec2 end, ivec3 color) {
 }
 
 Line::Line(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->start = ep.start;
@@ -59,6 +59,11 @@ Line::~Line() {}
 void Line::draw(Screen *screen) {
     screen->drawBresenhamLine(this->start, this->end, this->color, this->getParentStart(), this->getParentEnd());
 }
+
+GuiElement* Line::clone() const {
+    return new Line(*this);
+}
+
 
 void Line::setStart(const ivec2& v, TagType t){
     this->start = v;
@@ -109,7 +114,7 @@ void Line::writeXml(std::ostream& out, int depth) const {
     out << pad << "</line>\n";
 }
 
-bool Line::isValid(ElementParameters ep) {
+bool Line::validateAndNormalize(ElementParameters& ep) {
     if ((ep.start.x == std::numeric_limits<int>::lowest()) || (ep.start.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

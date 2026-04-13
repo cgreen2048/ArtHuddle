@@ -28,9 +28,10 @@ class Button : public Box {
         bool operator==(Button rhs);
         bool operator!=(Button rhs);
         void drawOverlay(Screen *screen);
+        GuiElement* clone() const;
         bool resolveEvent(Event* event);
         void writeXml(std::ostream& out, int depth) const;
-        bool isValid(ElementParameters ep);
+        bool validateAndNormalize(ElementParameters& ep);
         const std::string& getText() const;
         const std::string& getCallbackName() const;
 };

@@ -35,7 +35,7 @@ class TextBox : public Box {
         ivec2 getCursorPosition() const;
 
         void writeXml(std::ostream& out, int depth) const;
-        bool isValid(ElementParameters ep);
+        bool validateAndNormalize(ElementParameters &ep);
         const std::string& getText() const;
 };
 

@@ -28,14 +28,15 @@ class Arrow : public GuiElement {
 		bool operator!=(Arrow rhs);
 		~Arrow();
         void draw(Screen* screen);
+        GuiElement* clone() const;
         void writeXml(std::ostream& out, int depth) const;
-        bool isValid(ElementParameters ep);
         bool isInside(ivec2 coordinates);
         ivec2 getMin();
         ivec2 getMax();
         ivec2 getA();
         ivec2 getB();
         ivec2 getC();
+        bool validateAndNormalize(ElementParameters& ep);
 };
 
 #endif

@@ -24,7 +24,7 @@ bool TextBox::operator!=(TextBox rhs) {
 }
 
 TextBox::TextBox(ElementParameters ep) : Box(ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->text = ep.text;
@@ -138,8 +138,8 @@ void TextBox::writeXml(std::ostream& out, int depth) const {
     out << pad << "</textbox>\n";
 }
 
-bool TextBox::isValid(ElementParameters ep) {
-    Box::isValid(ep);
+bool TextBox::validateAndNormalize(ElementParameters &ep) {
+    Box::validateAndNormalize(ep);
     if (ep.textColor.z == std::numeric_limits<int>::lowest()) {
         ep.textColor.z = 125;
     }

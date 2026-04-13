@@ -22,7 +22,7 @@ bool Button::operator!=(Button rhs) {
 
 
 Button::Button(ElementParameters ep) : Box(ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
 
@@ -39,12 +39,19 @@ void Button::drawOverlay(Screen *screen){
 
 Button::Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, const std::string& callbackName, const std::string& text = "") : Box(min, max, color), onClick(callback), callbackName(callbackName), text(text) {}
 
+GuiElement* Button::clone() const {
+    return new Button(*this);
+}
+
 bool Button::resolveEvent(Event* event) {
+    std::cout << "resolving in button " << this->getName() << "\n";
     if (event->getType() == EventType::CLICK) {
         ClickEvent* clickEvent = dynamic_cast<ClickEvent*>(const_cast<Event*>(event));
         if (this->inBounds(ivec2(clickEvent->getMouseX(), clickEvent->getMouseY()))) {
-            onClick();
-            return true;
+            if (onClick) {
+                onClick();
+                return true;
+            }
         }
     }
     return false;
@@ -83,8 +90,11 @@ void Button::writeXml(std::ostream& out, int depth) const {
     out << pad << "</button>\n";
 }
 
-bool Button::isValid(ElementParameters ep) {
-    Box::isValid(ep);
+bool Button::validateAndNormalize(ElementParameters& ep) {
+    Box::validateAndNormalize(ep);
+    if ((ep.min.x == std::numeric_limits<int>::lowest()) || (ep.min.y == std::numeric_limits<int>::lowest())) {
+        return false;
+    }
     if (ep.textColor.z == std::numeric_limits<int>::lowest()) {
         ep.color.z = 125;
     }

@@ -73,7 +73,6 @@ int main() {
         SDL_RenderClear(renderer);
 
         screen->renderToRenderer();
-        layout->drawOverlay(screen);
 
         SDL_RenderPresent(renderer);
        

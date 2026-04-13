@@ -9,7 +9,7 @@ Point::Point(ivec2 coords, ivec3 color) {
 }
 
 Point::Point(ElementParameters ep) {
-    if (!isValid(ep)) {
+    if (!validateAndNormalize(ep)) {
         throw -1;
     }
     this->coords = ep.coords;
@@ -53,6 +53,10 @@ void Point::draw(Screen *screen) {
     screen->colorOnePixel(this->coords, this->color, this->getParentStart(), this->getParentEnd());
 }
 
+GuiElement* Point::clone() const {
+    return new Point(*this);
+}
+
 void Point::setCoords(const ivec2& v, TagType t){
     this->coords = v;
     this->coordsType = t;
@@ -86,7 +90,7 @@ void Point::writeXml(std::ostream& out, int depth) const {
     out << pad << "</point>\n";
 }
 
-bool Point::isValid(ElementParameters ep) {
+bool Point::validateAndNormalize(ElementParameters& ep) {
     if ((ep.coords.x == std::numeric_limits<int>::lowest()) || (ep.coords.y == std::numeric_limits<int>::lowest())) {
         return false;
     }

@@ -1,10 +1,16 @@
 #include <iostream>
 #include <memory>
+#include "../Layout.hpp"
 #include "../EventSystem.hpp"
 #include "../Event.hpp"
 #include "../ClickEvent.hpp"
+#include "../MouseUpEvent.hpp"
 #include "../ShowEvent.hpp"
 #include "../SoundEvent.hpp"
+#include "../SoundPlayer.hpp"
+#include "../Freehand.hpp"
+#include "../Factory.hpp"
+#include <SDL3/SDL.h>
 
 
 
@@ -31,6 +37,7 @@ int processEventsDispatchTest();
 int processEventsSoundTest();
 int processEventsClearsQueueTest();
 int processEventsMixedDispatchTest();
+int processEventsWithTargetedElement();
 void clearEventSystem();
 
 // --------------------------------------------------
@@ -65,7 +72,11 @@ int main() {
     if (processEventsClearsQueueTest()) {
         failure = 1;
     }
-    if(processEventsMixedDispatchTest()){
+    if (processEventsMixedDispatchTest()){
+        failure = 1;
+    }
+
+    if (processEventsWithTargetedElement()) {
         failure = 1;
     }
 
@@ -257,5 +268,40 @@ int processEventsClearsQueueTest() {
     }
 
     std::cout << (failure ? "clear queue test FAILED\n" : "clear queue test passed\n");
+    return failure;
+}
+
+int processEventsWithTargetedElement() {
+    int failure = 0;
+    std::cout << "Testing process events with targeted element\n";
+
+    clearEventSystem();
+    EventSystem& system = EventSystem::getInstance();
+    Layout* root = new Layout();
+    root->setStart(vec2(0.0f, 0.0f));
+    root->setEnd(vec2(1.0f, 1.0f));
+    root->setName("layout1");
+    root->setActive(true);
+
+    ElementParameters freehandParam;
+    freehandParam.points.push_back(ivec2(250,250));
+    freehandParam.points.push_back(ivec2(500,400));
+    freehandParam.points.push_back(ivec2(500,150));
+    freehandParam.points.push_back(ivec2(500,500));
+    freehandParam.points.push_back(ivec2(650,325));
+    freehandParam.isFreehandShape = false;
+    GuiElement* f = factory(guiElement::FREEHAND, freehandParam);
+    root->addElement(f);
+    system.setTargetedElement(f);
+
+    system.push(std::make_unique<MouseUpEvent>(ivec2(250,250)));
+
+    system.processEvents(root);
+
+    if (system.getTargetedElement() != nullptr) {
+        failure = 1;
+    }
+
+    std::cout << (failure ? "Targeted Element FAILED\n" : "Targeted element passed\n");
     return failure;
 }
