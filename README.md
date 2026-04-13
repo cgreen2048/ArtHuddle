@@ -39,8 +39,159 @@
 # main.cpp
 
 ## Description
-
 main.cpp is a demonstration program
+
+---
+
+# Global
+
+## Description
+Handles the creation of vital systems and stores references for use in `API`
+
+---
+
+## Variables
+
+### `const int X, Y`
+The size of the window to be opened, where `X` is the width and `Y` is the height
+
+---
+
+### `SDL_Window* window`
+A pointer to an `SDL_Window` object to show visual information
+
+---
+
+### `Screen* screen`
+A pointer to a `Screen` object to draw to
+
+---
+
+### `SoundPlayer* soundPlayer`
+A pointer to a `SoundPlayer` object to enable audio playback
+
+---
+
+### `Layout* rootLayout`
+The root `Layout` object of the program, set to the dimensions of the full window
+
+---
+
+### `Layout* tempLayout`
+A nested `Layout` object of the program, set to the dimensions of the full window
+- Used to hold elements that are in the process of being drawn but not fully complete
+
+---
+
+### `SDL_Renderer* renderer`
+A pointer to an `SDL_Renderer`, used for rendering text on a screen
+
+---
+
+## Functions
+
+### `void createWindow()`
+Creates a new `SDL_Window` object and assigns it to `window`
+- Reports errors in window creation
+
+---
+
+### `void createScreen()`
+Creates a new `Screen` object, set to the size of the full window, and assigns it to `screen`
+- Also fills the `renderer` variable and passes it to the screen constructor
+
+---
+
+### `void createRootLayout()`
+Creates a new `Layout` object and assigns it to `rootLayout`
+- Also creates a nested `Layout` object and sets it to `tempLayout`
+- Also creates a nested `Layout` object and uses it for the `Selected` singleton's bounding box layout
+
+---
+
+### `void setEventSystem()`
+Gets the instance of the `Event` singleton. Creates a new `SoundPlayer` object and saves the reference `soundPlayer` and to the `Event`'s `soundPlayer` attribute
+
+---
+
+# API
+
+## Description
+The interface that allows a programmer to interact with the underlying systems created in `Global`
+
+---
+
+## Functions
+
+### `void initialize()`
+Initializes video and audio through SDL and calls `createWindow()`, `createScreen()`, `createRootLayout()`, and `setEventSystem()` from `Global`
+- Also starts SDL text input
+
+---
+
+### `void loadSound(std::string filePath)`
+Attempts to loads the file specified by `filePath` into the program's `SoundPlayer` object using its `loadSound()` method
+
+---
+
+### `void playSound(std::string filePath, int loop)`
+Attempts to play the file specified by `filePath` using the program's `SoundPlayer` object using its `playSound()` method
+
+---
+
+### `void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+Draws an element of type specified by `type` to the `tempLayout` `Layout` object based on the three passed coordinates
+- Some shapes need fewer than three coordinates
+- For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
+
+---
+
+### `void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+Draws an element of type specified by `type` to the `rootLayout` `Layout` object based on the three passed coordinates
+- Some shapes need fewer than three coordinates
+- For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
+
+---
+
+### `void clicked(ivec2 coords)`
+Spawns a click event using the passed coordinates
+
+---
+
+### `bool isSelectedTextBox()`
+Checks whether a text box is the currently selected element
+- Uses the `Selected` singleton to access the selected element
+
+---
+
+### `void appendToTextBox(const std::string& s)`
+A call to append text to a text box
+- Uses the `Selected` singleton to access the selected text box
+- Calls the `appendText()` method in `TextBox`
+
+---
+
+### `void deleteText()`
+A call to delete text in a text box
+- Uses the `Selected` singleton to access the selected text box
+- Calls the `backspace()` method in `TextBox`
+
+---
+
+### `void deleteShape()`
+A call to delete the specified shape
+- Used to delete an empty textbox when backspace is pressed
+- Relies on the `Selected` singleton to delete the currently selected shape
+
+---
+
+### `void update()`
+Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer` and draws an overlay
+
+---
+
+### `void closeAll()`
+Deletes `soundPlayer`, `renderer`, `window`, and `screen`, then ends SDL text input and quits SDL
 
 ---
 

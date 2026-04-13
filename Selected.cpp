@@ -56,6 +56,22 @@ void Selected::setSelectedElement(GuiElement* updatedElement) {
         return;
     }
 
+    TextBox* textbox = dynamic_cast<TextBox*>(this->selectedElement);
+    if (textbox) {
+        textbox->setActive(true);
+        ivec2 min = textbox->getMin();
+        ivec2 max = textbox->getMax();
+        int minX = std::min(min.x, max.x);
+        int minY = std::min(min.y, max.y);
+        int maxX = std::max(min.x, max.x);
+        int maxY = std::max(min.y, max.y);
+
+        this->minBound = ivec2(minX, minY);
+        this->maxBound = ivec2(maxX, maxY);
+        this->drawBoundingBox();
+        return;
+    }
+
     Box* box = dynamic_cast<Box*>(this->selectedElement);
     if (box) {
         ivec2 min = box->getMin();
@@ -145,8 +161,7 @@ void Selected::setSelectedElement(GuiElement* updatedElement) {
             this->maxBound = ivec2{maxX, maxY};
         }
         this->drawBoundingBox();
-        return;
-        
+        return;    
     }
 }
 

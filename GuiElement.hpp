@@ -6,7 +6,7 @@
 #include "ElementParameters.hpp"
 #include "Event.hpp"
 
-enum class guiElement {UNKNOWN, LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, TEXTBOX, ELLIPSE, ARROW, FREEHAND};
+enum class guiElement {FREEHAND, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, POINT, BUTTON, LAYOUT, UNKNOWN};
 
 class GuiElement {
 	protected:

@@ -70,6 +70,9 @@ test:
 
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)   LayoutDeleteTest.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o layoutDelete
+	
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../Global.cpp ../API.cpp apiDemo.cpp \
+		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o apiDemo
 
 
 
@@ -152,6 +155,10 @@ selectedDemoStudentMachine:
 layoutDeleteStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) LayoutDeleteTest.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDelete
+
+apiDemoStudentMachine:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../Global.cpp ../API.cpp apiDemo.cpp \
+		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o apiDemo
 	
 
 
@@ -217,24 +224,28 @@ ellipseDemoMac:
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o ellipseDemo
 
 arrowDemoMac:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) ArrowDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ArrowDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o arrowDemo
 
 textBoxDemoMac:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) TextboxDemo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textBoxDemo
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o textBoxDemo
 		
 textInButtonDemoMac:	
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) TextInButtonDemo.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o textInButtonDemo
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o textInButtonDemo
 
 selectedDemoMac:	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS)     SelectedDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) SelectedDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o selectedDemo
 
 layoutDeleteMac:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) LayoutDeleteTest.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) LayoutDeleteTest.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o layoutDelete
+	
+apiDemoMac:
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../Global.cpp ../API.cpp apiDemo.cpp \
+		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o apiDemo
 
 
 clean:
@@ -242,6 +253,6 @@ clean:
 		milestone003 milestone004 milestone005 milestone005LayoutTests \
 		milestone006 milestone006EventSystem milestone006Demo \
 		layoutDemo ellipseDemo arrowDemo textBoxDemo textInButtonDemo \
-		selectedDemo layoutDelete
+		selectedDemo layoutDelete apiDemo
 
 
