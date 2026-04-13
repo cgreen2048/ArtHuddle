@@ -13,6 +13,8 @@ int main() {
     ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec3 color = ivec3(125, 125, 125);
+    std::cout << "1 to draw a point\n2 to draw a line\n3 to draw a box\n4 to draw a triangle\n5 to draw an ellipse\n6 to draw an arrow\n7 to draw a text box\nEscape to exit drawing mode\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
+    
     int numKeys;
     SDL_Event event;
     bool end = false;
@@ -205,6 +207,48 @@ int main() {
                                 deleteShape();
                                 
                             }
+                            case SDL_SCANCODE_R: {
+                                color.x += 1;
+                                if (color.x > 255) {
+                                    color.x = 255;
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_G: {
+                                color.y += 1;
+                                if (color.y > 255) {
+                                    color.y = 255;
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_B: {
+                                color.z += 1;
+                                if (color.z > 255) {
+                                    color.z = 255;
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_E: {
+                                color.x -= 1;
+                                if (color.x < 0) {
+                                    color.x = 0;
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_F: {
+                                color.y -= 1;
+                                if (color.y < 0) {
+                                    color.y = 0;
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_V: {
+                                color.z -= 1;
+                                if (color.z < 0) {
+                                    color.z = 0;
+                                }
+                                break;
+                            }
                             default: {
                                 break;
                             }
@@ -290,39 +334,6 @@ int main() {
             }
         }
 
-        // const bool* keyboardState = SDL_GetKeyboardState(&numKeys);
-        // if (keyboardState[SDL_SCANCODE_1]) {
-        //     type = 0;
-        //     resetPoints(point, point1, point2, point3);
-        // }
-        // if (keyboardState[SDL_SCANCODE_2]) {
-        //     type = 1;
-        //     resetPoints(point, point1, point2, point3);
-        // }
-        // if (keyboardState[SDL_SCANCODE_3]) {
-        //     type = 2;
-        //     resetPoints(point, point1, point2, point3);
-        // }
-        // if (keyboardState[SDL_SCANCODE_4]) {
-        //     type = 3;
-        //     resetPoints(point, point1, point2, point3);
-        // }
-        // if (keyboardState[SDL_SCANCODE_5]) {
-        //     type = 4;
-        //     resetPoints(point, point1, point2, point3);
-        // }
-        // if (keyboardState[SDL_SCANCODE_6]) {
-        //     type = 5;
-        //     resetPoints(point, point1, point2, point3);
-        // }
-        // if (keyboardState[SDL_SCANCODE_7]) {
-        //     type = 6;
-        //     resetPoints(point, point1, point2, point3);
-        // }
-        // if (keyboardState[SDL_SCANCODE_ESCAPE]) {
-        //     type = -1;
-        //     resetPoints(point, point1, point2, point3);
-        // }
         update();
     }
     closeAll();
