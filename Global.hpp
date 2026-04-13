@@ -18,6 +18,7 @@
 #include "ShowEvent.hpp"
 #include "Sound.hpp"
 #include "SoundEvent.hpp"
+#include "MouseDownEvent.hpp"
 #include "SoundPlayer.hpp"
 #include "SoundState.hpp"
 #include "Triangle.hpp"
@@ -31,6 +32,7 @@ extern Screen* screen;
 extern SoundPlayer* soundPlayer;
 extern Layout* rootLayout;
 extern Layout* tempLayout;
+extern SDL_Renderer* renderer;
 
 void createWindow();
 void createScreen();

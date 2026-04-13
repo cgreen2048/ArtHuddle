@@ -5,6 +5,7 @@ Screen* screen = nullptr;
 SoundPlayer* soundPlayer = nullptr;
 Layout* rootLayout = nullptr;
 Layout* tempLayout = nullptr;
+SDL_Renderer* renderer = nullptr;
 
 void createWindow() {
     window = SDL_CreateWindow("ArtHuddle", X, Y, 0);
@@ -15,7 +16,15 @@ void createWindow() {
 }
 
 void createScreen() {
-    screen = new Screen(X, Y);
+    renderer = SDL_CreateRenderer(window, NULL);
+    if (!renderer) {
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << '\n';
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return;
+    }
+
+    screen = new Screen(X, Y, renderer);
 }
 
 void createRootLayout() {

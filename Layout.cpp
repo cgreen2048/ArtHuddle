@@ -155,7 +155,10 @@ bool Layout::resolveEvent(Event* e) {
                 }
             }
         }
-
+        TextBox* textbox = dynamic_cast<TextBox*>(Selected::getInstance().getSelectedElement());
+        if (textbox) {
+            textbox->setActive(false);
+        }
         Selected::getInstance().setSelectedElement(nullptr);
         return false;
     }

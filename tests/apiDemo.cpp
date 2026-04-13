@@ -128,9 +128,96 @@ int main() {
                             }
                             break;
                         }
+                        case 6: {
+                            switch (point) {
+                                case 0: {
+                                    point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    ++point;
+                                    break;
+                                }
+                                case 1: {
+                                    point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    drawElement(type, point1, point2, point3, color);
+                                    resetPoints(point, point1, point2, point3);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
                         default: {
                             clicked(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
                             break;
+                        }
+                    }
+                    break;
+                }
+                case SDL_EVENT_TEXT_INPUT: {
+                    if (isSelectedTextBox()) {
+                        appendToTextBox(event.text.text);
+                    }
+                    break;
+                }
+                case SDL_EVENT_KEY_DOWN: {
+                    if (!isSelectedTextBox()) {
+                        switch (event.key.scancode) {
+                            case SDL_SCANCODE_1: {
+                                type = 0;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
+                            case SDL_SCANCODE_2: {
+                                type = 1;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
+                            case SDL_SCANCODE_3: {
+                                type = 2;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
+                            case SDL_SCANCODE_4: {
+                                type = 3;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
+                            case SDL_SCANCODE_5: {
+                                type = 4;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
+                            case SDL_SCANCODE_6: {
+                                type = 5;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
+                            case SDL_SCANCODE_7: {
+                                type = 6;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
+                            case SDL_SCANCODE_ESCAPE: {
+                                type = -1;
+                                resetPoints(point, point1, point2, point3);
+                                break;
+                            }
+                            case SDL_SCANCODE_BACKSPACE: {
+                                type = -1;
+                                deleteShape();
+                                
+                            }
+                            default: {
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        switch (event.key.scancode) {
+                            case SDL_SCANCODE_BACKSPACE: {
+                                deleteText();
+                            }
+                            default: {
+                                break;
+                            }
                         }
                     }
                     break;
@@ -191,40 +278,51 @@ int main() {
                 }
                 break;
             }
+            case 6: {
+                if (point == 1) {
+                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
+                    drawTempElement(2, point1, point2, point3, color);
+                }
+                break;
+            }
             default: {
                 break;
             }
         }
 
-        const bool* keyboardState = SDL_GetKeyboardState(&numKeys);
-        if (keyboardState[SDL_SCANCODE_1]) {
-            type = 0;
-            resetPoints(point, point1, point2, point3);
-        }
-        if (keyboardState[SDL_SCANCODE_2]) {
-            type = 1;
-            resetPoints(point, point1, point2, point3);
-        }
-        if (keyboardState[SDL_SCANCODE_3]) {
-            type = 2;
-            resetPoints(point, point1, point2, point3);
-        }
-        if (keyboardState[SDL_SCANCODE_4]) {
-            type = 3;
-            resetPoints(point, point1, point2, point3);
-        }
-        if (keyboardState[SDL_SCANCODE_5]) {
-            type = 4;
-            resetPoints(point, point1, point2, point3);
-        }
-        if (keyboardState[SDL_SCANCODE_6]) {
-            type = 5;
-            resetPoints(point, point1, point2, point3);
-        }
-        if (keyboardState[SDL_SCANCODE_ESCAPE]) {
-            type = -1;
-            resetPoints(point, point1, point2, point3);
-        }
+        // const bool* keyboardState = SDL_GetKeyboardState(&numKeys);
+        // if (keyboardState[SDL_SCANCODE_1]) {
+        //     type = 0;
+        //     resetPoints(point, point1, point2, point3);
+        // }
+        // if (keyboardState[SDL_SCANCODE_2]) {
+        //     type = 1;
+        //     resetPoints(point, point1, point2, point3);
+        // }
+        // if (keyboardState[SDL_SCANCODE_3]) {
+        //     type = 2;
+        //     resetPoints(point, point1, point2, point3);
+        // }
+        // if (keyboardState[SDL_SCANCODE_4]) {
+        //     type = 3;
+        //     resetPoints(point, point1, point2, point3);
+        // }
+        // if (keyboardState[SDL_SCANCODE_5]) {
+        //     type = 4;
+        //     resetPoints(point, point1, point2, point3);
+        // }
+        // if (keyboardState[SDL_SCANCODE_6]) {
+        //     type = 5;
+        //     resetPoints(point, point1, point2, point3);
+        // }
+        // if (keyboardState[SDL_SCANCODE_7]) {
+        //     type = 6;
+        //     resetPoints(point, point1, point2, point3);
+        // }
+        // if (keyboardState[SDL_SCANCODE_ESCAPE]) {
+        //     type = -1;
+        //     resetPoints(point, point1, point2, point3);
+        // }
         update();
     }
     closeAll();
