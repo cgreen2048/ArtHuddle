@@ -200,6 +200,7 @@ int main() {
                             case SDL_SCANCODE_ESCAPE: {
                                 type = -1;
                                 resetPoints(point, point1, point2, point3);
+                                deleteShape();
                                 break;
                             }
                             case SDL_SCANCODE_BACKSPACE: {
