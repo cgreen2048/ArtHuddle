@@ -9,8 +9,9 @@
 #include <algorithm>
 #include "vec2.hpp"
 #include "vec3.hpp"
+#include "Layout.hpp"
 
-void initialize();
+Layout* initialize();
 void loadSound(std::string filePath);
 void playSound(std::string filePath, int loop);
 void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);

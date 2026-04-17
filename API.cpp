@@ -1,16 +1,17 @@
 #include "API.hpp"
 #include "Global.hpp"
 
-void initialize() {
+Layout* initialize() {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         exit(1);
     }
     createWindow();
     createScreen();
-    createRootLayout();
+    Layout* layout = createRootLayout();
     setEventSystem();
     SDL_StartTextInput(window);
+    return layout;
 }
 
 void loadSound(std::string filePath) {
