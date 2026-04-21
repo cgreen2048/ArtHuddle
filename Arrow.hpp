@@ -37,6 +37,8 @@ class Arrow : public GuiElement {
         ivec2 getB();
         ivec2 getC();
         bool validateAndNormalize(ElementParameters& ep);
+        ElementParameters getParameters();
+        guiElement getType();
 };
 
 #endif

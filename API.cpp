@@ -23,7 +23,6 @@ void playSound(std::string filePath, int loop) {
 }
 
 void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
-    clicked(ivec2(-1, -1));
     tempLayout->clearElements();
     guiElement ge = static_cast<guiElement>(type);
     ElementParameters ep;
@@ -123,7 +122,6 @@ void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 c
 }
 
 void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
-    clicked(ivec2(-1, -1));
     guiElement ge = static_cast<guiElement>(type);
     ElementParameters ep;
     ep.color = color;
@@ -136,6 +134,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             Point* element = dynamic_cast<Point*>(factory(ge, ep));
             if (element) {
                 rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
             break;
 		}
@@ -147,6 +146,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
 			Line* element = dynamic_cast<Line*>(factory(ge, ep));
             if (element) {
                 rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
             break;
 		}
@@ -158,6 +158,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
 			Box* element = dynamic_cast<Box*>(factory(ge, ep));
             if (element) {
                 rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
             break;
 		}
@@ -171,6 +172,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
 			Triangle* element = dynamic_cast<Triangle*>(factory(ge, ep));
             if (element) {
                 rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
             break;
 		}
@@ -182,6 +184,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             Ellipse* element = dynamic_cast<Ellipse*>(factory(ge, ep));
             if (element) {
                 rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
             break;
         }
@@ -221,6 +224,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             Arrow* element = dynamic_cast<Arrow*>(factory(ge, ep));
             if (element) {
                 rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
             break;
         }
@@ -238,6 +242,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             TextBox* element = dynamic_cast<TextBox*>(factory(guiElement::TEXTBOX, ep));
             if (element) {
                 rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
             break;
         }
@@ -246,6 +251,208 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
         }
 	}
     tempLayout->clearElements();
+}
+
+void setClickAndDrag(ivec2 mouse) {
+    GuiElement* current = Selected::getInstance().getSelectedElement();
+    if (current) {
+        if (!current->isInside(mouse)) {
+            return;
+        }
+    }
+    lastMousePos = mouse;
+    if (draggingElement == nullptr) {
+        draggingElement = Selected::getInstance().getSelectedElement();
+        if (draggingElement) {
+            originalElementParameters = draggingElement->getParameters();
+            draggingElementParameters = draggingElement->getParameters();
+            draggingType = draggingElement->getType();
+            deleteShape();
+            drawClickAndDrag(lastMousePos);
+            Selected::getInstance().setSelectedElement(nullptr);
+        }
+    }
+}
+
+void endClickAndDrag() {
+    if (draggingType != guiElement::UNKNOWN) {
+        deleteTempShape();
+        switch (draggingType) {
+            case guiElement::POINT: {
+                Point* element = dynamic_cast<Point*>(factory(draggingType, draggingElementParameters));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::LINE: {
+                Line* element = dynamic_cast<Line*>(factory(draggingType, draggingElementParameters));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::BOX: {
+                Box* element = dynamic_cast<Box*>(factory(draggingType, draggingElementParameters));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::TRIANGLE: {
+                Triangle* element = dynamic_cast<Triangle*>(factory(draggingType, draggingElementParameters));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::ELLIPSE: {
+                Ellipse* element = dynamic_cast<Ellipse*>(factory(draggingType, draggingElementParameters));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::ARROW: {
+                Arrow* element = dynamic_cast<Arrow*>(factory(draggingType, draggingElementParameters));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::TEXTBOX: {
+                TextBox* element = dynamic_cast<TextBox*>(factory(draggingType, draggingElementParameters));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::FREEHAND: {
+                Freehand* element = dynamic_cast<Freehand*>(factory(draggingType, draggingElementParameters));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+    draggingElement = nullptr;
+    draggingType = guiElement::UNKNOWN;
+}
+
+void drawClickAndDrag(ivec2 currentMousePos) {
+    if (draggingType != guiElement::UNKNOWN) {
+        deleteTempShape();
+        Selected::getInstance().setSelectedElement(nullptr);
+        ivec2 delta = currentMousePos - lastMousePos;
+        draggingElementParameters = originalElementParameters;
+        draggingElementParameters.coords += delta;
+        draggingElementParameters.start += delta;
+        draggingElementParameters.end += delta;
+        draggingElementParameters.min += delta;
+        draggingElementParameters.max += delta;
+        draggingElementParameters.pointA += delta;
+        draggingElementParameters.pointB += delta;
+        draggingElementParameters.pointC += delta;
+        draggingElementParameters.center += delta;
+        for (int i = 0; i < draggingElementParameters.points.size(); ++i) {
+            draggingElementParameters.points[i] += delta;
+        }
+        GuiElement* element = factory(draggingType, draggingElementParameters);
+        if (element) {
+            tempLayout->addElement(element);
+        }
+    }
+}
+
+void cancelMove() {
+    deleteTempShape();
+    switch (draggingType) {
+		case guiElement::POINT: {
+            Point* element = dynamic_cast<Point*>(factory(draggingType, originalElementParameters));
+            if (element) {
+                rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
+            }
+            break;
+		}
+        case guiElement::LINE: {
+			Line* element = dynamic_cast<Line*>(factory(draggingType, originalElementParameters));
+            if (element) {
+                rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
+            }
+            break;
+		}
+		case guiElement::BOX: {
+			Box* element = dynamic_cast<Box*>(factory(draggingType, originalElementParameters));
+            if (element) {
+                rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
+            }
+            break;
+		}
+		case guiElement::TRIANGLE: {
+			Triangle* element = dynamic_cast<Triangle*>(factory(draggingType, originalElementParameters));
+            if (element) {
+                rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
+            }
+            break;
+		}
+        case guiElement::ELLIPSE: {
+            Ellipse* element = dynamic_cast<Ellipse*>(factory(draggingType, originalElementParameters));
+            if (element) {
+                rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
+            }
+            break;
+        }
+        case guiElement::ARROW: {
+            Arrow* element = dynamic_cast<Arrow*>(factory(draggingType, originalElementParameters));
+            if (element) {
+                rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
+            }
+            break;
+        }
+        case guiElement::TEXTBOX: {
+            TextBox* element = dynamic_cast<TextBox*>(factory(draggingType, originalElementParameters));
+            if (element) {
+                rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
+            }
+            break;
+        }
+        case guiElement::FREEHAND: {
+            Freehand* element = dynamic_cast<Freehand*>(factory(draggingType, originalElementParameters));
+            if (element) {
+                rootLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
+            }
+            break;
+        }
+        default: {
+            break;
+        }
+	}
+    draggingElement = nullptr;
+    draggingType = guiElement::UNKNOWN;
+}
+
+void unselect() {
+    EventSystem::getInstance().push(std::make_unique<ClickEvent>(-1, -1));
 }
 
 void clicked(ivec2 coords) {
@@ -275,6 +482,10 @@ void deleteText() {
         return;
     }
     textbox->backspace();
+}
+
+void deleteTempShape() {
+    tempLayout->clearElements();
 }
 
 void deleteShape() {

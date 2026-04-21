@@ -18,7 +18,7 @@ int main() {
     loadSound("../SFX/song.wav");
     playSound("../SFX/song.wav", true);
     int type = 0;
-    int point = 0;
+    int points = 0;
     ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
@@ -39,9 +39,9 @@ int main() {
     selectButtonParam.text = "Select";
     selectButtonParam.name = "selectButton";
     selectButtonParam.callbackName = "setSelectMode";
-    selectButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    selectButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 9;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* selectButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, selectButtonParam));
     layout->addElement(selectButton);
@@ -54,9 +54,9 @@ int main() {
     pointButtonParam.text = "Point";
     pointButtonParam.name = "pointButton";
     pointButtonParam.callbackName = "setPointMode";
-    pointButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    pointButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 0;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* pointButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, pointButtonParam));
     layout->addElement(pointButton);
@@ -69,9 +69,9 @@ int main() {
     lineButtonParam.text = "Line";
     lineButtonParam.name = "lineButton";
     lineButtonParam.callbackName = "setLineMode";
-    lineButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    lineButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 1;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* lineButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, lineButtonParam));
     layout->addElement(lineButton);
@@ -84,9 +84,9 @@ int main() {
     boxButtonParam.text = "Box";
     boxButtonParam.name = "boxButton";
     boxButtonParam.callbackName = "setBoxMode";
-    boxButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    boxButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 2;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* boxButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, boxButtonParam));
     layout->addElement(boxButton);
@@ -99,9 +99,9 @@ int main() {
     triangleButtonParam.text = "Triangle";
     triangleButtonParam.name = "triangleButton";
     triangleButtonParam.callbackName = "setTriangleMode";
-    triangleButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    triangleButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 3;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* triangleButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, triangleButtonParam));
     layout->addElement(triangleButton);
@@ -114,9 +114,9 @@ int main() {
     ellipseButtonParam.text = "Ellipse";
     ellipseButtonParam.name = "ellipseButton";
     ellipseButtonParam.callbackName = "setEllipseMode";
-    ellipseButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    ellipseButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 4;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* ellipseButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, ellipseButtonParam));
     layout->addElement(ellipseButton);
@@ -129,9 +129,9 @@ int main() {
     arrowButtonParam.text = "Arrow";
     arrowButtonParam.name = "arrowButton";
     arrowButtonParam.callbackName = "setArrowMode";
-    arrowButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    arrowButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 5;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* arrowButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, arrowButtonParam));
     layout->addElement(arrowButton);
@@ -144,9 +144,9 @@ int main() {
     textBoxButtonParam.text = "Text Box";
     textBoxButtonParam.name = "textBoxButton";
     textBoxButtonParam.callbackName = "setTextBoxMode";
-    textBoxButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    textBoxButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 6;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* textBoxButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, textBoxButtonParam));
     layout->addElement(textBoxButton);
@@ -159,9 +159,9 @@ int main() {
     freehandLineButtonParam.text = "Freehand Line";
     freehandLineButtonParam.name = "freehandLineButton";
     freehandLineButtonParam.callbackName = "setFreehandLineMode";
-    freehandLineButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    freehandLineButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 7;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* freehandLineButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, freehandLineButtonParam));
     layout->addElement(freehandLineButton);
@@ -174,13 +174,16 @@ int main() {
     freehandShapeButtonParam.text = "Freehand Shape";
     freehandShapeButtonParam.name = "freehandShapeButton";
     freehandShapeButtonParam.callbackName = "setFreehandShapeMode";
-    freehandShapeButtonParam.callback = [&type, &point, &point1, &point2, &point3]() {
+    freehandShapeButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 8;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     Button* freehandShapeButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, freehandShapeButtonParam));
     layout->addElement(freehandShapeButton);
 
+    bool clickAndHold = false;
+    bool justFinishedDrawing = false;
+    ivec2 lastMousePos;
     int numKeys;
     SDL_Event event;
     EventSystem& eventSystem = EventSystem::getInstance();
@@ -208,115 +211,129 @@ int main() {
                         case 0: {
                             point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
                             drawElement(type, point1, point2, point3, color);
-                            resetPoints(point, point1, point2, point3);
+                            resetPoints(points, point1, point2, point3);
+                            justFinishedDrawing = true;
+                            type = 9;
                             break;
                         }
                         case 1: {
-                            switch (point) {
+                            switch (points) {
                                 case 0: {
                                     point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                                    ++point;
+                                    ++points;
                                     break;
                                 }
                                 case 1: {
                                     point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
                                     drawElement(type, point1, point2, point3, color);
-                                    resetPoints(point, point1, point2, point3);
+                                    resetPoints(points, point1, point2, point3);
+                                    justFinishedDrawing = true;
+                                    type = 9;
                                     break;
                                 }
                             }
                             break;
                         }
                         case 2: {
-                            switch (point) {
+                            switch (points) {
                                 case 0: {
                                     point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                                    ++point;
+                                    ++points;
                                     break;
                                 }
                                 case 1: {
                                     point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
                                     drawElement(type, point1, point2, point3, color);
-                                    resetPoints(point, point1, point2, point3);
+                                    resetPoints(points, point1, point2, point3);
+                                    justFinishedDrawing = true;
+                                    type = 9;
                                     break;
                                 }
                             }
                             break;
                         }
                         case 3: {
-                            switch (point) {
+                            switch (points) {
                                 case 0: {
                                     point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                                    ++point;
+                                    ++points;
                                     break;
                                 }
                                 case 1: {
                                     point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                                    ++point;
+                                    ++points;
                                     break;
                                 }
                                 case 2: {
                                     point3 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
                                     drawElement(type, point1, point2, point3, color);
-                                    resetPoints(point, point1, point2, point3);
+                                    resetPoints(points, point1, point2, point3);
+                                    justFinishedDrawing = true;
+                                    type = 9;
                                     break;
                                 }
                             }
                             break;
                         }
                         case 4: {
-                            switch (point) {
+                            switch (points) {
                                 case 0: {
                                     point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                                    ++point;
+                                    ++points;
                                     break;
                                 }
                                 case 1: {
                                     point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                                    ++point;
+                                    ++points;
                                     break;
                                 }
                                 case 2: {
                                     point3 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
                                     drawElement(type, point1, point2, point3, color);
-                                    resetPoints(point, point1, point2, point3);
+                                    resetPoints(points, point1, point2, point3);
+                                    justFinishedDrawing = true;
+                                    type = 9;
                                     break;
                                 }
                             }
                             break;
                         }
                         case 5: {
-                            switch (point) {
+                            switch (points) {
                                 case 0: {
                                     point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                                    ++point;
+                                    ++points;
                                     break;
                                 }
                                 case 1: {
                                     point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                                    ++point;
+                                    ++points;
                                     break;
                                 }
                                 case 2: {
                                     point3 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
                                     drawElement(type, point1, point2, point3, color);
-                                    resetPoints(point, point1, point2, point3);
+                                    resetPoints(points, point1, point2, point3);
+                                    justFinishedDrawing = true;
+                                    type = 9;
                                     break;
                                 }
                             }
                             break;
                         }
                         case 6: {
-                            switch (point) {
+                            switch (points) {
                                 case 0: {
                                     point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                                    ++point;
+                                    ++points;
                                     break;
                                 }
                                 case 1: {
                                     point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
                                     drawElement(type, point1, point2, point3, color);
-                                    resetPoints(point, point1, point2, point3);
+                                    resetPoints(points, point1, point2, point3);
+                                    justFinishedDrawing = true;
+                                    type = 9;
                                     break;
                                 }
                             }
@@ -329,6 +346,7 @@ int main() {
                             ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
                             
                             eventSystem.push(std::make_unique<MouseDownEvent>(point));
+                            justFinishedDrawing = true;
                             break;
                         }
                         case 8: {
@@ -336,9 +354,19 @@ int main() {
                             layout->addElement(freehand);
                             eventSystem.setTargetedElement(freehand);
                             ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                            
                             eventSystem.push(std::make_unique<MouseDownEvent>(point));
+                            justFinishedDrawing = true;
                             break;
+                        }
+                        case 9: {
+                            if (justFinishedDrawing) {
+                                break;
+                            }
+                            lastMousePos = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                            eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
+                            // eventSystem.push(std::make_unique<ClickEvent>(lastMousePos.x, lastMousePos.y));
+                            clickAndHold = true;
+                            setClickAndDrag(lastMousePos);
                         }
                         default: {
                             clicked(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
@@ -354,6 +382,11 @@ int main() {
                         eventSystem.push(std::make_unique<MouseMotionEvent>(point, true));
                         break;
                     }
+                    if (type == 9) {
+                        if (clickAndHold && !justFinishedDrawing) {
+                            drawClickAndDrag(ivec2(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)));
+                        }
+                    }
                     break;
                 }
                 case SDL_EVENT_MOUSE_BUTTON_UP: {
@@ -361,6 +394,17 @@ int main() {
                         ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
 
                         eventSystem.push(std::make_unique<MouseUpEvent>(point));
+                    }
+                    if (justFinishedDrawing) {
+                        justFinishedDrawing = false;
+                        clickAndHold = false;
+                        break;
+                    }
+                    if (type == 9) {
+                        if (clickAndHold) {
+                            clickAndHold = false;
+                            endClickAndDrag();
+                        }
                     }
                     break;
                 }
@@ -375,58 +419,61 @@ int main() {
                         switch (event.key.scancode) {
                             case SDL_SCANCODE_1: {
                                 type = 0;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_2: {
                                 type = 1;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_3: {
                                 type = 2;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_4: {
                                 type = 3;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_5: {
                                 type = 4;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_6: {
                                 type = 5;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_7: {
                                 type = 6;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_8: {
                                 type = 7;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_9: {
                                 type = 8;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_0: {
                                 type = 9;
-                                resetPoints(point, point1, point2, point3);
+                                resetPoints(points, point1, point2, point3);
                                 break;
                             }
                             case SDL_SCANCODE_ESCAPE: {
-                                type = -1;
-                                resetPoints(point, point1, point2, point3);
-                                deleteShape();
+                                type = 9;
+                                resetPoints(points, point1, point2, point3);
+                                cancelMove();
+                                unselect();
+                                clickAndHold = false;
+                                justFinishedDrawing = false;
                                 break;
                             }
                             case SDL_SCANCODE_BACKSPACE: {
@@ -485,6 +532,11 @@ int main() {
                         switch (event.key.scancode) {
                             case SDL_SCANCODE_BACKSPACE: {
                                 deleteText();
+                                break;
+                            }
+                            case SDL_SCANCODE_ESCAPE: {
+                                unselect();
+                                break;
                             }
                             default: {
                                 break;
@@ -500,25 +552,25 @@ int main() {
         SDL_GetMouseState(&mouseX, &mouseY);
         switch (type) {
             case 1: {
-                if (point == 1) {
+                if (points == 1) {
                     point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
                     drawTempElement(type, point1, point2, point3, color);
                 }
                 break;
             }
             case 2: {
-                if (point == 1) {
+                if (points == 1) {
                     point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
                     drawTempElement(type, point1, point2, point3, color);
                 }
                 break;
             }
             case 3: {
-                if (point == 1) {
+                if (points == 1) {
                     point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
                     drawTempElement(1, point1, point2, point3, color);
                 }
-                else if (point == 2) {
+                else if (points == 2) {
                     point3 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
                     drawTempElement(type, point1, point2, point3, color);
                     break;
@@ -526,11 +578,11 @@ int main() {
                 break;
             }
             case 4: {
-                if (point == 1) {
+                if (points == 1) {
                     point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
                     drawTempElement(1, point1, point2, point3, color);
                 }
-                else if (point == 2) {
+                else if (points == 2) {
                     point3 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
                     drawTempElement(type, point1, point2, point3, color);
                     break;
@@ -538,11 +590,11 @@ int main() {
                 break;
             }
             case 5: {
-                if (point == 1) {
+                if (points == 1) {
                     point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
                     drawTempElement(2, point1, point2, point3, color);
                 }
-                else if (point == 2) {
+                else if (points == 2) {
                     point3 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
                     drawTempElement(type, point1, point2, point3, color);
                     break;
@@ -550,7 +602,7 @@ int main() {
                 break;
             }
             case 6: {
-                if (point == 1) {
+                if (points == 1) {
                     point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
                     drawTempElement(2, point1, point2, point3, color);
                 }
@@ -567,8 +619,8 @@ int main() {
     return 0;
 }
 
-void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
-    point = 0;
+void resetPoints(int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+    points = 0;
     point1.x = std::numeric_limits<int>::lowest();
     point1.y = std::numeric_limits<int>::lowest();
     point2.x = std::numeric_limits<int>::lowest();

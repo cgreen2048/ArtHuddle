@@ -38,6 +38,8 @@ class Freehand : public GuiElement {
         ivec2 getMinBound() const;
         ivec2 getMaxBound() const;
         bool hasDrawBounds() const;
+        ElementParameters getParameters();
+        guiElement getType();
 };
 
 #endif

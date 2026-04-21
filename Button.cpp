@@ -120,3 +120,21 @@ const std::string& Button::getText() const {
 const std::string& Button::getCallbackName() const {
     return callbackName;
 }
+
+ElementParameters Button::getParameters() {
+    ElementParameters ep;
+    ep.min = this->min;
+    ep.max = this->max;
+    ep.color = this->color;
+    ep.callback = this->onClick;
+    ep.callbackName = this->callbackName;
+    ep.text = this->text;
+    ep.textColor = this->textColor;
+    ep.textColorType = this->textColorType;
+    ep.name = this->name;
+    return ep;
+}
+
+guiElement Button::getType() {
+    return guiElement::BUTTON;
+}

@@ -207,3 +207,25 @@ ivec2 Arrow::getB() {
 ivec2 Arrow::getC() {
     return this->pointC;
 }
+
+ElementParameters Arrow::getParameters() {
+    ElementParameters ep;
+    ep.min = this->min;
+    ep.max = this->max;
+    ep.pointA = this->pointA;
+    ep.pointB = this->pointB;
+    ep.pointC = this->pointC;
+    ep.color = this->color;
+    ep.minType = this->minType;
+    ep.maxType = this->maxType;
+    ep.pointAType = this->pointAType;
+    ep.pointBType = this->pointBType;
+    ep.pointCType = this->pointCType;
+    ep.colorType = this->colorType;
+    ep.name = this->name;
+    return ep;
+}
+
+guiElement Arrow::getType() {
+    return guiElement::ARROW;
+}

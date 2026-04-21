@@ -151,3 +151,19 @@ bool Box::isInside(ivec2 coordinates) {
     }
     return this->inBounds(coordinates);
 }
+
+ElementParameters Box::getParameters() {
+    ElementParameters ep;
+    ep.min = this->min;
+    ep.max = this->max;
+    ep.color = this->color;
+    ep.minType = this->minType;
+    ep.maxType = this->maxType;
+    ep.colorType = this->colorType;
+    ep.name = this->name;
+    return ep;
+}
+
+guiElement Box::getType() {
+    return guiElement::BOX;
+}

@@ -248,3 +248,19 @@ void Layout::deleteElement(const std::string& name) {
         }
     }
 }
+
+ElementParameters Layout::getParameters() {
+    ElementParameters ep;
+    ep.layoutStart = this->start;
+    ep.layoutEnd = this->end;
+    ep.parentStart = this->parentStart;
+    ep.parentEnd = this->parentEnd;
+    ep.active = this->active;
+    ep.elements = this->elements;
+    ep.name = this->name;
+    return ep;
+}
+
+guiElement Layout::getType() {
+    return guiElement::LAYOUT;
+}

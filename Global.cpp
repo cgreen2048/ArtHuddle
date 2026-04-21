@@ -6,6 +6,11 @@ SoundPlayer* soundPlayer = nullptr;
 Layout* rootLayout = nullptr;
 Layout* tempLayout = nullptr;
 SDL_Renderer* renderer = nullptr;
+GuiElement* draggingElement = nullptr;
+guiElement draggingType = guiElement::UNKNOWN;
+ElementParameters originalElementParameters;
+ElementParameters draggingElementParameters;
+ivec2 lastMousePos;
 
 void createWindow() {
     window = SDL_CreateWindow("ArtHuddle", X, Y, 0);
