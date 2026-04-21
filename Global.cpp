@@ -5,14 +5,17 @@ Screen* screen = nullptr;
 SoundPlayer* soundPlayer = nullptr;
 Layout* rootLayout = nullptr;
 Layout* toolBarLayout = nullptr;
+Layout* canvasLayout = nullptr;
 Layout* tempLayout = nullptr;
 SDL_Renderer* renderer = nullptr;
 
 int type = 9;
 int point = 0;
-ivec2 point1;
-ivec2 point2;
-ivec2 point3;
+ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+
+
 
 Button* selectButton = nullptr;
 Button* pointButton = nullptr;
@@ -25,7 +28,7 @@ Button* textBoxButton = nullptr;
 Button* freehandLineButton = nullptr;
 Button* freehandShapeButton = nullptr;
 
-void initButtons() {
+void initButtons(Layout *layout) {
     ElementParameters selectButtonParam;
     selectButtonParam.min = ivec2(0, 0);
     selectButtonParam.max = ivec2(bW, bH);
@@ -39,6 +42,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     selectButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, selectButtonParam));
+    layout->addElement(selectButton);
 
     ElementParameters pointButtonParam;
     pointButtonParam.min = ivec2(bW + p, 0);
@@ -53,6 +57,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     pointButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, pointButtonParam));
+    layout->addElement(pointButton);
 
     ElementParameters lineButtonParam;
     lineButtonParam.min = ivec2(2 * bW + 2 * p, 0);
@@ -67,6 +72,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     lineButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, lineButtonParam));
+    layout->addElement(lineButton);
 
     ElementParameters boxButtonParam;
     boxButtonParam.min = ivec2(3 * bW + 3 * p, 0);
@@ -81,6 +87,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     boxButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, boxButtonParam));
+    layout->addElement(boxButton);
 
     ElementParameters triangleButtonParam;
     triangleButtonParam.min = ivec2(4 * bW + 4 * p, 0);
@@ -95,6 +102,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     triangleButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, triangleButtonParam));
+    layout->addElement(triangleButton);
 
     ElementParameters ellipseButtonParam;
     ellipseButtonParam.min = ivec2(5 * bW + 5 * p, 0);
@@ -109,6 +117,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     ellipseButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, ellipseButtonParam));
+    layout->addElement(ellipseButton);
 
     ElementParameters arrowButtonParam;
     arrowButtonParam.min = ivec2(6 * bW + 6 * p, 0);
@@ -123,6 +132,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     arrowButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, arrowButtonParam));
+    layout->addElement(arrowButton);
 
     ElementParameters textBoxButtonParam;
     textBoxButtonParam.min = ivec2(7 * bW + 7 * p, 0);
@@ -137,6 +147,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     textBoxButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, textBoxButtonParam));
+    layout->addElement(textBoxButton);
 
     ElementParameters freehandLineButtonParam;
     freehandLineButtonParam.min = ivec2(8 * bW + 8 * p, 0);
@@ -151,6 +162,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     freehandLineButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, freehandLineButtonParam));
+    layout->addElement(freehandLineButton);
 
     ElementParameters freehandShapeButtonParam;
     freehandShapeButtonParam.min = ivec2(8 * bW + 8 * p + bigBW + p, 0);
@@ -165,6 +177,7 @@ void initButtons() {
         resetPoints(point, point1, point2, point3);
     };
     freehandShapeButton = dynamic_cast<Button*>(factory(guiElement::BUTTON, freehandShapeButtonParam));
+    layout->addElement(freehandShapeButton);
 }
 
 void createWindow() {
@@ -197,6 +210,16 @@ Layout* createRootLayout() {
     root.name = "rootLayout";
     rootLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, root));
 
+    ElementParameters canvas;
+    canvas.layoutStart = vec2(0.0,0.0);
+    canvas.layoutEnd = vec2(1.0, 1.0);
+    canvas.parentStart = ivec2(0,0);
+    canvas.parentEnd = ivec2(X,Y);
+    canvas.active = true;
+    canvas.name = "canvasLayout";
+    canvasLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, canvas));
+    rootLayout->addElement(canvasLayout);
+
     ElementParameters toolBar;
     toolBar.layoutStart = vec2(0.0,0.0);
     toolBar.layoutEnd = vec2(1.0, 1.0);
@@ -205,6 +228,8 @@ Layout* createRootLayout() {
     toolBar.active = true;
     toolBar.name = "toolBarLayout";
     toolBarLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, toolBar));
+    rootLayout->addElement(toolBarLayout);
+    initButtons(toolBarLayout);
     
     ElementParameters temp;
     temp.layoutStart = vec2(0.0,0.0);
@@ -237,3 +262,12 @@ void setEventSystem() {
     eventSystem.setSoundPlayer(soundPlayer);
 }
 
+void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
+    point = 0;
+    point1.x = std::numeric_limits<int>::lowest();
+    point1.y = std::numeric_limits<int>::lowest();
+    point2.x = std::numeric_limits<int>::lowest();
+    point2.y = std::numeric_limits<int>::lowest();
+    point3.x = std::numeric_limits<int>::lowest();
+    point3.y = std::numeric_limits<int>::lowest();
+}

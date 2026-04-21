@@ -37,6 +37,7 @@ extern SoundPlayer* soundPlayer;
 extern Layout* rootLayout;
 extern Layout* toolBarLayout;
 extern Layout* tempLayout;
+extern Layout* canvasLayout;
 extern SDL_Renderer* renderer;
 
 extern int type;
@@ -44,6 +45,8 @@ extern int point;
 extern ivec2 point1;
 extern ivec2 point2;
 extern ivec2 point3;
+
+
 
 const int p = 10;
 const int bW = 76;
@@ -66,8 +69,7 @@ void createWindow();
 void createScreen();
 Layout* createRootLayout();
 void setEventSystem();
-void initButtons();
+void initButtons(Layout *layout);
 void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
-
 
 #endif

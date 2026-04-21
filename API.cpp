@@ -10,7 +10,6 @@ Layout* initialize() {
     createScreen();
     Layout* layout = createRootLayout();
     setEventSystem();
-    initButtons();
     SDL_StartTextInput(window);
     return layout;
 }
@@ -136,7 +135,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.coordsType = TagType::IVec;
             Point* element = dynamic_cast<Point*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
             }
             break;
 		}
@@ -147,7 +146,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.endType = TagType::IVec;
 			Line* element = dynamic_cast<Line*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
             }
             break;
 		}
@@ -158,7 +157,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.maxType = TagType::IVec;
 			Box* element = dynamic_cast<Box*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
             }
             break;
 		}
@@ -171,7 +170,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.pointCType = TagType::IVec;
 			Triangle* element = dynamic_cast<Triangle*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
             }
             break;
 		}
@@ -182,7 +181,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.centerType = TagType::IVec;
             Ellipse* element = dynamic_cast<Ellipse*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
             }
             break;
         }
@@ -221,7 +220,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.pointCType = TagType::IVec;
             Arrow* element = dynamic_cast<Arrow*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
             }
             break;
         }
@@ -238,7 +237,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.text = "";
             TextBox* element = dynamic_cast<TextBox*>(factory(guiElement::TEXTBOX, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
             }
             break;
         }
@@ -294,7 +293,7 @@ void deleteText() {
 void deleteShape() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     if (element != nullptr) {
-        rootLayout->deleteElement(element->getName());
+        canvasLayout->deleteElement(element->getName());
     }
     tempLayout->clearElements();
 }
@@ -306,8 +305,7 @@ void update() {
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
-    tempLayout->draw(screen);
-    toolBarLayout->draw(screen);
+    // tempLayout->draw(screen);
     // screen->blitTo(SDL_GetWindowSurface(window));
     // SDL_UpdateWindowSurface(window);
     
@@ -325,12 +323,3 @@ void closeAll() {
     SDL_Quit();
 }
 
-void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
-    point = 0;
-    point1.x = std::numeric_limits<int>::lowest();
-    point1.y = std::numeric_limits<int>::lowest();
-    point2.x = std::numeric_limits<int>::lowest();
-    point2.y = std::numeric_limits<int>::lowest();
-    point3.x = std::numeric_limits<int>::lowest();
-    point3.y = std::numeric_limits<int>::lowest();
-}

@@ -23,7 +23,6 @@ void deleteText();
 void deleteShape();
 void update();
 void closeAll();
-void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 void drawToolBar();
 
 #endif

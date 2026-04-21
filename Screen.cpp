@@ -279,7 +279,15 @@ void Screen::drawTextClipped(ivec2 min, ivec2 max, const std::string& text, ivec
     int padding = 5;
     int boxWidth = max.x - min.x;
     int usableWidth = boxWidth - 2 * padding;
+
+    if(usableWidth <= 0){
+        return;
+    }
+
     int maxChars = usableWidth / 8;
+    if(maxChars <=0){
+        return;
+    }
 
     std::string visibleText = text;
     if (static_cast<int>(visibleText.size()) > maxChars) {

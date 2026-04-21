@@ -96,7 +96,7 @@ void Layout::drawOverlay(Screen *screen) {
     }
 
     for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
-        if (dynamic_cast<Button*>(*start) || dynamic_cast<TextBox*>(*start)) {
+        if (dynamic_cast<Button*>(*start) || dynamic_cast<TextBox*>(*start) || dynamic_cast<Layout*>(*start) ) {
             (*start)->drawOverlay(screen);
         }
     }
@@ -149,12 +149,24 @@ bool Layout::resolveEvent(Event* e) {
         ClickEvent* click = static_cast<ClickEvent*>(e);
         for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
             GuiElement* object = *ritr;
-            if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
-                if (object->resolveEvent(e)) {
+            if (!object) continue;
+
+            Layout* childLayout = dynamic_cast<Layout*>(object);
+
+            if (childLayout) {
+                if (childLayout->resolveEvent(e)) {
                     return true;
+                }
+            } else
+            {
+                if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
+                    if (object->resolveEvent(e)) {
+                        return true;
+                    }
                 }
             }
         }
+
         TextBox* textbox = dynamic_cast<TextBox*>(Selected::getInstance().getSelectedElement());
         if (textbox) {
             textbox->setActive(false);
