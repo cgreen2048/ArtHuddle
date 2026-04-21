@@ -35,12 +35,39 @@ extern SDL_Window* window;
 extern Screen* screen;
 extern SoundPlayer* soundPlayer;
 extern Layout* rootLayout;
+extern Layout* toolBarLayout;
 extern Layout* tempLayout;
 extern SDL_Renderer* renderer;
+
+extern int type;
+extern int point;
+extern ivec2 point1;
+extern ivec2 point2;
+extern ivec2 point3;
+
+const int p = 10;
+const int bW = 76;
+const int bigBW = 131;
+const int bH = Y / 10;
+
+extern Button* selectButton;
+extern Button* pointButton;
+extern Button* lineButton;
+extern Button* boxButton;
+extern Button* triangleButton;
+extern Button* ellipseButton;
+extern Button* arrowButton;
+extern Button* textBoxButton;
+extern Button* freehandLineButton;
+extern Button* freehandShapeButton;
+
 
 void createWindow();
 void createScreen();
 Layout* createRootLayout();
 void setEventSystem();
+void initButtons();
+void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
+
 
 #endif

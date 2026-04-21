@@ -10,6 +10,7 @@ Layout* initialize() {
     createScreen();
     Layout* layout = createRootLayout();
     setEventSystem();
+    initButtons();
     SDL_StartTextInput(window);
     return layout;
 }
@@ -248,6 +249,19 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
     tempLayout->clearElements();
 }
 
+void drawToolBar(){
+    toolBarLayout->addElement(selectButton);
+    toolBarLayout->addElement(pointButton);
+    toolBarLayout->addElement(lineButton);
+    toolBarLayout->addElement(boxButton);
+    toolBarLayout->addElement(triangleButton);
+    toolBarLayout->addElement(ellipseButton);
+    toolBarLayout->addElement(arrowButton);
+    toolBarLayout->addElement(textBoxButton);
+    toolBarLayout->addElement(freehandLineButton);
+    toolBarLayout->addElement(freehandShapeButton);
+}
+
 void clicked(ivec2 coords) {
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.push(std::make_unique<ClickEvent>(coords.x, coords.y));
@@ -293,6 +307,7 @@ void update() {
     eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
     tempLayout->draw(screen);
+    toolBarLayout->draw(screen);
     // screen->blitTo(SDL_GetWindowSurface(window));
     // SDL_UpdateWindowSurface(window);
     
@@ -308,4 +323,14 @@ void closeAll() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
+    point = 0;
+    point1.x = std::numeric_limits<int>::lowest();
+    point1.y = std::numeric_limits<int>::lowest();
+    point2.x = std::numeric_limits<int>::lowest();
+    point2.y = std::numeric_limits<int>::lowest();
+    point3.x = std::numeric_limits<int>::lowest();
+    point3.y = std::numeric_limits<int>::lowest();
 }
