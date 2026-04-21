@@ -160,7 +160,17 @@ const std::string& TextBox::getText() const {
     return text;
 }
 
+ElementParameters TextBox::getParameters() {
+    ElementParameters ep;
+    ep.min = this->min;
+    ep.max = this->max;
+    ep.color = this->color;
+    ep.text = this->text;
+    ep.textColor = this->textColor;
+    ep.textColorType = this->textColorType;
+    return ep;
+}
 
-
-
-
+guiElement TextBox::getType() {
+    return guiElement::TEXTBOX;
+}

@@ -178,3 +178,21 @@ bool Triangle::isInside(ivec2 coordinates) {
 
     return !(hasPositive && hasNegative);
 }
+
+ElementParameters Triangle::getParameters() {
+    ElementParameters ep;
+    ep.pointA = this->a;
+    ep.pointB = this->b;
+    ep.pointC = this->c;
+    ep.color = this->color;
+    ep.pointAType = this->aType;
+    ep.pointBType = this->bType;
+    ep.pointCType = this->cType;
+    ep.colorType = this->colorType;
+    ep.name = this->name;
+    return ep;
+}
+
+guiElement Triangle::getType() {
+    return guiElement::TRIANGLE;
+}

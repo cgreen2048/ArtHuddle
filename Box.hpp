@@ -32,6 +32,8 @@ class Box : public GuiElement {
 		bool validateAndNormalize(ElementParameters& ep);
 		bool inBounds(const ivec2& point) const;
 		bool isInside(ivec2 coordinates);
+		ElementParameters getParameters();
+		guiElement getType();
 };
 
 #endif

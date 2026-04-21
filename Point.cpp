@@ -115,3 +115,17 @@ bool Point::isInside(ivec2 coordinates) {
     }
     return false;
 }
+
+ElementParameters Point::getParameters() {
+    ElementParameters ep;
+    ep.coords = this->coords;
+    ep.color = this->color;
+    ep.coordsType = this->coordsType;
+    ep.colorType = this->colorType;
+    ep.name = this->name;
+    return ep;
+}
+
+guiElement Point::getType() {
+    return guiElement::POINT;
+}

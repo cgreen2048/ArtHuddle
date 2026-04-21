@@ -27,6 +27,8 @@ class Point : public GuiElement {
 		void writeXml(std::ostream& out, int depth) const;
 		bool isInside(ivec2 coordinates);
 		bool validateAndNormalize(ElementParameters& ep);
+		ElementParameters getParameters();
+		guiElement getType();
 };
 
 #endif

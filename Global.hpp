@@ -37,7 +37,11 @@ extern SoundPlayer* soundPlayer;
 extern Layout* rootLayout;
 extern Layout* tempLayout;
 extern SDL_Renderer* renderer;
-
+extern GuiElement* draggingElement;
+extern guiElement draggingType;
+extern ElementParameters originalElementParameters;
+extern ElementParameters draggingElementParameters;
+extern ivec2 lastMousePos;
 void createWindow();
 void createScreen();
 Layout* createRootLayout();
