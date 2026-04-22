@@ -152,6 +152,14 @@ bool TextBox::validateAndNormalize(ElementParameters &ep) {
     if (ep.textColor.z == std::numeric_limits<int>::lowest()) {
         ep.textColor.z = 125;
     }
+    ivec2 newMin;
+    ivec2 newMax;
+    newMin.x = std::min(ep.min.x, ep.max.x);
+    newMin.y = std::min(ep.min.y, ep.max.y);
+    newMax.x = std::max(ep.min.x, ep.max.x);
+    newMax.y = std::max(ep.min.y, ep.max.y);
+    ep.min = newMin;
+    ep.max = newMax;
 
     return true;
 }

@@ -125,6 +125,14 @@ bool Box::validateAndNormalize(ElementParameters& ep) {
     if ((ep.max.x == std::numeric_limits<int>::lowest()) || (ep.max.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
+    ivec2 newMin;
+    ivec2 newMax;
+    newMin.x = std::min(ep.min.x, ep.max.x);
+    newMin.y = std::min(ep.min.y, ep.max.y);
+    newMax.x = std::max(ep.min.x, ep.max.x);
+    newMax.y = std::max(ep.min.y, ep.max.y);
+    ep.min = newMin;
+    ep.max = newMax;
     if (ep.color.x == std::numeric_limits<int>::lowest()) {
         ep.color.x = 125;
     }

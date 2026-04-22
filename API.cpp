@@ -6,6 +6,9 @@ Layout* initialize() {
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         exit(1);
     }
+    #ifdef __APPLE__
+        SDL_SetHint(SDL_HINT_MAC_PRESS_AND_HOLD, "0");
+    #endif
     createWindow();
     createScreen();
     Layout* layout = createRootLayout();
