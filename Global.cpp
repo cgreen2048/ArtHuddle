@@ -199,7 +199,7 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     saveButtonParam.text = "Save";
     saveButtonParam.name = "saveButton";
     saveButtonParam.callbackName = "saveCanvas";
-    saveButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
+    saveButtonParam.callback = []() {
         saveCanvas("drawing.xml");
         saveFlashUntil = SDL_GetTicks() + 700; // flash for 300 ms
     };
@@ -214,7 +214,7 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     loadButtonParam.text = "Load";
     loadButtonParam.name = "loadButton";
     loadButtonParam.callbackName = "loadCanvas";
-    loadButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
+    loadButtonParam.callback = [&points, &point1, &point2, &point3]() {
         loadCanvas("drawing.xml", points, point1, point2, point3);
         loadFlashUntil = SDL_GetTicks() + 700; // flash for 300 ms
     };

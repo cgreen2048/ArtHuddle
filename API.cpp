@@ -535,18 +535,20 @@ void copy() {
         clipboardType = guiElement::UNKNOWN;
         return;
     }
-    std::cout << "cpoied\n";
     clipboard = chosen->getParameters();
     clipboard.name = "";
     clipboardType = chosen->getType();
 }
 
-void paste(ivec2 mouseCoords) {
+void paste() {
     if (clipboardType != guiElement::UNKNOWN) {
-        std::cout << "pasting\n";
-        ivec2 delta = mouseCoords - lastMousePos;
-        delta.x += 20;
-        delta.y += 20;
+        // float x, y;
+        // SDL_GetMouseState(&x, &y);
+        // ivec2 mouseCoords = ivec2(static_cast<int>(x), static_cast<int>(y));
+        // ivec2 delta = mouseCoords - lastMousePos;
+        // delta.x += 20;
+        // delta.y += 20;
+        ivec2 delta = ivec2(20, 20);
         ElementParameters newObj = clipboard;
         newObj.coords += delta;
         newObj.start += delta;

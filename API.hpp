@@ -30,7 +30,7 @@ void deleteShape();
 void update(int& type);
 void closeAll();
 void copy();
-void paste(ivec2 mouseCoords);
+void paste();
 
 
 #endif
