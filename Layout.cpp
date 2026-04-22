@@ -149,24 +149,13 @@ bool Layout::resolveEvent(Event* e) {
         ClickEvent* click = static_cast<ClickEvent*>(e);
         for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
             GuiElement* object = *ritr;
-            if (!object) continue;
-
-            Layout* childLayout = dynamic_cast<Layout*>(object);
-
-            if (childLayout) {
-                if (childLayout->resolveEvent(e)) {
+            if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
+                if (object->resolveEvent(e)) {
                     return true;
-                }
-            } else
-            {
-                if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
-                    if (object->resolveEvent(e)) {
-                        return true;
-                    }
                 }
             }
         }
-
+        
         TextBox* textbox = dynamic_cast<TextBox*>(Selected::getInstance().getSelectedElement());
         if (textbox) {
             textbox->setActive(false);

@@ -1,14 +1,14 @@
 #include "API.hpp"
 #include "Global.hpp"
 
-Layout* initialize() {
+Layout* initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         exit(1);
     }
     createWindow();
     createScreen();
-    Layout* layout = createRootLayout();
+    Layout* layout = createRootLayout(type, points, point1, point2, point3);
     setEventSystem();
     SDL_StartTextInput(window);
     return layout;
@@ -496,7 +496,7 @@ void deleteShape() {
     tempLayout->clearElements();
 }
 
-void update() {
+void update(int& type) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     screen->clear(ivec3(255,255,255));
@@ -507,8 +507,8 @@ void update() {
     // screen->blitTo(SDL_GetWindowSurface(window));
     // SDL_UpdateWindowSurface(window);
 
-    updateToolbarButtonColors();
     updateActionButtonColors();
+    updateToolbarButtonColors(type);
     
     screen->renderToRenderer();
     rootLayout->drawOverlay(screen);

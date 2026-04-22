@@ -11,7 +11,7 @@
 #include "vec3.hpp"
 #include "Layout.hpp"
 
-Layout* initialize();
+Layout* initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void loadSound(std::string filePath);
 void playSound(std::string filePath, int loop);
 void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
@@ -27,7 +27,7 @@ void appendToTextBox(const std::string& s);
 void deleteText();
 void deleteTempShape();
 void deleteShape();
-void update();
+void update(int& type);
 void closeAll();
 
 

@@ -105,6 +105,11 @@ A nested `Layout` object of the program, set to the dimensions of the full windo
 
 ---
 
+### `GuiElement* draggingElement`
+The element currently being dragged by the user. Initialized to `nullptr`
+
+---
+
 ### `SDL_Renderer* renderer`
 A pointer to an `SDL_Renderer`, used for rendering text on a screen
 
@@ -118,13 +123,24 @@ Creates a new `SDL_Window` object and assigns it to `window`
 
 ---
 
+### `guiElement draggingType`
+The type of element being dragged by the user. Initialized to `guiElement::UNKNOWN`
+
+---
+
 ### `void createScreen()`
 Creates a new `Screen` object, set to the size of the full window, and assigns it to `screen`
 - Also fills the `renderer` variable and passes it to the screen constructor
 
 ---
 
-### `Layout* createRootLayout()`
+### `ElementParameters originalElementParameters`
+A struct holding the original element parameters for an element currently being dragged by the user
+- Used to cancel an element's movement
+
+---
+
+### `Layout* createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates and connects all layouts:
 - `rootLayout`
 - `canvasLayout`
@@ -136,12 +152,20 @@ Also initializes toolbar buttons
 
 ---
 
+### `ElementParameters draggingElementParameters`
+A struct holding modified element parameters for an element currently being dragged by the user
+
+---
+
 ### `void setEventSystem()`
 Gets the instance of the `Event` singleton. Creates a new `SoundPlayer` object and saves the reference `soundPlayer` and to the `Event`'s `soundPlayer` attribute
 
 ---
 
-### `void initButtons(Layout* layout)`
+### `ivec2 lastMousePos`
+The position of the last mouse click. Used for calculating the detal to move an object when dragging
+
+### `void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates all toolbar buttons and assigns:
 - positions
 - colors
@@ -154,7 +178,7 @@ Callbacks either:
 
 ---
 
-### `void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `void resetGlobalPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3)`
 Resets drawing state:
 - clears point tracking
 - prepares for a new shape
@@ -167,7 +191,7 @@ Saves the contents of `canvasLayout` to an XML file
 
 ---
 
-### `void loadCanvas(const std::string& filePath)`
+### `void loadCanvas(const std::string& filePath, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Loads an XML file into `canvasLayout`:
 - Clears existing shapes
 - Clones loaded elements into the canvas
@@ -175,7 +199,7 @@ Loads an XML file into `canvasLayout`:
 
 ---
 
-### `void updateToolbarButtonColors()`
+### `void updateToolbarButtonColors(int& type)`
 Updates colors of **mode buttons**:
 - Highlights the currently selected tool
 - Resets others to default color
@@ -198,7 +222,7 @@ The interface that allows a programmer to interact with the underlying systems c
 
 ## Functions
 
-### `void initialize()`
+### `void initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Initializes video and audio through SDL and calls `createWindow()`, `createScreen()`, `createRootLayout()`, and `setEventSystem()` from `Global`
 - Also starts SDL text input
 

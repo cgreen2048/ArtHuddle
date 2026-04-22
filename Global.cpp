@@ -14,11 +14,11 @@ ElementParameters originalElementParameters;
 ElementParameters draggingElementParameters;
 ivec2 lastMousePos;
 
-int type = 9;
-int points = 0;
-ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
-ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
-ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+// int type = 9;
+// int points = 0;
+// ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+// ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+// ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
 Button *selectButton = nullptr;
 Button *pointButton = nullptr;
@@ -37,8 +37,7 @@ Uint64 saveFlashUntil = 0;
 Uint64 loadFlashUntil = 0;
 
 
-void initButtons(Layout *layout)
-{
+void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     ElementParameters selectButtonParam;
     selectButtonParam.min = ivec2(0, 0);
     selectButtonParam.max = ivec2(bW, bH);
@@ -47,10 +46,9 @@ void initButtons(Layout *layout)
     selectButtonParam.text = "Select";
     selectButtonParam.name = "selectButton";
     selectButtonParam.callbackName = "setSelectMode";
-    selectButtonParam.callback = []()
-    {
+    selectButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 9;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     selectButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, selectButtonParam));
     layout->addElement(selectButton);
@@ -63,10 +61,9 @@ void initButtons(Layout *layout)
     pointButtonParam.text = "Point";
     pointButtonParam.name = "pointButton";
     pointButtonParam.callbackName = "setPointMode";
-    pointButtonParam.callback = []()
-    {
+    pointButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 0;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     pointButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, pointButtonParam));
     layout->addElement(pointButton);
@@ -79,10 +76,9 @@ void initButtons(Layout *layout)
     lineButtonParam.text = "Line";
     lineButtonParam.name = "lineButton";
     lineButtonParam.callbackName = "setLineMode";
-    lineButtonParam.callback = []()
-    {
+    lineButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 1;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     lineButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, lineButtonParam));
     layout->addElement(lineButton);
@@ -95,10 +91,9 @@ void initButtons(Layout *layout)
     boxButtonParam.text = "Box";
     boxButtonParam.name = "boxButton";
     boxButtonParam.callbackName = "setBoxMode";
-    boxButtonParam.callback = []()
-    {
+    boxButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 2;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     boxButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, boxButtonParam));
     layout->addElement(boxButton);
@@ -111,10 +106,9 @@ void initButtons(Layout *layout)
     triangleButtonParam.text = "Triangle";
     triangleButtonParam.name = "triangleButton";
     triangleButtonParam.callbackName = "setTriangleMode";
-    triangleButtonParam.callback = []()
-    {
+    triangleButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 3;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     triangleButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, triangleButtonParam));
     layout->addElement(triangleButton);
@@ -127,10 +121,9 @@ void initButtons(Layout *layout)
     ellipseButtonParam.text = "Ellipse";
     ellipseButtonParam.name = "ellipseButton";
     ellipseButtonParam.callbackName = "setEllipseMode";
-    ellipseButtonParam.callback = []()
-    {
+    ellipseButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 4;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     ellipseButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, ellipseButtonParam));
     layout->addElement(ellipseButton);
@@ -143,10 +136,9 @@ void initButtons(Layout *layout)
     arrowButtonParam.text = "Arrow";
     arrowButtonParam.name = "arrowButton";
     arrowButtonParam.callbackName = "setArrowMode";
-    arrowButtonParam.callback = []()
-    {
+    arrowButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 5;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     arrowButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, arrowButtonParam));
     layout->addElement(arrowButton);
@@ -159,10 +151,9 @@ void initButtons(Layout *layout)
     textBoxButtonParam.text = "Text Box";
     textBoxButtonParam.name = "textBoxButton";
     textBoxButtonParam.callbackName = "setTextBoxMode";
-    textBoxButtonParam.callback = []()
-    {
+    textBoxButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 6;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     textBoxButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, textBoxButtonParam));
     layout->addElement(textBoxButton);
@@ -175,10 +166,9 @@ void initButtons(Layout *layout)
     freehandLineButtonParam.text = "Freehand Line";
     freehandLineButtonParam.name = "freehandLineButton";
     freehandLineButtonParam.callbackName = "setFreehandLineMode";
-    freehandLineButtonParam.callback = []()
-    {
+    freehandLineButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 7;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     freehandLineButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, freehandLineButtonParam));
     layout->addElement(freehandLineButton);
@@ -191,10 +181,9 @@ void initButtons(Layout *layout)
     freehandShapeButtonParam.text = "Freehand Shape";
     freehandShapeButtonParam.name = "freehandShapeButton";
     freehandShapeButtonParam.callbackName = "setFreehandShapeMode";
-    freehandShapeButtonParam.callback = []()
-    {
+    freehandShapeButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         type = 8;
-        resetPoints(points, point1, point2, point3);
+        resetGlobalPoints(points, point1, point2, point3);
     };
     freehandShapeButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, freehandShapeButtonParam));
     layout->addElement(freehandShapeButton);
@@ -207,8 +196,7 @@ void initButtons(Layout *layout)
     saveButtonParam.text = "Save";
     saveButtonParam.name = "saveButton";
     saveButtonParam.callbackName = "saveCanvas";
-    saveButtonParam.callback = []()
-    {
+    saveButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
         saveCanvas("drawing.xml");
         saveFlashUntil = SDL_GetTicks() + 700; // flash for 300 ms
     };
@@ -223,9 +211,8 @@ void initButtons(Layout *layout)
     loadButtonParam.text = "Load";
     loadButtonParam.name = "loadButton";
     loadButtonParam.callbackName = "loadCanvas";
-    loadButtonParam.callback = []()
-    {
-        loadCanvas("drawing.xml");
+    loadButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
+        loadCanvas("drawing.xml", points, point1, point2, point3);
         loadFlashUntil = SDL_GetTicks() + 700; // flash for 300 ms
     };
     loadButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, loadButtonParam));
@@ -234,21 +221,17 @@ void initButtons(Layout *layout)
 
 }
 
-void createWindow()
-{
+void createWindow() {
     window = SDL_CreateWindow("ArtHuddle", X, Y, 0);
-    if (!window)
-    {
+    if (!window) {
         std::cerr << "Failed to create window: " << SDL_GetError() << '\n';
         SDL_Quit();
     }
 }
 
-void createScreen()
-{
+void createScreen() {
     renderer = SDL_CreateRenderer(window, NULL);
-    if (!renderer)
-    {
+    if (!renderer) {
         std::cerr << "Failed to create renderer: " << SDL_GetError() << '\n';
         SDL_DestroyWindow(window);
         SDL_Quit();
@@ -258,8 +241,7 @@ void createScreen()
     screen = new Screen(X, Y, renderer);
 }
 
-Layout *createRootLayout()
-{
+Layout *createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     ElementParameters root;
     root.layoutStart = vec2(0.0, 0.0);
     root.layoutEnd = vec2(1.0, 1.0);
@@ -288,7 +270,7 @@ Layout *createRootLayout()
     toolBar.name = "toolBarLayout";
     toolBarLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, toolBar));
     rootLayout->addElement(toolBarLayout);
-    initButtons(toolBarLayout);
+    initButtons(toolBarLayout, type, points, point1, point2, point3);
 
     ElementParameters temp;
     temp.layoutStart = vec2(0.0, 0.0);
@@ -315,15 +297,13 @@ Layout *createRootLayout()
     return rootLayout;
 }
 
-void setEventSystem()
-{
+void setEventSystem() {
     EventSystem &eventSystem = EventSystem::getInstance();
     soundPlayer = new SoundPlayer();
     eventSystem.setSoundPlayer(soundPlayer);
 }
 
-void resetPoints(int &points, ivec2 &point1, ivec2 &point2, ivec2 &point3)
-{
+void resetGlobalPoints(int &points, ivec2 &point1, ivec2 &point2, ivec2 &point3) {
     points = 0;
     point1.x = std::numeric_limits<int>::lowest();
     point1.y = std::numeric_limits<int>::lowest();
@@ -333,17 +313,14 @@ void resetPoints(int &points, ivec2 &point1, ivec2 &point2, ivec2 &point3)
     point3.y = std::numeric_limits<int>::lowest();
 }
 
-void saveCanvas(const std::string &filePath)
-{
+void saveCanvas(const std::string &filePath) {
     std::ofstream out(filePath);
-    if (!out)
-    {
+    if (!out){
         std::cerr << "Failed to open file for saving: " << filePath << '\n';
         return;
     }
 
-    if (!canvasLayout)
-    {
+    if (!canvasLayout) {
         std::cerr << "canvasLayout is null\n";
         return;
     }
@@ -352,7 +329,7 @@ void saveCanvas(const std::string &filePath)
 }
 
 
-void loadCanvas(const std::string& filePath) {
+void loadCanvas(const std::string& filePath, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     GUIFile guiFile;
     guiFile.readFile(filePath);
 
@@ -372,52 +349,41 @@ void loadCanvas(const std::string& filePath) {
 
     tempLayout->clearElements();
     Selected::getInstance().setSelectedElement(nullptr);
-    resetPoints(points, point1, point2, point3);
+    resetGlobalPoints(points, point1, point2, point3);
 }
 
-void updateToolbarButtonColors()
-{
+void updateToolbarButtonColors(int& type) {
     ivec3 normalColor(180, 220, 255);
     ivec3 selectedColor(255, 200, 120);
 
-    if (selectButton)
-    {
+    if (selectButton) {
         selectButton->setColor(type == 9 ? selectedColor : normalColor, TagType::Vec);
     }
-    if (pointButton)
-    {
+    if (pointButton) {
         pointButton->setColor(type == 0 ? selectedColor : normalColor, TagType::Vec);
     }
-    if (lineButton)
-    {
+    if (lineButton) {
         lineButton->setColor(type == 1 ? selectedColor : normalColor, TagType::Vec);
     }
-    if (boxButton)
-    {
+    if (boxButton) {
         boxButton->setColor(type == 2 ? selectedColor : normalColor, TagType::Vec);
     }
-    if (triangleButton)
-    {
+    if (triangleButton) {
         triangleButton->setColor(type == 3 ? selectedColor : normalColor, TagType::Vec);
     }
-    if (ellipseButton)
-    {
+    if (ellipseButton) {
         ellipseButton->setColor(type == 4 ? selectedColor : normalColor, TagType::Vec);
     }
-    if (arrowButton)
-    {
+    if (arrowButton) {
         arrowButton->setColor(type == 5 ? selectedColor : normalColor, TagType::Vec);
     }
-    if (textBoxButton)
-    {
+    if (textBoxButton) {
         textBoxButton->setColor(type == 6 ? selectedColor : normalColor, TagType::Vec);
     }
-    if (freehandLineButton)
-    {
+    if (freehandLineButton) {
         freehandLineButton->setColor(type == 7 ? selectedColor : normalColor, TagType::Vec);
     }
-    if (freehandShapeButton)
-    {
+    if (freehandShapeButton) {
         freehandShapeButton->setColor(type == 8 ? selectedColor : normalColor, TagType::Vec);
     }
 }

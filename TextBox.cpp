@@ -44,6 +44,10 @@ void TextBox::drawOverlay(Screen *screen) {
     }
 }
 
+GuiElement* TextBox::clone() const {
+    return new TextBox(*this);
+}
+
 bool TextBox::shouldShowCursor() const {
     if (!active) {
         return false;

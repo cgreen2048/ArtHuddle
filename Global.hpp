@@ -42,12 +42,6 @@ extern Layout* tempLayout;
 extern Layout* canvasLayout;
 extern SDL_Renderer* renderer;
 
-extern int type;
-extern int points;
-extern ivec2 point1;
-extern ivec2 point2;
-extern ivec2 point3;
-
 
 
 const int p = 10;
@@ -78,13 +72,13 @@ extern ivec2 lastMousePos;
 
 void createWindow();
 void createScreen();
-Layout* createRootLayout();
+Layout* createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void setEventSystem();
-void initButtons(Layout *layout);
-void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
+void initButtons(Layout *layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+void resetGlobalPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 void saveCanvas(const std::string& filePath);
-void loadCanvas(const std::string& filePath);
-void updateToolbarButtonColors();
+void loadCanvas(const std::string& filePath, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+void updateToolbarButtonColors(int& type);
 void updateActionButtonColors();
 
 #endif

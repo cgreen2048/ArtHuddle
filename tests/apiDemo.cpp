@@ -9,22 +9,26 @@
 #include "../MouseMotionEvent.hpp"
 #include "../MouseUpEvent.hpp"
 
-// void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
+void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 
 int main() {
     std::cout << "API Demo\n";
-    Layout* layout = initialize();
+    
+
+    int type = 9;
+    int points = 0;
+    ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+
+    
+    Layout* layout = initialize(type, points, point1, point2, point3);
 
     loadSound("../SFX/song.wav");
     playSound("../SFX/song.wav", true);
 
-    // I moved this to Global.cpp
 
-    // type = 0;
-    // point = 0;
-    // point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
-    // point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
-    // point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+   
     
     
     
@@ -34,7 +38,11 @@ int main() {
     std::cout << "1 to draw a point\n2 to draw a line\n3 to draw a box\n4 to draw a triangle\n5 to draw an ellipse\n6 to draw an arrow\n7 to draw a text box\n8 to draw a freehand line\n9to draw a freehand shape\n0 to select elements\nEscape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
     
 
-    // drawToolBar();
+    int p = 10;
+    int bW = 76;
+    int bigBW = 131;
+    int bH = Y / 10;
+
     
 
     // ElementParameters selectButtonParam;
@@ -484,7 +492,6 @@ int main() {
                                 break;
                             }
                             case SDL_SCANCODE_BACKSPACE: {
-                                type = -1;
                                 deleteShape();
                                 break;
                             }
@@ -620,18 +627,18 @@ int main() {
             }
         }
 
-        update();
+        update(type);
     }
     closeAll();
     return 0;
 }
 
-// void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
-//     point = 0;
-//     point1.x = std::numeric_limits<int>::lowest();
-//     point1.y = std::numeric_limits<int>::lowest();
-//     point2.x = std::numeric_limits<int>::lowest();
-//     point2.y = std::numeric_limits<int>::lowest();
-//     point3.x = std::numeric_limits<int>::lowest();
-//     point3.y = std::numeric_limits<int>::lowest();
-// }
+void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
+    point = 0;
+    point1.x = std::numeric_limits<int>::lowest();
+    point1.y = std::numeric_limits<int>::lowest();
+    point2.x = std::numeric_limits<int>::lowest();
+    point2.y = std::numeric_limits<int>::lowest();
+    point3.x = std::numeric_limits<int>::lowest();
+    point3.y = std::numeric_limits<int>::lowest();
+}
