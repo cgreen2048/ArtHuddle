@@ -39,6 +39,8 @@ Freehand::Freehand(ElementParameters ep) {
     this->color = ep.color;
     this->isFreehandShape = ep.isFreehandShape;
     this->name = ep.name;
+    this->minBound = ep.minBound;
+    this->maxBound = ep.maxBound;
 }
 
 void Freehand::draw(Screen *screen) {
@@ -288,4 +290,22 @@ ivec2 Freehand::getMaxBound() const {
 
 bool Freehand::hasDrawBounds() const {
     return hasBounds;
+}
+
+ElementParameters Freehand::getParameters() {
+    ElementParameters ep;
+    ep.points = this->points;
+    ep.hasFirstPoint = this->hasFirstPoint;
+    this->lastDrawnPoint = ep.lastDrawnPoint;
+    ep.finished = this->finished;
+    ep.color = this->color;
+    ep.isFreehandShape = this->isFreehandShape;
+    ep.name = this->name;
+    ep.minBound = minBound;
+    ep.maxBound = maxBound;
+    return ep;
+}
+
+guiElement Freehand::getType() {
+    return guiElement::FREEHAND;
 }

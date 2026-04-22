@@ -8,6 +8,11 @@ Layout *toolBarLayout = nullptr;
 Layout *canvasLayout = nullptr;
 Layout *tempLayout = nullptr;
 SDL_Renderer *renderer = nullptr;
+GuiElement* draggingElement = nullptr;
+guiElement draggingType = guiElement::UNKNOWN;
+ElementParameters originalElementParameters;
+ElementParameters draggingElementParameters;
+ivec2 lastMousePos;
 
 int type = 9;
 int point = 0;

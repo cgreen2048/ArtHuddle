@@ -37,6 +37,8 @@ class TextBox : public Box {
         void writeXml(std::ostream& out, int depth) const;
         bool validateAndNormalize(ElementParameters &ep);
         const std::string& getText() const;
+        ElementParameters getParameters();
+        guiElement getType();
 };
 
 #endif

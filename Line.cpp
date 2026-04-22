@@ -145,3 +145,19 @@ bool Line::isInside(ivec2 coordinates) {
     }
     return false;
 }
+
+ElementParameters Line::getParameters() {
+    ElementParameters ep;
+    ep.start = this->start;
+    ep.end = this->end;
+    ep.color = this->color;
+    ep.startType = this->startType;
+    ep.endType = this->endType;
+    ep.colorType = this->colorType;
+    ep.name = this->name;
+    return ep;
+}
+
+guiElement Line::getType() {
+    return guiElement::LINE;
+}

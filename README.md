@@ -110,91 +110,6 @@ A pointer to an `SDL_Renderer`, used for rendering text on a screen
 
 ---
 
-### `int type`
-Represents the current drawing mode:
-- `0` = select
-- `1` = point  
-- `2` = line  
-- `3` = box  
-- `4` = triangle
-- `5` = ellipse
-- `6` = arrow
-- `7` = text box
-- `8` = freehand line
-- `9` = freehand shape 
-
----
-
-### `int point`
-Tracks how many points have been placed for the current shape
-
----
-
-### `ivec2 point1, point2, point3`
-Stores coordinates used when constructing shapes
-
----
-
-
-### `const int p`
-Padding between buttons
-
----
-
-### `const int bW`
-Standard button width
-
----
-
-### `const int bigBW`
-Width for larger buttons (e.g., Freehand tools)
-
----
-
-### `const int bH`
-Toolbar button height
-
----
-
-### Mode Buttons
-These change the drawing mode (`type`):
-
-- `selectButton`
-- `pointButton`
-- `lineButton`
-- `boxButton`
-- `triangleButton`
-- `ellipseButton`
-- `arrowButton`
-- `textBoxButton`
-- `freehandLineButton`
-- `freehandShapeButton`
-
----
-
-
-### `Button* saveButton`
-- Saves the current drawing (`canvasLayout`) to an XML file
-- Triggers a temporary color flash to indicate the action occurred
-
-### `Button* loadButton`
-- Loads a drawing from an XML file into `canvasLayout`
-- Clears existing shapes before loading
-- Also flashes color on activation
-
----
-
-
-### `Uint64 saveFlashUntil`
-Time (in milliseconds) until which the Save button remains highlighted
-
-### `Uint64 loadFlashUntil`
-Time (in milliseconds) until which the Load button remains highlighted
-
-These are used to create a short visual feedback effect when buttons are clicked
-
----
-
 ## Functions
 
 ### `void createWindow()`
@@ -310,6 +225,38 @@ Draws an element of type specified by `type` to the `tempLayout` `Layout` object
 Draws an element of type specified by `type` to the `canvasLayout` `Layout` object based on the three passed coordinates
 - Some shapes need fewer than three coordinates
 - For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
+- Automatically selects the newly drawn element
+
+---
+
+### `void setClickAndDrag(ivec2 lastMousePos)`
+Sets information to allow elements to be dragged by the user. Retrieves the selected element, saves the last click coordinates, and initializes the `originalElementParameters` and `draggingElementParameters` structs before drawing the first ghost shape and deleting the version of the element in the root layout
+
+---
+
+### `void endClickAndDrag()`
+Used to terminate the dragging of an element when the user releases the mouse button. Creates a new element in the root layout using `draggingType` and `draggingElementParameters`
+- Resets `draggingElement` to `nullptr`
+- Resets `draggingType` to `guiElement::UNKNOWN`
+
+---
+
+### `void drawClickAndDrag(ivec2 currentMousePos)`
+Draws a ghost shape when dragging an element across the screen. Calculates a delta value to modify points by and creates a new element in the temporary layout
+- Subtracts `lastMousePos` from `currentMousePos`
+- Operates on all coordinate data in `draggingElementParameters` struct and passes it to the factory along with `draggingType`
+
+---
+
+### `void cancelMove()`
+Used to cancel a drag movement. Accesses `originalElementParameters` to create a new element in the same position as the previous element that was deleted when dragging. Internally functions similar to `drawElement()`
+- Sets `draggingElement` to `nullptr`
+- Sets `draggingType` to `guiElement::UNKNOWN`
+
+---
+
+### `void unselect()`
+Accesses the program's `EventSystem` and sends a `Click` event with invalid coordinates to deselect any element
 
 ---
 
@@ -335,6 +282,11 @@ A call to append text to a text box
 A call to delete text in a text box
 - Uses the `Selected` singleton to access the selected text box
 - Calls the `backspace()` method in `TextBox`
+
+---
+
+### `void deleteTempShape()`
+Clears the temporary layout of all elements
 
 ---
 
@@ -983,20 +935,40 @@ The length of the radius of the ellipse along the y-axis
 The type of mathematical vector that `center` is. Can be `TagType::Vec` or `TagType::IVec`
 - Initialized to `TagType::Vec`
 
+---
+
 ### `std::vector<ivec2> points`
 Stores points to be drawn, mainly in `Freehand` elements
+
+---
 
 ### `bool hasFirstPoint`
 Boolean for if a `Freehand` element has its first point to draw
 
+---
+
 ### `ivec2 lastDrawnPoint`
 Stores the last drawn point for a `Freehand` element
+
+---
 
 ### `bool finished`
 Boolean to check if an element is finished being created/drawn, primarily for `Freehand`
 
+---
+
 ### `bool isFreehandShape`
 Boolean to check if `Freehand` element is in Shape or Line mode
+
+---
+
+### `ivec2 minBound`
+The minimum point of a `Freehand` object
+
+---
+
+### `ivec2 maxBound`
+The maximum point of a `Freehand` object
 
 ---
 
@@ -1241,6 +1213,16 @@ A pure virtual function. Implemented by inherited classes to check if the passed
 
 ---
 
+### `virtual ElementParameters getParameters`
+A pure virtual function. Implemented by inherited classes to return an `ElementParameters` struct with information on the element's attributes
+
+---
+
+### `virtual guiElement getType()`
+A pure virtual function. Implmented by inherited classes to return the `guiElement` enumeration that corresponds to their type
+
+---
+
 # Factory
 
 ## Description
@@ -1451,6 +1433,18 @@ Clears the `elements` vector so that no previous elements will be drawn
 ### `void deleteElement(const std::string& elementName)`
 Finds the element whose name = `elementName`, deleting if found
 
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::LAYOUT`
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/Layout_UML.png)
 
@@ -1464,6 +1458,8 @@ Finds the element whose name = `elementName`, deleting if found
 - Shape Mode: Similar to line mode, except if the user releases the mouse nearby their starting point, `Freehand` will connect the first and last points to make a connected shape and flood fill the inside of the shape (if the user releases their mouse before being close enough to the starting point, their previosly drawn incomplete shape is deleted)
 `Freehand` inherits from the `GuiElement` class
 
+---
+
 ## Data Members
 
 ### `std::vector<ivec2> points`
@@ -1471,32 +1467,50 @@ Stores points part of the freehand drawing.
 By default, this will only store points that are at least 
 `PIXEL_DRAW_DIST_THRESHOLD` (default = 3) pixels away from each other to increase performance
 
+---
+
 ### `bool hasFirstPoint`
 Boolean to check if the freehand drawing has been started. 
 Used in `MouseDownEvent` conditionals in `Freehand::resolveEvent`
+
+---
 
 ### `ivec2 lastDrawnPoint`
 Stores the last drawn point in the freehand drawing. Used to draw a line between the 
 `lastDrawnPoint` and the `current` point during `Freehand::resolveEvent`
 
+---
+
 ### `bool finished`
 Boolean to check if the user released their mouse, indicating that drawing is finished.
 Used in `Freehand::resolveEvent`
 
+---
+
 ### `bool isFreehandShape`
 Boolean to check if we're in Line mode or Shape mode
+
+---
 
 ### `ivec3 color`
 The color for freehand drawing
 
+---
+
 ### `ivec2 minBound`
 The minimum calculated bound of freehand drawn pixels
+
+---
 
 ### `ivec2 maxBound`
 The maximum calculated bound of freehand drawn pixels
 
+---
+
 ### `bool hasBounds`
 Boolean to track if the `Freehand` has bounds for its drawn pixels
+
+---
 
 ## Methods
 
@@ -1504,14 +1518,22 @@ Boolean to track if the `Freehand` has bounds for its drawn pixels
 Default constructor. Sets points to an empty vector, lastDrawnPoint to (0,0), and color
  to black, and generates a random name
 
+---
+
 ### `Freehand(ivec3 color, bool isFreehandShape = false)`
 Constructor allowing user to specify color and if in Line or Shape mode, defaulting to Line mode
+
+---
 
 ### `Freehand(const Freehand& cp)`
 Default copy constructor. Sets member data of `this` to member data of `cp`
 
+---
+
 ### `Freehand(ElementParameters ep)`
 Calls `validateAndNormalize(ep)` to check if the given parameters are valid for construction, then constructors a new `Freehand` element based on those parameters
+
+---
 
 ### `void draw(Screen *screen)`
 Draws the freehand points to the `Screen` by calling `drawBresenhamLine` directly 
@@ -1524,16 +1546,24 @@ as `Freehand` stores `ivec2`s, not `Point/Line` for speed
 After drawing all points, if the user has released their mouse and in freehand shape mode, compute the centroid of all points in `points`, then call `Freehand::floodFill` 
 starting from the centroid and flood filling to the border of the shape.
 
+---
+
 ### `void floodFill(ivec2 start, Screen* screen)` 
 Flood fills a freehand shape from the starting point all the way to the borders
 Repeatedly pops from the stack, colors pixels that are not the correct color of the border, 
 and pushes all adjacent pixels to the stack to color until the stack is empty
 
+---
+
 ### `void updateBounds(const ivec2& coords)`
 Updates the bounds of the `Freehand` element as each pixel is drawn to the screen
 
+---
+
 ### `GuiElement* clone()`
 Returns a clone of the `Freehand` element
+
+---
 
 ### `bool Freehand::resolveEvent(Event *e)`
 This method is the main driver for drawing the `Freehand` element to the screen properly.
@@ -1542,6 +1572,8 @@ Else, continue into the conditional block to handle continuing the current freeh
 - If the event received is a mouse down event, add the current point to `points` as the first point, starting the freehand drawing
 - If the event received is a mouse motion event, add the current point to `points` if it's not less than `PIXEL_DRAW_DIST_THRESHOLD` pixels away from the previously drawn pixel
 - If the event recieved is a mouse up event, add the final point to `points` and set `finished` to true to finish drawing. If in Shape mode and the final point is less than `SHAPE_COMPLETION_DIST_THRESHOLD` pixels away from the first point, add the first point to `points` again to complete the shape
+
+---
 
 ### `void writeXml`
 Writes an opening `<freehand>` tag, then each point in `points` as an `ivec2`child via `writeIVec2`, finally closing with a `</freehand>` tag
@@ -1555,6 +1587,8 @@ Ex.
 </freehand>
 ```
 
+---
+
 ### `bool validateAndNormalize(ElementParameters& ep)`
 Validates the `Freehand` element parameters to check if element can be constructed normally.
 - Returns false if no points available
@@ -1562,23 +1596,47 @@ Validates the `Freehand` element parameters to check if element can be construct
 - Ensures that `finished` and `hasLastPoint` are both true for complete state
 - Sets `color` to default (125,125,125) if not included
 
+---
+
 ### `bool isFinished()`
 Returns if the `Freehand` is `finished` drawing or not
+
+---
 
 ### `bool isFreehandShapeMode()`
 Returns the mode of the `Freehand` for drawing, Shape or Line
 
+---
+
 ### `std::vector<ivec2>& getPoints()`
 Returns the `points` held within the `Freehand` element
+
+---
 
 ### `ivec2 getMinBound() const`
 Returns the minimum bound for the `Freehand` element's drawn points
 
+---
+
 ### `ivec2 getMaxBound() const`
 Returns the maximum bound for the `Freehand` element's drawn points
 
+---
+
 ### `bool hasDrawBounds() const`
 Returns if the `Freehand` has drawn bounds `minBound` and `maxBound`
+
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::FREEHAND`
+
+---
 
 ## UML Diagram
 ![UML Diagram](images/Freehand_UML.png)
@@ -1589,19 +1647,29 @@ Returns if the `Freehand` has drawn bounds `minBound` and `maxBound`
 `Ellipse` is a class used for storing and drawing a filled ellipse to a `Screen` object.
 It inherits from the `GuiELement` class
 
+---
+
 ## Data Members
 
 ### `ivec2 center`
 The coordinates of the center of the ellipse
 
+---
+
 ### `int radiusX`
 The x radius length of the ellipse
+
+---
 
 ### `int radiusY`
 The y radius length of the ellipse
 
+---
+
 ### `ivec3 color`
 The fill color of the ellipse
+
+---
 
 ### `TagType centerType`
 The type of the tag for the `center` attribute for XML parsing
@@ -1613,27 +1681,43 @@ The type of the tag for the `center` attribute for XML parsing
 ### `Ellipse()`
 Default constructor. Initializes `center`, `radiusX`, `radiusY`, and `color` to zeros
 
+---
+
 ### `Ellipse(ivec2 center, int radius, ivec3 color)`
 Circle constructor. Sets `center` to `center`, `color` to `color`, and both `radiusX` and `radiusY` to `radius`
+
+---
 
 ### `Ellipse(ivec2 center, int radiusX, int radiusY, ivec3 color)`
 Ellipse constructor. Sets `center` to `center`, `color` to `color`, and `radiusX` to `radiusX`, and `radiusY` to `radiusY`
 
+---
+
 ### `Ellipse(const Ellipse& cp)`
 Copy constructor using attributes from `cp` to create a new `Ellipse`
 
+---
+
 ### `Ellipse& operator=(const Ellipse& rhs)`
 Assignment operator overload that uses attributes from `rhs` to create a new `Ellipse`
+
+---
 
 ### `Ellipse(ElementParameters ep)`
 Constructor taking in an `ElementParameters` struct to check if the attempted construction
 has the required attributes for `Ellipse` via `validateAndNormalize(ep)`
 
+---
+
 ### `~Ellipse()`
 Default destructor
 
+---
+
 ### `void draw(Screen* screen)`
 Calls `screen->drawEllipse()` to draw `Ellipse` object to `screen`'s SDL_Surface
+
+---
 
 ### `void writeXml(std::ostream& out, int depth) const`
 Writes an `Ellipse` object to XML using standard XML formatting in the following way:
@@ -1642,8 +1726,12 @@ Writes an `Ellipse` object to XML using standard XML formatting in the following
 - Writes the corresponding `<ivec3>` or `<vec3>` tag based on `colorType` for `color` using `writeIVec3()`/`writeVec3()`
 - Writes a closing `</ellipse>` tag after some padding
 
+---
+
 ### `bool resolveEvent(Event *e)`
 Attempts to resolve `ClickEvent`s to select the `Ellipse` object, handling the event if the click is within the `Ellipse`'s bounds, and returning true if so.
+
+---
 
 ### `bool validateAndNormalize(ElementParameters& ep)`
 Checks if `ep` has the required attributes needed to construct an `Ellipse` object:
@@ -1652,6 +1740,8 @@ Checks if `ep` has the required attributes needed to construct an `Ellipse` obje
 - `int radiusY`
 - Sets `color` to default values if not included
 Returns true if all of the above are included, false if not
+
+---
 
 ### `bool isPointInside(ivec2 point)`
 Checks if `point` is within the bounds of the ellipse
@@ -1673,10 +1763,22 @@ Returns the integer in the ellipse's `radiusY` attribute
 
 ---
 
-`bool isInside(ivec2 coordinates)`
+### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are within the bounds of the `Ellipse` object
 - Returns the result of `isPointInside()`
 - Ensures the passed coordinates are within this object's parent's bounds
+
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::ELLIPSE`
+
+---
 
 ## UML Diagram
 ![UML Diagram](images/Ellipse_UML.png)
@@ -1689,17 +1791,25 @@ Checks whether the given coordinates are within the bounds of the `Ellipse` obje
 `TextBox` is a class used for storing and drawing a text box to a `Screen` object.
 It inherits from the `Box` class.
 
+---
+
 ## Data Members
 
 ### `std::string text`
 The text currently stored inside the text box.
 
+---
+
 ### `ivec3 textColor`
 The color used to draw the text and cursor.
+
+---
 
 ### `bool active`
 Indicates whether the text box is currently active.  
 When active, the blinking cursor may be shown.
+
+---
 
 ### `TagType textColorType`
 The type of the tag for the `textColor` attribute for XML parsing.
@@ -1711,8 +1821,12 @@ The type of the tag for the `textColor` attribute for XML parsing.
 ### `TextBox()`
 Default constructor. Initializes the base `Box`, sets `textColor` to `{0,0,0}`, sets `text` to an empty string, and sets `active` to `false`.
 
+---
+
 ### `TextBox(const TextBox& cp)`
 Copy constructor. Creates a new `TextBox` using the values from `cp`.
+
+---
 
 ### `TextBox(ElementParameters ep)`
 Constructor taking in an `ElementParameters` struct.  
@@ -1723,12 +1837,16 @@ Calls the `Box(ep)` constructor, checks validity with `isValid(ep)`, and then se
 
 Throws `-1` if `isValid(ep)` returns `false`.
 
+---
+
 ### `TextBox(ivec2 min, ivec2 max, ivec3 color, ivec3 textColor, const std::string& text)`
 Constructor that initializes:
 - the `Box` portion using `min`, `max`, and `color`
 - `textColor` using `textColor`
 - `text` using `text`
 - `active` to `false`
+
+---
 
 ### `bool operator==(TextBox rhs)`
 Equality operator overload.  
@@ -1739,14 +1857,20 @@ Returns `true` if:
 
 Returns `false` otherwise.
 
+---
+
 ### `bool operator!=(TextBox rhs)`
 Inequality operator overload.  
 Returns the opposite of `operator==`.
+
+---
 
 ### `void drawOverlay(Screen* screen)`
 Draws the text content and, if appropriate, a blinking cursor:
 - Calls `screen->drawTextClipped(min, max, text, textColor)` to draw the text
 - Calls `screen->drawCursor(getCursorPosition(), textColor)` if `shouldShowCursor()` returns `true`
+
+---
 
 ### `bool shouldShowCursor() const`
 Returns `true` only if:
@@ -1754,6 +1878,8 @@ Returns `true` only if:
 - the SDL tick count indicates the cursor should currently be visible
 
 This creates a blinking cursor effect.
+
+---
 
 ### `std::string getVisibleText() const`
 Returns the portion of `text` that fits inside the text box width.
@@ -1763,6 +1889,8 @@ Uses:
 
 If the full text is too long, only the ending visible portion is returned.
 
+---
+
 ### `ivec2 getCursorPosition() const`
 Returns the position where the blinking cursor should be drawn.
 The cursor is placed:
@@ -1770,20 +1898,32 @@ The cursor is placed:
 - after the currently visible text
 - with `5` pixels of padding
 
+---
+
 ### `void setActive(bool value)`
 Sets whether the text box is active.
+
+---
 
 ### `bool isActive() const`
 Returns whether the text box is currently active.
 
+---
+
 ### `void appendText(const std::string& s)`
 Appends the string `s` to the end of `text`.
+
+---
 
 ### `void backspace()`
 Removes the last character from `text` if `text` is not empty.
 
+---
+
 ### `bool containsPoint(int x, int y) const`
 Checks whether the point `(x, y)` lies within the rectangular bounds of the text box.
+
+---
 
 ### `void writeXml(std::ostream& out, int depth) const`
 Writes a `TextBox` object to XML using standard XML formatting in the following way:
@@ -1796,14 +1936,30 @@ Writes a `TextBox` object to XML using standard XML formatting in the following 
 - Writes `textColor` using either `<ivec3>` or `<vec3>` depending on `textColorType`
 - Writes a closing `</textbox>` tag
 
+---
+
 ### `bool isValid(ElementParameters ep)`
 Calls `Box::isValid(ep)` and then checks `ep.textColor`.
 
 Based on the current code, this function always returns `true`.  
 It also appears intended to assign default values when `textColor` is missing, although the current implementation writes to `ep.color` instead of `ep.textColor`.
 
+---
+
 ### `const std::string& getText() const`
 Returns a constant reference to the current text stored in the text box.
+
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::TEXTBOX`
+
+---
 
 ## UML Diagram
 ![UML Diagram](images/TextBox_UML.png)
@@ -1815,28 +1971,44 @@ Returns a constant reference to the current text stored in the text box.
 ## Description
 `Triangle` is a class used for storing and drawing a filled triangle to a `Screen` object. It inherits from the `GuiElement` class
 
+---
+
 ## Data Members
 
 ### `ivec2 a`
 The coordinates of the first point of the triangle
 
+---
+
 ### `ivec2 b`
 The coordinates of the second point of the triangle
+
+---
 
 ### `ivec2 c`
 The coordinates of the third point of the triangle
 
+---
+
 ### `ivec3 color`
 The color of the triangle
+
+---
 
 ### `TagType aType`
 The type of tag for the `a` attribute
 
+---
+
 ### `TagType bType`
 The type of tag for the `b` attribute
 
+---
+
 ### `TagType cType`
 The type of tag for the `c` attribute
+
+---
 
 ### `TagType colorType`
 The type of tag for the `color` attribute
@@ -1954,11 +2126,21 @@ Checks whether `ep.point1`, `ep.point2`, and `ep.point3` have been initialized a
 
 ---
 
-`bool isInside(ivec2 coordinates)`
+### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are within the bounds of the triangle using `a`, `b`, and `c`
 - Uses the same logic as `Screen`'s `pointInTriangle()` method
   - Performs cross-product calculations based on the triangle's bounds and the passed `coordinates`
 - Ensures the passed coordinates are within this object's parent's bounds
+
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::TRIANGLE`
 
 ---
 
@@ -2122,7 +2304,7 @@ Checks whether the passed `ElementParameters` struct contains valid data to crea
 
 ---
 
-`bool isInside(ivec2 coordinates)`
+### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are within the bounds of an `Arrow` object
 - Returns true if the coordinates are within the arrow, false otherwise
   - Combines logic from the `isInside()` methods from `Box` and `Triangle` and returns the logical OR of the the results
@@ -2130,28 +2312,38 @@ Checks whether the given coordinates are within the bounds of an `Arrow` object
 
 ---
 
-`ivec2 getMin()`
+### `ivec2 getMin()`
 Returns the `ivec2` in the `min` attribute of the `Arrow` object
 
 ---
 
-`ivec2 getMax()`
+### `ivec2 getMax()`
 Returns the `ivec2` in the `max` attribute of the `Arrow` object
 
 ---
 
-`ivec2 getA()`
+### `ivec2 getA()`
 Returns the `ivec2` in the `pointA` attribute of the `Arrow` object
 
 ---
 
-`ivec2 getB()`
+### `ivec2 getB()`
 Returns the `ivec2` in the `pointB` attribute of the `Arrow` object
 
 ---
 
-`ivec2 getC()`
+### `ivec2 getC()`
 Returns the `ivec2` in the `pointC` attribute of the `Arrow` object
+
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::ARROW`
 
 ---
 
@@ -2294,10 +2486,20 @@ Checks whether the given point is within the bounds of this `Box`
 
 ---
 
-`bool isInside(ivec2 coordinates)`
+### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are within the bounds of the box object
 - Returns the result of `inBounds()` returns true
 - Ensures the passed coordinates are within this object's parent's bounds
+
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::BOX`
 
 ---
 
@@ -2307,30 +2509,46 @@ Checks whether the given coordinates are within the bounds of the box object
 `Button` is a class used for storing and drawing a button to a `Screen` object. It inherits from `Box` to utilize the same geomtry and color scheme
 but allow for a label and event handling for clicks
 
+---
+
 ## Data Members
 
 ### `std::string label`
 The text label to be drawn on the button
 
+---
+
 ### `std::string callbackName`
 The name of the callback function to be called when this button is clicked. Used for XML writing and event handling
 
+---
+
 ### `std::function<void()> callback`
 The callback function to be called when this button is clicked. Set by the user after the button is created and used for event handling
+
+---
 
 ## Methods
 
 ### `Button()`
 The default constructor. Initializes `text` and `callbackName` to empty strings and `callback` to an empty lambda function
 
+---
+
 ### `Button(const Button& cp)`
 Copy assignment operator. Takes attributes from `cp` to pass into `Box` default constructor and set `text`, `callbackName`, and `callback` for this new `Button`
+
+---
 
 ### `bool operator==(Button rhs)`
 Equality operator. Returns false if attributes from current `Button` do not match attributes for `rhs`
 
+---
+
 ### `bool operator!=(Button rhs)`
 Inequlity operator. Returns the inverse of the equality operator
+
+---
 
 ### `Button(ElementParameters ep)`
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
@@ -2339,22 +2557,42 @@ Constructor that takes in an `ElementParameters` struct. Called via `Factory`
 - Sets the `text`, `callbackName`, and `callback` attributes based on the corresponding data in `ep`
 - Passes `ep` to the `Box` constructor to set the geometry and color attributes for this `Button`
 
+---
+
 ### `Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, const std::string& callbackName, const std::string& text)`
 Initializes the button with the given geometry and color via `Box` constructor, and sets the callback function, callback name, and label text
+
+---
 
 ### `bool resolveEvent(Event* e)`
 Overrides `GuiElement::resolveEvent` to handle click events. If the event is a click within the button's bounds, calls the `callback` function and returns `true` to indicate the event was handled. Otherwise, returns `false` to allow event propagation to continue.
 
+---
+
 ### `void writeXml(std::ostream& out) const`
 Overrides `Box::writeXml` in almost identical formatting, except including the `callbackName` and `text` as parameters in the `<button>` tag for XML writing
+
+---
 
 ### `bool validateAndNormalize(ElementParameters& ep)`
 Uses the same signature as `Box::validateAndNormalize` but also checks that `ep.callbackName` has been set to valid values for a button
 - Returns false if `ep.callbackName` is empty 
 - Allows empty lambda function for `callback` as a button with no functionality may still be desired
 
+---
+
 ### `const std::string& getText() const`
 Returns the `text` of the button
+
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::BUTTON`
 
 ---
 
@@ -2363,22 +2601,34 @@ Returns the `text` of the button
 ## Description
 `Line` is a class used for storing and drawing a line to a `Screen` object. It inherits from the `GuiElement` class
 
+---
+
 ## Data Members
 
 ### `vec2 start`
 The coordinates of the starting point of the line
 
+---
+
 ### `vec2 end`
 The coordinates of the ending point of the line
+
+---
 
 ### `vec3 color`
 The color of the line
 
+---
+
 ### `TagType startType`
 The type of tag for the `start` attribute
 
+---
+
 ### `TagType endType`
 The type of tag for the `end` attribute
+
+---
 
 ### `TagType colorType`
 The type of tag for the `color` attribute
@@ -2488,10 +2738,20 @@ Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep
 
 ---
 
-`bool isInside(ivec2 coordinates)`
+### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are on the line using the `start` and `end` attributes
 - Returns true if the coordinates are on the line, false otherwise
 - Ensures the passed coordinates are within this object's parent's bounds
+
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::LINE`
 
 ---
 
@@ -2500,16 +2760,24 @@ Checks whether the given coordinates are on the line using the `start` and `end`
 ## Description
 `Point` is a class used for storing and drawing a point to a `Screen` object. It inherits from the `GuiElement` class
 
+---
+
 ## Data Members
 
 ### `vec2 coords`
 The coordinates of the point
 
+---
+
 ### `vec3 color`
 The color of the point
 
+---
+
 ### `TagType coordsType`
 The type of tag for the `coords` attribute
+
+---
 
 ### `TagType colorType`
 The type of tag for the `color` attribute
@@ -2606,10 +2874,20 @@ Checks whether `ep.point1` has been initialized and whether `ep.color` is comple
 
 ---
 
-`bool isInside(ivec2 coordinates)`
+### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are equal to the coordinates in the `coords` attribute
 - Returns true if the coordinates are equal, false otherwise
 - Ensures the passed coordinates are within this object's parent's bounds
+
+---
+
+### `ElementParameters getParameters()`
+Gathers all attributes into one struct, which is then returned
+
+---
+
+### `guiElement getType()`
+Returns `guiElement::POINT`
 
 ---
 

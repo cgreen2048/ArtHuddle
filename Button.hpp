@@ -34,6 +34,8 @@ class Button : public Box {
         bool validateAndNormalize(ElementParameters& ep);
         const std::string& getText() const;
         const std::string& getCallbackName() const;
+        ElementParameters getParameters();
+        guiElement getType();
 };
 
 #endif

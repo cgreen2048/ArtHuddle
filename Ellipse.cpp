@@ -113,3 +113,17 @@ bool Ellipse::isInside(ivec2 coordinates) {
         && (coordinates.y < center.y + radiusY)
     );
 }
+
+ElementParameters Ellipse::getParameters() {
+    ElementParameters ep;
+    ep.center = this->center;
+    ep.radiusX = this->radiusX;
+    ep.radiusY = this->radiusY;
+    ep.color = this->color;
+    ep.name = this->name;
+    return ep;
+}
+
+guiElement Ellipse::getType() {
+    return guiElement::ELLIPSE;
+}

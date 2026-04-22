@@ -69,6 +69,11 @@ extern Button* saveButton;
 extern Button* loadButton;
 extern Uint64 saveFlashUntil;
 extern Uint64 loadFlashUntil;
+extern GuiElement* draggingElement;
+extern guiElement draggingType;
+extern ElementParameters originalElementParameters;
+extern ElementParameters draggingElementParameters;
+extern ivec2 lastMousePos;
 
 
 void createWindow();

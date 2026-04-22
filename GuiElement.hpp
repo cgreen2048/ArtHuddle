@@ -43,6 +43,10 @@ class GuiElement {
 		virtual bool isInside(ivec2 coordinates) = 0;
 		
 		virtual bool validateAndNormalize(ElementParameters& ep) = 0;
+		
+		virtual ElementParameters getParameters() = 0;
+
+		virtual guiElement getType() = 0;
 };
 
 

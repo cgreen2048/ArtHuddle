@@ -44,6 +44,8 @@ class Layout : public GuiElement {
         void clearElements();
         void deleteElement(const std::string& elementName);
         bool validateAndNormalize(ElementParameters& ep);
+        ElementParameters getParameters();
+        guiElement getType();
 };
 
 #endif
