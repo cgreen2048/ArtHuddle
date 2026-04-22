@@ -105,6 +105,11 @@ A nested `Layout` object of the program, set to the dimensions of the full windo
 
 ---
 
+### `Layout* boundingLayout`
+A layout that stores the bounding box for a selected element. Not nested under root to prevent the user from clicking on the bounding box
+
+---
+
 ### `GuiElement* draggingElement`
 The element currently being dragged by the user. Initialized to `nullptr`
 
@@ -112,6 +117,37 @@ The element currently being dragged by the user. Initialized to `nullptr`
 
 ### `SDL_Renderer* renderer`
 A pointer to an `SDL_Renderer`, used for rendering text on a screen
+
+---
+
+### `guiElement draggingType`
+The type of element being dragged by the user. Initialized to `guiElement::UNKNOWN`
+
+---
+
+### `ElementParameters originalElementParameters`
+A struct holding the original element parameters for an element currently being dragged by the user
+- Used to cancel an element's movement
+
+---
+
+### `ElementParameters draggingElementParameters`
+A struct holding modified element parameters for an element currently being dragged by the user
+
+---
+
+### `ivec2 lastMousePos`
+The position of the last mouse click. Used for calculating the detal to move an object when dragging
+
+---
+
+### `ElementParameters clipboard`
+A variable to hold a struct returned from an element's `getParameters()` method when copying
+
+---
+
+### `guiElement clipboardType`
+The type of element stored in the `clipboard` variable. Used to create a new element when pasting. Initialized to guiElement::UNKNOWN
 
 ---
 
@@ -123,20 +159,9 @@ Creates a new `SDL_Window` object and assigns it to `window`
 
 ---
 
-### `guiElement draggingType`
-The type of element being dragged by the user. Initialized to `guiElement::UNKNOWN`
-
----
-
 ### `void createScreen()`
 Creates a new `Screen` object, set to the size of the full window, and assigns it to `screen`
 - Also fills the `renderer` variable and passes it to the screen constructor
-
----
-
-### `ElementParameters originalElementParameters`
-A struct holding the original element parameters for an element currently being dragged by the user
-- Used to cancel an element's movement
 
 ---
 
@@ -152,18 +177,10 @@ Also initializes toolbar buttons
 
 ---
 
-### `ElementParameters draggingElementParameters`
-A struct holding modified element parameters for an element currently being dragged by the user
-
----
-
 ### `void setEventSystem()`
 Gets the instance of the `Event` singleton. Creates a new `SoundPlayer` object and saves the reference `soundPlayer` and to the `Event`'s `soundPlayer` attribute
 
 ---
-
-### `ivec2 lastMousePos`
-The position of the last mouse click. Used for calculating the detal to move an object when dragging
 
 ### `void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates all toolbar buttons and assigns:
@@ -225,6 +242,7 @@ The interface that allows a programmer to interact with the underlying systems c
 ### `void initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Initializes video and audio through SDL and calls `createWindow()`, `createScreen()`, `createRootLayout()`, and `setEventSystem()` from `Global`
 - Also starts SDL text input
+- Disables accent menu on Mac that appears when a user holds down a key
 
 ---
 
@@ -330,6 +348,18 @@ Clears the screen, processes events, draws all elements in `rootLayout`, then re
 
 ### `void closeAll()`
 Deletes `soundPlayer`, `renderer`, `window`, and `screen`, then ends SDL text input and quits SDL
+
+---
+
+### `void copy()`
+Gets the element that is currently selected by the user
+- If no element is selected, `clipboard` is set to an empty `ElementParameters` and `clipboardType` is set to `guiElement::UNKNOWN`
+- If an element is selected, `clipboard` receives the `ElementParameters` struct corresponding to the element using `getParameters()`, `clipboardType` receives the type of element using `getType()`, and the name attribue of `clipboard` is set to an empty string so that a new element created with the struct receives a unique name
+
+---
+
+### `void paste()`
+Checks if an element is stored in `clipboard`, then creates a new element shifted slightly using the stored struct. The new element is added to the drawing space
 
 ---
 
@@ -988,11 +1018,13 @@ Boolean to check if `Freehand` element is in Shape or Line mode
 
 ### `ivec2 minBound`
 The minimum point of a `Freehand` object
+- Initialized to `ivec2(std::numeric_limits<int>::max(), std::numeric_limits<int>::max())`
 
 ---
 
 ### `ivec2 maxBound`
 The maximum point of a `Freehand` object
+- Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
 
 ---
 
@@ -1059,6 +1091,7 @@ Sets the `selectedElement` attribute
 
 ### `GuiElement* getSelectedElement()`
 Returns the `GuiElement*` held in the `selectedElement` attribute
+- Returns `nullptr` if no element is stored
 
 ---
 
@@ -1484,6 +1517,23 @@ Returns `guiElement::LAYOUT`
 
 ---
 
+## Macros
+
+### `PIXEL_DRAW_DIST_THRESHOLD 3`
+Used to define a range for drawing new points
+
+---
+
+### `SHAPE_COMPLETION_DIST_THRESHOLD 10`
+Used to create a range of acceptable positions where a freehand shape will be considered completed
+
+---
+
+### `FREEHAND_PADDING 10`
+The amount of padding around a `Freehand` element that the user can click on to select it
+
+---
+
 ## Data Members
 
 ### `std::vector<ivec2> points`
@@ -1594,8 +1644,8 @@ This method is the main driver for drawing the `Freehand` element to the screen 
 If the `Freehand` is finished drawing, continue to proper `ClickEvent` handling for selecting the `Freehand` element.
 Else, continue into the conditional block to handle continuing the current freehand drawing
 - If the event received is a mouse down event, add the current point to `points` as the first point, starting the freehand drawing
-- If the event received is a mouse motion event, add the current point to `points` if it's not less than `PIXEL_DRAW_DIST_THRESHOLD` pixels away from the previously drawn pixel
 - If the event recieved is a mouse up event, add the final point to `points` and set `finished` to true to finish drawing. If in Shape mode and the final point is less than `SHAPE_COMPLETION_DIST_THRESHOLD` pixels away from the first point, add the first point to `points` again to complete the shape
+- Calls `setPoints()` to add intermediate points
 
 ---
 
@@ -1659,6 +1709,11 @@ Gathers all attributes into one struct, which is then returned
 
 ### `guiElement getType()`
 Returns `guiElement::FREEHAND`
+
+---
+
+### `void setPoints()`
+Pops the last element in `points`, then performs Bresenhams algorithm between the new last point and the popped point, adding all intermediate points to `points`
 
 ---
 
@@ -1969,9 +2024,8 @@ Writes a `TextBox` object to XML using standard XML formatting in the following 
 
 ### `bool isValid(ElementParameters ep)`
 Calls `Box::isValid(ep)` and then checks `ep.textColor`.
-
-Based on the current code, this function always returns `true`.  
-It also appears intended to assign default values when `textColor` is missing, although the current implementation writes to `ep.color` instead of `ep.textColor`.
+- Calculates the minimum and maximum `x` and `y` coordinates based on the passed points
+- Assign default values when `textColor` is missing
 
 ---
 
@@ -2328,6 +2382,7 @@ This ensures the XML output preserves whether integer or floating-point vector t
 Checks whether the passed `ElementParameters` struct contains valid data to create an `Arrow` object
 - Checks if all points have been set
   - Returns false if not
+- Calculates the minimum and maximum `x` and `y` coordinates for the stem based on the passed points
 - Checks if the color `vec3` has been set
   - Sets any unset member of color to a default value of 125
 
@@ -2507,7 +2562,10 @@ This ensures the XML output preserves whether integer or floating-point vector t
 ### `bool validateAndNormalize(ElementParameters& ep)`
 Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep.color` is complete
 - Returns false if `x` or `y` in `ep.point1` or `ep.point2` have not been set
+- Calculates the minimum and maximum `x` and `y` coordinates based on the passed points
 - Sets any missing color value to `125`
+
+---
 
 ### `bool inBounds(const ivec2& point)`
 Checks whether the given point is within the bounds of this `Box`
@@ -2632,6 +2690,13 @@ Returns `guiElement::BUTTON`
 
 ---
 
+## Macros
+
+### `LINE_PADDING 10`
+The amount of padding or grace area around all points on a line that a user can click on to select the line
+
+---
+
 ## Data Members
 
 ### `vec2 start`
@@ -2646,6 +2711,11 @@ The coordinates of the ending point of the line
 
 ### `vec3 color`
 The color of the line
+
+---
+
+### `std::vector<ivec2> points`
+A vector of all points on the line
 
 ---
 
@@ -2769,7 +2839,8 @@ Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep
 
 ### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are on the line using the `start` and `end` attributes
-- Returns true if the coordinates are on the line, false otherwise
+- Returns true if the coordinates are on the line or within a small amount of padding, false otherwise
+  - Iterates through all points in `points` to ensure any point on the line can be clicked on
 - Ensures the passed coordinates are within this object's parent's bounds
 
 ---
@@ -2784,10 +2855,22 @@ Returns `guiElement::LINE`
 
 ---
 
+### `void setPoints()`
+Uses Bresenham's algorithm to calculate every point on the line between `start` and `end` and add them to `points`
+
+---
+
 # Point
 
 ## Description
 `Point` is a class used for storing and drawing a point to a `Screen` object. It inherits from the `GuiElement` class
+
+---
+
+## Macros
+
+### `POINT_PADDING 10`
+The amount of padding or grace area around the point that the user can click on to select the point
 
 ---
 
@@ -2905,7 +2988,7 @@ Checks whether `ep.point1` has been initialized and whether `ep.color` is comple
 
 ### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are equal to the coordinates in the `coords` attribute
-- Returns true if the coordinates are equal, false otherwise
+- Returns true if the coordinates are equal or within an acceptable amount of distance (`POINT_PADDING`), false otherwise
 - Ensures the passed coordinates are within this object's parent's bounds
 
 ---
