@@ -1,14 +1,14 @@
 #include "API.hpp"
 #include "Global.hpp"
 
-Layout* initialize() {
+Layout* initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         exit(1);
     }
     createWindow();
     createScreen();
-    Layout* layout = createRootLayout();
+    Layout* layout = createRootLayout(type, points, point1, point2, point3);
     setEventSystem();
     SDL_StartTextInput(window);
     return layout;
@@ -133,7 +133,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.coordsType = TagType::IVec;
             Point* element = dynamic_cast<Point*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -145,7 +145,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.endType = TagType::IVec;
 			Line* element = dynamic_cast<Line*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -157,7 +157,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.maxType = TagType::IVec;
 			Box* element = dynamic_cast<Box*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -171,7 +171,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.pointCType = TagType::IVec;
 			Triangle* element = dynamic_cast<Triangle*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -183,7 +183,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.centerType = TagType::IVec;
             Ellipse* element = dynamic_cast<Ellipse*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -223,7 +223,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.pointCType = TagType::IVec;
             Arrow* element = dynamic_cast<Arrow*>(factory(ge, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -241,7 +241,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
             ep.text = "";
             TextBox* element = dynamic_cast<TextBox*>(factory(guiElement::TEXTBOX, ep));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -281,7 +281,7 @@ void endClickAndDrag() {
             case guiElement::POINT: {
                 Point* element = dynamic_cast<Point*>(factory(draggingType, draggingElementParameters));
                 if (element) {
-                    rootLayout->addElement(element);
+                    canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
                 break;
@@ -289,7 +289,7 @@ void endClickAndDrag() {
             case guiElement::LINE: {
                 Line* element = dynamic_cast<Line*>(factory(draggingType, draggingElementParameters));
                 if (element) {
-                    rootLayout->addElement(element);
+                    canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
                 break;
@@ -297,7 +297,7 @@ void endClickAndDrag() {
             case guiElement::BOX: {
                 Box* element = dynamic_cast<Box*>(factory(draggingType, draggingElementParameters));
                 if (element) {
-                    rootLayout->addElement(element);
+                    canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
                 break;
@@ -305,7 +305,7 @@ void endClickAndDrag() {
             case guiElement::TRIANGLE: {
                 Triangle* element = dynamic_cast<Triangle*>(factory(draggingType, draggingElementParameters));
                 if (element) {
-                    rootLayout->addElement(element);
+                    canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
                 break;
@@ -313,7 +313,7 @@ void endClickAndDrag() {
             case guiElement::ELLIPSE: {
                 Ellipse* element = dynamic_cast<Ellipse*>(factory(draggingType, draggingElementParameters));
                 if (element) {
-                    rootLayout->addElement(element);
+                    canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
                 break;
@@ -321,7 +321,7 @@ void endClickAndDrag() {
             case guiElement::ARROW: {
                 Arrow* element = dynamic_cast<Arrow*>(factory(draggingType, draggingElementParameters));
                 if (element) {
-                    rootLayout->addElement(element);
+                    canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
                 break;
@@ -329,7 +329,7 @@ void endClickAndDrag() {
             case guiElement::TEXTBOX: {
                 TextBox* element = dynamic_cast<TextBox*>(factory(draggingType, draggingElementParameters));
                 if (element) {
-                    rootLayout->addElement(element);
+                    canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
                 break;
@@ -337,7 +337,7 @@ void endClickAndDrag() {
             case guiElement::FREEHAND: {
                 Freehand* element = dynamic_cast<Freehand*>(factory(draggingType, draggingElementParameters));
                 if (element) {
-                    rootLayout->addElement(element);
+                    canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
                 break;
@@ -382,7 +382,7 @@ void cancelMove() {
 		case guiElement::POINT: {
             Point* element = dynamic_cast<Point*>(factory(draggingType, originalElementParameters));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -390,7 +390,7 @@ void cancelMove() {
         case guiElement::LINE: {
 			Line* element = dynamic_cast<Line*>(factory(draggingType, originalElementParameters));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -398,7 +398,7 @@ void cancelMove() {
 		case guiElement::BOX: {
 			Box* element = dynamic_cast<Box*>(factory(draggingType, originalElementParameters));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -406,7 +406,7 @@ void cancelMove() {
 		case guiElement::TRIANGLE: {
 			Triangle* element = dynamic_cast<Triangle*>(factory(draggingType, originalElementParameters));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -414,7 +414,7 @@ void cancelMove() {
         case guiElement::ELLIPSE: {
             Ellipse* element = dynamic_cast<Ellipse*>(factory(draggingType, originalElementParameters));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -422,7 +422,7 @@ void cancelMove() {
         case guiElement::ARROW: {
             Arrow* element = dynamic_cast<Arrow*>(factory(draggingType, originalElementParameters));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -430,7 +430,7 @@ void cancelMove() {
         case guiElement::TEXTBOX: {
             TextBox* element = dynamic_cast<TextBox*>(factory(draggingType, originalElementParameters));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -438,7 +438,7 @@ void cancelMove() {
         case guiElement::FREEHAND: {
             Freehand* element = dynamic_cast<Freehand*>(factory(draggingType, originalElementParameters));
             if (element) {
-                rootLayout->addElement(element);
+                canvasLayout->addElement(element);
                 Selected::getInstance().setSelectedElement(element);
             }
             break;
@@ -491,21 +491,24 @@ void deleteTempShape() {
 void deleteShape() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     if (element != nullptr) {
-        rootLayout->deleteElement(element->getName());
+        canvasLayout->deleteElement(element->getName());
     }
     tempLayout->clearElements();
 }
 
-void update() {
+void update(int& type) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     screen->clear(ivec3(255,255,255));
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
-    tempLayout->draw(screen);
+    // tempLayout->draw(screen);
     // screen->blitTo(SDL_GetWindowSurface(window));
     // SDL_UpdateWindowSurface(window);
+
+    updateActionButtonColors();
+    updateToolbarButtonColors(type);
     
     screen->renderToRenderer();
     rootLayout->drawOverlay(screen);
@@ -520,3 +523,4 @@ void closeAll() {
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
+

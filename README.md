@@ -48,6 +48,14 @@ main.cpp is a demonstration program
 ## Description
 Handles the creation of vital systems and stores references for use in `API`
 
+This module also:
+- Initializes all layouts (canvas, toolbar, temp, etc.)
+- Stores global drawing state (e.g., `type`, `point1`, etc.)
+- Creates and wires all toolbar buttons
+- Provides save/load functionality for drawings
+- Manages visual feedback (selected tool highlighting and save/load flash effects)
+
+
 ---
 
 ## Variables
@@ -77,14 +85,23 @@ The root `Layout` object of the program, set to the dimensions of the full windo
 
 ---
 
-### `Layout* tempLayout`
-A nested `Layout` object of the program, set to the dimensions of the full window
-- Used to hold elements that are in the process of being drawn but not fully complete
+### `Layout* canvasLayout`
+The main drawing layout:
+- Stores all finalized shapes (points, lines, boxes, etc.)
+- This is the **only layout used for saving and loading**
 
 ---
 
-### `SDL_Renderer* renderer`
-A pointer to an `SDL_Renderer`, used for rendering text on a screen
+### `Layout* toolBarLayout`
+A nested layout that contains all UI buttons:
+- Mode buttons (Line, Box, etc.)
+- Action buttons (Save, Load)
+
+---
+
+### `Layout* tempLayout`
+A nested `Layout` object of the program, set to the dimensions of the full window
+- Used to hold elements that are in the process of being drawn but not fully complete
 
 ---
 
@@ -93,24 +110,8 @@ The element currently being dragged by the user. Initialized to `nullptr`
 
 ---
 
-### `guiElement draggingType`
-The type of element being dragged by the user. Initialized to `guiElement::UNKNOWN`
-
----
-
-### `ElementParameters originalElementParameters`
-A struct holding the original element parameters for an element currently being dragged by the user
-- Used to cancel an element's movement
-
----
-
-### `ElementParameters draggingElementParameters`
-A struct holding modified element parameters for an element currently being dragged by the user
-
----
-
-### `ivec2 lastMousePos`
-The position of the last mouse click. Used for calculating the detal to move an object when dragging
+### `SDL_Renderer* renderer`
+A pointer to an `SDL_Renderer`, used for rendering text on a screen
 
 ---
 
@@ -122,21 +123,93 @@ Creates a new `SDL_Window` object and assigns it to `window`
 
 ---
 
+### `guiElement draggingType`
+The type of element being dragged by the user. Initialized to `guiElement::UNKNOWN`
+
+---
+
 ### `void createScreen()`
 Creates a new `Screen` object, set to the size of the full window, and assigns it to `screen`
 - Also fills the `renderer` variable and passes it to the screen constructor
 
 ---
 
-### `void createRootLayout()`
-Creates a new `Layout` object and assigns it to `rootLayout`
-- Also creates a nested `Layout` object and sets it to `tempLayout`
-- Also creates a nested `Layout` object and uses it for the `Selected` singleton's bounding box layout
+### `ElementParameters originalElementParameters`
+A struct holding the original element parameters for an element currently being dragged by the user
+- Used to cancel an element's movement
+
+---
+
+### `Layout* createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Creates and connects all layouts:
+- `rootLayout`
+- `canvasLayout`
+- `toolBarLayout`
+- `tempLayout`
+- Selection bounding layout
+
+Also initializes toolbar buttons
+
+---
+
+### `ElementParameters draggingElementParameters`
+A struct holding modified element parameters for an element currently being dragged by the user
 
 ---
 
 ### `void setEventSystem()`
 Gets the instance of the `Event` singleton. Creates a new `SoundPlayer` object and saves the reference `soundPlayer` and to the `Event`'s `soundPlayer` attribute
+
+---
+
+### `ivec2 lastMousePos`
+The position of the last mouse click. Used for calculating the detal to move an object when dragging
+
+### `void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Creates all toolbar buttons and assigns:
+- positions
+- colors
+- labels
+- callback functions
+
+Callbacks either:
+- change drawing mode (for tool buttons), or
+- trigger actions like save/load
+
+---
+
+### `void resetGlobalPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3)`
+Resets drawing state:
+- clears point tracking
+- prepares for a new shape
+
+---
+
+### `void saveCanvas(const std::string& filePath)`
+Saves the contents of `canvasLayout` to an XML file
+- Only the drawing is saved (not UI layouts)
+
+---
+
+### `void loadCanvas(const std::string& filePath, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Loads an XML file into `canvasLayout`:
+- Clears existing shapes
+- Clones loaded elements into the canvas
+- Resets selection and temporary state
+
+---
+
+### `void updateToolbarButtonColors(int& type)`
+Updates colors of **mode buttons**:
+- Highlights the currently selected tool
+- Resets others to default color
+
+---
+
+### `void updateActionButtonColors()`
+Updates colors of **action buttons (Save/Load)**:
+- Applies a temporary highlight when clicked
+- Reverts to normal color after a short delay
 
 ---
 
@@ -149,7 +222,7 @@ The interface that allows a programmer to interact with the underlying systems c
 
 ## Functions
 
-### `void initialize()`
+### `void initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Initializes video and audio through SDL and calls `createWindow()`, `createScreen()`, `createRootLayout()`, and `setEventSystem()` from `Global`
 - Also starts SDL text input
 
@@ -173,7 +246,7 @@ Draws an element of type specified by `type` to the `tempLayout` `Layout` object
 ---
 
 ### `void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
-Draws an element of type specified by `type` to the `rootLayout` `Layout` object based on the three passed coordinates
+Draws an element of type specified by `type` to the `canvasLayout` `Layout` object based on the three passed coordinates
 - Some shapes need fewer than three coordinates
 - For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
 - Automatically selects the newly drawn element
@@ -249,7 +322,9 @@ A call to delete the specified shape
 ---
 
 ### `void update()`
-Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer` and draws an overlay
+Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer`, draws an overlay, and updates button colors:
+- Highlights the currently selected toolbar button  
+- Applies a temporary flash effect to the Save and Load buttons when clicked
 
 ---
 
@@ -1818,6 +1893,11 @@ Returns the opposite of `operator==`.
 Draws the text content and, if appropriate, a blinking cursor:
 - Calls `screen->drawTextClipped(min, max, text, textColor)` to draw the text
 - Calls `screen->drawCursor(getCursorPosition(), textColor)` if `shouldShowCursor()` returns `true`
+
+---
+
+### `GuiElement* clone()`
+Returns a clone of the `TextBox` element
 
 ---
 
