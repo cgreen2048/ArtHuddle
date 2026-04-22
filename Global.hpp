@@ -43,6 +43,8 @@ extern guiElement draggingType;
 extern ElementParameters originalElementParameters;
 extern ElementParameters draggingElementParameters;
 extern ivec2 lastMousePos;
+extern ElementParameters clipboard;
+extern guiElement clipboardType;
 void createWindow();
 void createScreen();
 Layout* createRootLayout();

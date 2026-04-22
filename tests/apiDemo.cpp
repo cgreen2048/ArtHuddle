@@ -522,6 +522,16 @@ int main() {
                                 }
                                 break;
                             }
+                            case SDL_SCANCODE_C: {
+                                copy();
+                                break;
+                            }
+                            case SDL_SCANCODE_P: {
+                                float x, y;
+                                SDL_GetMouseState(&x, &y);
+                                paste(ivec2(static_cast<int>(x), static_cast<int>(y)));
+                                break;
+                            }
                             default: {
                                 break;
                             }

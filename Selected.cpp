@@ -166,6 +166,9 @@ void Selected::setSelectedElement(GuiElement* updatedElement) {
 }
 
 GuiElement* Selected::getSelectedElement() {
+    if (!this->selectedElement) {
+        return nullptr;
+    }
     return this->selectedElement;
 }
 

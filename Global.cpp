@@ -12,6 +12,8 @@ guiElement draggingType = guiElement::UNKNOWN;
 ElementParameters originalElementParameters;
 ElementParameters draggingElementParameters;
 ivec2 lastMousePos;
+ElementParameters clipboard;
+guiElement clipboardType = guiElement::UNKNOWN;
 
 void createWindow() {
     window = SDL_CreateWindow("ArtHuddle", X, Y, 0);

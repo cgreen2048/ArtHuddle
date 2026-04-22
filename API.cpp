@@ -524,3 +524,106 @@ void closeAll() {
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
+
+void copy() {
+    GuiElement* chosen = Selected::getInstance().getSelectedElement();
+    if (!chosen) {
+        clipboard = ElementParameters();
+        clipboardType = guiElement::UNKNOWN;
+        return;
+    }
+    clipboard = chosen->getParameters();
+    clipboard.name = "";
+    clipboardType = chosen->getType();
+}
+
+void paste(ivec2 mouseCoords) {
+    if (clipboardType != guiElement::UNKNOWN) {
+        ivec2 delta = mouseCoords - lastMousePos;
+        delta.x += 20;
+        delta.y += 20;
+        ElementParameters newObj = clipboard;
+        newObj.coords += delta;
+        newObj.start += delta;
+        newObj.end += delta;
+        newObj.min += delta;
+        newObj.max += delta;
+        newObj.pointA += delta;
+        newObj.pointB += delta;
+        newObj.pointC += delta;
+        newObj.center += delta;
+        for (int i = 0; i < newObj.points.size(); ++i) {
+            newObj.points[i] += delta;
+        }
+
+        switch (clipboardType) {
+            case guiElement::POINT: {
+                Point* element = dynamic_cast<Point*>(factory(clipboardType, newObj));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::LINE: {
+                Line* element = dynamic_cast<Line*>(factory(clipboardType, newObj));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::BOX: {
+                Box* element = dynamic_cast<Box*>(factory(clipboardType, newObj));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::TRIANGLE: {
+                Triangle* element = dynamic_cast<Triangle*>(factory(clipboardType, newObj));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::ELLIPSE: {
+                Ellipse* element = dynamic_cast<Ellipse*>(factory(clipboardType, newObj));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::ARROW: {
+                Arrow* element = dynamic_cast<Arrow*>(factory(clipboardType, newObj));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::TEXTBOX: {
+                TextBox* element = dynamic_cast<TextBox*>(factory(clipboardType, newObj));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::FREEHAND: {
+                Freehand* element = dynamic_cast<Freehand*>(factory(clipboardType, newObj));
+                if (element) {
+                    rootLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+}

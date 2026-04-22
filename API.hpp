@@ -29,5 +29,7 @@ void deleteTempShape();
 void deleteShape();
 void update();
 void closeAll();
+void copy();
+void paste(ivec2 mouseCoords);
 
 #endif
