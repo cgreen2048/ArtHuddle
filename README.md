@@ -1896,6 +1896,11 @@ Draws the text content and, if appropriate, a blinking cursor:
 
 ---
 
+### `GuiElement* clone()`
+Returns a clone of the `TextBox` element
+
+---
+
 ### `bool shouldShowCursor() const`
 Returns `true` only if:
 - the text box is active
