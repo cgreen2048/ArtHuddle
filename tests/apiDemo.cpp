@@ -26,6 +26,8 @@ int main() {
     // point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     // point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     
+    
+    
     ivec3 color = ivec3(125, 125, 125);
 
 

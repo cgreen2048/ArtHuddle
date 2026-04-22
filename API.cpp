@@ -248,18 +248,7 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
     tempLayout->clearElements();
 }
 
-void drawToolBar(){
-    toolBarLayout->addElement(selectButton);
-    toolBarLayout->addElement(pointButton);
-    toolBarLayout->addElement(lineButton);
-    toolBarLayout->addElement(boxButton);
-    toolBarLayout->addElement(triangleButton);
-    toolBarLayout->addElement(ellipseButton);
-    toolBarLayout->addElement(arrowButton);
-    toolBarLayout->addElement(textBoxButton);
-    toolBarLayout->addElement(freehandLineButton);
-    toolBarLayout->addElement(freehandShapeButton);
-}
+
 
 void clicked(ivec2 coords) {
     EventSystem& eventSystem = EventSystem::getInstance();
@@ -308,6 +297,9 @@ void update() {
     // tempLayout->draw(screen);
     // screen->blitTo(SDL_GetWindowSurface(window));
     // SDL_UpdateWindowSurface(window);
+
+    updateToolbarButtonColors();
+    updateActionButtonColors();
     
     screen->renderToRenderer();
     rootLayout->drawOverlay(screen);

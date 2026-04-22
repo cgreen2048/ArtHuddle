@@ -29,6 +29,8 @@
 #include "XmlWriteHelpers.hpp"
 #include "vec2.hpp"
 #include "vec3.hpp"
+#include <fstream>
+
 
 const int X = 960, Y = 540;
 extern SDL_Window* window;
@@ -63,6 +65,10 @@ extern Button* arrowButton;
 extern Button* textBoxButton;
 extern Button* freehandLineButton;
 extern Button* freehandShapeButton;
+extern Button* saveButton;
+extern Button* loadButton;
+extern Uint64 saveFlashUntil;
+extern Uint64 loadFlashUntil;
 
 
 void createWindow();
@@ -71,5 +77,9 @@ Layout* createRootLayout();
 void setEventSystem();
 void initButtons(Layout *layout);
 void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
+void saveCanvas(const std::string& filePath);
+void loadCanvas(const std::string& filePath);
+void updateToolbarButtonColors();
+void updateActionButtonColors();
 
 #endif

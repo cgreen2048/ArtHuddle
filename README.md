@@ -48,6 +48,14 @@ main.cpp is a demonstration program
 ## Description
 Handles the creation of vital systems and stores references for use in `API`
 
+This module also:
+- Initializes all layouts (canvas, toolbar, temp, etc.)
+- Stores global drawing state (e.g., `type`, `point1`, etc.)
+- Creates and wires all toolbar buttons
+- Provides save/load functionality for drawings
+- Manages visual feedback (selected tool highlighting and save/load flash effects)
+
+
 ---
 
 ## Variables
@@ -77,6 +85,20 @@ The root `Layout` object of the program, set to the dimensions of the full windo
 
 ---
 
+### `Layout* canvasLayout`
+The main drawing layout:
+- Stores all finalized shapes (points, lines, boxes, etc.)
+- This is the **only layout used for saving and loading**
+
+---
+
+### `Layout* toolBarLayout`
+A nested layout that contains all UI buttons:
+- Mode buttons (Line, Box, etc.)
+- Action buttons (Save, Load)
+
+---
+
 ### `Layout* tempLayout`
 A nested `Layout` object of the program, set to the dimensions of the full window
 - Used to hold elements that are in the process of being drawn but not fully complete
@@ -85,6 +107,91 @@ A nested `Layout` object of the program, set to the dimensions of the full windo
 
 ### `SDL_Renderer* renderer`
 A pointer to an `SDL_Renderer`, used for rendering text on a screen
+
+---
+
+### `int type`
+Represents the current drawing mode:
+- `0` = select
+- `1` = point  
+- `2` = line  
+- `3` = box  
+- `4` = triangle
+- `5` = ellipse
+- `6` = arrow
+- `7` = text box
+- `8` = freehand line
+- `9` = freehand shape 
+
+---
+
+### `int point`
+Tracks how many points have been placed for the current shape
+
+---
+
+### `ivec2 point1, point2, point3`
+Stores coordinates used when constructing shapes
+
+---
+
+
+### `const int p`
+Padding between buttons
+
+---
+
+### `const int bW`
+Standard button width
+
+---
+
+### `const int bigBW`
+Width for larger buttons (e.g., Freehand tools)
+
+---
+
+### `const int bH`
+Toolbar button height
+
+---
+
+### Mode Buttons
+These change the drawing mode (`type`):
+
+- `selectButton`
+- `pointButton`
+- `lineButton`
+- `boxButton`
+- `triangleButton`
+- `ellipseButton`
+- `arrowButton`
+- `textBoxButton`
+- `freehandLineButton`
+- `freehandShapeButton`
+
+---
+
+
+### `Button* saveButton`
+- Saves the current drawing (`canvasLayout`) to an XML file
+- Triggers a temporary color flash to indicate the action occurred
+
+### `Button* loadButton`
+- Loads a drawing from an XML file into `canvasLayout`
+- Clears existing shapes before loading
+- Also flashes color on activation
+
+---
+
+
+### `Uint64 saveFlashUntil`
+Time (in milliseconds) until which the Save button remains highlighted
+
+### `Uint64 loadFlashUntil`
+Time (in milliseconds) until which the Load button remains highlighted
+
+These are used to create a short visual feedback effect when buttons are clicked
 
 ---
 
@@ -102,15 +209,68 @@ Creates a new `Screen` object, set to the size of the full window, and assigns i
 
 ---
 
-### `void createRootLayout()`
-Creates a new `Layout` object and assigns it to `rootLayout`
-- Also creates a nested `Layout` object and sets it to `tempLayout`
-- Also creates a nested `Layout` object and uses it for the `Selected` singleton's bounding box layout
+### `Layout* createRootLayout()`
+Creates and connects all layouts:
+- `rootLayout`
+- `canvasLayout`
+- `toolBarLayout`
+- `tempLayout`
+- Selection bounding layout
+
+Also initializes toolbar buttons
 
 ---
 
 ### `void setEventSystem()`
 Gets the instance of the `Event` singleton. Creates a new `SoundPlayer` object and saves the reference `soundPlayer` and to the `Event`'s `soundPlayer` attribute
+
+---
+
+### `void initButtons(Layout* layout)`
+Creates all toolbar buttons and assigns:
+- positions
+- colors
+- labels
+- callback functions
+
+Callbacks either:
+- change drawing mode (for tool buttons), or
+- trigger actions like save/load
+
+---
+
+### `void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3)`
+Resets drawing state:
+- clears point tracking
+- prepares for a new shape
+
+---
+
+### `void saveCanvas(const std::string& filePath)`
+Saves the contents of `canvasLayout` to an XML file
+- Only the drawing is saved (not UI layouts)
+
+---
+
+### `void loadCanvas(const std::string& filePath)`
+Loads an XML file into `canvasLayout`:
+- Clears existing shapes
+- Clones loaded elements into the canvas
+- Resets selection and temporary state
+
+---
+
+### `void updateToolbarButtonColors()`
+Updates colors of **mode buttons**:
+- Highlights the currently selected tool
+- Resets others to default color
+
+---
+
+### `void updateActionButtonColors()`
+Updates colors of **action buttons (Save/Load)**:
+- Applies a temporary highlight when clicked
+- Reverts to normal color after a short delay
 
 ---
 
@@ -147,7 +307,7 @@ Draws an element of type specified by `type` to the `tempLayout` `Layout` object
 ---
 
 ### `void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
-Draws an element of type specified by `type` to the `rootLayout` `Layout` object based on the three passed coordinates
+Draws an element of type specified by `type` to the `canvasLayout` `Layout` object based on the three passed coordinates
 - Some shapes need fewer than three coordinates
 - For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
 
@@ -186,7 +346,9 @@ A call to delete the specified shape
 ---
 
 ### `void update()`
-Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer` and draws an overlay
+Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer`, draws an overlay, and updates button colors:
+- Highlights the currently selected toolbar button  
+- Applies a temporary flash effect to the Save and Load buttons when clicked
 
 ---
 

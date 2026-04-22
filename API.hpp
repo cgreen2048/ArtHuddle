@@ -23,6 +23,6 @@ void deleteText();
 void deleteShape();
 void update();
 void closeAll();
-void drawToolBar();
+
 
 #endif
