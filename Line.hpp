@@ -8,6 +8,7 @@ class Line : public GuiElement {
 		ivec2 start;
 		ivec2 end;
 		ivec3 color;
+		std::vector<ivec2> points;
 		TagType startType = TagType::Vec;
 		TagType endType   = TagType::Vec;
 		TagType colorType = TagType::Vec;

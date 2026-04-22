@@ -155,6 +155,7 @@ ElementParameters Line::getParameters() {
     ep.endType = this->endType;
     ep.colorType = this->colorType;
     ep.name = this->name;
+    ep.line = this->points;
     return ep;
 }
 
