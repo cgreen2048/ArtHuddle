@@ -167,7 +167,8 @@ apiDemoStudentMachine:
 mac: testsMac freehandDemoMac milestone001Mac milestone002Mac screenDemoMac \
 	milestone003Mac milestone004Mac milestone005LayoutTestsMac milestone005Mac \
 	layoutDemoMac milestone006Mac milestone006EventSystemMac milestone006DemoMac \
-	ellipseDemoMac arrowDemoMac textBoxDemoMac textInButtonDemoMac selectedDemoMac
+	ellipseDemoMac arrowDemoMac textBoxDemoMac textInButtonDemoMac selectedDemoMac \
+	apiDemoMac
 
 testsMac:
 	$(CXX) tests.cpp $(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS)

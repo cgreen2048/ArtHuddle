@@ -25,6 +25,7 @@ class TextBox : public Box {
         bool operator==(TextBox rhs);
 		bool operator!=(TextBox rhs);
         void drawOverlay(Screen *screen);
+        GuiElement* clone() const;
         void setActive(bool value);
         bool isActive() const;
         void appendText(const std::string& s);

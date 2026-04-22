@@ -96,7 +96,7 @@ void Layout::drawOverlay(Screen *screen) {
     }
 
     for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
-        if (dynamic_cast<Button*>(*start) || dynamic_cast<TextBox*>(*start)) {
+        if (dynamic_cast<Button*>(*start) || dynamic_cast<TextBox*>(*start) || dynamic_cast<Layout*>(*start) ) {
             (*start)->drawOverlay(screen);
         }
     }
@@ -155,6 +155,7 @@ bool Layout::resolveEvent(Event* e) {
                 }
             }
         }
+        
         TextBox* textbox = dynamic_cast<TextBox*>(Selected::getInstance().getSelectedElement());
         if (textbox) {
             textbox->setActive(false);
