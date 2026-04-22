@@ -7,6 +7,7 @@
 
 #define PIXEL_DRAW_DIST_THRESHOLD 3
 #define SHAPE_COMPLETION_DIST_THRESHOLD 10
+#define FREEHAND_PADDING 10
 
 class Freehand : public GuiElement {
     private:
@@ -40,6 +41,7 @@ class Freehand : public GuiElement {
         bool hasDrawBounds() const;
         ElementParameters getParameters();
         guiElement getType();
+        void setPoints();
 };
 
 #endif

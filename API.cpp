@@ -506,7 +506,8 @@ void update() {
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
-    tempLayout->draw(screen);
+    // tempLayout->draw(screen);
+    boundingLayout->draw(screen);
     // screen->blitTo(SDL_GetWindowSurface(window));
     // SDL_UpdateWindowSurface(window);
     

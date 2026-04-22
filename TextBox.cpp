@@ -2,11 +2,11 @@
 #include "XmlWriteHelpers.hpp"
 #include <iostream>
 
-TextBox::TextBox() : Box(), textColor({0,0,0}), text(""), active(false) {}
+TextBox::TextBox() : Box(), text(""), textColor({0,0,0}), active(false) {}
 
-TextBox::TextBox(const TextBox& cp) : Box(cp.min, cp.max, cp.color), textColor(cp.textColor), text(cp.text), active(cp.active) {}
+TextBox::TextBox(const TextBox& cp) : Box(cp.min, cp.max, cp.color), text(cp.text), textColor(cp.textColor), active(cp.active) {}
 
-TextBox::TextBox(ivec2 min, ivec2 max, ivec3 color, ivec3 textColor, const std::string& text): Box(min, max, color), textColor(textColor), text(text), active(false) {}
+TextBox::TextBox(ivec2 min, ivec2 max, ivec3 color, ivec3 textColor, const std::string& text): Box(min, max, color), text(text), textColor(textColor), active(false) {}
 
 
 bool TextBox::operator==(TextBox rhs) {

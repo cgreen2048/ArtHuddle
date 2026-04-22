@@ -36,6 +36,7 @@ extern Screen* screen;
 extern SoundPlayer* soundPlayer;
 extern Layout* rootLayout;
 extern Layout* tempLayout;
+extern Layout* boundingLayout;
 extern SDL_Renderer* renderer;
 extern GuiElement* draggingElement;
 extern guiElement draggingType;

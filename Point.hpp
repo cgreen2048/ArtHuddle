@@ -3,6 +3,8 @@
 
 #include "GuiElement.hpp"
 
+#define POINT_PADDING 10
+
 class Point : public GuiElement {
 	private:
 		ivec2 coords;

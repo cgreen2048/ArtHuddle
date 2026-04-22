@@ -184,7 +184,6 @@ int main() {
     bool clickAndHold = false;
     bool justFinishedDrawing = false;
     ivec2 lastMousePos;
-    int numKeys;
     SDL_Event event;
     EventSystem& eventSystem = EventSystem::getInstance();
     bool end = false;

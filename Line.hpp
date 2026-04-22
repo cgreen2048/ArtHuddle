@@ -3,6 +3,8 @@
 
 #include "GuiElement.hpp"
 
+#define LINE_PADDING 10
+
 class Line : public GuiElement {
 	private:
 		ivec2 start;
@@ -34,6 +36,7 @@ class Line : public GuiElement {
 		bool validateAndNormalize(ElementParameters& ep);
 		ElementParameters getParameters();
 		guiElement getType();
+		void setPoints();
 };
 
 #endif

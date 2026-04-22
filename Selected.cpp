@@ -154,7 +154,7 @@ void Selected::setSelectedElement(GuiElement* updatedElement) {
                 minX = std::min(point.x, minX);
                 maxX = std::max(point.x, maxX);
                 minY = std::min(point.y, minY);
-                maxY = std::max(point.y, minY);
+                maxY = std::max(point.y, maxY);
             }
 
             this->minBound = ivec2{minX, minY};

@@ -110,7 +110,9 @@ bool Point::isInside(ivec2 coordinates) {
     if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
         return false;
     }
-    if (this->coords == coordinates) {
+    int dx = coordinates.x - coords.x;
+    int dy = coordinates.y - coords.y;
+    if ((dx * dx + dy * dy) <= (POINT_PADDING * POINT_PADDING)) {  
         return true;
     }
     return false;

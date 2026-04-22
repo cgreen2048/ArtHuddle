@@ -31,13 +31,13 @@ static ivec3 toIVec3(const vec3& v) {
     return ivec3(toInt(v.x), toInt(v.y), toInt(v.z));
 }
 
-static vec2 toVec2(const ivec2& v) {
-    return vec2(static_cast<float>(v.x), static_cast<float>(v.y));
-}
+// static vec2 toVec2(const ivec2& v) {
+//     return vec2(static_cast<float>(v.x), static_cast<float>(v.y));
+// }
 
-static vec3 toVec3(const ivec3& v) {
-    return vec3(static_cast<float>(v.x), static_cast<float>(v.y), static_cast<float>(v.z));
-}
+// static vec3 toVec3(const ivec3& v) {
+//     return vec3(static_cast<float>(v.x), static_cast<float>(v.y), static_cast<float>(v.z));
+// }
 
 static std::string trim(const std::string& s) {
     size_t first = s.find_first_not_of(" \t\n\r");

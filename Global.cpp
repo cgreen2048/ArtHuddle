@@ -5,6 +5,7 @@ Screen* screen = nullptr;
 SoundPlayer* soundPlayer = nullptr;
 Layout* rootLayout = nullptr;
 Layout* tempLayout = nullptr;
+Layout* boundingLayout = nullptr;
 SDL_Renderer* renderer = nullptr;
 GuiElement* draggingElement = nullptr;
 guiElement draggingType = guiElement::UNKNOWN;
@@ -60,9 +61,9 @@ Layout* createRootLayout() {
     boundingLayoutParam.parentEnd = ivec2(X,Y);
     boundingLayoutParam.active = true;
     boundingLayoutParam.name = "boundingLayout";
-    Layout *boundingLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, boundingLayoutParam));
+    boundingLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, boundingLayoutParam));
     selectedSingleton.setSelectedLayout(boundingLayout);
-    rootLayout->addElement(boundingLayout);
+    // rootLayout->addElement(boundingLayout);
 
     return rootLayout;
 }
