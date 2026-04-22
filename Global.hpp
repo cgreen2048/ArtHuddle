@@ -43,7 +43,7 @@ extern Layout* canvasLayout;
 extern SDL_Renderer* renderer;
 
 extern int type;
-extern int point;
+extern int points;
 extern ivec2 point1;
 extern ivec2 point2;
 extern ivec2 point3;

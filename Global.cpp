@@ -15,7 +15,7 @@ ElementParameters draggingElementParameters;
 ivec2 lastMousePos;
 
 int type = 9;
-int point = 0;
+int points = 0;
 ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
@@ -50,7 +50,7 @@ void initButtons(Layout *layout)
     selectButtonParam.callback = []()
     {
         type = 9;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     selectButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, selectButtonParam));
     layout->addElement(selectButton);
@@ -66,7 +66,7 @@ void initButtons(Layout *layout)
     pointButtonParam.callback = []()
     {
         type = 0;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     pointButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, pointButtonParam));
     layout->addElement(pointButton);
@@ -82,7 +82,7 @@ void initButtons(Layout *layout)
     lineButtonParam.callback = []()
     {
         type = 1;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     lineButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, lineButtonParam));
     layout->addElement(lineButton);
@@ -98,7 +98,7 @@ void initButtons(Layout *layout)
     boxButtonParam.callback = []()
     {
         type = 2;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     boxButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, boxButtonParam));
     layout->addElement(boxButton);
@@ -114,7 +114,7 @@ void initButtons(Layout *layout)
     triangleButtonParam.callback = []()
     {
         type = 3;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     triangleButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, triangleButtonParam));
     layout->addElement(triangleButton);
@@ -130,7 +130,7 @@ void initButtons(Layout *layout)
     ellipseButtonParam.callback = []()
     {
         type = 4;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     ellipseButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, ellipseButtonParam));
     layout->addElement(ellipseButton);
@@ -146,7 +146,7 @@ void initButtons(Layout *layout)
     arrowButtonParam.callback = []()
     {
         type = 5;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     arrowButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, arrowButtonParam));
     layout->addElement(arrowButton);
@@ -162,7 +162,7 @@ void initButtons(Layout *layout)
     textBoxButtonParam.callback = []()
     {
         type = 6;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     textBoxButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, textBoxButtonParam));
     layout->addElement(textBoxButton);
@@ -178,7 +178,7 @@ void initButtons(Layout *layout)
     freehandLineButtonParam.callback = []()
     {
         type = 7;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     freehandLineButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, freehandLineButtonParam));
     layout->addElement(freehandLineButton);
@@ -194,7 +194,7 @@ void initButtons(Layout *layout)
     freehandShapeButtonParam.callback = []()
     {
         type = 8;
-        resetPoints(point, point1, point2, point3);
+        resetPoints(points, point1, point2, point3);
     };
     freehandShapeButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, freehandShapeButtonParam));
     layout->addElement(freehandShapeButton);
@@ -322,9 +322,9 @@ void setEventSystem()
     eventSystem.setSoundPlayer(soundPlayer);
 }
 
-void resetPoints(int &point, ivec2 &point1, ivec2 &point2, ivec2 &point3)
+void resetPoints(int &points, ivec2 &point1, ivec2 &point2, ivec2 &point3)
 {
-    point = 0;
+    points = 0;
     point1.x = std::numeric_limits<int>::lowest();
     point1.y = std::numeric_limits<int>::lowest();
     point2.x = std::numeric_limits<int>::lowest();
@@ -372,7 +372,7 @@ void loadCanvas(const std::string& filePath) {
 
     tempLayout->clearElements();
     Selected::getInstance().setSelectedElement(nullptr);
-    resetPoints(point, point1, point2, point3);
+    resetPoints(points, point1, point2, point3);
 }
 
 void updateToolbarButtonColors()
