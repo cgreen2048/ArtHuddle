@@ -728,9 +728,8 @@ bool changeColor(ivec3 colorIncrement) {
             break;
         }
         default: {
-            break;
+            return false;
         }
     }
-    // dynamic_cast<chosen->modifyColor(colorIncrement);
     return true;
 }

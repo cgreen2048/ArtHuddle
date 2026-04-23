@@ -120,6 +120,96 @@ A pointer to an `SDL_Renderer`, used for rendering text on a screen
 
 ---
 
+### `const int p = 10`
+Used to offset buttons in the toolbar
+
+---
+
+### `const int bW = 76`
+Used to offset buttons in the toolbar
+
+---
+
+### `const int bigBW = 131`
+Used to offset buttons in the toolbar
+
+---
+
+### `Button* selectButton`
+A button to trigger select mode
+
+---
+
+### `Button* pointButton`
+A button to trigger drawing points
+
+---
+
+### `Button* lineButton`
+A button to trigger drawing lines
+
+---
+
+### `Button*  boxButton`
+A button to trigger drawing boxes
+
+---
+
+### `Button* triangleButton`
+A button to trigger drawing triangles
+
+---
+
+### `Button* ellipseButton`
+A button to trigger drawing ellipses
+
+---
+
+### `Button* arrowButton`
+A button to trigger drawing arrows
+
+---
+
+### `Button* textBoxButton`
+A button to trigger drawing textboxes
+
+---
+
+### `Button* freehandLineButton`
+A button to trigger drawing freehand lines
+
+---
+
+### `Button* freehandShapeButton`
+A button to trigger drawing freehand shapes
+
+---
+
+### `Button* saveButton`
+A button to trigger the function to save the current layout
+
+---
+
+### `Button* loadButton`
+A button to trigger the function to load a saved layout
+
+---
+
+### `Button* colorIndicator`
+A button that displays the current drawing color with no callback function
+
+---
+
+### `Uint64 saveFlashUntil`
+Sets how long the save button flashes when clicked
+
+---
+
+### `Uint64 loadFlashUntil`
+Sets how long the load button flashes when clicked
+
+---
+
 ### `guiElement draggingType`
 The type of element being dragged by the user. Initialized to `guiElement::UNKNOWN`
 
@@ -278,6 +368,7 @@ Sets information to allow elements to be dragged by the user. Retrieves the sele
 
 ### `void endClickAndDrag()`
 Used to terminate the dragging of an element when the user releases the mouse button. Creates a new element in the root layout using `draggingType` and `draggingElementParameters`
+- If the newly created element falls within the bounds of the toolbar, `cancelMove()` is called and the original element is recreated
 - Resets `draggingElement` to `nullptr`
 - Resets `draggingType` to `guiElement::UNKNOWN`
 
@@ -360,6 +451,13 @@ Gets the element that is currently selected by the user
 
 ### `void paste()`
 Checks if an element is stored in `clipboard`, then creates a new element shifted slightly using the stored struct. The new element is added to the drawing space
+
+---
+
+### `bool changeColor(ivec3 colorIncrement)`
+Attempts to change the color of an element
+- Returns false if no element is selected, indicating that the drawing color should be changed instead
+- Calls `modifyColor()` on valid element types to shift the color of the selected element
 
 ---
 
@@ -1150,19 +1248,37 @@ enum class guiElement { LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, TEXTBOX, ELL
 
 ---
 
+## Macros
+
+### `PADDING`
+Defines the amount of padding around an element to increase to clickable area to select the element
+
+---
+
 ## Data Members
 
 ### `Screen* screen`  
 Pointer to the `Screen` object where the element will be drawn.
 
+---
+
 ### `ivec2 parentStart`
 `ivec2` that stores the starting coordinates of the parent `GuiElement` (usually `Layout`)
+
+---
 
 ### `ivec2 parentEnd`
 `ivec2` that stores the ending coordinates of the parent `GuiElement` (usually `Layout`)
 
+---
+
 ### `std::string name`
 `string` that stores the name of the `GuiElement`
+
+---
+
+### `ivec2 minBound`
+`ivec2` that stores the minimum `x` and `y` coordinates
 
 ---
 
@@ -1277,6 +1393,16 @@ A pure virtual function. Implemented by inherited classes to return an `ElementP
 
 ### `virtual guiElement getType()`
 A pure virtual function. Implmented by inherited classes to return the `guiElement` enumeration that corresponds to their type
+
+---
+
+### `virtual void setBounds()`
+A pure virtual function. Implemented by inherited classes to calculate their bounds
+
+---
+
+### `virtual std::vector<ivec2> getBounds()`
+A pure virtual function. Implemented by inherited classes to return their bounds
 
 ---
 
@@ -1502,6 +1628,16 @@ Returns `guiElement::LAYOUT`
 
 ---
 
+### `void setBounds()`
+Calls the `getAbsolute...()` methods to generate minimum and maximum bounds and puts these values into `minBound` and `maxBound`
+
+---
+
+### `std::vector<ivec2> getBounds()`
+Returns a vector containing `minBound` and `maxBound`
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/Layout_UML.png)
 
@@ -1519,18 +1655,13 @@ Returns `guiElement::LAYOUT`
 
 ## Macros
 
-### `PIXEL_DRAW_DIST_THRESHOLD 3`
+### `PIXEL_DRAW_DIST_THRESHOLD`
 Used to define a range for drawing new points
 
 ---
 
-### `SHAPE_COMPLETION_DIST_THRESHOLD 10`
+### `SHAPE_COMPLETION_DIST_THRESHOLD`
 Used to create a range of acceptable positions where a freehand shape will be considered completed
-
----
-
-### `FREEHAND_PADDING 10`
-The amount of padding around a `Freehand` element that the user can click on to select it
 
 ---
 
@@ -1568,16 +1699,6 @@ Boolean to check if we're in Line mode or Shape mode
 
 ### `ivec3 color`
 The color for freehand drawing
-
----
-
-### `ivec2 minBound`
-The minimum calculated bound of freehand drawn pixels
-
----
-
-### `ivec2 maxBound`
-The maximum calculated bound of freehand drawn pixels
 
 ---
 
@@ -1639,7 +1760,7 @@ Returns a clone of the `Freehand` element
 
 ---
 
-### `bool Freehand::resolveEvent(Event *e)`
+### `bool resolveEvent(Event *e)`
 This method is the main driver for drawing the `Freehand` element to the screen properly.
 If the `Freehand` is finished drawing, continue to proper `ClickEvent` handling for selecting the `Freehand` element.
 Else, continue into the conditional block to handle continuing the current freehand drawing
@@ -1712,10 +1833,32 @@ Returns `guiElement::FREEHAND`
 
 ---
 
+### `bool isInside(ivec2 coordinates)`
+Cycles through all points and checks if `coordinate` is equal to the point or within a distance `PADDING` from the point
+- Returns `true` if the above is true, `false` otherwise
+
+---
+
 ### `void setPoints()`
 Pops the last element in `points`, then performs Bresenhams algorithm between the new last point and the popped point, adding all intermediate points to `points`
 
 ---
+
+### `void modifyColor(ivec3 newColor)`
+Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
+### `void setBounds()`
+Cycles through stored point attributes to retrieve the minimum and maximum `x` and `y` values, storing them in `minBound` and `maxBound`
+
+---
+
+### `std::vector<ivec2> getBounds()`
+Returns a vector containing `minBound` and `maxBound`
+
+---
+
 
 ## UML Diagram
 ![UML Diagram](images/Freehand_UML.png)
@@ -1823,7 +1966,7 @@ Returns true if all of the above are included, false if not
 ---
 
 ### `bool isPointInside(ivec2 point)`
-Checks if `point` is within the bounds of the ellipse
+Checks if `point` is within the bounds of the ellipse with the addition of the `PADDING` constant
 
 ---
 
@@ -1856,6 +1999,21 @@ Gathers all attributes into one struct, which is then returned
 
 ### `guiElement getType()`
 Returns `guiElement::ELLIPSE`
+
+---
+
+### `void modifyColor(ivec3 newColor)`
+Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
+### `void setBounds()`
+Cycles through stored point attributes to retrieve the minimum and maximum `x` and `y` values, storing them in `minBound` and `maxBound`
+
+---
+
+### `std::vector<ivec2> getBounds()`
+Returns a vector containing `minBound` and `maxBound`
 
 ---
 
@@ -2044,6 +2202,11 @@ Returns `guiElement::TEXTBOX`
 
 ---
 
+### `void modifyColor(ivec3 newColor)`
+Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/TextBox_UML.png)
 
@@ -2210,9 +2373,10 @@ Checks whether `ep.point1`, `ep.point2`, and `ep.point3` have been initialized a
 ---
 
 ### `bool isInside(ivec2 coordinates)`
-Checks whether the given coordinates are within the bounds of the triangle using `a`, `b`, and `c`
+Checks whether the given coordinates are within the bounds of the triangle (with the addition of `PADDING`) using `a`, `b`, and `c`
 - Uses the same logic as `Screen`'s `pointInTriangle()` method
   - Performs cross-product calculations based on the triangle's bounds and the passed `coordinates`
+    - Shifts coordinates based on `PADDING` to make a bigger valid area
 - Ensures the passed coordinates are within this object's parent's bounds
 
 ---
@@ -2224,6 +2388,21 @@ Gathers all attributes into one struct, which is then returned
 
 ### `guiElement getType()`
 Returns `guiElement::TRIANGLE`
+
+---
+
+### `void modifyColor(ivec3 newColor)`
+Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
+### `void setBounds()`
+Cycles through stored point attributes to retrieve the minimum and maximum `x` and `y` values, storing them in `minBound` and `maxBound`
+
+---
+
+### `std::vector<ivec2> getBounds()`
+Returns a vector containing `minBound` and `maxBound`
 
 ---
 
@@ -2390,7 +2569,7 @@ Checks whether the passed `ElementParameters` struct contains valid data to crea
 
 ### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are within the bounds of an `Arrow` object
-- Returns true if the coordinates are within the arrow, false otherwise
+- Returns true if the coordinates are within the arrow and `PADDING` constant, false otherwise
   - Combines logic from the `isInside()` methods from `Box` and `Triangle` and returns the logical OR of the the results
 - Ensures the passed coordinates are within this object's parent's bounds
 
@@ -2428,6 +2607,21 @@ Gathers all attributes into one struct, which is then returned
 
 ### `guiElement getType()`
 Returns `guiElement::ARROW`
+
+---
+
+### `void modifyColor(ivec3 newColor)`
+Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
+### `void setBounds()`
+Cycles through stored point attributes to retrieve the minimum and maximum `x` and `y` values, storing them in `minBound` and `maxBound`
+
+---
+
+### `std::vector<ivec2> getBounds()`
+Returns a vector containing `minBound` and `maxBound`
 
 ---
 
@@ -2568,7 +2762,7 @@ Checks whether `ep.point1` and `ep.point2` have been initialized and whether `ep
 ---
 
 ### `bool inBounds(const ivec2& point)`
-Checks whether the given point is within the bounds of this `Box`
+Checks whether the given point is within the bounds of this `Box` with the addition of the `PADDING` constant
 - Returns true if the point is within the bounds of the box and false otherwise
 
 ---
@@ -2587,6 +2781,21 @@ Gathers all attributes into one struct, which is then returned
 
 ### `guiElement getType()`
 Returns `guiElement::BOX`
+
+---
+
+### `void modifyColor(ivec3 newColor)`
+Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
+### `void setBounds()`
+Cycles through stored point attributes to retrieve the minimum and maximum `x` and `y` values, storing them in `minBound` and `maxBound`
+
+---
+
+### `std::vector<ivec2> getBounds()`
+Returns a vector containing `minBound` and `maxBound`
 
 ---
 
@@ -2683,17 +2892,15 @@ Returns `guiElement::BUTTON`
 
 ---
 
+### `void modifyColor(ivec3 newColor)`
+Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
 # Line
 
 ## Description
 `Line` is a class used for storing and drawing a line to a `Screen` object. It inherits from the `GuiElement` class
-
----
-
-## Macros
-
-### `LINE_PADDING 10`
-The amount of padding or grace area around all points on a line that a user can click on to select the line
 
 ---
 
@@ -2860,17 +3067,25 @@ Uses Bresenham's algorithm to calculate every point on the line between `start` 
 
 ---
 
+### `void modifyColor(ivec3 newColor)`
+Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
+### `void setBounds()`
+Cycles through stored point attributes to retrieve the minimum and maximum `x` and `y` values, storing them in `minBound` and `maxBound`
+
+---
+
+### `std::vector<ivec2> getBounds()`
+Returns a vector containing `minBound` and `maxBound`
+
+---
+
 # Point
 
 ## Description
 `Point` is a class used for storing and drawing a point to a `Screen` object. It inherits from the `GuiElement` class
-
----
-
-## Macros
-
-### `POINT_PADDING 10`
-The amount of padding or grace area around the point that the user can click on to select the point
 
 ---
 
@@ -2988,7 +3203,7 @@ Checks whether `ep.point1` has been initialized and whether `ep.color` is comple
 
 ### `bool isInside(ivec2 coordinates)`
 Checks whether the given coordinates are equal to the coordinates in the `coords` attribute
-- Returns true if the coordinates are equal or within an acceptable amount of distance (`POINT_PADDING`), false otherwise
+- Returns true if the coordinates are equal or within an acceptable amount of distance (`PADDING`), false otherwise
 - Ensures the passed coordinates are within this object's parent's bounds
 
 ---
@@ -3000,6 +3215,21 @@ Gathers all attributes into one struct, which is then returned
 
 ### `guiElement getType()`
 Returns `guiElement::POINT`
+
+---
+
+### `void modifyColor(ivec3 newColor)`
+Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
+### `void setBounds()`
+Cycles through stored point attributes to retrieve the minimum and maximum `x` and `y` values, storing them in `minBound` and `maxBound`
+
+---
+
+### `std::vector<ivec2> getBounds()`
+Returns a vector containing `minBound` and `maxBound`
 
 ---
 

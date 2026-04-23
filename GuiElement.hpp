@@ -52,8 +52,6 @@ class GuiElement {
 
 		virtual guiElement getType() = 0;
 
-		void modifyColor(ivec3 newColor);
-
 		virtual void setBounds() = 0;
 
 		virtual std::vector<ivec2> getBounds() = 0;
