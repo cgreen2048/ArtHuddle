@@ -15,6 +15,8 @@ class SoundPlayer {
         SDL_AudioSpec spec;
         std::vector<Sound> soundBank;
         std::vector<SoundState> playback;
+        bool muted = false;
+
         static void streamLoader(void* userData, SDL_AudioStream* stream, int amount, int x);
 
     public:
@@ -25,6 +27,8 @@ class SoundPlayer {
         bool playSound(std::string filePath, bool loop);
         bool stopSound(std::string filePath);
         std::vector<Sound> getSoundBank();
+        bool isMuted();
+        void toggleMute();
 };
 
 #endif

@@ -16,6 +16,9 @@ ElementParameters draggingElementParameters;
 ivec2 lastMousePos;
 ElementParameters clipboard;
 guiElement clipboardType = guiElement::UNKNOWN;
+SDL_Cursor* arrowCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
+SDL_Cursor* handCursor  = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_POINTER);
+SDL_Cursor* currentCursor = arrowCursor;
 
 // int type = 9;
 // int points = 0;
@@ -35,6 +38,7 @@ Button *freehandLineButton = nullptr;
 Button *freehandShapeButton = nullptr;
 Button *saveButton = nullptr;
 Button *loadButton = nullptr;
+Button *muteButton = nullptr;
 Button* colorIndicator = nullptr;
 
 Uint64 saveFlashUntil = 0;
@@ -221,6 +225,20 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     };
     loadButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, loadButtonParam));
     layout->addElement(loadButton);
+
+    ElementParameters muteButtonParam;
+    muteButtonParam.min = ivec2(4 * bigBW + 4 * p, bH + p);
+    muteButtonParam.max = ivec2(5 * bigBW + 4 * p, 2* bH + p);
+    muteButtonParam.color = ivec3(180, 255, 180);
+    muteButtonParam.textColor = ivec3(0, 0, 0);
+    muteButtonParam.text = soundPlayer->isMuted() ? "Unmute" : "Mute";
+    muteButtonParam.name = "muteButton";
+    muteButtonParam.callbackName = "toggleMute";
+    muteButtonParam.callback = []() {
+        soundPlayer->toggleMute();
+    };
+    muteButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, muteButtonParam));
+    layout->addElement(muteButton);
 
     ElementParameters colorIndicatorParam;
     colorIndicatorParam.min = ivec2(3 * bigBW + 3 * p, bH + p);

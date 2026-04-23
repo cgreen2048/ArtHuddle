@@ -71,6 +71,9 @@ extern ElementParameters draggingElementParameters;
 extern ivec2 lastMousePos;
 extern ElementParameters clipboard;
 extern guiElement clipboardType;
+extern SDL_Cursor* arrowCursor;
+extern SDL_Cursor* handCursor;
+extern SDL_Cursor* currentCursor;
 
 
 void createWindow();
