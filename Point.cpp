@@ -6,6 +6,7 @@ Point::Point() : coords({0, 0}), color({0, 0, 0}) {}
 Point::Point(ivec2 coords, ivec3 color) {
     this->coords = coords; 
     this->color = color;
+    this->setBounds();
 }
 
 Point::Point(ElementParameters ep) {
@@ -17,6 +18,7 @@ Point::Point(ElementParameters ep) {
     this->coordsType = ep.coordsType;
     this->colorType = ep.colorType;
     this->name = ep.name;
+    this->setBounds();
 }
 
 Point::Point(const Point& cp) : Point() {
@@ -25,6 +27,7 @@ Point::Point(const Point& cp) : Point() {
     this->coordsType = cp.coordsType;
     this->colorType = cp.colorType;
     this->name = cp.name;
+    this->setBounds();
 }
 
 Point& Point::operator=(const Point& cp) {
@@ -33,6 +36,7 @@ Point& Point::operator=(const Point& cp) {
     this->coordsType = cp.coordsType;
     this->colorType = cp.colorType;
     this->name = cp.name;
+    this->setBounds();
     return *this;
 }
 
@@ -60,6 +64,7 @@ GuiElement* Point::clone() const {
 void Point::setCoords(const ivec2& v, TagType t){
     this->coords = v;
     this->coordsType = t;
+    this->setBounds();
 }
 
 void Point::setColor(const ivec3& v, TagType t){
@@ -110,7 +115,9 @@ bool Point::isInside(ivec2 coordinates) {
     if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
         return false;
     }
-    if (this->coords == coordinates) {
+    int dx = coordinates.x - coords.x;
+    int dy = coordinates.y - coords.y;
+    if ((dx * dx + dy * dy) <= (PADDING * PADDING)) {  
         return true;
     }
     return false;
@@ -128,4 +135,35 @@ ElementParameters Point::getParameters() {
 
 guiElement Point::getType() {
     return guiElement::POINT;
+}
+
+void Point::modifyColor(ivec3 newColor) {
+    this->color += newColor;
+    if (color.x < 0) {
+        color.x = 0;
+    }
+    else if (color.x > 255) {
+        color.x = 255;
+    }
+    if (color.y < 0) {
+        color.y = 0;
+    }
+    else if (color.y > 255) {
+        color.y = 255;
+    }
+    if (color.z < 0) {
+        color.z = 0;
+    }
+    else if (color.z > 255) {
+        color.z = 255;
+    }
+}
+
+void Point::setBounds() {
+    this->minBound = this->coords;
+    this->maxBound = this->coords;
+}
+
+std::vector<ivec2> Point::getBounds() {
+    return {this->minBound, this->maxBound};
 }

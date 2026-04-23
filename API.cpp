@@ -6,6 +6,9 @@ Layout* initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& 
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         exit(1);
     }
+    #ifdef __APPLE__
+        SDL_SetHint(SDL_HINT_MAC_PRESS_AND_HOLD, "0");
+    #endif
     createWindow();
     createScreen();
     Layout* layout = createRootLayout(type, points, point1, point2, point3);
@@ -277,10 +280,17 @@ void setClickAndDrag(ivec2 mouse) {
 void endClickAndDrag() {
     if (draggingType != guiElement::UNKNOWN) {
         deleteTempShape();
+        ivec2 toolBarBounds = toolBarLayout->getBounds()[1];
         switch (draggingType) {
             case guiElement::POINT: {
                 Point* element = dynamic_cast<Point*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -289,6 +299,12 @@ void endClickAndDrag() {
             case guiElement::LINE: {
                 Line* element = dynamic_cast<Line*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -297,6 +313,12 @@ void endClickAndDrag() {
             case guiElement::BOX: {
                 Box* element = dynamic_cast<Box*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -305,6 +327,12 @@ void endClickAndDrag() {
             case guiElement::TRIANGLE: {
                 Triangle* element = dynamic_cast<Triangle*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -313,6 +341,12 @@ void endClickAndDrag() {
             case guiElement::ELLIPSE: {
                 Ellipse* element = dynamic_cast<Ellipse*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -321,6 +355,12 @@ void endClickAndDrag() {
             case guiElement::ARROW: {
                 Arrow* element = dynamic_cast<Arrow*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -329,6 +369,12 @@ void endClickAndDrag() {
             case guiElement::TEXTBOX: {
                 TextBox* element = dynamic_cast<TextBox*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -337,6 +383,12 @@ void endClickAndDrag() {
             case guiElement::FREEHAND: {
                 Freehand* element = dynamic_cast<Freehand*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -503,7 +555,8 @@ void update(int& type) {
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
-    // tempLayout->draw(screen);
+    // // tempLayout->draw(screen);
+    boundingLayout->draw(screen);
     // screen->blitTo(SDL_GetWindowSurface(window));
     // SDL_UpdateWindowSurface(window);
 
@@ -524,3 +577,159 @@ void closeAll() {
     SDL_Quit();
 }
 
+void copy() {
+    GuiElement* chosen = Selected::getInstance().getSelectedElement();
+    if (!chosen) {
+        clipboard = ElementParameters();
+        clipboardType = guiElement::UNKNOWN;
+        return;
+    }
+    clipboard = chosen->getParameters();
+    clipboard.name = "";
+    clipboardType = chosen->getType();
+}
+
+void paste() {
+    if (clipboardType != guiElement::UNKNOWN) {
+        // float x, y;
+        // SDL_GetMouseState(&x, &y);
+        // ivec2 mouseCoords = ivec2(static_cast<int>(x), static_cast<int>(y));
+        // ivec2 delta = mouseCoords - lastMousePos;
+        // delta.x += 20;
+        // delta.y += 20;
+        ivec2 delta = ivec2(20, 20);
+        ElementParameters newObj = clipboard;
+        newObj.coords += delta;
+        newObj.start += delta;
+        newObj.end += delta;
+        newObj.min += delta;
+        newObj.max += delta;
+        newObj.pointA += delta;
+        newObj.pointB += delta;
+        newObj.pointC += delta;
+        newObj.center += delta;
+        for (int i = 0; i < newObj.points.size(); ++i) {
+            newObj.points[i] += delta;
+        }
+
+        switch (clipboardType) {
+            case guiElement::POINT: {
+                Point* element = dynamic_cast<Point*>(factory(clipboardType, newObj));
+                if (element) {
+                    canvasLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::LINE: {
+                Line* element = dynamic_cast<Line*>(factory(clipboardType, newObj));
+                if (element) {
+                    canvasLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::BOX: {
+                Box* element = dynamic_cast<Box*>(factory(clipboardType, newObj));
+                if (element) {
+                    canvasLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::TRIANGLE: {
+                Triangle* element = dynamic_cast<Triangle*>(factory(clipboardType, newObj));
+                if (element) {
+                    canvasLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::ELLIPSE: {
+                Ellipse* element = dynamic_cast<Ellipse*>(factory(clipboardType, newObj));
+                if (element) {
+                    canvasLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::ARROW: {
+                Arrow* element = dynamic_cast<Arrow*>(factory(clipboardType, newObj));
+                if (element) {
+                    canvasLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::TEXTBOX: {
+                TextBox* element = dynamic_cast<TextBox*>(factory(clipboardType, newObj));
+                if (element) {
+                    canvasLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            case guiElement::FREEHAND: {
+                Freehand* element = dynamic_cast<Freehand*>(factory(clipboardType, newObj));
+                if (element) {
+                    canvasLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+}
+
+bool changeColor(ivec3 colorIncrement) {
+    GuiElement* chosen = Selected::getInstance().getSelectedElement();
+    if (!chosen) {
+        colorIndicator->modifyColor(colorIncrement);
+        return false;
+    }
+    switch(chosen->getType()) {
+        case guiElement::POINT: {
+            dynamic_cast<Point*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::FREEHAND: {
+            dynamic_cast<Freehand*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::LINE: {
+            dynamic_cast<Line*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::TEXTBOX: {
+            dynamic_cast<TextBox*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::BUTTON: {
+            dynamic_cast<Button*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::BOX: {
+            dynamic_cast<Box*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::TRIANGLE: {
+            dynamic_cast<Triangle*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::ELLIPSE: {
+            dynamic_cast<Ellipse*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::ARROW: {
+            dynamic_cast<Arrow*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        default: {
+            return false;
+        }
+    }
+    return true;
+}

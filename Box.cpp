@@ -12,6 +12,7 @@ Box::Box(ivec2 min, ivec2 max, ivec3 color) {
     this->min = min;
     this->max = max;
     this->color = color;
+    this->setBounds();
 }
 
 Box::Box(ElementParameters ep) {
@@ -25,6 +26,7 @@ Box::Box(ElementParameters ep) {
     this->maxType = ep.maxType;
     this->colorType = ep.colorType;
     this->name = ep.name;
+    this->setBounds();
 }
 
 Box::Box(const Box& cp) : Box() {
@@ -35,6 +37,7 @@ Box::Box(const Box& cp) : Box() {
     this->maxType = cp.maxType;
     this->colorType = cp.colorType;
     this->name = cp.name;
+    this->setBounds();
 }
 
 Box& Box::operator=(const Box& cp) {
@@ -45,6 +48,7 @@ Box& Box::operator=(const Box& cp) {
     this->maxType = cp.maxType;
     this->colorType = cp.colorType;
     this->name = cp.name;
+    this->setBounds();
     return *this;
 }
 
@@ -72,11 +76,13 @@ GuiElement* Box::clone() const {
 void Box::setMin(const ivec2& v, TagType t){
     this->min = v;
     this->minType = t;
+    this->setBounds();
 }
 
 void Box::setMax(const ivec2& v, TagType t){
     this->max = v;
     this->maxType = t;
+    this->setBounds();
 }
 
 void Box::setColor(const ivec3& v, TagType t){
@@ -125,6 +131,14 @@ bool Box::validateAndNormalize(ElementParameters& ep) {
     if ((ep.max.x == std::numeric_limits<int>::lowest()) || (ep.max.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
+    ivec2 newMin;
+    ivec2 newMax;
+    newMin.x = std::min(ep.min.x, ep.max.x);
+    newMin.y = std::min(ep.min.y, ep.max.y);
+    newMax.x = std::max(ep.min.x, ep.max.x);
+    newMax.y = std::max(ep.min.y, ep.max.y);
+    ep.min = newMin;
+    ep.max = newMax;
     if (ep.color.x == std::numeric_limits<int>::lowest()) {
         ep.color.x = 125;
     }
@@ -139,7 +153,7 @@ bool Box::validateAndNormalize(ElementParameters& ep) {
 }
 
 bool Box::inBounds(const ivec2& point) const {
-    if ((point.x < min.x) || (point.x > max.x) || (point.y < min.y) || (point.y > max.y)) {
+    if ((point.x < min.x - PADDING) || (point.x > max.x + PADDING) || (point.y < min.y - PADDING) || (point.y > max.y + PADDING)) {
         return false;
     }
     return true;
@@ -166,4 +180,37 @@ ElementParameters Box::getParameters() {
 
 guiElement Box::getType() {
     return guiElement::BOX;
+}
+
+void Box::modifyColor(ivec3 newColor) {
+    this->color += newColor;
+    if (color.x < 0) {
+        color.x = 0;
+    }
+    else if (color.x > 255) {
+        color.x = 255;
+    }
+    if (color.y < 0) {
+        color.y = 0;
+    }
+    else if (color.y > 255) {
+        color.y = 255;
+    }
+    if (color.z < 0) {
+        color.z = 0;
+    }
+    else if (color.z > 255) {
+        color.z = 255;
+    }
+}
+
+void Box::setBounds() {
+    this->minBound.x = std::min(this->min.x, this->max.x);
+    this->minBound.y = std::min(this->min.y, this->max.y);
+    this->maxBound.x = std::max(this->min.x, this->max.x);
+    this->maxBound.y = std::max(this->min.y, this->max.y);
+}
+
+std::vector<ivec2> Box::getBounds() {
+    return {this->minBound, this->maxBound};
 }

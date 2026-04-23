@@ -60,8 +60,8 @@ struct ElementParameters {
     ivec2 lastDrawnPoint = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     bool finished = false;
     bool isFreehandShape = false;
-    ivec2 minBound;
-    ivec2 maxBound;
+    ivec2 minBound = ivec2(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
+    ivec2 maxBound = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 };
 
 #endif

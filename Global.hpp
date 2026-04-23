@@ -40,8 +40,8 @@ extern Layout* rootLayout;
 extern Layout* toolBarLayout;
 extern Layout* tempLayout;
 extern Layout* canvasLayout;
+extern Layout* boundingLayout;
 extern SDL_Renderer* renderer;
-
 
 
 const int p = 10;
@@ -61,6 +61,7 @@ extern Button* freehandLineButton;
 extern Button* freehandShapeButton;
 extern Button* saveButton;
 extern Button* loadButton;
+extern Button* colorIndicator;
 extern Uint64 saveFlashUntil;
 extern Uint64 loadFlashUntil;
 extern GuiElement* draggingElement;
@@ -68,6 +69,8 @@ extern guiElement draggingType;
 extern ElementParameters originalElementParameters;
 extern ElementParameters draggingElementParameters;
 extern ivec2 lastMousePos;
+extern ElementParameters clipboard;
+extern guiElement clipboardType;
 
 
 void createWindow();

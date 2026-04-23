@@ -2,11 +2,11 @@
 #include "XmlWriteHelpers.hpp"
 #include <iostream>
 
-TextBox::TextBox() : Box(), textColor({0,0,0}), text(""), active(false) {}
+TextBox::TextBox() : Box(), text(""), textColor({0,0,0}), active(false) {}
 
-TextBox::TextBox(const TextBox& cp) : Box(cp.min, cp.max, cp.color), textColor(cp.textColor), text(cp.text), active(cp.active) {}
+TextBox::TextBox(const TextBox& cp) : Box(cp.min, cp.max, cp.color), text(cp.text), textColor(cp.textColor), active(cp.active) {}
 
-TextBox::TextBox(ivec2 min, ivec2 max, ivec3 color, ivec3 textColor, const std::string& text): Box(min, max, color), textColor(textColor), text(text), active(false) {}
+TextBox::TextBox(ivec2 min, ivec2 max, ivec3 color, ivec3 textColor, const std::string& text): Box(min, max, color), text(text), textColor(textColor), active(false) {}
 
 
 bool TextBox::operator==(TextBox rhs) {
@@ -164,6 +164,14 @@ bool TextBox::validateAndNormalize(ElementParameters &ep) {
     if (ep.textColor.z == std::numeric_limits<int>::lowest()) {
         ep.textColor.z = 125;
     }
+    ivec2 newMin;
+    ivec2 newMax;
+    newMin.x = std::min(ep.min.x, ep.max.x);
+    newMin.y = std::min(ep.min.y, ep.max.y);
+    newMax.x = std::max(ep.min.x, ep.max.x);
+    newMax.y = std::max(ep.min.y, ep.max.y);
+    ep.min = newMin;
+    ep.max = newMax;
 
     return true;
 }
@@ -185,4 +193,26 @@ ElementParameters TextBox::getParameters() {
 
 guiElement TextBox::getType() {
     return guiElement::TEXTBOX;
+}
+
+void TextBox::modifyColor(ivec3 newColor) {
+    this->color += newColor;
+    if (color.x < 0) {
+        color.x = 0;
+    }
+    else if (color.x > 255) {
+        color.x = 255;
+    }
+    if (color.y < 0) {
+        color.y = 0;
+    }
+    else if (color.y > 255) {
+        color.y = 255;
+    }
+    if (color.z < 0) {
+        color.z = 0;
+    }
+    else if (color.z > 255) {
+        color.z = 255;
+    }
 }

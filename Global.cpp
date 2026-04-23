@@ -7,12 +7,15 @@ Layout *rootLayout = nullptr;
 Layout *toolBarLayout = nullptr;
 Layout *canvasLayout = nullptr;
 Layout *tempLayout = nullptr;
+Layout* boundingLayout = nullptr;
 SDL_Renderer *renderer = nullptr;
 GuiElement* draggingElement = nullptr;
 guiElement draggingType = guiElement::UNKNOWN;
 ElementParameters originalElementParameters;
 ElementParameters draggingElementParameters;
 ivec2 lastMousePos;
+ElementParameters clipboard;
+guiElement clipboardType = guiElement::UNKNOWN;
 
 // int type = 9;
 // int points = 0;
@@ -32,6 +35,7 @@ Button *freehandLineButton = nullptr;
 Button *freehandShapeButton = nullptr;
 Button *saveButton = nullptr;
 Button *loadButton = nullptr;
+Button* colorIndicator = nullptr;
 
 Uint64 saveFlashUntil = 0;
 Uint64 loadFlashUntil = 0;
@@ -196,7 +200,7 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     saveButtonParam.text = "Save";
     saveButtonParam.name = "saveButton";
     saveButtonParam.callbackName = "saveCanvas";
-    saveButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
+    saveButtonParam.callback = []() {
         saveCanvas("drawing.xml");
         saveFlashUntil = SDL_GetTicks() + 700; // flash for 300 ms
     };
@@ -211,14 +215,24 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     loadButtonParam.text = "Load";
     loadButtonParam.name = "loadButton";
     loadButtonParam.callbackName = "loadCanvas";
-    loadButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
+    loadButtonParam.callback = [&points, &point1, &point2, &point3]() {
         loadCanvas("drawing.xml", points, point1, point2, point3);
         loadFlashUntil = SDL_GetTicks() + 700; // flash for 300 ms
     };
     loadButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, loadButtonParam));
     layout->addElement(loadButton);
 
-
+    ElementParameters colorIndicatorParam;
+    colorIndicatorParam.min = ivec2(3 * bigBW + 3 * p, bH + p);
+    colorIndicatorParam.max = ivec2(4 * bigBW + 3 * p, bH + p + bH);
+    colorIndicatorParam.color = ivec3(125, 125, 125);
+    colorIndicatorParam.textColor = ivec3(0, 0, 0);
+    colorIndicatorParam.text = "Color";
+    colorIndicatorParam.name = "colorIndicator";
+    colorIndicatorParam.callbackName = "colorIndicator";
+    colorIndicatorParam.callback = []() {};
+    colorIndicator = dynamic_cast<Button *>(factory(guiElement::BUTTON, colorIndicatorParam));
+    layout->addElement(colorIndicator);
 }
 
 void createWindow() {
@@ -263,7 +277,7 @@ Layout *createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, i
 
     ElementParameters toolBar;
     toolBar.layoutStart = vec2(0.0, 0.0);
-    toolBar.layoutEnd = vec2(1.0, 1.0);
+    toolBar.layoutEnd = vec2(1.0, 0.2);
     toolBar.parentStart = ivec2(0, 0);
     toolBar.parentEnd = ivec2(X, Y);
     toolBar.active = true;
@@ -290,9 +304,9 @@ Layout *createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, i
     boundingLayoutParam.parentEnd = ivec2(X, Y);
     boundingLayoutParam.active = true;
     boundingLayoutParam.name = "boundingLayout";
-    Layout *boundingLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, boundingLayoutParam));
+    boundingLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, boundingLayoutParam));
     selectedSingleton.setSelectedLayout(boundingLayout);
-    rootLayout->addElement(boundingLayout);
+    // rootLayout->addElement(boundingLayout);
 
     return rootLayout;
 }

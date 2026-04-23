@@ -46,6 +46,8 @@ class Layout : public GuiElement {
         bool validateAndNormalize(ElementParameters& ep);
         ElementParameters getParameters();
         guiElement getType();
+        void setBounds();
+		std::vector<ivec2> getBounds();
 };
 
 #endif

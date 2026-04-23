@@ -34,6 +34,9 @@ class Box : public GuiElement {
 		bool isInside(ivec2 coordinates);
 		ElementParameters getParameters();
 		guiElement getType();
+		void modifyColor(ivec3 newColor);
+		void setBounds();
+		std::vector<ivec2> getBounds();
 };
 
 #endif

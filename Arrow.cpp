@@ -10,6 +10,7 @@ Arrow::Arrow(ivec2 min, ivec2 max, ivec2 a, ivec2 b, ivec2 c, ivec3 color) {
     this->pointB = b;
     this->pointC = c;
     this->color = color;
+    this->setBounds();
 }
 
 Arrow::Arrow(ElementParameters ep) {
@@ -29,6 +30,7 @@ Arrow::Arrow(ElementParameters ep) {
     this->pointCType = ep.pointCType;
     this->colorType = ep.colorType;
     this->name = ep.name;
+    this->setBounds();
 }
 
 Arrow::Arrow(const Arrow& cp) {
@@ -45,6 +47,7 @@ Arrow::Arrow(const Arrow& cp) {
     this->pointCType = cp.pointCType;
     this->colorType = cp.colorType;
     this->name = cp.name;
+    this->setBounds();
 }
 
 Arrow& Arrow::operator=(const Arrow& cp) {
@@ -61,6 +64,7 @@ Arrow& Arrow::operator=(const Arrow& cp) {
     this->pointCType = cp.pointCType;
     this->colorType = cp.colorType;
     this->name = cp.name;
+    this->setBounds();
     return *this;
 }
 
@@ -145,6 +149,14 @@ bool Arrow::validateAndNormalize(ElementParameters& ep) {
     if ((ep.pointC.x == std::numeric_limits<int>::lowest()) || (ep.pointC.y == std::numeric_limits<int>::lowest())) {
         return false;
     }
+    ivec2 newMin;
+    ivec2 newMax;
+    newMin.x = std::min(ep.min.x, ep.max.x);
+    newMin.y = std::min(ep.min.y, ep.max.y);
+    newMax.x = std::max(ep.min.x, ep.max.x);
+    newMax.y = std::max(ep.min.y, ep.max.y);
+    ep.min = newMin;
+    ep.max = newMax;
     if (ep.color.x == std::numeric_limits<int>::lowest()) {
         ep.color.x = 125;
     }
@@ -165,23 +177,33 @@ bool Arrow::isInside(ivec2 coordinates) {
 
     bool insideBox = true;
     bool insideTriangle = true;
-    if ((coordinates.x < min.x) || (coordinates.x > max.x) || (coordinates.y < min.y) || (coordinates.y > max.y)) {
+    if ((coordinates.x < min.x - PADDING) || (coordinates.x > max.x + PADDING) || (coordinates.y < min.y - PADDING) || (coordinates.y > max.y + PADDING)) {
         insideBox = false;
     }
 
-    ivec2 ap = coordinates - this->pointA;
-    ivec2 ab = this->pointB - this->pointA;
-    ivec2 bp = coordinates - this->pointB;
-    ivec2 bc = this->pointC - this->pointB;
-    ivec2 cp = coordinates - this->pointC;
-    ivec2 ca = this->pointA - this->pointC;
+    vec2 center = vec2((float)(this->pointA.x + this->pointB.x + this->pointC.x) / 3, (float)(this->pointA.y + this->pointB.y + this->pointC.y) / 3.0f);
 
-    int crossApAb = ap.cross(ab);
-    int crossBpBc = bp.cross(bc);
-    int crossCpCa = cp.cross(ca);
+    vec2 dirA = vec2(this->pointA.x, this->pointA.y) - center;
+    vec2 dirB = vec2(this->pointB.x, this->pointB.y) - center;
+    vec2 dirC = vec2(this->pointC.x, this->pointC.y) - center;
 
-    bool hasPositive = crossApAb > 0 || crossBpBc > 0 || crossCpCa > 0;
-    bool hasNegative = crossApAb < 0 || crossBpBc < 0 || crossCpCa < 0;
+    vec2 newA = vec2(this->pointA.x, this->pointA.y) + dirA.unit() * (float)PADDING;
+    vec2 newB = vec2(this->pointB.x, this->pointB.y) + dirB.unit() * (float)PADDING;
+    vec2 newC = vec2(this->pointC.x, this->pointC.y) + dirC.unit() * (float)PADDING;
+    
+    vec2 ap = vec2(coordinates.x, coordinates.y) - newA;
+    vec2 ab = newB - newA;
+    vec2 bp = vec2(coordinates.x, coordinates.y) - newB;
+    vec2 bc = newC - newB;
+    vec2 cp = vec2(coordinates.x, coordinates.y) - newC;
+    vec2 ca = newA - newC;
+
+    float crossApAb = ap.cross(ab);
+    float crossBpBc = bp.cross(bc);
+    float crossCpCa = cp.cross(ca);
+
+    bool hasPositive = crossApAb > 0.0f || crossBpBc > 0.0f || crossCpCa > 0.0f;
+    bool hasNegative = crossApAb < 0.0f || crossBpBc < 0.0f || crossCpCa < 0.0f;
 
     insideTriangle = !(hasPositive && hasNegative);
 
@@ -228,4 +250,37 @@ ElementParameters Arrow::getParameters() {
 
 guiElement Arrow::getType() {
     return guiElement::ARROW;
+}
+
+void Arrow::modifyColor(ivec3 newColor) {
+    this->color += newColor;
+    if (color.x < 0) {
+        color.x = 0;
+    }
+    else if (color.x > 255) {
+        color.x = 255;
+    }
+    if (color.y < 0) {
+        color.y = 0;
+    }
+    else if (color.y > 255) {
+        color.y = 255;
+    }
+    if (color.z < 0) {
+        color.z = 0;
+    }
+    else if (color.z > 255) {
+        color.z = 255;
+    }
+}
+
+void Arrow::setBounds() {
+    this->minBound.x = std::min(this->min.x, std::min(this->max.x, std::min(this->pointA.x, std::min(this->pointB.x, this->pointC.x))));
+    this->minBound.y = std::min(this->min.y, std::min(this->max.y, std::min(this->pointA.y, std::min(this->pointB.y, this->pointC.y))));
+    this->maxBound.x = std::max(this->min.x, std::max(this->max.x, std::max(this->pointA.x, std::max(this->pointB.x, this->pointC.x))));
+    this->maxBound.y = std::max(this->min.y, std::max(this->max.y, std::max(this->pointA.y, std::max(this->pointB.y, this->pointC.y))));
+}
+
+std::vector<ivec2> Arrow::getBounds() {
+    return {this->minBound, this->maxBound};
 }

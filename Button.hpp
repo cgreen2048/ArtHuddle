@@ -36,6 +36,7 @@ class Button : public Box {
         const std::string& getCallbackName() const;
         ElementParameters getParameters();
         guiElement getType();
+        void modifyColor(ivec3 newColor);
 };
 
 #endif

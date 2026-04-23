@@ -7,6 +7,7 @@
 
 #define PIXEL_DRAW_DIST_THRESHOLD 3
 #define SHAPE_COMPLETION_DIST_THRESHOLD 10
+// #define FREEHAND_PADDING 10
 
 class Freehand : public GuiElement {
     private:
@@ -16,8 +17,8 @@ class Freehand : public GuiElement {
         bool finished = false;
         bool isFreehandShape = false;
         ivec3 color;
-        ivec2 minBound;
-        ivec2 maxBound;
+        // ivec2 minBound;
+        // ivec2 maxBound;
         bool hasBounds = false;
     public:
         Freehand();
@@ -40,6 +41,10 @@ class Freehand : public GuiElement {
         bool hasDrawBounds() const;
         ElementParameters getParameters();
         guiElement getType();
+        void setPoints();
+        void modifyColor(ivec3 newColor);
+        void setBounds();
+		std::vector<ivec2> getBounds();
 };
 
 #endif

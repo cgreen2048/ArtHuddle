@@ -8,6 +8,7 @@ Triangle::Triangle(ivec2 a, ivec2 b, ivec2 c, ivec3 color) {
     this->b = b;
     this->c = c;
     this->color = color;
+    this->setBounds();
 }
 
 Triangle::Triangle(ElementParameters ep) {
@@ -22,6 +23,7 @@ Triangle::Triangle(ElementParameters ep) {
     this->bType = ep.pointBType;
     this->cType = ep.pointCType;
     this->colorType = ep.colorType;
+    this->setBounds();
     this->name = ep.name;
 }
 
@@ -36,6 +38,7 @@ Triangle::Triangle(const Triangle& cp) : Triangle() {
     this->bType = cp.bType;
     this->cType = cp.cType;
     this->colorType = cp.colorType;
+    this->setBounds();
     this->name = cp.name;
 }
 
@@ -49,6 +52,7 @@ Triangle& Triangle::operator=(const Triangle& cp) {
     this->cType = cp.cType;
     this->colorType = cp.colorType;
     this->name = cp.name;
+    this->setBounds();
     return *this;
 }
 
@@ -74,16 +78,19 @@ GuiElement* Triangle::clone() const {
 void Triangle::setA(const ivec2& v, TagType t){
     this->a = v;
     this->aType = t;
+    this->setBounds();
 }
 
 void Triangle::setB(const ivec2& v, TagType t){
     this->b = v;
     this->bType = t;
+    this->setBounds();
 }
 
 void Triangle::setC(const ivec2& v, TagType t){
     this->c = v;
     this->cType = t;
+    this->setBounds();
 }
 
 void Triangle::setColor(const ivec3& v, TagType t){
@@ -162,19 +169,29 @@ bool Triangle::isInside(ivec2 coordinates) {
     if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
         return false;
     }
-    ivec2 ap = coordinates - this->a;
-    ivec2 ab = this->b - this->a;
-    ivec2 bp = coordinates - this->b;
-    ivec2 bc = this->c - this->b;
-    ivec2 cp = coordinates - this->c;
-    ivec2 ca = this->a - this->c;
+    vec2 center = vec2((float)(this->a.x + this->b.x + this->c.x) / 3, (float)(this->a.y + this->b.y + this->c.y) / 3.0f);
 
-    int crossApAb = ap.cross(ab);
-    int crossBpBc = bp.cross(bc);
-    int crossCpCa = cp.cross(ca);
+    vec2 dirA = vec2(this->a.x, this->a.y) - center;
+    vec2 dirB = vec2(this->b.x, this->b.y) - center;
+    vec2 dirC = vec2(this->c.x, this->c.y) - center;
 
-    bool hasPositive = crossApAb > 0 || crossBpBc > 0 || crossCpCa > 0;
-    bool hasNegative = crossApAb < 0 || crossBpBc < 0 || crossCpCa < 0;
+    vec2 newA = vec2(this->a.x, this->a.y) + dirA.unit() * (float)PADDING;
+    vec2 newB = vec2(this->b.x, this->b.y) + dirB.unit() * (float)PADDING;
+    vec2 newC = vec2(this->c.x, this->c.y) + dirC.unit() * (float)PADDING;
+    
+    vec2 ap = vec2(coordinates.x, coordinates.y) - newA;
+    vec2 ab = newB - newA;
+    vec2 bp = vec2(coordinates.x, coordinates.y) - newB;
+    vec2 bc = newC - newB;
+    vec2 cp = vec2(coordinates.x, coordinates.y) - newC;
+    vec2 ca = newA - newC;
+
+    float crossApAb = ap.cross(ab);
+    float crossBpBc = bp.cross(bc);
+    float crossCpCa = cp.cross(ca);
+
+    bool hasPositive = crossApAb > 0.0f || crossBpBc > 0.0f || crossCpCa > 0.0f;
+    bool hasNegative = crossApAb < 0.0f || crossBpBc < 0.0f || crossCpCa < 0.0f;
 
     return !(hasPositive && hasNegative);
 }
@@ -195,4 +212,37 @@ ElementParameters Triangle::getParameters() {
 
 guiElement Triangle::getType() {
     return guiElement::TRIANGLE;
+}
+
+void Triangle::modifyColor(ivec3 newColor) {
+    this->color += newColor;
+    if (color.x < 0) {
+        color.x = 0;
+    }
+    else if (color.x > 255) {
+        color.x = 255;
+    }
+    if (color.y < 0) {
+        color.y = 0;
+    }
+    else if (color.y > 255) {
+        color.y = 255;
+    }
+    if (color.z < 0) {
+        color.z = 0;
+    }
+    else if (color.z > 255) {
+        color.z = 255;
+    }
+}
+
+void Triangle::setBounds() {
+    this->minBound.x = std::min(this->a.x, std::min(this->b.x, this->c.x));
+    this->minBound.y = std::min(this->a.y, std::min(this->b.y, this->c.y));
+    this->maxBound.x = std::max(this->a.x, std::max(this->b.x, this->c.x));
+    this->maxBound.y = std::max(this->a.y, std::max(this->b.y, this->c.y));
+}
+
+std::vector<ivec2> Triangle::getBounds() {
+    return {this->minBound, this->maxBound};
 }
