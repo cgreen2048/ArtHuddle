@@ -369,6 +369,9 @@ void Freehand::modifyColor(ivec3 newColor) {
 }
 
 void Freehand::setBounds() {
+    if (points.empty()) {
+        return;
+    }
     minBound = points[0];
     maxBound = points[0];
     for (auto point : points) {
