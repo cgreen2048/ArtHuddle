@@ -158,6 +158,14 @@ bool Layout::resolveEvent(Event* e) {
                 return true;
             }
         }
+        // for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
+        //     GuiElement* object = *ritr;
+        //     if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
+        //         if (object->resolveEvent(e)) {
+        //             return true;
+        //         }
+        //     }
+        // }
         
         TextBox* textbox = dynamic_cast<TextBox*>(Selected::getInstance().getSelectedElement());
         if (textbox) {
@@ -193,6 +201,8 @@ GuiElement* Layout::getElementAt(const ivec2& point) {
             if (childHit != nullptr) {
                 return childHit;
             }
+
+            continue;
         }
 
         return element;

@@ -11,8 +11,8 @@ Layout* initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& 
     #endif
     createWindow();
     createScreen();
-    Layout* layout = createRootLayout(type, points, point1, point2, point3);
     setEventSystem();
+    Layout* layout = createRootLayout(type, points, point1, point2, point3);
     SDL_StartTextInput(window);
     return layout;
 }
