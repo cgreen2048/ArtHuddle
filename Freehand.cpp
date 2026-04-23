@@ -12,10 +12,12 @@
 
 Freehand::Freehand() : points{}, lastDrawnPoint{0,0}, color{0,0,0} {
     setName(generateElementName());
+    this->setBounds();
 }
 
 Freehand::Freehand(ivec3 color, bool isFreehandShape) : points{}, lastDrawnPoint{0,0}, isFreehandShape{isFreehandShape}, color{color} {
     setName(generateElementName());
+    this->setBounds();
 }
 
 Freehand::Freehand(const Freehand& cp) : Freehand() {
@@ -26,6 +28,7 @@ Freehand::Freehand(const Freehand& cp) : Freehand() {
     this->color = cp.color;
     this->isFreehandShape = cp.isFreehandShape;
     this->name = cp.name;
+    this->setBounds();
 }
 
 Freehand::Freehand(ElementParameters ep) {
@@ -41,6 +44,7 @@ Freehand::Freehand(ElementParameters ep) {
     this->name = ep.name;
     this->minBound = ep.minBound;
     this->maxBound = ep.maxBound;
+    this->setBounds();
 }
 
 void Freehand::draw(Screen *screen) {
@@ -242,7 +246,7 @@ bool Freehand::isInside(ivec2 coordinates) {
         int dy = coordinates.y - point.y;
         center.x += point.x;
         center.y += point.y;
-        if ((dx * dx + dy * dy) <= (FREEHAND_PADDING * FREEHAND_PADDING)) {
+        if ((dx * dx + dy * dy) <= (PADDING * PADDING)) {
             return true;
         }
     }
@@ -340,4 +344,41 @@ void Freehand::setPoints() {
             y0 += sy;
         }
     }
+}
+
+void Freehand::modifyColor(ivec3 newColor) {
+    this->color += newColor;
+    if (color.x < 0) {
+        color.x = 0;
+    }
+    else if (color.x > 255) {
+        color.x = 255;
+    }
+    if (color.y < 0) {
+        color.y = 0;
+    }
+    else if (color.y > 255) {
+        color.y = 255;
+    }
+    if (color.z < 0) {
+        color.z = 0;
+    }
+    else if (color.z > 255) {
+        color.z = 255;
+    }
+}
+
+void Freehand::setBounds() {
+    minBound = points[0];
+    maxBound = points[0];
+    for (auto point : points) {
+        minBound.x = std::min(minBound.x, point.x);
+        minBound.y = std::min(minBound.y, point.y);
+        maxBound.x = std::max(maxBound.x, point.x);
+        maxBound.y = std::max(maxBound.y, point.y);
+    }
+}
+
+std::vector<ivec2> Freehand::getBounds() {
+    return {this->minBound, this->maxBound};
 }

@@ -8,10 +8,14 @@
 
 enum class guiElement {FREEHAND, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, POINT, BUTTON, LAYOUT, UNKNOWN};
 
+#define PADDING 10
+
 class GuiElement {
 	protected:
 		ivec2 parentStart;
 		ivec2 parentEnd;
+		ivec2 minBound;
+		ivec2 maxBound;
 		std::string name = "";
 	public:
 		GuiElement();
@@ -47,6 +51,12 @@ class GuiElement {
 		virtual ElementParameters getParameters() = 0;
 
 		virtual guiElement getType() = 0;
+
+		void modifyColor(ivec3 newColor);
+
+		virtual void setBounds() = 0;
+
+		virtual std::vector<ivec2> getBounds() = 0;
 };
 
 

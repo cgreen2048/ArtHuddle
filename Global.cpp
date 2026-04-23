@@ -266,7 +266,7 @@ Layout *createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, i
 
     ElementParameters toolBar;
     toolBar.layoutStart = vec2(0.0, 0.0);
-    toolBar.layoutEnd = vec2(1.0, 1.0);
+    toolBar.layoutEnd = vec2(1.0, 0.2);
     toolBar.parentStart = ivec2(0, 0);
     toolBar.parentEnd = ivec2(X, Y);
     toolBar.active = true;

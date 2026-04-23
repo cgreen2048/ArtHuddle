@@ -39,6 +39,9 @@ class Arrow : public GuiElement {
         bool validateAndNormalize(ElementParameters& ep);
         ElementParameters getParameters();
         guiElement getType();
+        void modifyColor(ivec3 newColor);
+        void setBounds();
+		std::vector<ivec2> getBounds();
 };
 
 #endif

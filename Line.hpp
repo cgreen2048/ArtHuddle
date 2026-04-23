@@ -3,7 +3,7 @@
 
 #include "GuiElement.hpp"
 
-#define LINE_PADDING 10
+// #define LINE_PADDING 10
 
 class Line : public GuiElement {
 	private:
@@ -37,6 +37,9 @@ class Line : public GuiElement {
 		ElementParameters getParameters();
 		guiElement getType();
 		void setPoints();
+		void modifyColor(ivec3 newColor);
+		void setBounds();
+		std::vector<ivec2> getBounds();
 };
 
 #endif

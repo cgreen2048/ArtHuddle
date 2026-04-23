@@ -34,6 +34,7 @@ Layout::Layout(ElementParameters ep) {
         this->addElement(ep.elements[i]);
     }
     this->name = ep.name;
+    this->setBounds();
 }
 
 Layout::~Layout() {
@@ -46,20 +47,24 @@ Layout::~Layout() {
 
 void Layout::setStart(const vec2& start) {
     this->start = start;
+    this->setBounds();
 }
 
 void Layout::setEnd(const vec2& end) {
     this->end = end;
+    this->setBounds();
 }
 
 void Layout::setParentStart(const ivec2& start) {
     GuiElement::setParentStart(start);
     this->hasParentStart = true;
+    this->setBounds();
 }
 
 void Layout::setParentEnd(const ivec2& end) {
     GuiElement::setParentEnd(end);
     this->hasParentEnd = true;
+    this->setBounds();
 }
 
 void Layout::setActive(bool value) {
@@ -264,4 +269,13 @@ ElementParameters Layout::getParameters() {
 
 guiElement Layout::getType() {
     return guiElement::LAYOUT;
+}
+
+void Layout::setBounds() {
+    this->minBound = ivec2(this->getAbsoluteStartX(), this->getAbsoluteStartY());
+    this->maxBound = ivec2(this->getAbsoluteEndX(), this->getAbsoluteEndY());
+}
+
+std::vector<ivec2> Layout::getBounds() {
+    return {this->minBound, this->maxBound};
 }

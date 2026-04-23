@@ -8,6 +8,7 @@ Line::Line(ivec2 start, ivec2 end, ivec3 color) {
     this->end = end;
     this->color = color;
     setPoints();
+    this->setBounds();
 }
 
 Line::Line(ElementParameters ep) {
@@ -22,6 +23,7 @@ Line::Line(ElementParameters ep) {
     this->colorType = ep.colorType;
     this->name = ep.name;
     setPoints();
+    this->setBounds();
 }
 
 Line::Line(const Line& cp) : Line() {
@@ -33,6 +35,7 @@ Line::Line(const Line& cp) : Line() {
     this->colorType = cp.colorType;
     this->name = cp.name;
     this->points = cp.points;
+    this->setBounds();
 }
 
 Line& Line::operator=(const Line& cp) {
@@ -44,6 +47,7 @@ Line& Line::operator=(const Line& cp) {
     this->colorType = cp.colorType;
     this->name = cp.name;
     this->points = cp.points;
+    this->setBounds();
     return *this;
 }
 
@@ -72,11 +76,13 @@ GuiElement* Line::clone() const {
 void Line::setStart(const ivec2& v, TagType t){
     this->start = v;
     this->startType = t;
+    this->setBounds();
 }
 
 void Line::setEnd(const ivec2& v, TagType t){
     this->end = v;
     this->endType = t;
+    this->setBounds();
 }
 
 void Line::setColor(const ivec3& v, TagType t){
@@ -144,16 +150,10 @@ bool Line::isInside(ivec2 coordinates) {
     for (auto point : this->points) {
         int dx = coordinates.x - point.x;
         int dy = coordinates.y - point.y;
-        if ((dx * dx + dy * dy) <= (LINE_PADDING * LINE_PADDING)) {  
+        if ((dx * dx + dy * dy) <= (PADDING * PADDING)) {  
             return true;
         }
     }
-    // int term1 = (coordinates.y - this->start.y) * (this->end.x - this->start.x);
-    // int term2 = (coordinates.x - this->start.x) * (this->end.y - this->start.y);
-    // int difference = term1 - term2;
-    // if (difference == 0) {
-    //     return true;
-    // }
     return false;
 }
 
@@ -199,4 +199,37 @@ void Line::setPoints() {
             y0 += sy;
         }
     }
+}
+
+void Line::modifyColor(ivec3 newColor) {
+    this->color += newColor;
+    if (color.x < 0) {
+        color.x = 0;
+    }
+    else if (color.x > 255) {
+        color.x = 255;
+    }
+    if (color.y < 0) {
+        color.y = 0;
+    }
+    else if (color.y > 255) {
+        color.y = 255;
+    }
+    if (color.z < 0) {
+        color.z = 0;
+    }
+    else if (color.z > 255) {
+        color.z = 255;
+    }
+}
+
+void Line::setBounds() {
+    this->minBound.x = std::min(this->start.x, this->end.x);
+    this->minBound.y = std::min(this->start.y, this->end.y);
+    this->maxBound.x = std::max(this->start.x, this->end.x);
+    this->maxBound.y = std::max(this->start.y, this->end.y);
+}
+
+std::vector<ivec2> Line::getBounds() {
+    return {this->minBound, this->maxBound};
 }

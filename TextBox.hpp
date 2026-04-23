@@ -40,6 +40,7 @@ class TextBox : public Box {
         const std::string& getText() const;
         ElementParameters getParameters();
         guiElement getType();
+        void modifyColor(ivec3 newColor);
 };
 
 #endif

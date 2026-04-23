@@ -31,6 +31,7 @@ void update(int& type);
 void closeAll();
 void copy();
 void paste();
+bool changeColor(ivec3 colorIncrement);
 
 
 #endif

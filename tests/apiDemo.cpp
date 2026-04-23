@@ -326,44 +326,56 @@ int main() {
                                 break;
                             }
                             case SDL_SCANCODE_R: {
-                                color.x += 1;
-                                if (color.x > 255) {
-                                    color.x = 255;
+                                if (!changeColor(ivec3(1, 0, 0))) {
+                                    color.x += 1;
+                                    if (color.x > 255) {
+                                        color.x = 255;
+                                    }
                                 }
                                 break;
                             }
                             case SDL_SCANCODE_G: {
-                                color.y += 1;
-                                if (color.y > 255) {
-                                    color.y = 255;
+                                if (!changeColor(ivec3(0, 1, 0))) {
+                                    color.y += 1;
+                                    if (color.y > 255) {
+                                        color.y = 255;
+                                    }
                                 }
                                 break;
                             }
                             case SDL_SCANCODE_B: {
-                                color.z += 1;
-                                if (color.z > 255) {
-                                    color.z = 255;
+                                if (!changeColor(ivec3(0, 0, 1))) {
+                                    color.z += 1;
+                                    if (color.z > 255) {
+                                        color.z = 255;
+                                    }
                                 }
                                 break;
                             }
                             case SDL_SCANCODE_E: {
-                                color.x -= 1;
-                                if (color.x < 0) {
-                                    color.x = 0;
+                                if (!changeColor(ivec3(-1, 0, 0))) {
+                                    color.x -= 1;
+                                    if (color.x < 0) {
+                                        color.x = 0;
+                                    }
                                 }
                                 break;
                             }
                             case SDL_SCANCODE_F: {
-                                color.y -= 1;
-                                if (color.y < 0) {
-                                    color.y = 0;
+                                if (!changeColor(ivec3(0, -1, 0))) {
+                                    color.y -= 1;
+                                    if (color.y < 0) {
+                                        color.y = 0;
+                                    }
                                 }
                                 break;
                             }
                             case SDL_SCANCODE_V: {
-                                color.z -= 1;
-                                if (color.z < 0) {
-                                    color.z = 0;
+                                if (!changeColor(ivec3(0, 0, -1))) {
+                                    color.z -= 1;
+                                    if (color.z < 0) {
+                                        color.z = 0;
+                                    }
                                 }
                                 break;
                             }

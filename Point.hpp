@@ -3,7 +3,7 @@
 
 #include "GuiElement.hpp"
 
-#define POINT_PADDING 10
+// #define POINT_PADDING 10
 
 class Point : public GuiElement {
 	private:
@@ -31,6 +31,9 @@ class Point : public GuiElement {
 		bool validateAndNormalize(ElementParameters& ep);
 		ElementParameters getParameters();
 		guiElement getType();
+		void modifyColor(ivec3 newColor);
+		void setBounds();
+		std::vector<ivec2> getBounds();
 };
 
 #endif

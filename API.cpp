@@ -280,10 +280,17 @@ void setClickAndDrag(ivec2 mouse) {
 void endClickAndDrag() {
     if (draggingType != guiElement::UNKNOWN) {
         deleteTempShape();
+        ivec2 toolBarBounds = toolBarLayout->getBounds()[1];
         switch (draggingType) {
             case guiElement::POINT: {
                 Point* element = dynamic_cast<Point*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -292,6 +299,12 @@ void endClickAndDrag() {
             case guiElement::LINE: {
                 Line* element = dynamic_cast<Line*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -300,6 +313,12 @@ void endClickAndDrag() {
             case guiElement::BOX: {
                 Box* element = dynamic_cast<Box*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -308,6 +327,12 @@ void endClickAndDrag() {
             case guiElement::TRIANGLE: {
                 Triangle* element = dynamic_cast<Triangle*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -316,6 +341,12 @@ void endClickAndDrag() {
             case guiElement::ELLIPSE: {
                 Ellipse* element = dynamic_cast<Ellipse*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -324,6 +355,12 @@ void endClickAndDrag() {
             case guiElement::ARROW: {
                 Arrow* element = dynamic_cast<Arrow*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -332,6 +369,12 @@ void endClickAndDrag() {
             case guiElement::TEXTBOX: {
                 TextBox* element = dynamic_cast<TextBox*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -340,6 +383,12 @@ void endClickAndDrag() {
             case guiElement::FREEHAND: {
                 Freehand* element = dynamic_cast<Freehand*>(factory(draggingType, draggingElementParameters));
                 if (element) {
+                    std::vector<ivec2> bounds = element->getBounds();
+                    if (bounds[0].y < toolBarBounds.y) {
+                        delete element;
+                        cancelMove();
+                        return;
+                    }
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -633,4 +682,54 @@ void paste() {
             }
         }
     }
+}
+
+bool changeColor(ivec3 colorIncrement) {
+    GuiElement* chosen = Selected::getInstance().getSelectedElement();
+    if (!chosen) {
+        return false;
+    }
+    switch(chosen->getType()) {
+        case guiElement::POINT: {
+            dynamic_cast<Point*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::FREEHAND: {
+            dynamic_cast<Freehand*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::LINE: {
+            dynamic_cast<Line*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::TEXTBOX: {
+            dynamic_cast<TextBox*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::BUTTON: {
+            dynamic_cast<Button*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::BOX: {
+            dynamic_cast<Box*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::TRIANGLE: {
+            dynamic_cast<Triangle*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::ELLIPSE: {
+            dynamic_cast<Ellipse*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        case guiElement::ARROW: {
+            dynamic_cast<Arrow*>(chosen)->modifyColor(colorIncrement);
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+    // dynamic_cast<chosen->modifyColor(colorIncrement);
+    return true;
 }

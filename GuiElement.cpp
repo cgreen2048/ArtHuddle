@@ -41,3 +41,7 @@ ivec2 GuiElement::getParentEnd() {
 const std::string& GuiElement::getName() const {
     return name;
 }
+
+void GuiElement::modifyColor(ivec3 colorIncrement) {
+
+}
