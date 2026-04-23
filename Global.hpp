@@ -61,6 +61,7 @@ extern Button* freehandLineButton;
 extern Button* freehandShapeButton;
 extern Button* saveButton;
 extern Button* loadButton;
+extern Button* colorIndicator;
 extern Uint64 saveFlashUntil;
 extern Uint64 loadFlashUntil;
 extern GuiElement* draggingElement;

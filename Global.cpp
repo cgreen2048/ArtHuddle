@@ -35,6 +35,7 @@ Button *freehandLineButton = nullptr;
 Button *freehandShapeButton = nullptr;
 Button *saveButton = nullptr;
 Button *loadButton = nullptr;
+Button* colorIndicator = nullptr;
 
 Uint64 saveFlashUntil = 0;
 Uint64 loadFlashUntil = 0;
@@ -221,7 +222,17 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     loadButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, loadButtonParam));
     layout->addElement(loadButton);
 
-
+    ElementParameters colorIndicatorParam;
+    colorIndicatorParam.min = ivec2(3 * bigBW + 3 * p, bH + p);
+    colorIndicatorParam.max = ivec2(4 * bigBW + 3 * p, bH + p + bH);
+    colorIndicatorParam.color = ivec3(125, 125, 125);
+    colorIndicatorParam.textColor = ivec3(0, 0, 0);
+    colorIndicatorParam.text = "Color";
+    colorIndicatorParam.name = "colorIndicator";
+    colorIndicatorParam.callbackName = "colorIndicator";
+    colorIndicatorParam.callback = []() {};
+    colorIndicator = dynamic_cast<Button *>(factory(guiElement::BUTTON, colorIndicatorParam));
+    layout->addElement(colorIndicator);
 }
 
 void createWindow() {

@@ -687,6 +687,7 @@ void paste() {
 bool changeColor(ivec3 colorIncrement) {
     GuiElement* chosen = Selected::getInstance().getSelectedElement();
     if (!chosen) {
+        colorIndicator->modifyColor(colorIncrement);
         return false;
     }
     switch(chosen->getType()) {
