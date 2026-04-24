@@ -76,6 +76,10 @@ extern ElementParameters clipboard;
 extern guiElement clipboardType;
 extern std::filesystem::path currentFileLoadPath;
 extern std::filesystem::path currentFileSavePath;
+extern SDL_Cursor* arrowCursor;
+extern SDL_Cursor* handCursor;
+extern SDL_Cursor* currentCursor;
+
 
 void createWindow();
 void createScreen();

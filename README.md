@@ -2,6 +2,7 @@
 
 # Quick Links to Classes
 - [Global](#global)
+- [API](#api)
 - [Event Class](#event)
 - [MouseEvent Class](#mouseevent)
 - [MouseDownEvent Class](#mousedownevent)
@@ -196,6 +197,11 @@ A button to trigger the function to load a saved layout
 
 ---
 
+### `Button* muteButton`
+A button to toggle muting/unmuting audio in the program
+
+---
+
 ### `Button* colorIndicator`
 A button that displays the current drawing color with no callback function
 
@@ -239,6 +245,15 @@ A variable to hold a struct returned from an element's `getParameters()` method 
 
 ### `guiElement clipboardType`
 The type of element stored in the `clipboard` variable. Used to create a new element when pasting. Initialized to guiElement::UNKNOWN
+
+### `SDL_Cursor* arrowCursor`
+A cursor to represent the default arrow cursor
+
+### `SDL_Cursor* handCursor`
+A cursor to represent a hand, used when hovering over elements or dragging
+
+### `SDL_Cursor* currentCursor`
+A variable to hold the current cursor being used, initialized to `arrowCursor`
 
 ---
 
@@ -481,6 +496,12 @@ Checks if an element is stored in `clipboard`, then creates a new element shifte
 Attempts to change the color of an element
 - Returns false if no element is selected, indicating that the drawing color should be changed instead
 - Calls `modifyColor()` on valid element types to shift the color of the selected element
+
+---
+
+### `void updateCursorIcon(const ivec2& point, bool currentlyDragging)`
+Updates the cursor icon based on if the cursor is hovering over an element or dragging an element. If either of those are true, the cursor is set to `handCursor` (`SDL_SYSTEM_CURSOR_POINTER`), otherwise it is set to
+`arrowCursor` (`SDL_SYSTEM_CURSOR_DEFAULT`)
 
 ---
 
@@ -814,6 +835,9 @@ Storage for all loaded sounds. Stores `Sound` objects. Accessed when a sound is 
 ### `std::vector<SoundState> playback`
 The playback queue for the callback function. `SoundState` objects are cleared from the vector when their data has been exhausted or reset to the beginning if the sound is set to loop
 
+### `bool muted`
+A boolean to set whether the audio is muted or not. Muted when set to true
+
 ---
 
 ## Methods
@@ -873,6 +897,12 @@ The callback function for audio playback. Takes in `userData` as a reference to 
     - If `loop` is true, the audio is reset to the beginning of its buffer
     - If `loop` is false, the audio is cleared from `playback`
 - Uses `SDL_MixAudio()` and `SDL_PutAudioStreamData()` to build and supply the mix array for the stream
+
+### `void toggleMute()`
+Toggled the `muted` attribute of the `SoundPlayer`. When `muted` is true, audio will not be mixed in `streamLoader()`, effectively muting the audio. When `muted` is false, audio will be mixed as normal
+
+### `bool isMuted()`
+Returns the `muted` attribute of the `SoundPlayer` to check if the audio is currently muted or not
 
 ---
 
@@ -1581,6 +1611,12 @@ Handles and propagates an event through this Layout’s hierarchy
 - Returns:
   - `true` → event was handled by a child  
   - `false` → event was not handled  
+
+---
+
+### `GuiElement* getElementAt(const ivec2& point)`
+Iterates through child elements and  returns a pointer to the child element of the `Layout` that contains the passed coordinates via `isInside()`, or `nullptr` if no child element contains the coordinates 
+- Recurses through child `Layout`s to find the most specific element that contains the coordinates
 
 ---
 
@@ -2917,6 +2953,11 @@ Returns `guiElement::BUTTON`
 
 ### `void modifyColor(ivec3 newColor)`
 Adds the `newColor` increment to `color`, resetting a color value to `0` or `255` if it goes below `0` or above `255`
+
+---
+
+### `void setText(std::string newText)`
+Sets the `text` attribute of the button to `newText`
 
 ---
 
