@@ -7,7 +7,7 @@ CXXFLAGS := -std=c++17 -I$(SDL3_INC)
 
 # Link flags: where to find it at link time + where to find it at run time
 LDFLAGS := -L$(SDL3_LIB) -Wl,-rpath,$(SDL3_LIB)
-LDLIBS := -lSDL3
+LDLIBS := -lSDL3 -lstdc++fs
 
 MAC_CXXFLAGS := -std=c++17 -Wall
 MAC_LDFLAGS := -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks

@@ -16,6 +16,8 @@ ElementParameters draggingElementParameters;
 ivec2 lastMousePos;
 ElementParameters clipboard;
 guiElement clipboardType = guiElement::UNKNOWN;
+std::filesystem::path currentFileLoadPath = "";
+std::filesystem::path currentFileSavePath = "";
 
 // int type = 9;
 // int points = 0;
@@ -40,6 +42,36 @@ Button* colorIndicator = nullptr;
 Uint64 saveFlashUntil = 0;
 Uint64 loadFlashUntil = 0;
 
+struct FileDialogData {
+    int*points;
+    ivec2* point1;
+    ivec2* point2;
+    ivec2* point3;
+};
+
+static void SDLCALL loadFileCallback(void* userdata, const char* const* filelist, int filter) {
+    if (!filelist || !*filelist) return;
+
+    FileDialogData* dialogData = static_cast<FileDialogData*>(userdata);
+
+    std::filesystem::path absolutePath = filelist[0];
+    std::filesystem::path relativePath = std::filesystem::relative(absolutePath, std::filesystem::current_path());
+    currentFileLoadPath = relativePath;
+
+    loadCanvas(currentFileLoadPath.string(), *dialogData->points, *dialogData->point1, *dialogData->point2, *dialogData->point3);
+
+    delete dialogData;
+}
+
+static void SDLCALL saveFileCallback(void* userdata, const char* const* filelist, int filter) {
+    if (!filelist || !*filelist) return;
+
+    std::filesystem::path absolutePath = filelist[0];
+    std::filesystem::path relativePath = std::filesystem::relative(absolutePath, std::filesystem::current_path());
+    currentFileSavePath = relativePath;
+
+    saveCanvas(currentFileSavePath.string());
+}
 
 void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     ElementParameters selectButtonParam;
@@ -201,7 +233,19 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     saveButtonParam.name = "saveButton";
     saveButtonParam.callbackName = "saveCanvas";
     saveButtonParam.callback = []() {
-        saveCanvas("drawing.xml");
+        if (currentFileSavePath.empty()) {
+            SDL_ShowSaveFileDialog(
+                saveFileCallback,
+                nullptr,
+                window,
+                nullptr,  // filters (optional)
+                0,
+                nullptr  // default location
+            );
+        } else {
+            saveCanvas(currentFileSavePath.string());
+        }
+        
         saveFlashUntil = SDL_GetTicks() + 700; // flash for 300 ms
     };
     saveButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, saveButtonParam));
@@ -216,7 +260,17 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     loadButtonParam.name = "loadButton";
     loadButtonParam.callbackName = "loadCanvas";
     loadButtonParam.callback = [&points, &point1, &point2, &point3]() {
-        loadCanvas("drawing.xml", points, point1, point2, point3);
+        FileDialogData* dialogData = new FileDialogData{&points, &point1, &point2, &point3};
+        SDL_ShowOpenFileDialog(
+            loadFileCallback,
+            dialogData, // userdata
+            window,
+            nullptr,   // filters
+            0,         // number of filters
+            nullptr,   // default location
+            false      // allow multiple files
+        );
+
         loadFlashUntil = SDL_GetTicks() + 700; // flash for 300 ms
     };
     loadButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, loadButtonParam));
