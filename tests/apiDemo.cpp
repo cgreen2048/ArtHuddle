@@ -223,15 +223,7 @@ int main() {
                 case SDL_EVENT_MOUSE_MOTION: {
                     ivec2 point(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y));
 
-                    GuiElement* hoveredElement = layout->getElementAt(point);
-                    if ((clickAndHold || hoveredElement) && currentCursor != handCursor) {
-                        SDL_SetCursor(handCursor);
-                        currentCursor = handCursor;
-                    }
-                    else if (currentCursor != arrowCursor) {
-                        SDL_SetCursor(arrowCursor);
-                        currentCursor = arrowCursor;
-                    }
+                    updateCursorIcon(point, clickAndHold);
 
                     if ((type == 7 || type == 8) && event.motion.state != 0) {
                         eventSystem.push(std::make_unique<MouseMotionEvent>(point, true));

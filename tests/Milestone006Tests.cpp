@@ -361,6 +361,16 @@ bool soundTests(SoundPlayer* player) {
         std::cout << "playing valid sound test succeeded\n";
     }
 
+    player->toggleMute();
+    bool playingMuted = player->playSound("../SFX/song.wav", 1);
+    if (!playingMuted) {
+        std::cout << "playing muted sound test FAILED\n";
+    }
+    else {
+        std::cout << "playing muted sound test succeeded\n";
+    }
+    player->toggleMute();
+
     bool playingUnloaded = player->playSound("../SFX/chords.wav", 1);
     if (!playingUnloaded) {
         std::cout << "playing valid unloaded sound test FAILED\n";

@@ -1,6 +1,8 @@
 # SP26_Team02
 
 # Quick Links to Classes
+- [Global](#global)
+- [API](#api)
 - [Event Class](#event)
 - [MouseEvent Class](#mouseevent)
 - [MouseDownEvent Class](#mousedownevent)
@@ -472,6 +474,12 @@ Checks if an element is stored in `clipboard`, then creates a new element shifte
 Attempts to change the color of an element
 - Returns false if no element is selected, indicating that the drawing color should be changed instead
 - Calls `modifyColor()` on valid element types to shift the color of the selected element
+
+---
+
+### `void updateCursorIcon(const ivec2& point, bool currentlyDragging)`
+Updates the cursor icon based on if the cursor is hovering over an element or dragging an element. If either of those are true, the cursor is set to `handCursor` (`SDL_SYSTEM_CURSOR_POINTER`), otherwise it is set to
+`arrowCursor` (`SDL_SYSTEM_CURSOR_DEFAULT`)
 
 ---
 

@@ -733,3 +733,14 @@ bool changeColor(ivec3 colorIncrement) {
     }
     return true;
 }
+
+void updateCursorIcon(const ivec2& point, bool currentlyDragging) {
+    GuiElement* hoveredElement = rootLayout->getElementAt(point);
+
+    SDL_Cursor* desiredCursor = (currentlyDragging || hoveredElement) ? handCursor : arrowCursor;
+    
+    if (currentCursor != desiredCursor) {
+        SDL_SetCursor(desiredCursor);
+        currentCursor = desiredCursor;
+    }
+}
