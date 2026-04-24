@@ -30,6 +30,9 @@
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include <fstream>
+#include <filesystem>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_dialog.h>
 
 
 const int X = 960, Y = 540;
@@ -71,6 +74,8 @@ extern ElementParameters draggingElementParameters;
 extern ivec2 lastMousePos;
 extern ElementParameters clipboard;
 extern guiElement clipboardType;
+extern std::filesystem::path currentFileLoadPath;
+extern std::filesystem::path currentFileSavePath;
 extern SDL_Cursor* arrowCursor;
 extern SDL_Cursor* handCursor;
 extern SDL_Cursor* currentCursor;
@@ -86,5 +91,7 @@ void saveCanvas(const std::string& filePath);
 void loadCanvas(const std::string& filePath, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void updateToolbarButtonColors(int& type);
 void updateActionButtonColors();
+static void SDLCALL loadFileCallback(void* userdata, const char* const* filelist, int filter);
+static void SDLCALL saveFileCallback(void* userdata, const char* const* filelist, int filter);
 
 #endif

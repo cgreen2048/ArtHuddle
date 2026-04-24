@@ -1,0 +1,37 @@
+<layout name="canvasLayout" sX="0" sY="0" eX="1" eY="1">
+  <box name="S6nJYFnv4">
+      <ivec2>
+          <x>241</x>
+          <y>201</y>
+      </ivec2>
+      <ivec2>
+          <x>476</x>
+          <y>330</y>
+      </ivec2>
+      <ivec3>
+          <x>125</x>
+          <y>125</y>
+          <z>125</z>
+      </ivec3>
+  </box>
+  <textbox name="6fUmSlzl19" text="test save">
+      <vec2>
+          <x>535</x>
+          <y>204</y>
+      </vec2>
+      <vec2>
+          <x>619</x>
+          <y>252</y>
+      </vec2>
+      <ivec3>
+          <x>220</x>
+          <y>220</y>
+          <z>220</z>
+      </ivec3>
+      <vec3>
+          <x>125</x>
+          <y>125</y>
+          <z>125</z>
+      </vec3>
+  </textbox>
+</layout>
