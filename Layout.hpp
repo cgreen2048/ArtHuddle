@@ -35,6 +35,7 @@ class Layout : public GuiElement {
         void drawOverlay(Screen *screen);
         void writeXml(std::ostream& out, int depth = 0) const;
         bool resolveEvent(Event* e);
+        GuiElement* getElementAt(const ivec2& point);
         const std::vector<GuiElement*>& getElements() const;
         int getAbsoluteStartX();
         int getAbsoluteStartY();

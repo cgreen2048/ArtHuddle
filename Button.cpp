@@ -160,3 +160,7 @@ void Button::modifyColor(ivec3 newColor) {
         color.z = 255;
     }
 }
+
+void Button::setText(std::string newText) {
+    this->text = newText;
+}

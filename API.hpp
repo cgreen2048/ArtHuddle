@@ -35,6 +35,7 @@ void closeAll();
 void copy();
 void paste();
 bool changeColor(ivec3 colorIncrement);
+void updateCursorIcon(const ivec2& point, bool currentlyDragging);
 
 
 #endif

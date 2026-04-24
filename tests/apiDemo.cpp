@@ -46,7 +46,7 @@ int main() {
                     int mouseX = static_cast<int>(event.button.x);
                     int mouseY = static_cast<int>(event.button.y);
 
-                    if (mouseY <= bH) {
+                    if (mouseY <= 2 * bH - p) {
                         eventSystem.push(std::make_unique<ClickEvent>(mouseX, mouseY));
                         eventSystem.processEvents(layout);
                         break;
