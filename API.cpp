@@ -256,6 +256,22 @@ void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color
     tempLayout->clearElements();
 }
 
+void startFreehandDraw(const ivec2& point, const ivec3& color, bool isFreehandShape) {
+    Freehand* freehand = new Freehand(color, isFreehandShape);
+    canvasLayout->addElement(freehand);
+    EventSystem& eventSystem = EventSystem::getInstance();
+    eventSystem.setTargetedElement(freehand);
+    eventSystem.push(std::make_unique<MouseDownEvent>(point));
+}
+
+void continueFreehandDraw(const ivec2& point) {
+    EventSystem::getInstance().push(std::make_unique<MouseMotionEvent>(point, true));
+}
+
+void endFreehandDraw(const ivec2& point) {
+    EventSystem::getInstance().push(std::make_unique<MouseUpEvent>(point));
+}
+
 void setClickAndDrag(ivec2 mouse) {
     GuiElement* current = Selected::getInstance().getSelectedElement();
     if (current) {

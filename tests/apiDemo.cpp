@@ -185,21 +185,12 @@ int main() {
                             break;
                         }
                         case 7: {
-                            Freehand* freehand = new Freehand(color, false);
-                            canvasLayout->addElement(freehand);
-                            eventSystem.setTargetedElement(freehand);
-                            ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                            
-                            eventSystem.push(std::make_unique<MouseDownEvent>(point));
+                            startFreehandDraw(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)), color, false);
                             justFinishedDrawing = true;
                             break;
                         }
                         case 8: {
-                            Freehand* freehand = new Freehand(color, true);
-                            canvasLayout->addElement(freehand);
-                            eventSystem.setTargetedElement(freehand);
-                            ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                            eventSystem.push(std::make_unique<MouseDownEvent>(point));
+                            startFreehandDraw(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)), color, true);
                             justFinishedDrawing = true;
                             break;
                         }
@@ -221,12 +212,8 @@ int main() {
                     break;
                 }
                 case SDL_EVENT_MOUSE_MOTION: {
-                    ivec2 point(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y));
-
-                    updateCursorIcon(point, clickAndHold);
-
                     if ((type == 7 || type == 8) && event.motion.state != 0) {
-                        eventSystem.push(std::make_unique<MouseMotionEvent>(point, true));
+                        continueFreehandDraw(ivec2(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)));
                         break;
                     }
                     if (type == 9) {
@@ -238,9 +225,8 @@ int main() {
                 }
                 case SDL_EVENT_MOUSE_BUTTON_UP: {
                     if (type == 7 || type == 8) {
-                        ivec2 point(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-
-                        eventSystem.push(std::make_unique<MouseUpEvent>(point));
+                        endFreehandDraw(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
+                        break;
                     }
                     if (justFinishedDrawing) {
                         justFinishedDrawing = false;

@@ -399,6 +399,21 @@ Draws an element of type specified by `type` to the `canvasLayout` `Layout` obje
 
 ---
 
+### `void startFreehandDraw(const ivec2& point, const ivec3& color, bool isFreehandShape)`
+Starts drawing of a `Freehand` element. Creates a new `Freehand` object at the starting point `point` and color `color` in line or shape mode based on `isFreehandShape`, adds it to the canvas, sets it as the targeted element for mouse events in `EventSystem`, and pushes a `MouseDownEvent` with the starting point
+
+---
+
+### `void continueFreehandDraw(const ivec2& point)`
+Continues drawing of the current `Freehand` element targeted in `EventSystem` by pushing a `MouseMotionEvent` with the current point and `mouseDown` set to true
+
+---
+
+### `void endFreehandDraw(const ivec2& point)`
+Ends drawing of the current `Freehand` element targeted in `EventSystem` by pushing a `MouseUpEvent` with the current point
+
+---
+
 ### `void setClickAndDrag(ivec2 lastMousePos)`
 Sets information to allow elements to be dragged by the user. Retrieves the selected element, saves the last click coordinates, and initializes the `originalElementParameters` and `draggingElementParameters` structs before drawing the first ghost shape and deleting the version of the element in the root layout
 
