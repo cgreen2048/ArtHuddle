@@ -152,14 +152,20 @@ bool Layout::resolveEvent(Event* e) {
 
     if (e->getType() == EventType::CLICK) {
         ClickEvent* click = static_cast<ClickEvent*>(e);
-        for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
-            GuiElement* object = *ritr;
-            if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
-                if (object->resolveEvent(e)) {
-                    return true;
-                }
+        GuiElement* object = this->getElementAt(ivec2(click->getMouseX(), click->getMouseY()));
+        if (object != nullptr) {
+            if (object->resolveEvent(e)) {
+                return true;
             }
         }
+        // for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
+        //     GuiElement* object = *ritr;
+        //     if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
+        //         if (object->resolveEvent(e)) {
+        //             return true;
+        //         }
+        //     }
+        // }
         
         TextBox* textbox = dynamic_cast<TextBox*>(Selected::getInstance().getSelectedElement());
         if (textbox) {
@@ -176,6 +182,33 @@ bool Layout::resolveEvent(Event* e) {
     }
 
     return false;
+}
+
+GuiElement* Layout::getElementAt(const ivec2& point) {
+    if (!this->isInside(point) || !this->active) {
+        return nullptr;
+    }
+
+    for (auto itr = elements.rbegin(); itr != elements.rend(); ++itr) {
+        GuiElement* element = *itr;
+
+        if (!element->isInside(point)) {
+            continue;
+        }
+
+        if (Layout* layout = dynamic_cast<Layout*>(element)) {
+            GuiElement* childHit = layout->getElementAt(point);
+            if (childHit != nullptr) {
+                return childHit;
+            }
+
+            continue;
+        }
+
+        return element;
+    }
+
+    return nullptr;
 }
 
 vec2 Layout::getStart() const {

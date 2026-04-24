@@ -68,6 +68,9 @@ bool SoundPlayer::loadSound(std::string filePath) {
 }
 
 bool SoundPlayer::playSound(std::string filePath, bool loop) {
+    if (this->muted) {
+        return true;
+    }
     for (Sound itr : this->soundBank) {
         if (itr.getName() == filePath) {
             SoundState soundData;
@@ -124,7 +127,9 @@ void SoundPlayer::streamLoader(void* userData, SDL_AudioStream* stream, int amou
     while (audioSample != player->playback.end()) {
         Uint32 mixData = std::min(audioSample->audioLength, (Uint32)amount);
         if (mixData > 0) {
-            SDL_MixAudio(audioMix, audioSample->buffer, player->spec.format, mixData, 1.0);
+            if (!player->isMuted()) {
+                SDL_MixAudio(audioMix, audioSample->buffer, player->spec.format, mixData, 1.0);
+            }
             audioSample->buffer += mixData;
             audioSample->audioLength -= mixData;
             if (audioSample->audioLength <= 0 && !audioSample->loop) {
@@ -138,9 +143,20 @@ void SoundPlayer::streamLoader(void* userData, SDL_AudioStream* stream, int amou
                 ++audioSample;
             }
         }
+        else {
+            ++audioSample;
+        }
     }
     SDL_PutAudioStreamData(stream, audioMix, amount);
     if (audioMix) {
         delete[] audioMix;
     }
+}
+
+bool SoundPlayer::isMuted() {
+    return this->muted;
+}
+
+void SoundPlayer::toggleMute() {
+    this->muted = !this->muted;
 }

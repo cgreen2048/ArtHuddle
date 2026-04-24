@@ -16,6 +16,9 @@ ElementParameters draggingElementParameters;
 ivec2 lastMousePos;
 ElementParameters clipboard;
 guiElement clipboardType = guiElement::UNKNOWN;
+SDL_Cursor* arrowCursor = nullptr;
+SDL_Cursor* handCursor  = nullptr;
+SDL_Cursor* currentCursor = nullptr;
 
 // int type = 9;
 // int points = 0;
@@ -35,6 +38,7 @@ Button *freehandLineButton = nullptr;
 Button *freehandShapeButton = nullptr;
 Button *saveButton = nullptr;
 Button *loadButton = nullptr;
+Button *muteButton = nullptr;
 Button* colorIndicator = nullptr;
 
 Uint64 saveFlashUntil = 0;
@@ -222,6 +226,21 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     loadButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, loadButtonParam));
     layout->addElement(loadButton);
 
+    ElementParameters muteButtonParam;
+    muteButtonParam.min = ivec2(4 * bigBW + 4 * p, bH + p);
+    muteButtonParam.max = ivec2(5 * bigBW + 4 * p, 2* bH + p);
+    muteButtonParam.color = ivec3(180, 255, 180);
+    muteButtonParam.textColor = ivec3(0, 0, 0);
+    muteButtonParam.text = "Mute";
+    muteButtonParam.name = "muteButton";
+    muteButtonParam.callbackName = "toggleMute";
+    muteButtonParam.callback = []() {
+        soundPlayer->toggleMute();
+        muteButton->setText(soundPlayer->isMuted() ? "Unmute" : "Mute");
+    };
+    muteButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, muteButtonParam));
+    layout->addElement(muteButton);
+
     ElementParameters colorIndicatorParam;
     colorIndicatorParam.min = ivec2(3 * bigBW + 3 * p, bH + p);
     colorIndicatorParam.max = ivec2(4 * bigBW + 3 * p, bH + p + bH);
@@ -253,6 +272,11 @@ void createScreen() {
     }
 
     screen = new Screen(X, Y, renderer);
+
+    arrowCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
+    handCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_POINTER);
+    currentCursor = arrowCursor;
+    SDL_SetCursor(currentCursor);
 }
 
 Layout *createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
@@ -275,6 +299,16 @@ Layout *createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, i
     canvasLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, canvas));
     rootLayout->addElement(canvasLayout);
 
+    ElementParameters temp;
+    temp.layoutStart = vec2(0.0, 0.0);
+    temp.layoutEnd = vec2(1.0, 1.0);
+    temp.parentStart = ivec2(0, 0);
+    temp.parentEnd = ivec2(X, Y);
+    temp.active = true;
+    temp.name = "tempLayout";
+    tempLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, temp));
+    rootLayout->addElement(tempLayout);
+
     ElementParameters toolBar;
     toolBar.layoutStart = vec2(0.0, 0.0);
     toolBar.layoutEnd = vec2(1.0, 0.2);
@@ -286,15 +320,6 @@ Layout *createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, i
     rootLayout->addElement(toolBarLayout);
     initButtons(toolBarLayout, type, points, point1, point2, point3);
 
-    ElementParameters temp;
-    temp.layoutStart = vec2(0.0, 0.0);
-    temp.layoutEnd = vec2(1.0, 1.0);
-    temp.parentStart = ivec2(0, 0);
-    temp.parentEnd = ivec2(X, Y);
-    temp.active = true;
-    temp.name = "tempLayout";
-    tempLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, temp));
-    rootLayout->addElement(tempLayout);
 
     Selected &selectedSingleton = Selected::getInstance();
     ElementParameters boundingLayoutParam;

@@ -46,7 +46,7 @@ int main() {
                     int mouseX = static_cast<int>(event.button.x);
                     int mouseY = static_cast<int>(event.button.y);
 
-                    if (mouseY <= bH) {
+                    if (mouseY <= 2 * bH - p) {
                         eventSystem.push(std::make_unique<ClickEvent>(mouseX, mouseY));
                         eventSystem.processEvents(layout);
                         break;
@@ -221,9 +221,11 @@ int main() {
                     break;
                 }
                 case SDL_EVENT_MOUSE_MOTION: {
-                    if ((type == 7 || type == 8) && event.motion.state != 0) {
-                        ivec2 point(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y));
+                    ivec2 point(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y));
 
+                    updateCursorIcon(point, clickAndHold);
+
+                    if ((type == 7 || type == 8) && event.motion.state != 0) {
                         eventSystem.push(std::make_unique<MouseMotionEvent>(point, true));
                         break;
                     }

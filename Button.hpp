@@ -37,6 +37,7 @@ class Button : public Box {
         ElementParameters getParameters();
         guiElement getType();
         void modifyColor(ivec3 newColor);
+        void setText(std::string newText);
 };
 
 #endif
