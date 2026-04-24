@@ -1,6 +1,7 @@
 # SP26_Team02
 
 # Quick Links to Classes
+- [Global](#global)
 - [Event Class](#event)
 - [MouseEvent Class](#mouseevent)
 - [MouseDownEvent Class](#mousedownevent)
@@ -52,7 +53,7 @@ This module also:
 - Initializes all layouts (canvas, toolbar, temp, etc.)
 - Stores global drawing state (e.g., `type`, `point1`, etc.)
 - Creates and wires all toolbar buttons
-- Provides save/load functionality for drawings
+- Provides save/load functionality to/from user's choice of files for drawings
 - Manages visual feedback (selected tool highlighting and save/load flash effects)
 
 
@@ -241,6 +242,16 @@ The type of element stored in the `clipboard` variable. Used to create a new ele
 
 ---
 
+### `std::filesystem::path currentFileLoadPath`
+The filepath to the most recently loaded file. Used to determine where to save if the user tries to save without specifying a file path
+
+---
+
+### `std::filesystem::path currentFileSavePath`
+The filepath to the most recently saved file. Used to determine where to save if the user attempts to save to a certain location
+
+---
+
 ## Functions
 
 ### `void createWindow()`
@@ -269,6 +280,18 @@ Also initializes toolbar buttons
 
 ### `void setEventSystem()`
 Gets the instance of the `Event` singleton. Creates a new `SoundPlayer` object and saves the reference `soundPlayer` and to the `Event`'s `soundPlayer` attribute
+
+---
+
+### `static void SDLCALL loadFileCallback(void* userdata, const char* const* filelist, int filter)`
+The standard SDL3 callback function for loading files via `SDL_ShowOpenFileDIalog()`. This opens the machine's filesystem explorer, allows the user to select a file, grabs the filepath of
+the selected file, saves the relative filepath to `currentFileLoadPath`, and calls `loadCanvas()` with the selected file to load a previous drawing
+
+---
+
+### `static void SDLCALL saveFileCallback(void* userdata, const char* const* filelist, int filter)`
+The standard SDL3 callback function for saving files via `SDL_SaveFileDialog()`. This opens the machine's filesystem explorer, allows the user to select a file path, grbas the filepath of the selected file,
+saves the relative filepath to `currentFileSavePath`, and calls `saveCanvas()` with the selected file to save the drawing contents to XML
 
 ---
 
