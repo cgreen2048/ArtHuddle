@@ -3,6 +3,7 @@
 # Quick Links to Classes
 - [Global](#global)
 - [API](#api)
+- [Network Client](#networkclient)
 - [Event Class](#event)
 - [MouseEvent Class](#mouseevent)
 - [MouseDownEvent Class](#mousedownevent)
@@ -522,6 +523,90 @@ Attempts to change the color of an element
 ### `void updateCursorIcon(const ivec2& point, bool currentlyDragging)`
 Updates the cursor icon based on if the cursor is hovering over an element or dragging an element. If either of those are true, the cursor is set to `handCursor` (`SDL_SYSTEM_CURSOR_POINTER`), otherwise it is set to
 `arrowCursor` (`SDL_SYSTEM_CURSOR_DEFAULT`)
+
+---
+
+# ClientNetwork
+
+## Description
+Handles client-side networking for real-time communication with the server.
+
+This module:
+- Connects the client to a server using TCP sockets
+- Sends messages (e.g., drawing events or XML data)
+- Receives messages asynchronously from the server
+- Manages connection lifecycle (open/close)
+- Enables real-time synchronization between multiple clients
+
+---
+
+## Variables
+
+### `int sock`
+Stores the active socket connection.
+
+- Initialized to `-1`
+- Represents:
+  - `0` → active connection
+  - `-1` → no connection
+
+---
+
+## Functions
+
+### `bool connectToServer(const char* host, int port)`
+
+Establishes a connection to the server.
+
+#### Steps:
+- Creates a socket using `socket()`
+- Converts IP address using `inet_pton()`
+- Connects to server using `connect()`
+
+#### Returns:
+- `true` → connection successful  
+- `false` → connection failed  
+
+#### Example:
+```cpp
+connectToServer("127.0.0.1", 40666);
+```
+
+### `void sendToServer(const std::string& message)`
+
+Sends a message to the server.
+
+#### Behavior
+Appends a newline (`\n`) to each message:
+```cpp
+std::string packet = message + "\n";
+```
+
+### `void receiveMessagesLoop()`
+
+Continuously listens for incoming messages from the server.
+
+#### Behavior
+- Runs in a loop:
+```cpp
+while (sock >= 0)
+```
+- Calls recv() to read data
+- Converts received bytes into a string
+- Prints messages to the console
+
+### Important:
+- This function is blocking
+- Must be run in a separate thread
+
+### `void closeConnection()`
+
+Closes the connection to the server.
+
+#### Behavior
+- Calls close(sock)
+- Sets sock = -1
+- Causes receiveMessagesLoop() to exit
 
 ---
 
