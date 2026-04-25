@@ -26,94 +26,141 @@ void playSound(std::string filePath, int loop) {
 }
 
 void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
-    tempLayout->clearElements();
+    GuiElement* lastEl = tempLayout->popLast();
     ElementParameters ep;
     ep.color = color;
     ep.colorType = TagType::IVec;
     
     switch (ge) {
 		case guiElement::LINE: {
-            ep.start = point1;
-            ep.end = point2;
-            ep.startType = TagType::IVec;
-            ep.endType = TagType::IVec;
-			Line* element = dynamic_cast<Line*>(factory(ge, ep));
-            if (element) {
-                tempLayout->addElement(element);
+            Line* derived = dynamic_cast<Line*>(lastEl);
+            if (derived) {
+                derived->setEnd(point2, TagType::IVec);
+                derived->setColor(color, TagType::IVec);
+                tempLayout->addElement(derived);
+            }
+            else {
+                ep.start = point1;
+                ep.end = point2;
+                ep.startType = TagType::IVec;
+                ep.endType = TagType::IVec;
+                Line* element = dynamic_cast<Line*>(factory(ge, ep));
+                if (element) {
+                    tempLayout->addElement(element);
+                }
             }
             return;
 		}
 		case guiElement::BOX: {
-            ep.min = point1;
-            ep.max = point2;
-            ep.minType = TagType::IVec;
-            ep.maxType = TagType::IVec;
-			Box* element = dynamic_cast<Box*>(factory(ge, ep));
-            if (element) {
-                tempLayout->addElement(element);
+            Box* derived = dynamic_cast<Box*>(lastEl);
+            if (derived) {
+                derived->setMax(point2, TagType::IVec);
+                derived->setColor(color, TagType::IVec);
+                tempLayout->addElement(derived);
+            }
+            else {
+                ep.min = point1;
+                ep.max = point2;
+                ep.minType = TagType::IVec;
+                ep.maxType = TagType::IVec;
+                Box* element = dynamic_cast<Box*>(factory(ge, ep));
+                if (element) {
+                    tempLayout->addElement(element);
+                }
             }
             return;
 		}
 		case guiElement::TRIANGLE: {
-            ep.pointA = point1;
-            ep.pointB = point2;
-            ep.pointC = point3;
-            ep.pointAType = TagType::IVec;
-            ep.pointBType = TagType::IVec;
-            ep.pointCType = TagType::IVec;
-			Triangle* element = dynamic_cast<Triangle*>(factory(ge, ep));
-            if (element) {
-                tempLayout->addElement(element);
+            Triangle* derived = dynamic_cast<Triangle*>(lastEl);
+            if (derived) {
+                derived->setC(point3, TagType::IVec);
+                derived->setColor(color, TagType::IVec);
+                tempLayout->addElement(derived);
+            }
+            else {
+                ep.pointA = point1;
+                ep.pointB = point2;
+                ep.pointC = point3;
+                ep.pointAType = TagType::IVec;
+                ep.pointBType = TagType::IVec;
+                ep.pointCType = TagType::IVec;
+                Triangle* element = dynamic_cast<Triangle*>(factory(ge, ep));
+                if (element) {
+                    tempLayout->addElement(element);
+                }
             }
             return;
 		}
         case guiElement::ELLIPSE: {
-            ep.center = point1;
-            ep.radiusX = std::abs(point3.x - point1.x);
-            ep.radiusY = std::abs(point2.y - point1.y);
-            ep.centerType = TagType::IVec;
-            Ellipse* element = dynamic_cast<Ellipse*>(factory(ge, ep));
-            if (element) {
-                tempLayout->addElement(element);
+            Ellipse* derived = dynamic_cast<Ellipse*>(lastEl);
+            if (derived) {
+                derived->setRadiusX(point3.x - derived->getCenter().x);
+                derived->setColor(color, TagType::IVec);
+                tempLayout->addElement(derived);
+            }
+            else {
+                ep.center = point1;
+                ep.radiusX = std::abs(point3.x - point1.x);
+                ep.radiusY = std::abs(point2.y - point1.y);
+                ep.centerType = TagType::IVec;
+                Ellipse* element = dynamic_cast<Ellipse*>(factory(ge, ep));
+                if (element) {
+                    tempLayout->addElement(element);
+                }
             }
             return;
         }
         case guiElement::ARROW: {
-            if ((point1.x > point2.x) && (point1.y > point2.y)) {
-                ivec2 holder = point1;
-                point1 = point2;
-                point2 = holder;
-            }
-            ep.min = point1;
-            ep.max = point2;            
+            ivec2 newMin;
+            ivec2 newMax;
+            newMin.x = std::min(point1.x, point2.x);
+            newMin.y = std::min(point1.y, point2.y);
+            newMax.x = std::max(point1.x, point2.x);
+            newMax.y = std::max(point1.y, point2.y);
+            point1 = newMin;
+            point2 = newMax;
+            ivec2 A;
+            ivec2 B;
             ivec2 center = ivec2(std::abs(point2.x + point1.x)/2, std::abs(point2.y + point1.y)/2);
-
             if ((point3.y > center.y) && (point3.x < point2.x) && (point3.x > point1.x)) {
-                ep.pointA = ivec2(point1.x - ((point2.x - point1.x)/5), point2.y);
-                ep.pointB = ivec2(point2.x + ((point2.x - point1.x)/5), point2.y);
-            }
-            else if ((point3.y < center.y) && (point3.x > point1.x) && (point3.x < point2.x)) {
-                ep.pointA = ivec2(point1.x - ((point2.x - point1.x)/5), point1.y);
-                ep.pointB = ivec2(point2.x + ((point2.x - point1.x)/5), point1.y);
-            }
-            else if (point3.x < center.x) {
-                ep.pointA = ivec2(point1.x, point1.y - ((point2.y - point1.y)/5));
-                ep.pointB = ivec2(point1.x, point2.y + ((point2.y - point1.y)/5));
+                    A = ivec2(point1.x - ((point2.x - point1.x)/5), point2.y);
+                    B = ivec2(point2.x + ((point2.x - point1.x)/5), point2.y);
+                }
+                else if ((point3.y < center.y) && (point3.x > point1.x) && (point3.x < point2.x)) {
+                    A = ivec2(point1.x - ((point2.x - point1.x)/5), point1.y);
+                    B = ivec2(point2.x + ((point2.x - point1.x)/5), point1.y);
+                }
+                else if (point3.x < center.x) {
+                    A = ivec2(point1.x, point1.y - ((point2.y - point1.y)/5));
+                    B = ivec2(point1.x, point2.y + ((point2.y - point1.y)/5));
+                }
+                else {
+                    A = ivec2(point2.x, point1.y - ((point2.y - point1.y)/5));
+                    B = ivec2(point2.x, point2.y + ((point2.y - point1.y)/5));
+                }
+            Arrow* derived = dynamic_cast<Arrow*>(lastEl);
+            if (derived) {
+                derived->setA(A, TagType::IVec);
+                derived->setB(B, TagType::IVec);
+                derived->setC(point3, TagType::IVec);
+                derived->setColor(color, TagType::IVec);
+                tempLayout->addElement(derived);
             }
             else {
-                ep.pointA = ivec2(point2.x, point1.y - ((point2.y - point1.y)/5));
-                ep.pointB = ivec2(point2.x, point2.y + ((point2.y - point1.y)/5));
-            }
-            
-            ep.pointC = point3;
-            ep.minType = TagType::IVec;
-            ep.maxType = TagType::IVec;
-            ep.pointAType = TagType::IVec;
-            ep.pointBType = TagType::IVec;
-            ep.pointCType = TagType::IVec;
-            Arrow* element = dynamic_cast<Arrow*>(factory(ge, ep));
-            if (element) {
-                tempLayout->addElement(element);
+                ep.min = point1;
+                ep.max = point2;
+                ep.pointA = A;
+                ep.pointB = B;
+                ep.pointC = point3;
+                ep.minType = TagType::IVec;
+                ep.maxType = TagType::IVec;
+                ep.pointAType = TagType::IVec;
+                ep.pointBType = TagType::IVec;
+                ep.pointCType = TagType::IVec;
+                Arrow* element = dynamic_cast<Arrow*>(factory(ge, ep));
+                if (element) {
+                    tempLayout->addElement(element);
+                }
             }
             return;
         }
@@ -124,13 +171,18 @@ void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, iv
 }
 
 void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
+    GuiElement* lastEl = tempLayout->popLast();
+    if (!lastEl && ge != guiElement::POINT) {
+        return;
+    }
+
     ElementParameters ep;
     ep.color = color;
     ep.colorType = TagType::IVec;
     
     switch (ge) {
-		case guiElement::POINT: {
-			ep.coords = point1;
+        case guiElement::POINT: {
+            ep.coords = point1;
             ep.coordsType = TagType::IVec;
             Point* element = dynamic_cast<Point*>(factory(ge, ep));
             if (element) {
@@ -140,110 +192,58 @@ void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 
             break;
 		}
         case guiElement::LINE: {
-            ep.start = point1;
-            ep.end = point2;
-            ep.startType = TagType::IVec;
-            ep.endType = TagType::IVec;
-			Line* element = dynamic_cast<Line*>(factory(ge, ep));
-            if (element) {
-                canvasLayout->addElement(element);
-                Selected::getInstance().setSelectedElement(element);
+            Line* derived = dynamic_cast<Line*>(lastEl);
+            if (derived) {
+                canvasLayout->addElement(derived);
+                Selected::getInstance().setSelectedElement(derived);
             }
             break;
 		}
 		case guiElement::BOX: {
-            ep.min = point1;
-            ep.max = point2;
-            ep.minType = TagType::IVec;
-            ep.maxType = TagType::IVec;
-			Box* element = dynamic_cast<Box*>(factory(ge, ep));
-            if (element) {
-                canvasLayout->addElement(element);
-                Selected::getInstance().setSelectedElement(element);
+            Box* derived = dynamic_cast<Box*>(lastEl);
+            if (derived) {
+                canvasLayout->addElement(derived);
+                Selected::getInstance().setSelectedElement(derived);
             }
             break;
 		}
 		case guiElement::TRIANGLE: {
-            ep.pointA = point1;
-            ep.pointB = point2;
-            ep.pointC = point3;
-            ep.pointAType = TagType::IVec;
-            ep.pointBType = TagType::IVec;
-            ep.pointCType = TagType::IVec;
-			Triangle* element = dynamic_cast<Triangle*>(factory(ge, ep));
-            if (element) {
-                canvasLayout->addElement(element);
-                Selected::getInstance().setSelectedElement(element);
+            Triangle* derived = dynamic_cast<Triangle*>(lastEl);
+            if (derived) {
+                canvasLayout->addElement(derived);
+                Selected::getInstance().setSelectedElement(derived);
             }
             break;
 		}
         case guiElement::ELLIPSE: {
-            ep.center = point1;
-            ep.radiusX = std::abs(point3.x - point1.x);
-            ep.radiusY = std::abs(point2.y - point1.y);
-            ep.centerType = TagType::IVec;
-            Ellipse* element = dynamic_cast<Ellipse*>(factory(ge, ep));
-            if (element) {
-                canvasLayout->addElement(element);
-                Selected::getInstance().setSelectedElement(element);
+            Ellipse* derived = dynamic_cast<Ellipse*>(lastEl);
+            if (derived) {
+                canvasLayout->addElement(derived);
+                Selected::getInstance().setSelectedElement(derived);
             }
             break;
         }
         case guiElement::ARROW: {
-            if ((point1.x > point2.x) && (point1.y > point2.y)) {
-                ivec2 holder = point1;
-                point1 = point2;
-                point2 = holder;
-            }
-            ep.min = point1;
-            ep.max = point2;    
-            ivec2 center = ivec2(std::abs(point2.x + point1.x)/2, std::abs(point2.y + point1.y)/2);
-
-            if ((point3.y > center.y) && (point3.x < point2.x) && (point3.x > point1.x)) {
-                ep.pointA = ivec2(point1.x - ((point2.x - point1.x)/5), point2.y);
-                ep.pointB = ivec2(point2.x + ((point2.x - point1.x)/5), point2.y);
-            }
-            else if ((point3.y < center.y) && (point3.x > point1.x) && (point3.x < point2.x)) {
-                ep.pointA = ivec2(point1.x - ((point2.x - point1.x)/5), point1.y);
-                ep.pointB = ivec2(point2.x + ((point2.x - point1.x)/5), point1.y);
-            }
-            else if (point3.x < center.x) {
-                ep.pointA = ivec2(point1.x, point1.y - ((point2.y - point1.y)/5));
-                ep.pointB = ivec2(point1.x, point2.y + ((point2.y - point1.y)/5));
-            }
-            else {
-                ep.pointA = ivec2(point2.x, point1.y - ((point2.y - point1.y)/5));
-                ep.pointB = ivec2(point2.x, point2.y + ((point2.y - point1.y)/5));
-            }
-            
-            ep.pointC = point3;
-            ep.minType = TagType::IVec;
-            ep.maxType = TagType::IVec;
-            ep.pointAType = TagType::IVec;
-            ep.pointBType = TagType::IVec;
-            ep.pointCType = TagType::IVec;
-            Arrow* element = dynamic_cast<Arrow*>(factory(ge, ep));
-            if (element) {
-                canvasLayout->addElement(element);
-                Selected::getInstance().setSelectedElement(element);
+            Arrow* derived = dynamic_cast<Arrow*>(lastEl);
+            if (derived) {
+                canvasLayout->addElement(derived);
+                Selected::getInstance().setSelectedElement(derived);
             }
             break;
         }
         case guiElement::TEXTBOX: {
-            if (point1.x > point2.x) {
-                ivec2 holder = point1;
-                point1 = point2;
-                point2 = holder;
-            }
-            ep.min = point1;
-            ep.max = point2;
-            ep.color = ivec3(220, 220, 220);
-            ep.textColor = color;
-            ep.text = "";
-            TextBox* element = dynamic_cast<TextBox*>(factory(guiElement::TEXTBOX, ep));
-            if (element) {
-                canvasLayout->addElement(element);
-                Selected::getInstance().setSelectedElement(element);
+            Box* derived = dynamic_cast<Box*>(lastEl);
+            if (derived) {
+                ElementParameters textParam = derived->getParameters();
+                textParam.textColor = textParam.color;
+                textParam.color = ivec3(220, 220, 220);
+                textParam.text = "";
+                TextBox* element = dynamic_cast<TextBox*>(factory(guiElement::TEXTBOX, textParam));
+                if (element) {
+                    canvasLayout->addElement(element);
+                    Selected::getInstance().setSelectedElement(element);
+                }
+                delete derived;
             }
             break;
         }
@@ -251,10 +251,13 @@ void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 
             break;
         }
 	}
-    tempLayout->clearElements();
 }
 
 void startFreehandDraw(const ivec2& point, const ivec3& color, bool isFreehandShape) {
+    ivec2 toolBarBounds = toolBarLayout->getBounds()[1];
+    if (point.y < toolBarBounds.y) {
+        return;
+    }
     Freehand* freehand = new Freehand(color, isFreehandShape);
     canvasLayout->addElement(freehand);
     EventSystem& eventSystem = EventSystem::getInstance();
@@ -263,11 +266,18 @@ void startFreehandDraw(const ivec2& point, const ivec3& color, bool isFreehandSh
 }
 
 void continueFreehandDraw(const ivec2& point) {
+    ivec2 toolBarBounds = toolBarLayout->getBounds()[1];
+    if (point.y < toolBarBounds.y) {
+        EventSystem::getInstance().push(std::make_unique<MouseUpEvent>(point));
+        return;
+    }
     EventSystem::getInstance().push(std::make_unique<MouseMotionEvent>(point, true));
 }
 
 void endFreehandDraw(const ivec2& point) {
-    EventSystem::getInstance().push(std::make_unique<MouseUpEvent>(point));
+    EventSystem& eventSystem = EventSystem::getInstance();
+    Selected::getInstance().setSelectedElement(eventSystem.getTargetedElement());
+    eventSystem.push(std::make_unique<MouseUpEvent>(point));
 }
 
 void setClickAndDrag(ivec2 mouse) {
@@ -517,7 +527,8 @@ void cancelMove() {
 }
 
 void unselect() {
-    EventSystem::getInstance().push(std::make_unique<ClickEvent>(-1, -1));
+    EventSystem::getInstance().setTargetedElement(nullptr);
+    Selected::getInstance().setSelectedElement(nullptr);
 }
 
 void clicked(ivec2 coords) {
@@ -568,10 +579,7 @@ void updateScreen(DrawingMode mode) {
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
-    // // tempLayout->draw(screen);
     boundingLayout->draw(screen);
-    // screen->blitTo(SDL_GetWindowSurface(window));
-    // SDL_UpdateWindowSurface(window);
 
     updateActionButtonColors();
     updateToolbarButtonColors(mode);
@@ -604,12 +612,6 @@ void copy() {
 
 void paste() {
     if (clipboardType != guiElement::UNKNOWN) {
-        // float x, y;
-        // SDL_GetMouseState(&x, &y);
-        // ivec2 mouseCoords = ivec2(static_cast<int>(x), static_cast<int>(y));
-        // ivec2 delta = mouseCoords - lastMousePos;
-        // delta.x += 20;
-        // delta.y += 20;
         ivec2 delta = ivec2(20, 20);
         ElementParameters newObj = clipboard;
         newObj.coords += delta;
@@ -772,6 +774,10 @@ bool isInsideSameButton(const ivec2& point) {
         return true;
     }
     return false;
+}
+
+void resetPressedButton() {
+    pressedButton = nullptr;
 }
 
 int requiredPointsForType(guiElement type) {

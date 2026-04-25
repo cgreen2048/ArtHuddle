@@ -2,13 +2,11 @@
 #include "../Global.hpp"
 #include <memory>
 #include "../Layout.hpp"
-#include "../Button.hpp"
 #include "../EventSystem.hpp"
-#include "../Freehand.hpp"
 #include "../MouseDownEvent.hpp"
 #include "../MouseMotionEvent.hpp"
 #include "../MouseUpEvent.hpp"
-#include "../ClickEvent.hpp"
+#include "../ClientNetwork.hpp"
 
 void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 
@@ -23,6 +21,10 @@ int main() {
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
     Layout* layout = initialize(mode, points, point1, point2, point3);
+    // Connect to server
+    if (!connectToServer("127.0.0.1", 40666)) {
+        std::cerr << "Failed to connect\n";
+    }
 
     loadSound("../SFX/song.wav");
     playSound("../SFX/song.wav", true);
@@ -42,11 +44,7 @@ int main() {
                     break;
                 }
                 case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-                    // eventSystem.push(std::make_unique<ClickEvent>(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
-                    // playSound("../SFX/chords.wav", true);
-                    int mouseX = static_cast<int>(event.button.x);
-                    int mouseY = static_cast<int>(event.button.y);
-                    ivec2 mousePos(mouseX, mouseY);
+                    ivec2 mousePos(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
 
                     if (pressedToolbarButton(mousePos)) {
                         currentInteractionState = InteractionState::TOOLBAR_CLICK;
@@ -87,6 +85,7 @@ int main() {
                                 break;
                             }
 
+                            // If an element is selected, allow for selecting/dragging that element if mouse within bounding box
                             if (selected.getSelectedElement() != nullptr) {
                                 if (selected.isInside(mousePos)) {
                                     lastMousePos = mousePos;
@@ -139,11 +138,11 @@ int main() {
                 case SDL_EVENT_MOUSE_BUTTON_UP: {
                     ivec2 mousePos(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
 
-        
                     switch (currentInteractionState) {
                         case InteractionState::FREEHAND_DRAWING: {
                             endFreehandDraw(mousePos);
                             currentInteractionState = InteractionState::IDLE;
+                            mode = DrawingMode::SELECT;
                             break;
                         }
                         case InteractionState::DRAGGING: {
@@ -170,7 +169,7 @@ int main() {
                             break;
                         }
                     }
-                    pressedButton = nullptr;
+                    resetPressedButton();
                     
                     break;
                 }
@@ -317,6 +316,7 @@ int main() {
 
         updateScreen(mode);
     }
+    closeConnection(); // Closes client
     closeAll();
     return 0;
 }
