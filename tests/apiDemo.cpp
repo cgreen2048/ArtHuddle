@@ -32,6 +32,7 @@ int main() {
     ivec2 lastMousePos;
     SDL_Event event;
     EventSystem& eventSystem = EventSystem::getInstance();
+    Selected& selected = Selected::getInstance();
     bool end = false;
     while (!end) {
         while (SDL_PollEvent(&event)) {
@@ -86,6 +87,17 @@ int main() {
                                 break;
                             }
 
+                            if (selected.getSelectedElement() != nullptr) {
+                                if (selected.isInside(mousePos)) {
+                                    lastMousePos = mousePos;
+   
+                                    eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
+                                    currentInteractionState = InteractionState::DRAGGING;
+                                    setClickAndDrag(lastMousePos);
+                                    break;
+                                }
+                            }
+                            
                             GuiElement* hit = canvasLayout->getElementAt(mousePos);
                             if (hit) {
                                 lastMousePos = mousePos;

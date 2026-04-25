@@ -271,15 +271,14 @@ void endFreehandDraw(const ivec2& point) {
 }
 
 void setClickAndDrag(ivec2 mouse) {
-    GuiElement* current = Selected::getInstance().getSelectedElement();
-    if (current) {
-        if (!current->isInside(mouse)) {
-            return;
-        }
+    Selected& selected = Selected::getInstance();
+    GuiElement* current = selected.getSelectedElement();
+    if (!current || !selected.isInside(mouse)) {
+        return;
     }
     lastMousePos = mouse;
     if (draggingElement == nullptr) {
-        draggingElement = Selected::getInstance().getSelectedElement();
+        draggingElement = current;
         if (draggingElement) {
             originalElementParameters = draggingElement->getParameters();
             draggingElementParameters = draggingElement->getParameters();
