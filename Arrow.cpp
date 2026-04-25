@@ -230,6 +230,36 @@ ivec2 Arrow::getC() {
     return this->pointC;
 }
 
+void Arrow::setMin(ivec2 point, TagType pointType) {
+    this->min = point;
+    this->minType = pointType;
+}
+
+void Arrow::setMax(ivec2 point, TagType pointType) {
+    this->max = point;
+    this->maxType = pointType;
+}
+
+void Arrow::setA(ivec2 point, TagType pointType) {
+    this->pointA = point;
+    this->pointAType = pointType;
+}
+
+void Arrow::setB(ivec2 point, TagType pointType) {
+    this->pointB = point;
+    this->pointBType = pointType;
+}
+
+void Arrow::setC(ivec2 point, TagType pointType) {
+    this->pointC = point;
+    this->pointCType = pointType;
+}
+
+void Arrow::setColor(ivec3 color, TagType colorType) {
+    this->color = color;
+    this->colorType = colorType;
+}
+
 ElementParameters Arrow::getParameters() {
     ElementParameters ep;
     ep.min = this->min;

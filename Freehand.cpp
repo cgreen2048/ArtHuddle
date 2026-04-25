@@ -76,7 +76,8 @@ void Freehand::draw(Screen *screen) {
 void Freehand::floodFill(ivec2 start, Screen* screen) {
     std::stack<ivec2> st;
     st.push(start);
-
+    std::vector<ivec2> pointsToColor;
+    std::vector<bool> visited(screen->getWidth() * screen->getHeight(), false);
     while (!st.empty()) {
         ivec2 p = st.top();
         st.pop();
@@ -89,12 +90,17 @@ void Freehand::floodFill(ivec2 start, Screen* screen) {
         }
 
         ivec3 current = screen->getPixelColor(p);
-
         if (current == this->color) {
             continue;
         }
+        int id = p.y * screen->getWidth() + p.x;
+        if (visited[id]) {
+            continue;
+        }
 
-        screen->colorOnePixel(p, this->color, this->parentStart, this->parentEnd);
+        // screen->colorOnePixel(p, this->color, this->parentStart, this->parentEnd);
+        pointsToColor.push_back(p);
+        visited[id] = true;
         updateBounds(p);
 
         st.push(ivec2(x + 1, y));
@@ -102,6 +108,10 @@ void Freehand::floodFill(ivec2 start, Screen* screen) {
         st.push(ivec2(x, y + 1));
         st.push(ivec2(x, y - 1));
     }
+    std::sort(pointsToColor.begin(), pointsToColor.end(), [](const ivec2& a, const ivec2& b) {
+        return a.y == b.y ? a.x < b.x : a.y < b.y;
+    });
+    screen->drawFreehandFlood(pointsToColor, this->color, this->parentStart, this->parentEnd);
 }
 
 void Freehand::updateBounds(const ivec2& coords) {
@@ -174,18 +184,21 @@ bool Freehand::resolveEvent(Event *e) {
         ivec2 current = mu->getCoords();
         // this->points.push_back(ivec2{lastDrawnPoint});
         // this->updateBounds(ivec2{lastDrawnPoint});
-        this->finished = true;
+        
 
         if (isFreehandShape) {
             int dx = current.x - points[0].x;
             int dy = current.y - points[0].y;
 
             if (dx * dx + dy * dy > SHAPE_COMPLETION_DIST_THRESHOLD * SHAPE_COMPLETION_DIST_THRESHOLD) {  
-                this->points.clear();
-                lastDrawnPoint = current;
-                return false;
+                if (!this->finished) {
+                    this->points.clear();
+                    lastDrawnPoint = current;
+                    return false;
+                }
+                
             }
-
+            this->finished = true;
             this->points.push_back(points[0]);
             lastDrawnPoint = points[0];
             this->updateBounds(ivec2{lastDrawnPoint});
@@ -300,7 +313,7 @@ ElementParameters Freehand::getParameters() {
     ElementParameters ep;
     ep.points = this->points;
     ep.hasFirstPoint = this->hasFirstPoint;
-    this->lastDrawnPoint = ep.lastDrawnPoint;
+    ep.lastDrawnPoint = this->lastDrawnPoint;
     ep.finished = this->finished;
     ep.color = this->color;
     ep.isFreehandShape = this->isFreehandShape;
@@ -384,4 +397,10 @@ void Freehand::setBounds() {
 
 std::vector<ivec2> Freehand::getBounds() {
     return {this->minBound, this->maxBound};
+}
+
+void Freehand::movePoints(ivec2 delta) {
+    for (int i = 0; i < this->points.size(); ++i) {
+        this->points[i] += delta;
+    }
 }

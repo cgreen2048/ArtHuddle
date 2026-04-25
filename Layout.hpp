@@ -44,11 +44,13 @@ class Layout : public GuiElement {
         bool isInside(ivec2 coordinates);
         void clearElements();
         void deleteElement(const std::string& elementName);
+        GuiElement* removeElement(const std::string& elementName);
         bool validateAndNormalize(ElementParameters& ep);
         ElementParameters getParameters();
         guiElement getType();
         void setBounds();
 		std::vector<ivec2> getBounds();
+        GuiElement* popLast();
 };
 
 #endif

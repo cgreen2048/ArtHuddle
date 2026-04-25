@@ -6,7 +6,7 @@
 #include "ElementParameters.hpp"
 #include "Event.hpp"
 
-enum class guiElement {FREEHAND, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, POINT, BUTTON, LAYOUT, UNKNOWN};
+enum class guiElement {POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND, BUTTON, LAYOUT, UNKNOWN};
 
 #define PADDING 10
 
