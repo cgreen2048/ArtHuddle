@@ -77,12 +77,14 @@ void Line::setStart(const ivec2& v, TagType t){
     this->start = v;
     this->startType = t;
     this->setBounds();
+    this->setPoints();
 }
 
 void Line::setEnd(const ivec2& v, TagType t){
     this->end = v;
     this->endType = t;
     this->setBounds();
+    this->setPoints();
 }
 
 void Line::setColor(const ivec3& v, TagType t){
