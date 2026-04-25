@@ -300,7 +300,7 @@ Creates a new `Screen` object, set to the size of the full window, and assigns i
 
 ---
 
-### `Layout* createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `Layout* createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates and connects all layouts:
 - `rootLayout`
 - `canvasLayout`
@@ -329,7 +329,7 @@ saves the relative filepath to `currentFileSavePath`, and calls `saveCanvas()` w
 
 ---
 
-### `void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `void initButtons(Layout* layout, DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates all toolbar buttons and assigns:
 - positions
 - colors
@@ -363,7 +363,7 @@ Loads an XML file into `canvasLayout`:
 
 ---
 
-### `void updateToolbarButtonColors(int& type)`
+### `void updateToolbarButtonColors(DrawingMode mode)`
 Updates colors of **mode buttons**:
 - Highlights the currently selected tool
 - Resets others to default color
@@ -386,7 +386,7 @@ The interface that allows a programmer to interact with the underlying systems c
 
 ## Functions
 
-### `void initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `void initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Initializes video and audio through SDL and calls `createWindow()`, `createScreen()`, `createRootLayout()`, and `setEventSystem()` from `Global`
 - Also starts SDL text input
 - Disables accent menu on Mac that appears when a user holds down a key
@@ -403,15 +403,15 @@ Attempts to play the file specified by `filePath` using the program's `SoundPlay
 
 ---
 
-### `void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
-Draws an element of type specified by `type` to the `tempLayout` `Layout` object based on the three passed coordinates
+### `void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+Draws an element of type specified by `ge` to the `tempLayout` `Layout` object based on the three passed coordinates
 - Some shapes need fewer than three coordinates
 - For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
 
 ---
 
-### `void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
-Draws an element of type specified by `type` to the `canvasLayout` `Layout` object based on the three passed coordinates
+### `void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+Draws an element of type specified by `ge` to the `canvasLayout` `Layout` object based on the three passed coordinates
 - Some shapes need fewer than three coordinates
 - For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
 - Automatically selects the newly drawn element
@@ -502,7 +502,7 @@ A call to delete the specified shape
 
 ---
 
-### `void update()`
+### `void updateScreen()`
 Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer`, draws an overlay, and updates button colors:
 - Highlights the currently selected toolbar button  
 - Applies a temporary flash effect to the Save and Load buttons when clicked
@@ -536,6 +536,43 @@ Attempts to change the color of an element
 ### `void updateCursorIcon(const ivec2& point, bool currentlyDragging)`
 Updates the cursor icon based on if the cursor is hovering over an element or dragging an element. If either of those are true, the cursor is set to `handCursor` (`SDL_SYSTEM_CURSOR_POINTER`), otherwise it is set to
 `arrowCursor` (`SDL_SYSTEM_CURSOR_DEFAULT`)
+
+---
+
+### `bool pressedToolbarButton(const ivec2& point)`
+Checks if the user has clicked on a toolbar button by checking if `point` is within the bounds of
+any toolbar button. Sets `pressedButton` to the clicked button if true and returns true, otherwise returns false
+
+---
+
+### `bool isInsideSameButton(const ivec2& point)`
+Checks if the user's mouse up position `point` is within the bounds of the same button stored
+in `pressedButton`
+
+---
+
+### `int requiredPointsForType(guiElement type)`
+Helper function that returns the number of points required to draw an element of type `type`, used to determine when an element is ready to be drawn based on how many points the user has input so far
+
+---
+
+### `guiElement tempElementType(DrawingMode mode)`
+Helper function that returns the type of element being currently drawn based on the current drawing mode, used to determine what type of element to draw in the temporary layout as the user is inputting points
+
+---
+
+### `guiElement modeToType(DrawingMode mode)`
+Helper function that returns the type of element being currently drawn based on the current drawing mode, used to determine what type of element to draw in the canvas layout when the user has input enough points to finalize a shape
+
+---
+
+### `void storePoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3)`
+Helper function to store the user's input points based on how many points they have input so far, used to keep track of the points needed to draw shapes as the user clicks on the canvas
+
+---
+
+### `void resetPoints(int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Helper function to reset the user's input points, used to clear point tracking when the user finishes drawing a shape and prepares for the next shape
 
 ---
 
