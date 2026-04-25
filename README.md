@@ -246,11 +246,17 @@ A variable to hold a struct returned from an element's `getParameters()` method 
 ### `guiElement clipboardType`
 The type of element stored in the `clipboard` variable. Used to create a new element when pasting. Initialized to guiElement::UNKNOWN
 
+---
+
 ### `SDL_Cursor* arrowCursor`
 A cursor to represent the default arrow cursor
 
+---
+
 ### `SDL_Cursor* handCursor`
 A cursor to represent a hand, used when hovering over elements or dragging
+
+---
 
 ### `SDL_Cursor* currentCursor`
 A variable to hold the current cursor being used, initialized to `arrowCursor`
@@ -264,6 +270,19 @@ The filepath to the most recently loaded file. Used to determine where to save i
 
 ### `std::filesystem::path currentFileSavePath`
 The filepath to the most recently saved file. Used to determine where to save if the user attempts to save to a certain location
+
+---
+
+### `Button* pressedButton`
+A variable to hold the most recently pressed button, used to trigger the button effect if the mouse is still on the same button when the mouse button is released
+
+---
+
+### `enum class InteractionState { IDLE, FREEHAND_DRAWING, SHAPE_DRAWING, DRAGGING, TOOLBAR_CLICK }`
+An enum to represent the current state of user interaction, used to determine how mouse events should be handled.
+
+### `InteractionState currentInteractionState`
+A variable to hold the current interaction state of the user, initialized to `InteractionState::IDLE`
 
 ---
 
