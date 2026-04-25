@@ -15,7 +15,7 @@ MAC_LDLIBS := -framework sdl3
 
 FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../helperFunctions.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../Ellipse.cpp ../TextBox.cpp ../Arrow.cpp ../Freehand.cpp 
 EVENT_ELEMENTS := ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp ../MouseEvent.cpp ../MouseUpEvent.cpp ../MouseDownEvent.cpp ../MouseMotionEvent.cpp
-UTILITY_ELEMENTS := ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../GUIFile.cpp
+UTILITY_ELEMENTS := ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../GUIFile.cpp ../ClientNetwork.hpp
 
 test:
 	g++ tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3
@@ -71,14 +71,12 @@ test:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)   LayoutDeleteTest.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o layoutDelete
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../Global.cpp ../API.cpp apiDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../ClientNetwork.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o apiDemo
 	
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) server.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o server
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) client.cpp \
-		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o client
 
 
 
@@ -88,7 +86,7 @@ studentMachine: testsStudentMachine freehandDemoStudentMachine milestone001Stude
 	layoutDemoStudentMachine milestone006StudentMachine milestone006EventSystemStudentMachine \
 	milestone006DemoStudentMachine ellipseDemoStudentMachine arrowDemoStudentMachine \
 	textBoxDemoStudentMachine textInButtonDemoStudentMachine selectedDemoStudentMachine \
-	layoutDeleteStudentMachine
+	layoutDeleteStudentMachine apiDemoStudentMachine serverStudentMachine
 
 testsStudentMachine:
 	$(CXX) tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
@@ -163,16 +161,13 @@ layoutDeleteStudentMachine:
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDelete
 
 apiDemoStudentMachine:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../Global.cpp ../API.cpp apiDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../ClientNetwork.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o apiDemo
 
 serverStudentMachine:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) server.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o server
 
-clientStudentMachine:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) client.cpp \
-		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o client
 	
 
 
@@ -259,19 +254,16 @@ layoutDeleteMac:
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o layoutDelete
 	
 apiDemoMac:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../Global.cpp ../API.cpp apiDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../ClientNetwork.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o apiDemo
 
 serverStudentMac:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) server.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o server
 
-clientStudentMac:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) client.cpp \
-		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o client
 
 clean:
-	rm -f a.out freehandDemo milestone001 milestone002 screenDemo \
+	rm -f a.out server freehandDemo milestone001 milestone002 screenDemo \
 		milestone003 milestone004 milestone005 milestone005LayoutTests \
 		milestone006 milestone006EventSystem milestone006Demo \
 		layoutDemo ellipseDemo arrowDemo textBoxDemo textInButtonDemo \

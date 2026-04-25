@@ -1,16 +1,8 @@
 // server.cpp
 #include <iostream>
 #include <cstring>
-#include "../API.hpp"
-#include "../Global.hpp"
 #include <memory>
-#include "../Layout.hpp"
-#include "../Button.hpp"
-#include "../EventSystem.hpp"
-#include "../Freehand.hpp"
-#include "../MouseDownEvent.hpp"
-#include "../MouseMotionEvent.hpp"
-#include "../MouseUpEvent.hpp"
+
 
 #ifdef _WIN32
     #include <WinSock2.h>
