@@ -578,10 +578,7 @@ void update(int& type) {
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
-    // // tempLayout->draw(screen);
     boundingLayout->draw(screen);
-    // screen->blitTo(SDL_GetWindowSurface(window));
-    // SDL_UpdateWindowSurface(window);
 
     updateActionButtonColors();
     updateToolbarButtonColors(type);
@@ -614,12 +611,6 @@ void copy() {
 
 void paste() {
     if (clipboardType != guiElement::UNKNOWN) {
-        // float x, y;
-        // SDL_GetMouseState(&x, &y);
-        // ivec2 mouseCoords = ivec2(static_cast<int>(x), static_cast<int>(y));
-        // ivec2 delta = mouseCoords - lastMousePos;
-        // delta.x += 20;
-        // delta.y += 20;
         ivec2 delta = ivec2(20, 20);
         ElementParameters newObj = clipboard;
         newObj.coords += delta;

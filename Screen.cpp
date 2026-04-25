@@ -210,14 +210,6 @@ void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors
 }
 
 void Screen::drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, ivec2 parentStart, ivec2 parentEnd) {
-    // std::vector<std::future<void>> futures;
-    // auto drawStrip = [this, color, parentStart, parentEnd](int y, int start, int end) {
-    //     return this->threadPool.enqueue([=] {
-    //         for (int i = start; i <= end; ++i) {
-    //             this->colorOnePixel(ivec2(i, y), color, parentStart, parentEnd);
-    //         }
-    //     });
-    // };
     float dx, dy, d1, d2, x = 0, y = radiusY;
 
     d1 = (radiusY * radiusY) - (radiusX * radiusX * radiusY) + (0.25 * radiusX * radiusX);
@@ -236,8 +228,6 @@ void Screen::drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, iv
             colorOnePixel(ivec2(i, yCenter + intY), color, parentStart, parentEnd);
             colorOnePixel(ivec2(i, yCenter - intY), color, parentStart, parentEnd);
         }
-        // futures.push_back(drawStrip(yCenter + intY, xCenter - intX, xCenter + intX));
-        // futures.push_back(drawStrip(yCenter - intY, xCenter - intX, xCenter + intX));
 
         if (d1 < 0)
         {
@@ -269,8 +259,6 @@ void Screen::drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, iv
             colorOnePixel(ivec2(i, yCenter + intY), color, parentStart, parentEnd);
             colorOnePixel(ivec2(i, yCenter - intY), color, parentStart, parentEnd);
         }
-        // futures.push_back(drawStrip(yCenter + intY, xCenter - intX, xCenter + intX));
-        // futures.push_back(drawStrip(yCenter - intY, xCenter - intX, xCenter + intX));
 
         // Checking and updating parameter
         // value based on algorithm
@@ -362,9 +350,6 @@ void Screen::drawFreehandFlood(std::vector<ivec2> points, ivec3 color, ivec2 par
     for (auto& f : futures) {
         f.wait();
     }
-    // for (ivec2 p : points) {
-    //     colorOnePixel(p, color, parentStart, parentEnd);
-    // }
 }
 
 ivec3 Screen::getPixelColor(ivec2 coords) const {

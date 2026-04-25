@@ -269,25 +269,10 @@ void Layout::clearElements() {
 }
 
 void Layout::deleteElement(const std::string& name) {
-    for (auto it = elements.begin(); it != elements.end(); ++it) {
-        if ((*it)->getName() == name) {
-            EventSystem& eventSystem = EventSystem::getInstance();
-            GuiElement* target = eventSystem.getTargetedElement();
-
-            if (target != nullptr && target->getName() == name) {
-                eventSystem.setTargetedElement(nullptr);
-            }
-
-            Selected& selectedSystem = Selected::getInstance();
-            GuiElement* selected = selectedSystem.getSelectedElement();
-            if (selected != nullptr && selected->getName() == name) {
-                selectedSystem.setSelectedElement(nullptr);
-            }
-
-            delete *it;
-            elements.erase(it);
-            return;
-        }
+    GuiElement* target = this->removeElement(name);
+    if (target) {
+        delete target;
+        return;
     }
     for (auto it = elements.begin(); it != elements.end(); ++it) {
         Layout* nested = dynamic_cast<Layout*>(*it);
@@ -297,9 +282,10 @@ void Layout::deleteElement(const std::string& name) {
     }
 }
 
-void Layout::removeElement(GuiElement* element) {
+GuiElement* Layout::removeElement(const std::string& name) {
     for (auto it = elements.begin(); it != elements.end(); ++it) {
         if ((*it)->getName() == name) {
+            GuiElement* found = *it;
             EventSystem& eventSystem = EventSystem::getInstance();
             GuiElement* target = eventSystem.getTargetedElement();
 
@@ -314,9 +300,10 @@ void Layout::removeElement(GuiElement* element) {
             }
 
             elements.erase(it);
-            return;
+            return found;
         }
     }
+    return nullptr;
 }
 
 ElementParameters Layout::getParameters() {

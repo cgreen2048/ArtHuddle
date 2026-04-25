@@ -1693,13 +1693,14 @@ Clears the `elements` vector so that no previous elements will be drawn
 ---
 
 ### `void deleteElement(const std::string& elementName)`
-Finds the element whose name = `elementName`, deleting if found
+Finds the element whose name = `elementName` using `removeElement()`, deleting if found. If not, nested layouts are searched
 
 ---
 
-### `void removeElement(GuiElement* element)`
+### `GuiElement* removeElement(GuiElement* element)`
 Iterates through stored elements, removing `element` from the vector if found
 - Does not delete `element`, useful for transfering an element between layouts
+- Returns the found element pointer
 
 ---
 
