@@ -79,6 +79,10 @@ extern std::filesystem::path currentFileSavePath;
 extern SDL_Cursor* arrowCursor;
 extern SDL_Cursor* handCursor;
 extern SDL_Cursor* currentCursor;
+extern Button* pressedButton;
+
+enum class InteractionState { IDLE, FREEHAND_DRAWING, SHAPE_DRAWING, DRAGGING, TOOLBAR_CLICK };
+extern InteractionState currentInteractionState;
 
 
 void createWindow();

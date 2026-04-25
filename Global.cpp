@@ -21,6 +21,8 @@ std::filesystem::path currentFileSavePath = "";
 SDL_Cursor* arrowCursor = nullptr;
 SDL_Cursor* handCursor  = nullptr;
 SDL_Cursor* currentCursor = nullptr;
+Button* pressedButton = nullptr;
+InteractionState currentInteractionState = InteractionState::IDLE;
 
 // int type = 9;
 // int points = 0;

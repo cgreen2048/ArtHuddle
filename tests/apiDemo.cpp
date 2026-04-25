@@ -8,6 +8,7 @@
 #include "../MouseDownEvent.hpp"
 #include "../MouseMotionEvent.hpp"
 #include "../MouseUpEvent.hpp"
+#include "../ClickEvent.hpp"
 
 void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 
@@ -27,8 +28,6 @@ int main() {
     ivec3 color = ivec3(125, 125, 125);
     std::cout << "1 to draw a point\n2 to draw a line\n3 to draw a box\n4 to draw a triangle\n5 to draw an ellipse\n6 to draw an arrow\n7 to draw a text box\n8 to draw a freehand line\n9to draw a freehand shape\n0 to select elements\nEscape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
 
-    bool clickAndHold = false;
-    bool justFinishedDrawing = false;
     ivec2 lastMousePos;
     SDL_Event event;
     EventSystem& eventSystem = EventSystem::getInstance();
@@ -45,34 +44,37 @@ int main() {
                     // playSound("../SFX/chords.wav", true);
                     int mouseX = static_cast<int>(event.button.x);
                     int mouseY = static_cast<int>(event.button.y);
+                    ivec2 mousePos(mouseX, mouseY);
 
-                    if (mouseY <= 2 * bH - p) {
-                        eventSystem.push(std::make_unique<ClickEvent>(mouseX, mouseY));
-                        eventSystem.processEvents(layout);
+                    Button* button = dynamic_cast<Button*>(layout->getElementAt(mousePos));
+                    if (button) {
+                        pressedButton = button;
+                        currentInteractionState = InteractionState::TOOLBAR_CLICK;
                         break;
                     }
 
                     switch (type) {
                         case 0: {
-                            point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                            point1 = mousePos;
                             drawElement(type, point1, point2, point3, color);
                             resetPoints(points, point1, point2, point3);
-                            justFinishedDrawing = true;
+                            currentInteractionState = InteractionState::IDLE;
                             type = 9;
                             break;
                         }
                         case 1: {
                             switch (points) {
                                 case 0: {
-                                    point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point1 = mousePos;
                                     ++points;
+                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
                                     break;
                                 }
                                 case 1: {
-                                    point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point2 = mousePos;
                                     drawElement(type, point1, point2, point3, color);
                                     resetPoints(points, point1, point2, point3);
-                                    justFinishedDrawing = true;
+                                    currentInteractionState = InteractionState::IDLE;
                                     type = 9;
                                     break;
                                 }
@@ -82,15 +84,16 @@ int main() {
                         case 2: {
                             switch (points) {
                                 case 0: {
-                                    point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point1 = mousePos;
                                     ++points;
+                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
                                     break;
                                 }
                                 case 1: {
-                                    point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point2 = mousePos;
                                     drawElement(type, point1, point2, point3, color);
                                     resetPoints(points, point1, point2, point3);
-                                    justFinishedDrawing = true;
+                                    currentInteractionState = InteractionState::IDLE;
                                     type = 9;
                                     break;
                                 }
@@ -100,21 +103,22 @@ int main() {
                         case 3: {
                             switch (points) {
                                 case 0: {
-                                    point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point1 = mousePos;
                                     ++points;
+                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
                                     break;
                                 }
                                 case 1: {
-                                    point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point2 = mousePos;
                                     ++points;
                                     break;
                                 }
                                 case 2: {
-                                    point3 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point3 = mousePos;
                                     drawElement(type, point1, point2, point3, color);
                                     resetPoints(points, point1, point2, point3);
-                                    justFinishedDrawing = true;
                                     type = 9;
+                                    currentInteractionState = InteractionState::IDLE;
                                     break;
                                 }
                             }
@@ -123,21 +127,22 @@ int main() {
                         case 4: {
                             switch (points) {
                                 case 0: {
-                                    point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point1 = mousePos;
                                     ++points;
+                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
                                     break;
                                 }
                                 case 1: {
-                                    point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point2 = mousePos;
                                     ++points;
                                     break;
                                 }
                                 case 2: {
-                                    point3 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point3 = mousePos;
                                     drawElement(type, point1, point2, point3, color);
                                     resetPoints(points, point1, point2, point3);
-                                    justFinishedDrawing = true;
                                     type = 9;
+                                    currentInteractionState = InteractionState::IDLE;
                                     break;
                                 }
                             }
@@ -146,21 +151,22 @@ int main() {
                         case 5: {
                             switch (points) {
                                 case 0: {
-                                    point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point1 = mousePos;
                                     ++points;
+                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
                                     break;
                                 }
                                 case 1: {
-                                    point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point2 = mousePos;
                                     ++points;
                                     break;
                                 }
                                 case 2: {
-                                    point3 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point3 = mousePos;
                                     drawElement(type, point1, point2, point3, color);
                                     resetPoints(points, point1, point2, point3);
-                                    justFinishedDrawing = true;
                                     type = 9;
+                                    currentInteractionState = InteractionState::IDLE;
                                     break;
                                 }
                             }
@@ -169,76 +175,104 @@ int main() {
                         case 6: {
                             switch (points) {
                                 case 0: {
-                                    point1 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point1 = mousePos;
                                     ++points;
+                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
                                     break;
                                 }
                                 case 1: {
-                                    point2 = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+                                    point2 = mousePos;
                                     drawElement(type, point1, point2, point3, color);
                                     resetPoints(points, point1, point2, point3);
-                                    justFinishedDrawing = true;
                                     type = 9;
+                                    currentInteractionState = InteractionState::IDLE;
                                     break;
                                 }
                             }
                             break;
                         }
-                        case 7: {
-                            startFreehandDraw(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)), color, false);
-                            justFinishedDrawing = true;
-                            break;
-                        }
-                        case 8: {
-                            startFreehandDraw(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)), color, true);
-                            justFinishedDrawing = true;
+                        case 7: 
+                        case 8:{
+                            startFreehandDraw(mousePos, color, type == 8);
+                            currentInteractionState = InteractionState::FREEHAND_DRAWING;
                             break;
                         }
                         case 9: {
-                            if (justFinishedDrawing) {
+                            if (currentInteractionState != InteractionState::IDLE) {
                                 break;
                             }
-                            lastMousePos = ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
-                            eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
-                            // eventSystem.push(std::make_unique<ClickEvent>(lastMousePos.x, lastMousePos.y));
-                            clickAndHold = true;
-                            setClickAndDrag(lastMousePos);
+
+                            GuiElement* hit = canvasLayout->getElementAt(mousePos);
+                            if (hit) {
+                                lastMousePos = mousePos;
+                                Selected::getInstance().setSelectedElement(hit);
+                                eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
+                                // eventSystem.push(std::make_unique<ClickEvent>(lastMousePos.x, lastMousePos.y));
+                                currentInteractionState = InteractionState::DRAGGING;
+                                setClickAndDrag(lastMousePos);
+                                break;
+                            }
+
+                            break;
                         }
                         default: {
-                            clicked(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
+                            clicked(mousePos);
                             break;
                         }
                     }
                     break;
                 }
                 case SDL_EVENT_MOUSE_MOTION: {
-                    if ((type == 7 || type == 8) && event.motion.state != 0) {
-                        continueFreehandDraw(ivec2(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)));
-                        break;
-                    }
-                    if (type == 9) {
-                        if (clickAndHold && !justFinishedDrawing) {
+                    switch (currentInteractionState) {
+                        case InteractionState::FREEHAND_DRAWING: {
+                            if (event.motion.state != 0) {
+                                continueFreehandDraw(ivec2(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)));
+                            }
+                            break;
+                        }
+                        case InteractionState::DRAGGING: {
                             drawClickAndDrag(ivec2(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)));
+                            break;
+                        }
+                        default: {
+                            break;
                         }
                     }
+
                     break;
                 }
                 case SDL_EVENT_MOUSE_BUTTON_UP: {
-                    if (type == 7 || type == 8) {
-                        endFreehandDraw(ivec2(static_cast<int>(event.button.x), static_cast<int>(event.button.y)));
-                        break;
-                    }
-                    if (justFinishedDrawing) {
-                        justFinishedDrawing = false;
-                        clickAndHold = false;
-                        break;
-                    }
-                    if (type == 9) {
-                        if (clickAndHold) {
-                            clickAndHold = false;
+                    int mouseX = static_cast<int>(event.button.x);
+                    int mouseY = static_cast<int>(event.button.y);
+
+        
+                    switch (currentInteractionState) {
+                        case InteractionState::FREEHAND_DRAWING: {
+                            endFreehandDraw(ivec2(mouseX, mouseY));
+                            break;
+                        }
+                        case InteractionState::DRAGGING: {
                             endClickAndDrag();
+                            break;
+                        }
+                        case InteractionState::TOOLBAR_CLICK: {
+                            if (pressedButton && pressedButton->isInside(ivec2(mouseX, mouseY))) {
+                                unselect();
+                                clicked(ivec2(mouseX, mouseY));
+                            }
+                            break;
+                        }
+                        case InteractionState::IDLE: {
+                            clicked(ivec2(mouseX, mouseY));
+                            break;
+                        }
+                        default: {
+                            break;
                         }
                     }
+                    pressedButton = nullptr;
+                    currentInteractionState = InteractionState::IDLE;
+                    
                     break;
                 }
                 case SDL_EVENT_TEXT_INPUT: {
@@ -305,8 +339,7 @@ int main() {
                                 resetPoints(points, point1, point2, point3);
                                 cancelMove();
                                 unselect();
-                                clickAndHold = false;
-                                justFinishedDrawing = false;
+                                currentInteractionState = InteractionState::IDLE;
                                 break;
                             }
                             case SDL_SCANCODE_BACKSPACE: {
