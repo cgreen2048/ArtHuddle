@@ -17,13 +17,20 @@ int main() {
     
     int type = 9;
     int points = 0;
+    const char* connectedHost = nullptr;
     ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
     Layout* layout = initialize(type, points, point1, point2, point3);
     // Connect to server
-    if (!connectToServer("127.0.0.1", 40666)) {
+    for (const char* host : hosts) {
+        if (connectToServer(host, 40666)) {
+            connectedHost = host;
+            break;
+        }
+    }
+    if (connectedHost == nullptr) {
         std::cerr << "Failed to connect\n";
     }
 

@@ -6,10 +6,13 @@
 #include <iostream>
 #include <limits>
 #include <cmath>
+#include <vector>
 #include <algorithm>
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "Layout.hpp"
+
+const std::vector<const char*> hosts = {"129.74.152.140", "129.74.152.141", "129.74.152.142", "129.74.152.143", "127.0.0.1"};
 
 Layout* initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void loadSound(std::string filePath);

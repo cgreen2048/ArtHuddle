@@ -79,37 +79,41 @@ int main() {
 
     std::cout << "Server listening on port " << PORT << "...\n";
 
-    // Step 5: Accept client
-    SocketType client = accept(listener, nullptr, nullptr);
-
-    if (client == INVALID_SOCKET) {
-        std::cout << "Accept failed\n";
-        CLOSE_SOCKET(listener);
-#ifdef _WIN32
-        WSACleanup();
-#endif
-        return 1;
-    }
-
-    std::cout << "Client connected!\n";
-
-    // Step 6: Receive messages
-    char buffer[BUFFER_SIZE + 1];
-
     while (true) {
-        int bytes = recv(client, buffer, BUFFER_SIZE, 0);
+        // Step 5: Accept client
+        SocketType client = accept(listener, nullptr, nullptr);
 
-        if (bytes <= 0) {
-            std::cout << "Client disconnected\n";
-            break;
+        if (client == INVALID_SOCKET) {
+            std::cout << "Accept failed\n";
+            CLOSE_SOCKET(listener);
+            #ifdef _WIN32
+                    WSACleanup();
+            #endif
+                    return 1;
         }
 
-        buffer[bytes] = '\0';
-        std::cout << "Received: " << buffer << "\n";
+        std::cout << "Client connected!\n";
+
+        // Step 6: Receive messages
+        char buffer[BUFFER_SIZE + 1];
+
+        while (true) {
+            int bytes = recv(client, buffer, BUFFER_SIZE, 0);
+
+            if (bytes <= 0) {
+                std::cout << "Client disconnected. Listening for new connections...\n";
+                break;
+            }
+
+            buffer[bytes] = '\0';
+            std::cout << "Received: " << buffer << "\n";
+        }
+
+        // Cleanup
+        CLOSE_SOCKET(client);
     }
 
-    // Cleanup
-    CLOSE_SOCKET(client);
+    
     CLOSE_SOCKET(listener);
 
 #ifdef _WIN32

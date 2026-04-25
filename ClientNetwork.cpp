@@ -21,13 +21,13 @@ bool connectToServer(const char* host, int port) {
     }
 
     if (connect(sock, reinterpret_cast<sockaddr*>(&server), sizeof(server)) < 0) {
-        std::cerr << "Failed to connect to server\n";
+        std::cerr << "Failed to connect to server: " << host << "\n";
         close(sock);
         sock = -1;
         return false;
     }
 
-    std::cout << "Connected to server\n";
+    std::cout << "Connected to server: " << host << "\n";
     return true;
 }
 
