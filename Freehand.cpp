@@ -174,18 +174,21 @@ bool Freehand::resolveEvent(Event *e) {
         ivec2 current = mu->getCoords();
         // this->points.push_back(ivec2{lastDrawnPoint});
         // this->updateBounds(ivec2{lastDrawnPoint});
-        this->finished = true;
+        
 
         if (isFreehandShape) {
             int dx = current.x - points[0].x;
             int dy = current.y - points[0].y;
 
             if (dx * dx + dy * dy > SHAPE_COMPLETION_DIST_THRESHOLD * SHAPE_COMPLETION_DIST_THRESHOLD) {  
-                this->points.clear();
-                lastDrawnPoint = current;
-                return false;
+                if (!this->finished) {
+                    this->points.clear();
+                    lastDrawnPoint = current;
+                    return false;
+                }
+                
             }
-
+            this->finished = true;
             this->points.push_back(points[0]);
             lastDrawnPoint = points[0];
             this->updateBounds(ivec2{lastDrawnPoint});
@@ -300,7 +303,7 @@ ElementParameters Freehand::getParameters() {
     ElementParameters ep;
     ep.points = this->points;
     ep.hasFirstPoint = this->hasFirstPoint;
-    this->lastDrawnPoint = ep.lastDrawnPoint;
+    ep.lastDrawnPoint = this->lastDrawnPoint;
     ep.finished = this->finished;
     ep.color = this->color;
     ep.isFreehandShape = this->isFreehandShape;
@@ -384,4 +387,10 @@ void Freehand::setBounds() {
 
 std::vector<ivec2> Freehand::getBounds() {
     return {this->minBound, this->maxBound};
+}
+
+void Freehand::movePoints(ivec2 delta) {
+    for (int i = 0; i < this->points.size(); ++i) {
+        this->points[i] += delta;
+    }
 }

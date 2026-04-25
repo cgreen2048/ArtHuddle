@@ -262,6 +262,9 @@ bool Layout::isInside(ivec2 coordinates) {
 }
 
 void Layout::clearElements() {
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        delete *it;
+    }
     this->elements.clear();
 }
 
@@ -282,6 +285,34 @@ void Layout::deleteElement(const std::string& name) {
             }
 
             delete *it;
+            elements.erase(it);
+            return;
+        }
+    }
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        Layout* nested = dynamic_cast<Layout*>(*it);
+        if (nested) {
+            nested->deleteElement(name);
+        }
+    }
+}
+
+void Layout::removeElement(GuiElement* element) {
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        if ((*it)->getName() == name) {
+            EventSystem& eventSystem = EventSystem::getInstance();
+            GuiElement* target = eventSystem.getTargetedElement();
+
+            if (target != nullptr && target->getName() == name) {
+                eventSystem.setTargetedElement(nullptr);
+            }
+
+            Selected& selectedSystem = Selected::getInstance();
+            GuiElement* selected = selectedSystem.getSelectedElement();
+            if (selected != nullptr && selected->getName() == name) {
+                selectedSystem.setSelectedElement(nullptr);
+            }
+
             elements.erase(it);
             return;
         }
@@ -311,4 +342,13 @@ void Layout::setBounds() {
 
 std::vector<ivec2> Layout::getBounds() {
     return {this->minBound, this->maxBound};
+}
+
+GuiElement* Layout::popLast() {
+    if (this->elements.empty()) {
+        return nullptr;
+    }
+    GuiElement* element = this->elements.back();
+    this->elements.pop_back();
+    return element;
 }

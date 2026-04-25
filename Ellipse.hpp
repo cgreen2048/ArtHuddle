@@ -34,6 +34,10 @@ class Ellipse : public GuiElement {
         ivec2 getCenter();
         int getRadiusX();
         int getRadiusY();
+        void setCenter(ivec2 point, TagType pointType);
+        void setRadiusX(int radX);
+        void setRadiusY(int radY);
+        void setColor(ivec3 color, TagType colorType);
         bool isInside(ivec2 coordinates);
         ElementParameters getParameters();
         guiElement getType();

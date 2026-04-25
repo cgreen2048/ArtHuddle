@@ -25,7 +25,7 @@ int main() {
     loadSound("../SFX/song.wav");
     playSound("../SFX/song.wav", true);
     ivec3 color = ivec3(125, 125, 125);
-    std::cout << "1 to draw a point\n2 to draw a line\n3 to draw a box\n4 to draw a triangle\n5 to draw an ellipse\n6 to draw an arrow\n7 to draw a text box\n8 to draw a freehand line\n9to draw a freehand shape\n0 to select elements\nEscape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
+    std::cout << "1 to draw a point\n2 to draw a line\n3 to draw a box\n4 to draw a triangle\n5 to draw an ellipse\n6 to draw an arrow\n7 to draw a text box\n8 to draw a freehand line\n9 to draw a freehand shape\n0 to select elements\nEscape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
 
     bool clickAndHold = false;
     bool justFinishedDrawing = false;

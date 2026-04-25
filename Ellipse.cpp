@@ -111,6 +111,24 @@ int Ellipse::getRadiusY() {
     return this->radiusY;
 }
 
+void Ellipse::setCenter(ivec2 point, TagType pointType) {
+    this->center = point;
+    this->centerType = pointType;
+}
+
+void Ellipse::setRadiusX(int radX) {
+    this->radiusX = radX;
+}
+
+void Ellipse::setRadiusY(int radY) {
+    this->radiusY = radY;
+}
+
+void Ellipse::setColor(ivec3 color, TagType colorType) {
+    this->color = color;
+    this->colorType = colorType;
+}
+
 bool Ellipse::isInside(ivec2 coordinates) {
     if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
         return false;

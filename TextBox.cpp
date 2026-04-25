@@ -152,9 +152,6 @@ void TextBox::writeXml(std::ostream& out, int depth) const {
 
 bool TextBox::validateAndNormalize(ElementParameters &ep) {
     Box::validateAndNormalize(ep);
-    if (ep.textColor.z == std::numeric_limits<int>::lowest()) {
-        ep.textColor.z = 125;
-    }
     if (ep.textColor.x == std::numeric_limits<int>::lowest()) {
         ep.textColor.x = 125;
     }
