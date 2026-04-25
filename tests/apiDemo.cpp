@@ -15,18 +15,19 @@ void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 int main() {
     std::cout << "API Demo\n";
     
-    int type = 9;
+    DrawingMode mode = DrawingMode::SELECT;
+    InteractionState currentInteractionState = InteractionState::IDLE;
     int points = 0;
     ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
-    Layout* layout = initialize(type, points, point1, point2, point3);
+    Layout* layout = initialize(mode, points, point1, point2, point3);
 
     loadSound("../SFX/song.wav");
     playSound("../SFX/song.wav", true);
     ivec3 color = ivec3(125, 125, 125);
-    std::cout << "1 to draw a point\n2 to draw a line\n3 to draw a box\n4 to draw a triangle\n5 to draw an ellipse\n6 to draw an arrow\n7 to draw a text box\n8 to draw a freehand line\n9to draw a freehand shape\n0 to select elements\nEscape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
+    std::cout << "Escape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
 
     ivec2 lastMousePos;
     SDL_Event event;
@@ -53,151 +54,36 @@ int main() {
                         break;
                     }
 
-                    switch (type) {
-                        case 0: {
-                            point1 = mousePos;
-                            drawElement(type, point1, point2, point3, color);
-                            resetPoints(points, point1, point2, point3);
-                            currentInteractionState = InteractionState::IDLE;
-                            type = 9;
-                            break;
-                        }
-                        case 1: {
-                            switch (points) {
-                                case 0: {
-                                    point1 = mousePos;
-                                    ++points;
-                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
-                                    break;
-                                }
-                                case 1: {
-                                    point2 = mousePos;
-                                    drawElement(type, point1, point2, point3, color);
-                                    resetPoints(points, point1, point2, point3);
-                                    currentInteractionState = InteractionState::IDLE;
-                                    type = 9;
-                                    break;
-                                }
+                    switch (mode) {
+                        case DrawingMode::POINT:
+                        case DrawingMode::LINE:
+                        case DrawingMode::BOX:
+                        case DrawingMode::TRIANGLE:
+                        case DrawingMode::ELLIPSE:
+                        case DrawingMode::ARROW:
+                        case DrawingMode::TEXTBOX: {
+                            storePoint(points, mousePos, point1, point2, point3);
+                            points++;
+
+                            guiElement type = modeToType(mode);
+                            if (points >= requiredPointsForType(type)) {
+                                drawElement(type, point1, point2, point3, color);
+                                resetPoints(points, point1, point2, point3);
+                                mode = DrawingMode::SELECT;
+                                currentInteractionState = InteractionState::IDLE;
+                            } else {
+                                currentInteractionState = InteractionState::SHAPE_DRAWING;
                             }
                             break;
                         }
-                        case 2: {
-                            switch (points) {
-                                case 0: {
-                                    point1 = mousePos;
-                                    ++points;
-                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
-                                    break;
-                                }
-                                case 1: {
-                                    point2 = mousePos;
-                                    drawElement(type, point1, point2, point3, color);
-                                    resetPoints(points, point1, point2, point3);
-                                    currentInteractionState = InteractionState::IDLE;
-                                    type = 9;
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case 3: {
-                            switch (points) {
-                                case 0: {
-                                    point1 = mousePos;
-                                    ++points;
-                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
-                                    break;
-                                }
-                                case 1: {
-                                    point2 = mousePos;
-                                    ++points;
-                                    break;
-                                }
-                                case 2: {
-                                    point3 = mousePos;
-                                    drawElement(type, point1, point2, point3, color);
-                                    resetPoints(points, point1, point2, point3);
-                                    type = 9;
-                                    currentInteractionState = InteractionState::IDLE;
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case 4: {
-                            switch (points) {
-                                case 0: {
-                                    point1 = mousePos;
-                                    ++points;
-                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
-                                    break;
-                                }
-                                case 1: {
-                                    point2 = mousePos;
-                                    ++points;
-                                    break;
-                                }
-                                case 2: {
-                                    point3 = mousePos;
-                                    drawElement(type, point1, point2, point3, color);
-                                    resetPoints(points, point1, point2, point3);
-                                    type = 9;
-                                    currentInteractionState = InteractionState::IDLE;
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case 5: {
-                            switch (points) {
-                                case 0: {
-                                    point1 = mousePos;
-                                    ++points;
-                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
-                                    break;
-                                }
-                                case 1: {
-                                    point2 = mousePos;
-                                    ++points;
-                                    break;
-                                }
-                                case 2: {
-                                    point3 = mousePos;
-                                    drawElement(type, point1, point2, point3, color);
-                                    resetPoints(points, point1, point2, point3);
-                                    type = 9;
-                                    currentInteractionState = InteractionState::IDLE;
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case 6: {
-                            switch (points) {
-                                case 0: {
-                                    point1 = mousePos;
-                                    ++points;
-                                    currentInteractionState = InteractionState::SHAPE_DRAWING;
-                                    break;
-                                }
-                                case 1: {
-                                    point2 = mousePos;
-                                    drawElement(type, point1, point2, point3, color);
-                                    resetPoints(points, point1, point2, point3);
-                                    type = 9;
-                                    currentInteractionState = InteractionState::IDLE;
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case 7: 
-                        case 8:{
-                            startFreehandDraw(mousePos, color, type == 8);
+                        case DrawingMode::FREEHAND_LINE: 
+                        case DrawingMode::FREEHAND_SHAPE: {
+                            startFreehandDraw(mousePos, color, mode == DrawingMode::FREEHAND_SHAPE);
                             currentInteractionState = InteractionState::FREEHAND_DRAWING;
                             break;
                         }
-                        case 9: {
+                        case DrawingMode::SELECT: {
+                            // If within another state (dragging, freehand drawing, shape drawing, toolbar click, do not allow select or drag)
                             if (currentInteractionState != InteractionState::IDLE) {
                                 break;
                             }
@@ -207,7 +93,6 @@ int main() {
                                 lastMousePos = mousePos;
                                 Selected::getInstance().setSelectedElement(hit);
                                 eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
-                                // eventSystem.push(std::make_unique<ClickEvent>(lastMousePos.x, lastMousePos.y));
                                 currentInteractionState = InteractionState::DRAGGING;
                                 setClickAndDrag(lastMousePos);
                                 break;
@@ -242,28 +127,33 @@ int main() {
                     break;
                 }
                 case SDL_EVENT_MOUSE_BUTTON_UP: {
-                    int mouseX = static_cast<int>(event.button.x);
-                    int mouseY = static_cast<int>(event.button.y);
+                    ivec2 mousePos(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
 
         
                     switch (currentInteractionState) {
                         case InteractionState::FREEHAND_DRAWING: {
-                            endFreehandDraw(ivec2(mouseX, mouseY));
+                            endFreehandDraw(mousePos);
+                            currentInteractionState = InteractionState::IDLE;
                             break;
                         }
                         case InteractionState::DRAGGING: {
                             endClickAndDrag();
+                            currentInteractionState = InteractionState::IDLE;
                             break;
                         }
                         case InteractionState::TOOLBAR_CLICK: {
-                            if (pressedButton && pressedButton->isInside(ivec2(mouseX, mouseY))) {
+                            if (pressedButton && pressedButton->isInside(mousePos)) {
                                 unselect();
-                                clicked(ivec2(mouseX, mouseY));
+                                clicked(mousePos);
                             }
+                            currentInteractionState = InteractionState::IDLE;
                             break;
                         }
                         case InteractionState::IDLE: {
-                            clicked(ivec2(mouseX, mouseY));
+                            clicked(mousePos);
+                            break;
+                        }
+                        case InteractionState::SHAPE_DRAWING: {
                             break;
                         }
                         default: {
@@ -271,7 +161,6 @@ int main() {
                         }
                     }
                     pressedButton = nullptr;
-                    currentInteractionState = InteractionState::IDLE;
                     
                     break;
                 }
@@ -284,58 +173,8 @@ int main() {
                 case SDL_EVENT_KEY_DOWN: {
                     if (!isSelectedTextBox()) {
                         switch (event.key.scancode) {
-                            case SDL_SCANCODE_1: {
-                                type = 0;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
-                            case SDL_SCANCODE_2: {
-                                type = 1;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
-                            case SDL_SCANCODE_3: {
-                                type = 2;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
-                            case SDL_SCANCODE_4: {
-                                type = 3;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
-                            case SDL_SCANCODE_5: {
-                                type = 4;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
-                            case SDL_SCANCODE_6: {
-                                type = 5;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
-                            case SDL_SCANCODE_7: {
-                                type = 6;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
-                            case SDL_SCANCODE_8: {
-                                type = 7;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
-                            case SDL_SCANCODE_9: {
-                                type = 8;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
-                            case SDL_SCANCODE_0: {
-                                type = 9;
-                                resetPoints(points, point1, point2, point3);
-                                break;
-                            }
                             case SDL_SCANCODE_ESCAPE: {
-                                type = 9;
+                                mode = DrawingMode::SELECT;
                                 resetPoints(points, point1, point2, point3);
                                 cancelMove();
                                 unselect();
@@ -344,6 +183,7 @@ int main() {
                             }
                             case SDL_SCANCODE_BACKSPACE: {
                                 deleteShape();
+                                currentInteractionState = InteractionState::IDLE;
                                 break;
                             }
                             case SDL_SCANCODE_R: {
@@ -435,61 +275,28 @@ int main() {
         float mouseX = 0;
         float mouseY = 0;
         SDL_GetMouseState(&mouseX, &mouseY);
-        switch (type) {
-            case 1: {
-                if (points == 1) {
-                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
+        ivec2 mousePos(static_cast<int>(mouseX), static_cast<int>(mouseY));
+
+        if (points == 0) {
+            updateScreen(mode);
+            continue;
+        }
+
+        switch (mode) {
+            case DrawingMode::LINE:
+            case DrawingMode::BOX:
+            case DrawingMode::TRIANGLE:
+            case DrawingMode::ELLIPSE: 
+            case DrawingMode::ARROW:
+            case DrawingMode::TEXTBOX: {
+                storePoint(points, mousePos, point1, point2, point3);
+
+                guiElement type = modeToType(mode);
+                if (points == requiredPointsForType(type) - 1) {
                     drawTempElement(type, point1, point2, point3, color);
                 }
-                break;
-            }
-            case 2: {
-                if (points == 1) {
-                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
-                    drawTempElement(type, point1, point2, point3, color);
-                }
-                break;
-            }
-            case 3: {
-                if (points == 1) {
-                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
-                    drawTempElement(1, point1, point2, point3, color);
-                }
-                else if (points == 2) {
-                    point3 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
-                    drawTempElement(type, point1, point2, point3, color);
-                    break;
-                }
-                break;
-            }
-            case 4: {
-                if (points == 1) {
-                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
-                    drawTempElement(1, point1, point2, point3, color);
-                }
-                else if (points == 2) {
-                    point3 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
-                    drawTempElement(type, point1, point2, point3, color);
-                    break;
-                }
-                break;
-            }
-            case 5: {
-                if (points == 1) {
-                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
-                    drawTempElement(2, point1, point2, point3, color);
-                }
-                else if (points == 2) {
-                    point3 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
-                    drawTempElement(type, point1, point2, point3, color);
-                    break;
-                }
-                break;
-            }
-            case 6: {
-                if (points == 1) {
-                    point2 = ivec2(static_cast<int>(mouseX), static_cast<int>(mouseY));
-                    drawTempElement(2, point1, point2, point3, color);
+                else {
+                    drawTempElement(tempElementType(mode), point1, point2, point3, color);
                 }
                 break;
             }
@@ -498,18 +305,8 @@ int main() {
             }
         }
 
-        update(type);
+        updateScreen(mode);
     }
     closeAll();
     return 0;
-}
-
-void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
-    point = 0;
-    point1.x = std::numeric_limits<int>::lowest();
-    point1.y = std::numeric_limits<int>::lowest();
-    point2.x = std::numeric_limits<int>::lowest();
-    point2.y = std::numeric_limits<int>::lowest();
-    point3.x = std::numeric_limits<int>::lowest();
-    point3.y = std::numeric_limits<int>::lowest();
 }

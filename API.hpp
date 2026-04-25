@@ -10,12 +10,15 @@
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "Layout.hpp"
+#include "InteractionState.hpp"
+#include "DrawingMode.hpp"
 
-Layout* initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+
+Layout* initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void loadSound(std::string filePath);
 void playSound(std::string filePath, int loop);
-void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
-void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
+void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
+void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
 void startFreehandDraw(const ivec2& point, const ivec3& color, bool isFreehandShape);
 void continueFreehandDraw(const ivec2& point);
 void endFreehandDraw(const ivec2& point);
@@ -30,12 +33,17 @@ void appendToTextBox(const std::string& s);
 void deleteText();
 void deleteTempShape();
 void deleteShape();
-void update(int& type);
+void updateScreen(DrawingMode mode);
 void closeAll();
 void copy();
 void paste();
 bool changeColor(ivec3 colorIncrement);
 void updateCursorIcon(const ivec2& point, bool currentlyDragging);
+int requiredPointsForType(guiElement type);
+guiElement tempElementType(DrawingMode mode);
+guiElement modeToType(DrawingMode mode);
+void storePoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3);
+void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 
 
 #endif

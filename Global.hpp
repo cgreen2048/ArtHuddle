@@ -4,6 +4,7 @@
 #include "Box.hpp"
 #include "Button.hpp"
 #include "ClickEvent.hpp"
+#include "DrawingMode.hpp"
 #include "ElementParameters.hpp"
 #include "Event.hpp"
 #include "EventSystem.hpp"
@@ -81,19 +82,15 @@ extern SDL_Cursor* handCursor;
 extern SDL_Cursor* currentCursor;
 extern Button* pressedButton;
 
-enum class InteractionState { IDLE, FREEHAND_DRAWING, SHAPE_DRAWING, DRAGGING, TOOLBAR_CLICK };
-extern InteractionState currentInteractionState;
-
-
 void createWindow();
 void createScreen();
-Layout* createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+Layout* createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void setEventSystem();
-void initButtons(Layout *layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+void initButtons(Layout *layout, DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void resetGlobalPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 void saveCanvas(const std::string& filePath);
 void loadCanvas(const std::string& filePath, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
-void updateToolbarButtonColors(int& type);
+void updateToolbarButtonColors(DrawingMode mode);
 void updateActionButtonColors();
 static void SDLCALL loadFileCallback(void* userdata, const char* const* filelist, int filter);
 static void SDLCALL saveFileCallback(void* userdata, const char* const* filelist, int filter);

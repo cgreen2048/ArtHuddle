@@ -22,7 +22,6 @@ SDL_Cursor* arrowCursor = nullptr;
 SDL_Cursor* handCursor  = nullptr;
 SDL_Cursor* currentCursor = nullptr;
 Button* pressedButton = nullptr;
-InteractionState currentInteractionState = InteractionState::IDLE;
 
 // int type = 9;
 // int points = 0;
@@ -79,7 +78,7 @@ static void SDLCALL saveFileCallback(void* userdata, const char* const* filelist
     saveCanvas(currentFileSavePath.string());
 }
 
-void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+void initButtons(Layout* layout, DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     ElementParameters selectButtonParam;
     selectButtonParam.min = ivec2(0, 0);
     selectButtonParam.max = ivec2(bW, bH);
@@ -88,8 +87,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     selectButtonParam.text = "Select";
     selectButtonParam.name = "selectButton";
     selectButtonParam.callbackName = "setSelectMode";
-    selectButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 9;
+    selectButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::SELECT;
         resetGlobalPoints(points, point1, point2, point3);
     };
     selectButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, selectButtonParam));
@@ -103,8 +102,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     pointButtonParam.text = "Point";
     pointButtonParam.name = "pointButton";
     pointButtonParam.callbackName = "setPointMode";
-    pointButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 0;
+    pointButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::POINT;
         resetGlobalPoints(points, point1, point2, point3);
     };
     pointButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, pointButtonParam));
@@ -118,8 +117,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     lineButtonParam.text = "Line";
     lineButtonParam.name = "lineButton";
     lineButtonParam.callbackName = "setLineMode";
-    lineButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 1;
+    lineButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::LINE;
         resetGlobalPoints(points, point1, point2, point3);
     };
     lineButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, lineButtonParam));
@@ -133,8 +132,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     boxButtonParam.text = "Box";
     boxButtonParam.name = "boxButton";
     boxButtonParam.callbackName = "setBoxMode";
-    boxButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 2;
+    boxButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::BOX;
         resetGlobalPoints(points, point1, point2, point3);
     };
     boxButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, boxButtonParam));
@@ -148,8 +147,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     triangleButtonParam.text = "Triangle";
     triangleButtonParam.name = "triangleButton";
     triangleButtonParam.callbackName = "setTriangleMode";
-    triangleButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 3;
+    triangleButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::TRIANGLE;
         resetGlobalPoints(points, point1, point2, point3);
     };
     triangleButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, triangleButtonParam));
@@ -163,8 +162,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     ellipseButtonParam.text = "Ellipse";
     ellipseButtonParam.name = "ellipseButton";
     ellipseButtonParam.callbackName = "setEllipseMode";
-    ellipseButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 4;
+    ellipseButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::ELLIPSE;
         resetGlobalPoints(points, point1, point2, point3);
     };
     ellipseButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, ellipseButtonParam));
@@ -178,8 +177,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     arrowButtonParam.text = "Arrow";
     arrowButtonParam.name = "arrowButton";
     arrowButtonParam.callbackName = "setArrowMode";
-    arrowButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 5;
+    arrowButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::ARROW;
         resetGlobalPoints(points, point1, point2, point3);
     };
     arrowButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, arrowButtonParam));
@@ -193,8 +192,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     textBoxButtonParam.text = "Text Box";
     textBoxButtonParam.name = "textBoxButton";
     textBoxButtonParam.callbackName = "setTextBoxMode";
-    textBoxButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 6;
+    textBoxButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::TEXTBOX;
         resetGlobalPoints(points, point1, point2, point3);
     };
     textBoxButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, textBoxButtonParam));
@@ -208,8 +207,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     freehandLineButtonParam.text = "Freehand Line";
     freehandLineButtonParam.name = "freehandLineButton";
     freehandLineButtonParam.callbackName = "setFreehandLineMode";
-    freehandLineButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 7;
+    freehandLineButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::FREEHAND_LINE;
         resetGlobalPoints(points, point1, point2, point3);
     };
     freehandLineButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, freehandLineButtonParam));
@@ -223,8 +222,8 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     freehandShapeButtonParam.text = "Freehand Shape";
     freehandShapeButtonParam.name = "freehandShapeButton";
     freehandShapeButtonParam.callbackName = "setFreehandShapeMode";
-    freehandShapeButtonParam.callback = [&type, &points, &point1, &point2, &point3]() {
-        type = 8;
+    freehandShapeButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        mode = DrawingMode::FREEHAND_SHAPE;
         resetGlobalPoints(points, point1, point2, point3);
     };
     freehandShapeButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, freehandShapeButtonParam));
@@ -335,7 +334,7 @@ void createScreen() {
     SDL_SetCursor(currentCursor);
 }
 
-Layout *createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+Layout *createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     ElementParameters root;
     root.layoutStart = vec2(0.0, 0.0);
     root.layoutEnd = vec2(1.0, 1.0);
@@ -374,7 +373,7 @@ Layout *createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, i
     toolBar.name = "toolBarLayout";
     toolBarLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, toolBar));
     rootLayout->addElement(toolBarLayout);
-    initButtons(toolBarLayout, type, points, point1, point2, point3);
+    initButtons(toolBarLayout, mode, points, point1, point2, point3);
 
 
     Selected &selectedSingleton = Selected::getInstance();
@@ -447,39 +446,39 @@ void loadCanvas(const std::string& filePath, int& points, ivec2& point1, ivec2& 
     resetGlobalPoints(points, point1, point2, point3);
 }
 
-void updateToolbarButtonColors(int& type) {
+void updateToolbarButtonColors(DrawingMode mode) {
     ivec3 normalColor(180, 220, 255);
     ivec3 selectedColor(255, 200, 120);
 
     if (selectButton) {
-        selectButton->setColor(type == 9 ? selectedColor : normalColor, TagType::Vec);
+        selectButton->setColor(mode == DrawingMode::SELECT ? selectedColor : normalColor, TagType::Vec);
     }
     if (pointButton) {
-        pointButton->setColor(type == 0 ? selectedColor : normalColor, TagType::Vec);
+        pointButton->setColor(mode == DrawingMode::POINT ? selectedColor : normalColor, TagType::Vec);
     }
     if (lineButton) {
-        lineButton->setColor(type == 1 ? selectedColor : normalColor, TagType::Vec);
+        lineButton->setColor(mode == DrawingMode::LINE ? selectedColor : normalColor, TagType::Vec);
     }
     if (boxButton) {
-        boxButton->setColor(type == 2 ? selectedColor : normalColor, TagType::Vec);
+        boxButton->setColor(mode == DrawingMode::BOX ? selectedColor : normalColor, TagType::Vec);
     }
     if (triangleButton) {
-        triangleButton->setColor(type == 3 ? selectedColor : normalColor, TagType::Vec);
+        triangleButton->setColor(mode == DrawingMode::TRIANGLE ? selectedColor : normalColor, TagType::Vec);
     }
     if (ellipseButton) {
-        ellipseButton->setColor(type == 4 ? selectedColor : normalColor, TagType::Vec);
+        ellipseButton->setColor(mode == DrawingMode::ELLIPSE ? selectedColor : normalColor, TagType::Vec);
     }
     if (arrowButton) {
-        arrowButton->setColor(type == 5 ? selectedColor : normalColor, TagType::Vec);
+        arrowButton->setColor(mode == DrawingMode::ARROW ? selectedColor : normalColor, TagType::Vec);
     }
     if (textBoxButton) {
-        textBoxButton->setColor(type == 6 ? selectedColor : normalColor, TagType::Vec);
+        textBoxButton->setColor(mode == DrawingMode::TEXTBOX ? selectedColor : normalColor, TagType::Vec);
     }
     if (freehandLineButton) {
-        freehandLineButton->setColor(type == 7 ? selectedColor : normalColor, TagType::Vec);
+        freehandLineButton->setColor(mode == DrawingMode::FREEHAND_LINE ? selectedColor : normalColor, TagType::Vec);
     }
     if (freehandShapeButton) {
-        freehandShapeButton->setColor(type == 8 ? selectedColor : normalColor, TagType::Vec);
+        freehandShapeButton->setColor(mode == DrawingMode::FREEHAND_SHAPE ? selectedColor : normalColor, TagType::Vec);
     }
 }
 
