@@ -173,15 +173,25 @@ void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 c
 
 void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
     GuiElement* lastEl = tempLayout->popLast();
-    if (!lastEl) {
+    guiElement ge = static_cast<guiElement>(type);
+    if (!lastEl && ge != guiElement::POINT) {
         return;
     }
-    guiElement ge = static_cast<guiElement>(type);
     ElementParameters ep;
     ep.color = color;
     ep.colorType = TagType::IVec;
     
     switch (ge) {
+        case guiElement::POINT: {
+            ep.coords = point1;
+            ep.coordsType = TagType::IVec;
+            Point* element = dynamic_cast<Point*>(factory(ge, ep));
+            if (element) {
+                canvasLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
+            }
+            break;
+		}
         case guiElement::LINE: {
             Line* derived = dynamic_cast<Line*>(lastEl);
             if (derived) {
