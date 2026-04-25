@@ -303,8 +303,6 @@ int main() {
                             case SDL_SCANCODE_ESCAPE: {
                                 type = 9;
                                 resetPoints(points, point1, point2, point3);
-                                cancelMove();
-                                unselect();
                                 clickAndHold = false;
                                 justFinishedDrawing = false;
                                 break;
@@ -479,4 +477,6 @@ void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
     point2.y = std::numeric_limits<int>::lowest();
     point3.x = std::numeric_limits<int>::lowest();
     point3.y = std::numeric_limits<int>::lowest();
+    cancelMove();
+    unselect();
 }

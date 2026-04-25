@@ -527,7 +527,7 @@ void cancelMove() {
 }
 
 void unselect() {
-    EventSystem::getInstance().push(std::make_unique<ClickEvent>(-1, -1));
+    EventSystem::getInstance().setTargetedElement(nullptr);
 }
 
 void clicked(ivec2 coords) {
