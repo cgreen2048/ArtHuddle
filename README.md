@@ -1331,6 +1331,11 @@ Draws a bounding box around the currently selected element
 
 ---
 
+### `bool isInside(ivec2 coordinates)`
+Checks if `coordinates` are within the bounds of the currently selected element by comparing the coordinates to `minBound` and `maxBound`
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/Selected_UML.png)
 
