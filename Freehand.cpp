@@ -76,7 +76,7 @@ void Freehand::draw(Screen *screen) {
 void Freehand::floodFill(ivec2 start, Screen* screen) {
     std::stack<ivec2> st;
     st.push(start);
-
+    std::vector<ivec2> pointsToColor;
     while (!st.empty()) {
         ivec2 p = st.top();
         st.pop();
@@ -95,6 +95,7 @@ void Freehand::floodFill(ivec2 start, Screen* screen) {
         }
 
         screen->colorOnePixel(p, this->color, this->parentStart, this->parentEnd);
+        pointsToColor.push_back(p);
         updateBounds(p);
 
         st.push(ivec2(x + 1, y));
@@ -102,6 +103,7 @@ void Freehand::floodFill(ivec2 start, Screen* screen) {
         st.push(ivec2(x, y + 1));
         st.push(ivec2(x, y - 1));
     }
+    // screen->drawFreehandFlood(pointsToColor, this->color, this->parentStart, this->parentEnd);
 }
 
 void Freehand::updateBounds(const ivec2& coords) {
