@@ -47,9 +47,7 @@ int main() {
                     int mouseY = static_cast<int>(event.button.y);
                     ivec2 mousePos(mouseX, mouseY);
 
-                    Button* button = dynamic_cast<Button*>(layout->getElementAt(mousePos));
-                    if (button) {
-                        pressedButton = button;
+                    if (pressedToolbarButton(mousePos)) {
                         currentInteractionState = InteractionState::TOOLBAR_CLICK;
                         break;
                     }
@@ -142,7 +140,7 @@ int main() {
                             break;
                         }
                         case InteractionState::TOOLBAR_CLICK: {
-                            if (pressedButton && pressedButton->isInside(mousePos)) {
+                            if (isInsideSameButton(mousePos)) {
                                 unselect();
                                 clicked(mousePos);
                             }

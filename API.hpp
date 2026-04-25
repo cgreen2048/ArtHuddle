@@ -39,6 +39,8 @@ void copy();
 void paste();
 bool changeColor(ivec3 colorIncrement);
 void updateCursorIcon(const ivec2& point, bool currentlyDragging);
+bool pressedToolbarButton(const ivec2& point);
+bool isInsideSameButton(const ivec2& point);
 int requiredPointsForType(guiElement type);
 guiElement tempElementType(DrawingMode mode);
 guiElement modeToType(DrawingMode mode);

@@ -759,6 +759,22 @@ void updateCursorIcon(const ivec2& point, bool currentlyDragging) {
     }
 }
 
+bool pressedToolbarButton(const ivec2& point) {
+    Button* button = dynamic_cast<Button*>(toolBarLayout->getElementAt(point));
+    if (button) {
+        pressedButton = button;
+        return true;
+    }
+    return false;
+}
+
+bool isInsideSameButton(const ivec2& point) {
+    if (pressedButton && pressedButton->isInside(point)) {
+        return true;
+    }
+    return false;
+}
+
 int requiredPointsForType(guiElement type) {
     switch (type) {
         case guiElement::POINT: {
