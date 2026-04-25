@@ -177,6 +177,7 @@ guiElement Line::getType() {
 }
 
 void Line::setPoints() {
+    this->points.clear();
     int x0 = this->start.x;
     int y0 = this->start.y;
     int x1 = this->end.x;
