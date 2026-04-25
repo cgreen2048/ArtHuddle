@@ -4,6 +4,7 @@
 #include "GuiElement.hpp"
 #include "Event.hpp"
 #include "ElementParameters.hpp"
+#include <set>
 
 #define PIXEL_DRAW_DIST_THRESHOLD 3
 #define SHAPE_COMPLETION_DIST_THRESHOLD 10

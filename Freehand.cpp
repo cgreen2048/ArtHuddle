@@ -77,6 +77,7 @@ void Freehand::floodFill(ivec2 start, Screen* screen) {
     std::stack<ivec2> st;
     st.push(start);
     std::vector<ivec2> pointsToColor;
+    std::vector<bool> visited(screen->getWidth() * screen->getHeight(), false);
     while (!st.empty()) {
         ivec2 p = st.top();
         st.pop();
@@ -89,13 +90,17 @@ void Freehand::floodFill(ivec2 start, Screen* screen) {
         }
 
         ivec3 current = screen->getPixelColor(p);
-
         if (current == this->color) {
             continue;
         }
+        int id = p.y * screen->getWidth() + p.x;
+        if (visited[id]) {
+            continue;
+        }
 
-        screen->colorOnePixel(p, this->color, this->parentStart, this->parentEnd);
+        // screen->colorOnePixel(p, this->color, this->parentStart, this->parentEnd);
         pointsToColor.push_back(p);
+        visited[id] = true;
         updateBounds(p);
 
         st.push(ivec2(x + 1, y));
@@ -103,7 +108,10 @@ void Freehand::floodFill(ivec2 start, Screen* screen) {
         st.push(ivec2(x, y + 1));
         st.push(ivec2(x, y - 1));
     }
-    // screen->drawFreehandFlood(pointsToColor, this->color, this->parentStart, this->parentEnd);
+    std::sort(pointsToColor.begin(), pointsToColor.end(), [](const ivec2& a, const ivec2& b) {
+        return a.y == b.y ? a.x < b.x : a.y < b.y;
+    });
+    screen->drawFreehandFlood(pointsToColor, this->color, this->parentStart, this->parentEnd);
 }
 
 void Freehand::updateBounds(const ivec2& coords) {

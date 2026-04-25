@@ -89,6 +89,32 @@ class Screen {
                 std::clamp(static_cast<int>(colors.z), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE))
             );
 
+            // int rows = maxY - minY + 1;
+            // int blocks = std::min(NUM_THREADS, rows);
+            // int rowsPerBlock = rows / blocks;
+            // std::vector<std::future<void>> futures;
+
+            // for (int b = 0; b < blocks; ++b) {
+            //     int start = minY + (b * rowsPerBlock);
+            //     int end;
+            //     if (b == blocks - 1) {
+            //         end = maxY;
+            //     }
+            //     else {
+            //         end = start + rowsPerBlock - 1;
+            //     }
+            //     futures.push_back(this->threadPool.enqueue([=] {
+            //         for (int j = start; j <= end; ++j) {
+            //             for (int i = minX; i <= maxX; ++i) {
+            //                 ivec2 point = ivec2{i,j};
+            //                 this->colorOnePixel(point, clampedColor, parentStart, parentEnd);
+            //             }
+            //         }
+            //     }));
+            // }
+            // for (auto& f : futures) {
+            //     f.wait();
+            // }
             for (int i = minX; i <= maxX; ++i) {
                 for (int j = minY; j <= maxY; ++j) {
                     this->colorOnePixel(ivec2{i,j}, clampedColor, parentStart, parentEnd);
