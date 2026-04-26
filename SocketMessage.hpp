@@ -1,7 +1,7 @@
 #ifndef __SOCKET_MESSAGE_HPP__
 #define __SOCKET_MESSAGE_HPP__
 
-#include "./external/json.hpp"
+#include "./external/JsonDefinition.hpp"
 #include <string>
 
 enum class MessageType {

@@ -3,14 +3,14 @@
 
 #include "SocketMessage.hpp"
 #include "ElementParameters.hpp"
-#include "./external/json.hpp"
+#include "./external/JsonDefinition.hpp"
 
 class UpdateElementMessage : public SocketMessage<UpdateElementMessage> {
     public:
         UpdateElementMessage(ElementParameters ep);
         json toJsonImpl();
     private:
-        ElementParameters elementParameters;
+        ElementParameters ep;
 };
 
 #endif

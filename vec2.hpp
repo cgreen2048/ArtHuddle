@@ -4,7 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
-#include "./external/json.hpp"
+#include "./external/JsonDefinition.hpp"
 
 // Header file for vec2, ivec2
 

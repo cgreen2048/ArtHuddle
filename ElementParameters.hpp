@@ -28,7 +28,6 @@ struct ElementParameters {
     ivec2 pointC = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec3 color = ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec3 textColor = ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
-    std::string textBoxText = "";
     ivec2 parentStart = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 parentEnd = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     bool hasParentStart = false;

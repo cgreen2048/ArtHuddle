@@ -1,12 +1,8 @@
 #include "UpdateElementMessage.hpp"
+#include "jsonHelpers.hpp"
 
-UpdateElementMessage::UpdateElementMessage(ElementParameters ep) : SocketMessage<UpdateElementMessage>(MessageType::UPDATE_ELEMENT), elementParameters(ep) {}
-
-std::string UpdateElementMessage::serializeImpl() {
-    return "";
-}
+UpdateElementMessage::UpdateElementMessage(ElementParameters ep) : SocketMessage<UpdateElementMessage>(MessageType::UPDATE_ELEMENT), ep(ep) {}
 
 json UpdateElementMessage::toJsonImpl() {
-    json j;
-    return j;
+    return elementParametersToJson(ep);
 }
