@@ -86,6 +86,7 @@ int main() {
 
     while (true) {
         // Step 5: Accept client
+        
         SocketType client = accept(listener, nullptr, nullptr);
 
         if (client == INVALID_SOCKET) {
