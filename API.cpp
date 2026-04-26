@@ -110,6 +110,25 @@ void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, iv
             }
             return;
         }
+        case guiElement::TEXTBOX: {
+            TextBox* derived = dynamic_cast<TextBox*>(lastEl);
+            if (derived) {
+                derived->setMax(point2, TagType::IVec);
+                derived->setColor(color, TagType::IVec);
+                tempLayout->addElement(derived);
+            }
+            else {
+                ep.min = point1;
+                ep.max = point2;
+                ep.minType = TagType::IVec;
+                ep.maxType = TagType::IVec;
+                TextBox* element = dynamic_cast<TextBox*>(factory(ge, ep));
+                if (element) {
+                    tempLayout->addElement(element);
+                }
+            }
+            return;
+		}
         case guiElement::ARROW: {
             ivec2 newMin;
             ivec2 newMax;
@@ -547,17 +566,20 @@ bool isSelectedTextBox() {
 void appendToTextBox(const std::string& s) {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     TextBox* textbox = dynamic_cast<TextBox*>(element);
+    playButtonClickSound();
     textbox->appendText(s);
 }
 
-void deleteText() {
+bool deleteText() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     TextBox* textbox = dynamic_cast<TextBox*>(element);
     if (textbox->getText().empty()) {
         deleteShape();
-        return;
+        return false;
     }
+    playButtonClickSound();
     textbox->backspace();
+    return true;
 }
 
 void deleteTempShape() {
@@ -855,11 +877,20 @@ guiElement modeToType(DrawingMode mode) {
     }
 }
 
-void storePoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3) {
+void storeCommittedPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3) {
     if (points == 0) {
         point1 = mousePos;
     }
     else if (points == 1) {
+        point2 = mousePos;
+    }
+    else if (points == 2) { 
+        point3 = mousePos;
+    }
+}
+
+void storeTemporaryPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3) {
+    if (points == 1) {
         point2 = mousePos;
     }
     else if (points == 2) { 
@@ -875,4 +906,20 @@ void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
     point2.y = std::numeric_limits<int>::lowest();
     point3.x = std::numeric_limits<int>::lowest();
     point3.y = std::numeric_limits<int>::lowest();
+}
+
+void playDrawClickSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/draw_click.wav", SoundActionType::PLAY, false));
+}
+
+void playButtonClickSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/button_click.wav", SoundActionType::PLAY, false));
+}
+
+void playFreehandDrawSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/freehand_draw.wav", SoundActionType::PLAY, false));
+}
+
+void playDeleteSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/delete.wav", SoundActionType::PLAY, false));
 }
