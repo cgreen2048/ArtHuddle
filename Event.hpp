@@ -7,7 +7,8 @@ enum class EventType {
     SOUND,
     MOUSE_DOWN,
     MOUSE_UP,
-    MOUSE_MOTION
+    MOUSE_MOTION,
+    BUTTON_CLICK
 };
 
 class Event {

@@ -3,7 +3,8 @@
 # Quick Links to Classes
 - [Global](#global)
 - [API](#api)
-- [Network Client](#networkclient)
+- [Enums](#enums)
+- [Network Client](#clientnetwork)
 - [Event Class](#event)
 - [MouseEvent Class](#mouseevent)
 - [MouseDownEvent Class](#mousedownevent)
@@ -248,11 +249,17 @@ A variable to hold a struct returned from an element's `getParameters()` method 
 ### `guiElement clipboardType`
 The type of element stored in the `clipboard` variable. Used to create a new element when pasting. Initialized to guiElement::UNKNOWN
 
+---
+
 ### `SDL_Cursor* arrowCursor`
 A cursor to represent the default arrow cursor
 
+---
+
 ### `SDL_Cursor* handCursor`
 A cursor to represent a hand, used when hovering over elements or dragging
+
+---
 
 ### `SDL_Cursor* currentCursor`
 A variable to hold the current cursor being used, initialized to `arrowCursor`
@@ -266,6 +273,11 @@ The filepath to the most recently loaded file. Used to determine where to save i
 
 ### `std::filesystem::path currentFileSavePath`
 The filepath to the most recently saved file. Used to determine where to save if the user attempts to save to a certain location
+
+---
+
+### `Button* pressedButton`
+A variable to hold the most recently pressed button, used to trigger the button effect if the mouse is still on the same button when the mouse button is released
 
 ---
 
@@ -283,7 +295,7 @@ Creates a new `Screen` object, set to the size of the full window, and assigns i
 
 ---
 
-### `Layout* createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `Layout* createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates and connects all layouts:
 - `rootLayout`
 - `canvasLayout`
@@ -312,7 +324,7 @@ saves the relative filepath to `currentFileSavePath`, and calls `saveCanvas()` w
 
 ---
 
-### `void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `void initButtons(Layout* layout, DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates all toolbar buttons and assigns:
 - positions
 - colors
@@ -346,7 +358,7 @@ Loads an XML file into `canvasLayout`:
 
 ---
 
-### `void updateToolbarButtonColors(int& type)`
+### `void updateToolbarButtonColors(DrawingMode mode)`
 Updates colors of **mode buttons**:
 - Highlights the currently selected tool
 - Resets others to default color
@@ -369,7 +381,7 @@ The interface that allows a programmer to interact with the underlying systems c
 
 ## Functions
 
-### `void initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `void initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Initializes video and audio through SDL and calls `createWindow()`, `createScreen()`, `createRootLayout()`, and `setEventSystem()` from `Global`
 - Also starts SDL text input
 - Disables accent menu on Mac that appears when a user holds down a key
@@ -386,8 +398,8 @@ Attempts to play the file specified by `filePath` using the program's `SoundPlay
 
 ---
 
-### `void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
-Draws an element of type specified by `type` to the `tempLayout` `Layout` object based on the three passed coordinates
+### `void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+Draws an element of type specified by `ge` to the `tempLayout` `Layout` object based on the three passed coordinates
 - Attempts to retrieve a temporary shape from `tempLayout` to shortcut the creation process using the element's setters
   - If no element is in `tempLayou`, the factory is called
 - Some shapes need fewer than three coordinates
@@ -395,7 +407,7 @@ Draws an element of type specified by `type` to the `tempLayout` `Layout` object
 
 ---
 
-### `void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+### `void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
 Moves a `GuiElement*` from `tempLayout` to `canvasLayout`
 - Calls the factory if element to be drawn is a `Point` as no temporary version of a point exists when drawing
 - Casts to determine the correct type
@@ -466,14 +478,15 @@ Checks whether a text box is the currently selected element
 ### `void appendToTextBox(const std::string& s)`
 A call to append text to a text box
 - Uses the `Selected` singleton to access the selected text box
-- Calls the `appendText()` method in `TextBox`
+- Calls the `appendText()` method in `TextBox`, plays a button click sound, then returns true
 
 ---
 
-### `void deleteText()`
+### `bool deleteText()`
 A call to delete text in a text box
 - Uses the `Selected` singleton to access the selected text box
-- Calls the `backspace()` method in `TextBox`
+- Returns false if this deletes the `TextBox`
+- Calls the `backspace()` method in `TextBox`, plays a button click sound, then returns true
 
 ---
 
@@ -489,7 +502,7 @@ A call to delete the specified shape
 
 ---
 
-### `void update()`
+### `void updateScreen()`
 Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer`, draws an overlay, and updates button colors:
 - Highlights the currently selected toolbar button  
 - Applies a temporary flash effect to the Save and Load buttons when clicked
@@ -523,6 +536,97 @@ Attempts to change the color of an element
 ### `void updateCursorIcon(const ivec2& point, bool currentlyDragging)`
 Updates the cursor icon based on if the cursor is hovering over an element or dragging an element. If either of those are true, the cursor is set to `handCursor` (`SDL_SYSTEM_CURSOR_POINTER`), otherwise it is set to
 `arrowCursor` (`SDL_SYSTEM_CURSOR_DEFAULT`)
+
+---
+
+### `bool pressedToolbarButton(const ivec2& point)`
+Checks if the user has clicked on a toolbar button by checking if `point` is within the bounds of
+any toolbar button. Sets `pressedButton` to the clicked button if true and returns true, otherwise returns false
+
+---
+
+### `bool isInsideSameButton(const ivec2& point)`
+Checks if the user's mouse up position `point` is within the bounds of the same button stored
+in `pressedButton`
+
+---
+
+### `void resetPressedButton()`
+Resets the `pressedButton` to `nullptr` to allow for future button clicks
+
+---
+
+### `int requiredPointsForType(guiElement type)`
+Helper function that returns the number of points required to draw an element of type `type`, used to determine when an element is ready to be drawn based on how many points the user has input so far
+
+---
+
+### `guiElement tempElementType(DrawingMode mode)`
+Helper function that returns the type of element being currently drawn based on the current drawing mode, used to determine what type of element to draw in the temporary layout as the user is inputting points
+
+---
+
+### `guiElement modeToType(DrawingMode mode)`
+Helper function that returns the type of element being currently drawn based on the current drawing mode, used to determine what type of element to draw in the canvas layout when the user has input enough points to finalize a shape
+
+---
+
+### `void storeCommittedPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3)`
+Helper function to store the user's input points based on how many points they have input so far, used to keep track of the points needed to draw shapes as the user clicks on the canvas
+
+---
+
+### `void storeTemporaryPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3)`
+Helper function to store the user's input points based on how many points they have input so far, used to keep track of the points needed to draw shapes as the user clicks on the canvas
+- Same structure as `storeCommittedPoint`, but with a different name and only allows updating when `points > 0`
+
+---
+
+### `void resetPoints(int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Helper function to reset the user's input points, used to clear point tracking when the user finishes drawing a shape and prepares for the next shape
+
+---
+
+### `void playDrawClickSound()`
+Helper function to play `draw_click.wav` upon clicking for drawing an element
+
+---
+
+### `void playButtonClickSound()`
+Helper function to play `button_click.wav` upon clicking a button
+
+---
+
+### `void playFreehandDrawSound()`
+Helper function to play `freehand_draw.wav` upon moving the mouse during a freehand draw
+
+---
+
+### `void playDeleteSound()`
+Helper function to play `delete.wav` when deleting an element
+
+---
+
+# Enums
+
+### `enum class InteractionState { IDLE, FREEHAND_DRAWING, SHAPE_DRAWING, DRAGGING, TOOLBAR_CLICK }`
+An enum to represent the current state of user interaction, used to determine how mouse events should be handled.
+
+---
+
+### `enum class DrawingMode { POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND_LINE, FREEHAND_SHAPE, SELECT }`
+An enum to represent the current mode that the user is attempting to draw shapes with
+
+---
+
+### `enum class TagType { Vec, IVec }`
+Enumeration used to communicate whether the corresponding attribute is a float or integer mathematical vector
+
+---
+
+### `enum class guiElement{ POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND, BUTTON, LAYOUT, UNKNOWN }`
+This enumeration identifies the type of GUI element being created.  
+It is primarily used by the **Factory** to determine which object to instantiate.
 
 ---
 
@@ -1027,11 +1131,6 @@ A struct passed to `Factory` to create a `GuiElement` object. Members are set to
 
 ## Data Members
 
-### `enum class TagType { Vec, IVec }`
-Enumeration used to communicate whether the corresponding attribute is a float or integer mathematical vector
-
----
-
 ### `std::string name`
 The desired name of the object
 
@@ -1365,6 +1464,11 @@ Draws a bounding box around the currently selected element
 
 ---
 
+### `bool isInside(ivec2 coordinates)`
+Checks if `coordinates` are within the bounds of the currently selected element by comparing the coordinates to `minBound` and `maxBound`
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/Selected_UML.png)
 
@@ -1391,18 +1495,6 @@ It defines a common interface used by all graphical objects such as:
 The class allows these derived types to be handled **polymorphically**, meaning they can be stored and manipulated using a `GuiElement*`.
 
 Each element maintains a pointer to the `Screen` object where it will be rendered.
-
----
-
-## Internal Data Structures
-
-### `enum class guiElement`
-This enumeration identifies the type of GUI element being created.  
-It is primarily used by the **Factory** to determine which object to instantiate.
-
-```cpp
-enum class guiElement { POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND, BUTTON, LAYOUT, UNKNOWN };
-```
 
 ---
 
