@@ -59,6 +59,7 @@ int main() {
                         case DrawingMode::ELLIPSE:
                         case DrawingMode::ARROW:
                         case DrawingMode::TEXTBOX: {
+                            playDrawClickSound();
                             storeCommittedPoint(points, mousePos, point1, point2, point3);
                             points++;
 
@@ -121,6 +122,7 @@ int main() {
                     switch (currentInteractionState) {
                         case InteractionState::FREEHAND_DRAWING: {
                             if (event.motion.state != 0) {
+                                playFreehandDrawSound();
                                 continueFreehandDraw(ivec2(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)));
                             }
                             break;
@@ -153,6 +155,7 @@ int main() {
                         }
                         case InteractionState::TOOLBAR_CLICK: {
                             if (isInsideSameButton(mousePos)) {
+                                playButtonClickSound();
                                 unselect();
                                 clicked(mousePos);
                             }
@@ -196,6 +199,7 @@ int main() {
                                 break;
                             }
                             case SDL_SCANCODE_BACKSPACE: {
+                                playDeleteSound();
                                 deleteShape();
                                 currentInteractionState = InteractionState::IDLE;
                                 break;
@@ -270,7 +274,11 @@ int main() {
                     else {
                         switch (event.key.scancode) {
                             case SDL_SCANCODE_BACKSPACE: {
-                                deleteText();
+                                bool isTextBoxExisting = deleteText();
+                                if (!isTextBoxExisting) {
+                                    currentInteractionState = InteractionState::IDLE;
+                                    playDeleteSound();
+                                }
                                 break;
                             }
                             case SDL_SCANCODE_ESCAPE: {
