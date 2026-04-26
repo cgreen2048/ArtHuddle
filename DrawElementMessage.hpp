@@ -12,7 +12,7 @@ class DrawElementMessage : public SocketMessage<DrawElementMessage> {
         std::string serializeImpl();
         json toJsonImpl();
     private:
-        ElementParameters elementParameters;
+        ElementParameters ep;
 }
 
 #endif

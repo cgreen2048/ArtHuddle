@@ -21,7 +21,9 @@ class SocketMessage {
             this->serializedMessage = static_cast<Message*>(this)->serializeImpl();
         }
         json toJson() {
-            return static_cast<Message*>(this)->toJsonImpl();
+            json j = static_cast<Message*>(this)->toJsonImpl();
+            j["messageType"] = static_cast<int>(this->messageType);
+            return j;
         }
         std::string getSerializedMessage() {
             if (this->serializedMessage.empty()) {

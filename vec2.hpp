@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include "./external/json.hpp"
 
 // Header file for vec2, ivec2
 
@@ -107,5 +108,18 @@ inline ivec2 Tvec2<int>::unit() {  // specialization for unit vector of ivec2, r
     return ivec2{static_cast<int>(std::round(this->x / magnitude)), static_cast<int>(std::round(this->y / magnitude))};
 }
 
+template <typename T>
+void to_json(json& j, const Tvec2<T>& v) {
+    j = json{
+        {"x", v.x},
+        {"y", v.y}
+    };
+}
+
+template <typename T>
+void from_json(const json& j, Tvec2<T>& v) {
+    j.at("x").get_to(v.x);
+    j.at("y").get_to(v.y);
+}
 
 #endif

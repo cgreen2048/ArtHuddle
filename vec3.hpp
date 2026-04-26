@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include "./external/json.hpp"
 
 // Header file for Tvec3
 
@@ -136,5 +137,21 @@ inline ivec3 Tvec3<int>::unit() {
         static_cast<int>(std::round(y * magnitudeReciprocal)),
         static_cast<int>(std::round(z * magnitudeReciprocal))
     };
+}
+
+template <typename T>
+void to_json(json& j, const Tvec3<T>& v) {
+    j = json{
+        {"x", v.x},
+        {"y", v.y},
+        {"z", v.z}
+    };
+}
+
+template <typename T>
+void from_json(const json& j, Tvec3<T>& v) {
+    j.at("x").get_to(v.x);
+    j.at("y").get_to(v.y);
+    j.at("z").get_to(v.z);
 }
 #endif
