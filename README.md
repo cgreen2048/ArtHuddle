@@ -3,7 +3,8 @@
 # Quick Links to Classes
 - [Global](#global)
 - [API](#api)
-- [Network Client](#networkclient)
+- [Enums](#enums)
+- [Network Client](#clientnetwork)
 - [Event Class](#event)
 - [MouseEvent Class](#mouseevent)
 - [MouseDownEvent Class](#mousedownevent)
@@ -277,14 +278,6 @@ The filepath to the most recently saved file. Used to determine where to save if
 
 ### `Button* pressedButton`
 A variable to hold the most recently pressed button, used to trigger the button effect if the mouse is still on the same button when the mouse button is released
-
----
-
-### `enum class InteractionState { IDLE, FREEHAND_DRAWING, SHAPE_DRAWING, DRAGGING, TOOLBAR_CLICK }`
-An enum to represent the current state of user interaction, used to determine how mouse events should be handled.
-
-### `InteractionState currentInteractionState`
-A variable to hold the current interaction state of the user, initialized to `InteractionState::IDLE`
 
 ---
 
@@ -611,6 +604,29 @@ Helper function to play `freehand_draw.wav` upon moving the mouse during a freeh
 
 ### `void playDeleteSound()`
 Helper function to play `delete.wav` when deleting an element
+
+---
+
+# Enums
+
+### `enum class InteractionState { IDLE, FREEHAND_DRAWING, SHAPE_DRAWING, DRAGGING, TOOLBAR_CLICK }`
+An enum to represent the current state of user interaction, used to determine how mouse events should be handled.
+
+---
+
+### `enum class DrawingMode { POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND_LINE, FREEHAND_SHAPE, SELECT }`
+An enum to represent the current mode that the user is attempting to draw shapes with
+
+---
+
+### `enum class TagType { Vec, IVec }`
+Enumeration used to communicate whether the corresponding attribute is a float or integer mathematical vector
+
+---
+
+### `enum class guiElement{ POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND, BUTTON, LAYOUT, UNKNOWN }`
+This enumeration identifies the type of GUI element being created.  
+It is primarily used by the **Factory** to determine which object to instantiate.
 
 ---
 
@@ -1115,11 +1131,6 @@ A struct passed to `Factory` to create a `GuiElement` object. Members are set to
 
 ## Data Members
 
-### `enum class TagType { Vec, IVec }`
-Enumeration used to communicate whether the corresponding attribute is a float or integer mathematical vector
-
----
-
 ### `std::string name`
 The desired name of the object
 
@@ -1484,18 +1495,6 @@ It defines a common interface used by all graphical objects such as:
 The class allows these derived types to be handled **polymorphically**, meaning they can be stored and manipulated using a `GuiElement*`.
 
 Each element maintains a pointer to the `Screen` object where it will be rendered.
-
----
-
-## Internal Data Structures
-
-### `enum class guiElement`
-This enumeration identifies the type of GUI element being created.  
-It is primarily used by the **Factory** to determine which object to instantiate.
-
-```cpp
-enum class guiElement { POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND, BUTTON, LAYOUT, UNKNOWN };
-```
 
 ---
 
