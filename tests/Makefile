@@ -7,24 +7,24 @@ CXXFLAGS := -std=c++17 -I$(SDL3_INC)
 
 # Link flags: where to find it at link time + where to find it at run time
 LDFLAGS := -L$(SDL3_LIB) -Wl,-rpath,$(SDL3_LIB)
-LDLIBS := -lSDL3 -lstdc++fs
+LDLIBS := -lSDL3 -lstdc++fs -pthread
 
 MAC_CXXFLAGS := -std=c++17 -Wall
 MAC_LDFLAGS := -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks
 MAC_LDLIBS := -framework sdl3
 
-FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../helperFunctions.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../Ellipse.cpp ../TextBox.cpp ../Arrow.cpp ../Freehand.cpp 
+FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../helperFunctions.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../Ellipse.cpp ../TextBox.cpp ../Arrow.cpp ../Freehand.cpp ../ThreadPool.cpp 
 EVENT_ELEMENTS := ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp ../MouseEvent.cpp ../MouseUpEvent.cpp ../MouseDownEvent.cpp ../MouseMotionEvent.cpp
-UTILITY_ELEMENTS := ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../GUIFile.cpp ../ClientNetwork.cpp
+UTILITY_ELEMENTS := ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../GUIFile.cpp
 
 test:
 	g++ tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3
 
 	g++ ../Matrix.cpp Milestone001Tests.cpp -o milestone001
 
-	g++ ../Screen.cpp Milestone002Tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone002
+	g++ ../Screen.cpp ../ThreadPool.cpp Milestone002Tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone002
 
-	g++ ../Screen.cpp screenDemo.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o screenDemo
+	g++ ../Screen.cpp ../ThreadPool.cpp screenDemo.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o screenDemo
 
 	g++ Milestone003Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS) \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o milestone003
@@ -95,10 +95,10 @@ milestone001StudentMachine:
 	$(CXX) ../Matrix.cpp Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone001
 
 milestone002StudentMachine:
-	$(CXX) ../Screen.cpp Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone002
+	$(CXX) ../Screen.cpp ../ThreadPool.cpp Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone002
 
 screenDemoStudentMachine:
-	$(CXX) ../Screen.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
+	$(CXX) ../Screen.cpp ../ThreadPool.cpp screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
 
 milestone003StudentMachine:
 	$(CXX) Milestone003Tests.cpp $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) \
@@ -190,11 +190,11 @@ milestone001Mac:
 	$(CXX) ../Matrix.cpp Milestone001Tests.cpp -Wall -o milestone001
 
 milestone002Mac:
-	$(CXX) ../Screen.cpp Milestone002Tests.cpp \
+	$(CXX) ../Screen.cpp ../ThreadPool.cpp Milestone002Tests.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone002
 
 screenDemoMac:
-	$(CXX) ../Screen.cpp screenDemo.cpp \
+	$(CXX) ../Screen.cpp ../ThreadPool.cpp screenDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o screenDemo
 
 milestone003Mac:

@@ -34,6 +34,7 @@
 - [EventSystem Class](#eventsystem)
 - [GuiFile XML Parser](#guifile)
 - [Screen Class](#screen)
+- [ThreadPool Class](#threadpool)
 - [Matrix Class](#matrix)
 - [vec2 (templated) Class](#vec2)
 - [vec3 (templated) Class](#vec3)
@@ -247,11 +248,17 @@ A variable to hold a struct returned from an element's `getParameters()` method 
 ### `guiElement clipboardType`
 The type of element stored in the `clipboard` variable. Used to create a new element when pasting. Initialized to guiElement::UNKNOWN
 
+---
+
 ### `SDL_Cursor* arrowCursor`
 A cursor to represent the default arrow cursor
 
+---
+
 ### `SDL_Cursor* handCursor`
 A cursor to represent a hand, used when hovering over elements or dragging
+
+---
 
 ### `SDL_Cursor* currentCursor`
 A variable to hold the current cursor being used, initialized to `arrowCursor`
@@ -265,6 +272,19 @@ The filepath to the most recently loaded file. Used to determine where to save i
 
 ### `std::filesystem::path currentFileSavePath`
 The filepath to the most recently saved file. Used to determine where to save if the user attempts to save to a certain location
+
+---
+
+### `Button* pressedButton`
+A variable to hold the most recently pressed button, used to trigger the button effect if the mouse is still on the same button when the mouse button is released
+
+---
+
+### `enum class InteractionState { IDLE, FREEHAND_DRAWING, SHAPE_DRAWING, DRAGGING, TOOLBAR_CLICK }`
+An enum to represent the current state of user interaction, used to determine how mouse events should be handled.
+
+### `InteractionState currentInteractionState`
+A variable to hold the current interaction state of the user, initialized to `InteractionState::IDLE`
 
 ---
 
@@ -282,7 +302,7 @@ Creates a new `Screen` object, set to the size of the full window, and assigns i
 
 ---
 
-### `Layout* createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `Layout* createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates and connects all layouts:
 - `rootLayout`
 - `canvasLayout`
@@ -311,7 +331,7 @@ saves the relative filepath to `currentFileSavePath`, and calls `saveCanvas()` w
 
 ---
 
-### `void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `void initButtons(Layout* layout, DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates all toolbar buttons and assigns:
 - positions
 - colors
@@ -345,7 +365,7 @@ Loads an XML file into `canvasLayout`:
 
 ---
 
-### `void updateToolbarButtonColors(int& type)`
+### `void updateToolbarButtonColors(DrawingMode mode)`
 Updates colors of **mode buttons**:
 - Highlights the currently selected tool
 - Resets others to default color
@@ -368,7 +388,7 @@ The interface that allows a programmer to interact with the underlying systems c
 
 ## Functions
 
-### `void initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `void initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Initializes video and audio through SDL and calls `createWindow()`, `createScreen()`, `createRootLayout()`, and `setEventSystem()` from `Global`
 - Also starts SDL text input
 - Disables accent menu on Mac that appears when a user holds down a key
@@ -385,28 +405,32 @@ Attempts to play the file specified by `filePath` using the program's `SoundPlay
 
 ---
 
-### `void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
-Draws an element of type specified by `type` to the `tempLayout` `Layout` object based on the three passed coordinates
+### `void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+Draws an element of type specified by `ge` to the `tempLayout` `Layout` object based on the three passed coordinates
+- Attempts to retrieve a temporary shape from `tempLayout` to shortcut the creation process using the element's setters
+  - If no element is in `tempLayou`, the factory is called
 - Some shapes need fewer than three coordinates
 - For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
 
 ---
 
-### `void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
-Draws an element of type specified by `type` to the `canvasLayout` `Layout` object based on the three passed coordinates
-- Some shapes need fewer than three coordinates
-- For `Ellipse` and `Arrow`, internal calculations are done based on the three coordinates to determine the radii or arrow point placement respectively
-- Automatically selects the newly drawn element
+### `void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color)`
+Moves a `GuiElement*` from `tempLayout` to `canvasLayout`
+- Calls the factory if element to be drawn is a `Point` as no temporary version of a point exists when drawing
+- Casts to determine the correct type
+- Sets the element to be the actively selected element
 
 ---
 
 ### `void startFreehandDraw(const ivec2& point, const ivec3& color, bool isFreehandShape)`
 Starts drawing of a `Freehand` element. Creates a new `Freehand` object at the starting point `point` and color `color` in line or shape mode based on `isFreehandShape`, adds it to the canvas, sets it as the targeted element for mouse events in `EventSystem`, and pushes a `MouseDownEvent` with the starting point
+- Returns if the coordinates are within the bounds of the toolbar
 
 ---
 
 ### `void continueFreehandDraw(const ivec2& point)`
 Continues drawing of the current `Freehand` element targeted in `EventSystem` by pushing a `MouseMotionEvent` with the current point and `mouseDown` set to true
+- Pushes a `MouseUpEvent` if the coordinates are within the toolbar's bounds to stop the drawing of a `Freehand` object
 
 ---
 
@@ -443,7 +467,7 @@ Used to cancel a drag movement. Accesses `originalElementParameters` to create a
 ---
 
 ### `void unselect()`
-Accesses the program's `EventSystem` and sends a `Click` event with invalid coordinates to deselect any element
+Accesses the program's `EventSystem` and sets the selected element to `nullptr`
 
 ---
 
@@ -484,7 +508,7 @@ A call to delete the specified shape
 
 ---
 
-### `void update()`
+### `void updateScreen()`
 Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer`, draws an overlay, and updates button colors:
 - Highlights the currently selected toolbar button  
 - Applies a temporary flash effect to the Save and Load buttons when clicked
@@ -520,6 +544,46 @@ Updates the cursor icon based on if the cursor is hovering over an element or dr
 `arrowCursor` (`SDL_SYSTEM_CURSOR_DEFAULT`)
 
 ---
+
+### `bool pressedToolbarButton(const ivec2& point)`
+Checks if the user has clicked on a toolbar button by checking if `point` is within the bounds of
+any toolbar button. Sets `pressedButton` to the clicked button if true and returns true, otherwise returns false
+
+---
+
+### `bool isInsideSameButton(const ivec2& point)`
+Checks if the user's mouse up position `point` is within the bounds of the same button stored
+in `pressedButton`
+
+---
+
+### `void resetPressedButton()`
+Resets the `pressedButton` to `nullptr` to allow for future button clicks
+
+---
+
+### `int requiredPointsForType(guiElement type)`
+Helper function that returns the number of points required to draw an element of type `type`, used to determine when an element is ready to be drawn based on how many points the user has input so far
+
+---
+
+### `guiElement tempElementType(DrawingMode mode)`
+Helper function that returns the type of element being currently drawn based on the current drawing mode, used to determine what type of element to draw in the temporary layout as the user is inputting points
+
+---
+
+### `guiElement modeToType(DrawingMode mode)`
+Helper function that returns the type of element being currently drawn based on the current drawing mode, used to determine what type of element to draw in the canvas layout when the user has input enough points to finalize a shape
+
+---
+
+### `void storePoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3)`
+Helper function to store the user's input points based on how many points they have input so far, used to keep track of the points needed to draw shapes as the user clicks on the canvas
+
+---
+
+### `void resetPoints(int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Helper function to reset the user's input points, used to clear point tracking when the user finishes drawing a shape and prepares for the next shape
 
 # ClientNetwork
 
@@ -1360,6 +1424,11 @@ Draws a bounding box around the currently selected element
 
 ---
 
+### `bool isInside(ivec2 coordinates)`
+Checks if `coordinates` are within the bounds of the currently selected element by comparing the coordinates to `minBound` and `maxBound`
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/Selected_UML.png)
 
@@ -1396,7 +1465,7 @@ This enumeration identifies the type of GUI element being created.
 It is primarily used by the **Factory** to determine which object to instantiate.
 
 ```cpp
-enum class guiElement { LAYOUT, POINT, LINE, BOX, TRIANGLE, BUTTON, TEXTBOX, ELLIPSE, ARROW };
+enum class guiElement { POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND, BUTTON, LAYOUT, UNKNOWN };
 ```
 
 ---
@@ -1773,7 +1842,14 @@ Clears the `elements` vector so that no previous elements will be drawn
 ---
 
 ### `void deleteElement(const std::string& elementName)`
-Finds the element whose name = `elementName`, deleting if found
+Finds the element whose name = `elementName` using `removeElement()`, deleting if found. If not, nested layouts are searched
+
+---
+
+### `GuiElement* removeElement(GuiElement* element)`
+Iterates through stored elements, removing `element` from the vector if found
+- Does not delete `element`, useful for transfering an element between layouts
+- Returns the found element pointer
 
 ---
 
@@ -1794,6 +1870,12 @@ Calls the `getAbsolute...()` methods to generate minimum and maximum bounds and 
 
 ### `std::vector<ivec2> getBounds()`
 Returns a vector containing `minBound` and `maxBound`
+
+---
+
+### `GuiElement* popLast()`
+Pops the last pointer from the `elements` array and returns it
+- This removes the returned element from the stored vector
 
 ---
 
@@ -1906,6 +1988,9 @@ starting from the centroid and flood filling to the border of the shape.
 Flood fills a freehand shape from the starting point all the way to the borders
 Repeatedly pops from the stack, colors pixels that are not the correct color of the border, 
 and pushes all adjacent pixels to the stack to color until the stack is empty
+- Stores pixels to color in a vector and keeps track of visited pixels in a boolean vector
+- Sorts vector of points by increasing y, with x as a tie breaker
+- Calls `drawFreehandFlood()` from `Screen` to draw the shape
 
 ---
 
@@ -1924,7 +2009,8 @@ This method is the main driver for drawing the `Freehand` element to the screen 
 If the `Freehand` is finished drawing, continue to proper `ClickEvent` handling for selecting the `Freehand` element.
 Else, continue into the conditional block to handle continuing the current freehand drawing
 - If the event received is a mouse down event, add the current point to `points` as the first point, starting the freehand drawing
-- If the event recieved is a mouse up event, add the final point to `points` and set `finished` to true to finish drawing. If in Shape mode and the final point is less than `SHAPE_COMPLETION_DIST_THRESHOLD` pixels away from the first point, add the first point to `points` again to complete the shape
+- If the event recieved is a mouse up event, add the final point to `points`. If in Shape mode and the final point is less than `SHAPE_COMPLETION_DIST_THRESHOLD` pixels away from the first point, add the first point to `points` again to complete the shape
+- Set `finished` to true to finish drawing
 - Calls `setPoints()` to add intermediate points
 
 ---
@@ -2015,6 +2101,11 @@ Cycles through stored point attributes to retrieve the minimum and maximum `x` a
 
 ### `std::vector<ivec2> getBounds()`
 Returns a vector containing `minBound` and `maxBound`
+
+---
+
+### `void movePoints(ivec2 delta)`
+Adds `delta` to every point in `points` to shift this element
 
 ---
 
@@ -2141,6 +2232,25 @@ Returns the integer in the ellipse's `radiusX` attribute
 
 ### `int getRadiusY()`
 Returns the integer in the ellipse's `radiusY` attribute
+
+---
+
+### `void setCenter(ivec2 point, TagType pointType)`
+Sets `center` and `centerType` to the passed values 
+
+---
+
+### `void setRadiusX(int radX)`
+Sets `radiusX` to the passed value
+---
+
+### `void setRadiusY(int radY)`
+Sets `radiusY` to the passed value
+
+---
+
+### `void setColor(ivec3 color, TagType colorType)`
+Sets `color` and `colorType` to the passed values
 
 ---
 
@@ -2759,6 +2869,36 @@ Returns the `ivec2` in the `pointC` attribute of the `Arrow` object
 
 ---
 
+### `void setMin(ivec2 point, TagType pointType)`
+Sets `min` and `minType` to the passed values
+
+---
+
+### `void setMax(ivec2 point, TagType pointType)`
+Sets `max` and `maxType` to the passed values
+
+---
+
+### `void setA(ivec2 point, TagType pointType)`
+Sets `pointA` and `pointAType` to the passed values
+
+---
+
+### `void setB(ivec2 point, TagType pointType)`
+Sets `pointB` and `pointBType` to the passed values
+
+---
+
+### `void setC(ivec2 point, TagType pointType)`
+Sets `pointC` and `pointCType` to the passed values
+
+---
+
+### `void setColor(ivec3 color, TagType colorType)`
+Sets `color` and `colorType` to the passed values
+
+---
+
 ### `ElementParameters getParameters()`
 Gathers all attributes into one struct, which is then returned
 
@@ -3158,11 +3298,13 @@ Method to draw the stored line to a `Screen` object
 
 ### `void setStart(const ivec2& v, TagType t)`
 Method to set the `start` and `startType` attributes of a `Line` object
+- Calls `setPoints()` to update the points on the line
 
 ---
 
 ### `void setEnd(const ivec2& v, TagType t)`
 Method to set the `end` and `endType` attributes of a `Line` object
+- Calls `setPoints()` to update the points on the line
 
 ---
 
@@ -3228,6 +3370,7 @@ Returns `guiElement::LINE`
 
 ### `void setPoints()`
 Uses Bresenham's algorithm to calculate every point on the line between `start` and `end` and add them to `points`
+- Clears `points` before calculating new points
 
 ---
 
@@ -3975,6 +4118,8 @@ These ensure the correct internal representation while preserving original XML t
 - `SDL_Surface* surface`: Holds a pointer to the SDL_Surface object
 - `SDL_Renderer* renderer`: Holds a pointer to the SDL_Renderer object
 
+---
+
 ## Methods
 
 ### `blitTo(SDL_Surface* target) const`
@@ -3983,12 +4128,16 @@ Blits the current Screen object to the target surface
 - Verifies target surface exists
 - Uses `SDL_BlitSurface` to blit between surfaces
 
+---
+
 ### `colorOnePixel(const Tvec2<T1> coords, const Tvec3<T2> colors, ivec2 parentStart, ivec2 parentEnd)`
 Colors target pixel in object's SDL_Surface
 - Uses a 2D mathematical vector object to hold target pixel's X and Y components
 - Uses a 3D mathematical vector object to hold target pixel's color value in RGB format (clamped between 0 and 255)
 - Uses `SDL_MapRGBA` to convert the color to the pixel
 - Will only draw if the pixel falls within the bounds of the Screen as well as the `parentStart` and `parentEnd` coordinates passed from a drawable object's `Layout` object
+
+---
 
 ### `drawBox(Tvec2<T1> min, Tvec2<T1> max, Tvec3<T2> colors, ivec2 parentStart, ivec2 parentEnd)`
 Draws a box on the target Screen object's SDL_Surface
@@ -3997,16 +4146,25 @@ Draws a box on the target Screen object's SDL_Surface
 - Uses 3D mathematical vector to store the target color for the box
 - Calls `colorOnePixel` for each coordinate in the bounds of the box in a double nested for loop as long as the coordinate falls within the `parentStart` and `parentEnd` coordinates passed from the Box's `Layout` object
 
+---
+
 ### `pointInTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec2 pointP)`
 Determines if `pointP` is within the bounds of the triangle established by `pointA`, `pointB`, and `pointC`
 - Calculates the cross products AP x AB, BP x BC, & CP x CA
 - If no conflicting signs exist between these three cross products, `point` is inside the triangle, else it is not
 
+---
+
 ### `drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
 Draws a triangle on the target Screen object's SDL_Surface
 - Computes a bounding box around the triangle using the min and max of the corners' x & y values
 - Iterates over all points in the box & uses pointInTriangle to determine if the current point is in the triangle
-- Calls `colorOnePixel` for each coordinate in the bounds of the triangle 
+- Calls `colorOnePixel` for each coordinate in the bounds of the triangle
+- Splits the box into smaller strips and gives them to drawing threads to accelerate the rendering process
+  - Waits until all threads are finished
+  - Each thread calls `colorOnePixel()` on each pixel in its strip
+
+---
 
 ### `drawBresenhamLine(ivec2 start, ivec2 end, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
 Draws a line to the Target Screen object's SDL_Surface using the Bresenham algorithm
@@ -4014,20 +4172,36 @@ Draws a line to the Target Screen object's SDL_Surface using the Bresenham algor
 - Will only draw on pixels that exist in the surface
 - Calls `colorOnePixel` for each pixel that exists on the line
 
+---
+
 ### `drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
 Draws an ellipse to the target Screen object's SDL_Surface
 - Centers the ellipse on `center`
 - Draws along x and y axes based on `radiusX` and `radiusY`
 
+---
+
 ### `drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd)`
 Draws an arrow to the target Screen object's SDL_Surface
 - Internally calls `drawBox()` and `drawTriangle()` to draw the stem and point of the arrow respectively
+
+---
+
+### `void drawFreehandFlood(std::vector<ivec2> points, ivec3 color, ivec2 parentStart, ivec2 parentEnd)`
+Draws a freehand shape to the target Screen's SDL_Surface
+- Splits `points` into blocks and gives them to drawing threads to accelerate the rendering process
+  - Waits until all threads are finished
+  - Each thread calls `colorOnePixel()`
+
+---
 
 ### `clear(ivec3 color)`
 Clears the Target Screen object's `SDL_Surface` by filling the entire surface with the given color
 - Uses `drawBox` to draw a filled rectangle from `(0, 0)` to `(width, height)`
 - Overwrites all previously drawn pixels in the surface
 - Intended to be called at the start of each frame before drawing new elements
+
+---
 
 ### `void renderToRenderer()`
 Renders the current `Screen` surface to the SDL renderer.
@@ -4050,6 +4224,8 @@ This method is required when using the **SDL_Renderer pipeline**.
 
 - Mixing surface-based rendering and renderer-based rendering will cause incorrect or undefined behavior
 
+---
+
 ### `void drawTextClipped(ivec2 min, ivec2 max, const std::string& text, ivec3 color)`
 Draws text inside a bounded rectangular region.
 
@@ -4061,12 +4237,16 @@ Draws text inside a bounded rectangular region.
   - Only the rightmost portion of the text is displayed
 - Calls `drawText()` to render the clipped text
 
+---
+
 ### `void drawCursor(ivec2 pos, ivec3 color)`
 Draws a text cursor (`|`) at the specified position.
 
 - Uses `drawText()` internally
 - Intended for use in interactive components like `TextBox`
 - Typically paired with a blinking condition (e.g., time-based toggle)
+
+---
 
 ### `void drawText(Tvec2<T1> pos, const std::string& text, Tvec3<T2> textColors)`
 Draws text to the screen using the SDL renderer.
@@ -4083,6 +4263,8 @@ Draws text to the screen using the SDL renderer.
 #### Note
 This function draws **directly to the renderer**, not the surface.
 
+---
+
 ### `void drawTextCentered(Tvec2<T1> min, Tvec2<T1> max, const std::string& text, Tvec3<T2> textColors)`
 Draws centered text within a rectangular region.
 
@@ -4092,39 +4274,59 @@ Draws centered text within a rectangular region.
 - Computes the center of the bounding box
 - Calls `drawText()` with computed centered coordinates
 
+---
+
 ### `SDL_Surface* getSurface()`
 Returns the surface for comparisons
+
+---
 
 ### `uint32_t getHeight()`
 Returns the height stored in the Screen object
 
+---
+
 ### `uint32_t getWidth()`
 Returns the width stored in the Screen object
+
+---
 
 ### `bool surfaceEqual(const SDL_Surface* rhs)`
 Compares the current Screen's SDL_Surface with the target SDL_Surface
 - Uses `memcmp` to compare the memory of the two surfaces
 - Returns false if either surface does not exist or is not equal, true otherwise
 
+---
+
 ### `Screen()`
 Default constructor. Initializes `width` and `height` to 0
+
+---
 
 ### `Screen(uint32_t w, uint_32 h)`
 Constructor that takes in values for width and height. Calls SDL_CreateSurface to create an SDL_Surface for the object
 - Calls drawBox() to fill the entire screen with a black box as a way of clearing garbage values
+
+---
 
 ### `Screen(uint32_t w, uint_32 h, SDL_Renderer* renderer)`
 Constructor that takes in values for width, height, and renderer. 
 Calls SDL_CreateSurface to create an SDL_Surface for the object
 - Calls drawBox() to fill the entire screen with a black box as a way of clearing garbage values
 
+---
+
 ### `Screen(const Screen& cp)`
 Copy constructor. Creates a new Screen with the same values as `cp`
 - Calls `cp.blitTo(this->surface)` to blit existing surface to the new surface
 
+---
+
 ### `Screen& operator=(const Screen& cp)`
 Copy assignment operator. Replaces Screen object's values with values from `cp`.
 - Calls `cp.blitTo(this->surface)` to blit existing surface to the new surface
+
+---
 
 ### `bool operator==(const Screen rhs)`
 Compares two Screen objects
@@ -4132,8 +4334,12 @@ Compares two Screen objects
 - Calls surfaceEqual to check surface equality
 - Returns false if any checks fail, true otherwise
 
+---
+
 ### `~Screen()`
 Destructor method. Checks if Screen object has a valid SDL_Surface before calling `SDL_DestroySurface`
+
+---
 
 ## Rendering Pipeline Summary
 
@@ -4160,6 +4366,64 @@ The rendering system follows this order each frame:
 Do not mix with:
 - `SDL_GetWindowSurface`
 - `SDL_UpdateWindowSurface`
+
+---
+
+# ThreadPool
+
+## Description
+A thread pool used in the `Screen` class to split the work of drawing larger shapes to the screen. Currently implemented in `Freehand` filled shapes and `Triangle` as these shapes showed a performance increase with threading. Uses `future`s to allow the main thread to wait for the threads to finish executing before moving on 
+
+---
+
+## Macros
+
+### `NUM_THREADS`
+The number of threads that exist in this thread pool. Work will be split between up to as many threads as this defines
+
+---
+
+## Attributes
+
+### `ThreadPool()`
+Constructor. Creates `NUM_THREADS` threads to accomplish tasks in the queue. Threads wait until tasks are given
+
+---
+
+### `~ThreadPool()`
+Destructor. Stops all threads and joins them
+
+---
+
+### `std::future<void> enqueue(std::function<void()> task)`
+Add new tasks for the thread pool
+
+---
+
+## Methods
+
+### `std::vector<std::thread> threads_`
+A vector that stores the threads
+
+---
+
+### `std::queue<std::function<void()> > tasks_`
+The queue of tasks to do
+
+---
+
+### `std::mutex queue_mutex_`
+A mutex to allow safe access to shared data
+
+---
+
+### `std::condition_variable cv_`
+Signals changes to shared data
+
+---
+
+### `bool stop_`
+A flag to stop the thread pool. Initialized to `false`
 
 ---
 

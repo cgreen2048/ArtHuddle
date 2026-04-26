@@ -36,6 +36,12 @@ class Arrow : public GuiElement {
         ivec2 getA();
         ivec2 getB();
         ivec2 getC();
+        void setMin(ivec2 point, TagType pointType);
+        void setMax(ivec2 point, TagType pointType);
+        void setA(ivec2 point, TagType pointType);
+        void setB(ivec2 point, TagType pointType);
+        void setC(ivec2 point, TagType pointType);
+        void setColor(ivec3 color, TagType colorType);
         bool validateAndNormalize(ElementParameters& ep);
         ElementParameters getParameters();
         guiElement getType();

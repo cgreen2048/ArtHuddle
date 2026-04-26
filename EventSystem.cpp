@@ -72,7 +72,7 @@ bool EventSystem::processEvents(Layout *root){
                         handled = true;
                     }
 
-                    if (!success && fr->isFinished()) {
+                    if (!success && !fr->isFinished()) {
                         root->deleteElement(fr->getName());
                     }
 

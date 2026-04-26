@@ -8,6 +8,7 @@
 #include <string>
 #include "vec2.hpp"
 #include "vec3.hpp"
+#include "ThreadPool.hpp"
 #define MIN_COLOR_VALUE 0
 #define MAX_COLOR_VALUE 255
 static constexpr int SDL_DEBUG_FONT_WIDTH = 8;
@@ -18,6 +19,7 @@ class Screen {
         uint32_t width, height;
         SDL_Surface* surface = nullptr;
         SDL_Renderer* renderer = nullptr;
+        ThreadPool threadPool = ThreadPool();
         
     public:
         Screen();
@@ -35,6 +37,7 @@ class Screen {
         void drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd);
         void drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, ivec2 parentStart, ivec2 parentEnd);
         void drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd);
+        void drawFreehandFlood(std::vector<ivec2> points, ivec3 color, ivec2 parentStart, ivec2 parentEnd);
         ivec3 getPixelColor(ivec2 coords) const;
         void clear(ivec3 color);
 
@@ -85,7 +88,6 @@ class Screen {
                 std::clamp(static_cast<int>(colors.y), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE)),
                 std::clamp(static_cast<int>(colors.z), MIN_COLOR_VALUE, static_cast<int>(MAX_COLOR_VALUE))
             );
-
             for (int i = minX; i <= maxX; ++i) {
                 for (int j = minY; j <= maxY; ++j) {
                     this->colorOnePixel(ivec2{i,j}, clampedColor, parentStart, parentEnd);

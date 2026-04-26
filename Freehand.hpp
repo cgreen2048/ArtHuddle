@@ -4,6 +4,7 @@
 #include "GuiElement.hpp"
 #include "Event.hpp"
 #include "ElementParameters.hpp"
+#include <set>
 
 #define PIXEL_DRAW_DIST_THRESHOLD 3
 #define SHAPE_COMPLETION_DIST_THRESHOLD 10
@@ -45,6 +46,7 @@ class Freehand : public GuiElement {
         void modifyColor(ivec3 newColor);
         void setBounds();
 		std::vector<ivec2> getBounds();
+        void movePoints(ivec2 delta);
 };
 
 #endif

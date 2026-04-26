@@ -227,3 +227,15 @@ void Selected::drawBoundingBox() {
     Line* rightBound = dynamic_cast<Line*>(factory(guiElement::LINE, rightParam));
     this->selectedLayout->addElement(rightBound);
 }
+
+bool Selected::isInside(ivec2 coordinates) {
+    if (!this->selectedElement) {
+        return false;
+    }
+
+    if (coordinates.x < this->minBound.x || coordinates.x > this->maxBound.x || coordinates.y < this->minBound.y || coordinates.y > this->maxBound.y) {
+        return false;
+    }
+    
+    return true; 
+}

@@ -179,14 +179,33 @@ void Screen::drawTriangle(ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors
         std::clamp(colors.y, MIN_COLOR_VALUE, MAX_COLOR_VALUE),
         std::clamp(colors.z, MIN_COLOR_VALUE, MAX_COLOR_VALUE)
     );
+    int rows = maxY - minY + 1;
+    int blocks = std::min(NUM_THREADS, rows);
+    int rowsPerBlock = rows / blocks;
+    std::vector<std::future<void>> futures;
 
-    for (int i = minX; i <= maxX; ++i) {
-        for (int j = minY; j <= maxY; ++j) {
-            ivec2 point = ivec2{i,j};
-            if (this->pointInTriangle(pointA, pointB, pointC, point)) {
-                this->colorOnePixel(point, clampedColor, parentStart, parentEnd);
-            }
+    for (int b = 0; b < blocks; ++b) {
+        int start = minY + (b * rowsPerBlock);
+        int end;
+        if (b == blocks - 1) {
+            end = maxY;
         }
+        else {
+            end = start + rowsPerBlock - 1;
+        }
+        futures.push_back(this->threadPool.enqueue([=] {
+            for (int j = start; j <= end; ++j) {
+                for (int i = minX; i <= maxX; ++i) {
+                    ivec2 point = ivec2{i,j};
+                    if (this->pointInTriangle(pointA, pointB, pointC, point)) {
+                        this->colorOnePixel(point, clampedColor, parentStart, parentEnd);
+                    }
+                }
+            }
+        }));
+    }
+    for (auto& f : futures) {
+        f.wait();
     }
 }
 
@@ -258,6 +277,9 @@ void Screen::drawEllipse(ivec2 center, int radiusX, int radiusY, ivec3 color, iv
             d2 = d2 + dx - dy + (radiusX * radiusX);
         }
     }
+    // for (auto& f : futures) {
+    //     f.wait();
+    // }
 }
 
 void Screen::renderToRenderer(){
@@ -304,6 +326,30 @@ void Screen::drawCursor(ivec2 pos, ivec3 color) {
 void Screen::drawArrow(ivec2 min, ivec2 max, ivec2 pointA, ivec2 pointB, ivec2 pointC, ivec3 colors, ivec2 parentStart, ivec2 parentEnd) {
     this->drawBox(min, max, colors, parentStart, parentEnd);
     this->drawTriangle(pointA, pointB, pointC, colors, parentStart, parentEnd);
+}
+
+void Screen::drawFreehandFlood(std::vector<ivec2> points, ivec3 color, ivec2 parentStart, ivec2 parentEnd) {
+    int numPoints = points.size();
+    int pointsPerBlock = numPoints / NUM_THREADS;
+    std::vector<std::future<void>> futures;
+    for (int i = 0; i < NUM_THREADS; ++i) {
+        int start = i * pointsPerBlock;
+        int end;
+        if (i == NUM_THREADS - 1) {
+            end = numPoints;
+        }
+        else {
+            end = start + pointsPerBlock;
+        }
+        futures.push_back(this->threadPool.enqueue([=, &points] {
+            for (int j = start; j < end; ++j) {
+                this->colorOnePixel(points[j], color, parentStart, parentEnd);
+            }
+        }));
+    }
+    for (auto& f : futures) {
+        f.wait();
+    }
 }
 
 ivec3 Screen::getPixelColor(ivec2 coords) const {
