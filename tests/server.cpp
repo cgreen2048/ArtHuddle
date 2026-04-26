@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <memory>
+#include "../ThreadPool.hpp"
 
 
 #ifdef _WIN32
@@ -23,6 +24,8 @@
 
 #define PORT 40666
 #define BUFFER_SIZE 512
+
+void handleClient(SocketType client);
 
 int main() {
 #ifdef _WIN32
@@ -56,7 +59,7 @@ int main() {
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(PORT);
-    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if (bind(listener, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
         std::cout << "Bind failed\n";
@@ -79,6 +82,8 @@ int main() {
 
     std::cout << "Server listening on port " << PORT << "...\n";
 
+    ThreadPool pool;
+
     while (true) {
         // Step 5: Accept client
         SocketType client = accept(listener, nullptr, nullptr);
@@ -94,26 +99,11 @@ int main() {
 
         std::cout << "Client connected!\n";
 
-        // Step 6: Receive messages
-        char buffer[BUFFER_SIZE + 1];
-
-        while (true) {
-            int bytes = recv(client, buffer, BUFFER_SIZE, 0);
-
-            if (bytes <= 0) {
-                std::cout << "Client disconnected. Listening for new connections...\n";
-                break;
-            }
-
-            buffer[bytes] = '\0';
-            std::cout << "Received: " << buffer << "\n";
-        }
-
-        // Cleanup
-        CLOSE_SOCKET(client);
+        pool.enqueue([client]() {
+            handleClient(client);
+        });
     }
-
-    
+ 
     CLOSE_SOCKET(listener);
 
 #ifdef _WIN32
@@ -121,4 +111,23 @@ int main() {
 #endif
 
     return 0;
+}
+
+void handleClient(SocketType client) {
+    char buffer[BUFFER_SIZE + 1];
+
+    while (true) {
+        int bytes = recv(client, buffer, BUFFER_SIZE, 0);
+
+        if (bytes <= 0) {
+            std::cout << "Client disconnected. Listening for new connections...\n";
+            break;
+        }
+
+        buffer[bytes] = '\0';
+        std::cout << "Received: " << buffer << "\n";
+    }
+
+    // Cleanup
+    CLOSE_SOCKET(client);
 }

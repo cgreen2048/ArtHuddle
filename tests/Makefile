@@ -161,7 +161,7 @@ layoutDeleteStudentMachine:
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDelete
 
 apiDemoStudentMachine:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../Global.cpp ../API.cpp apiDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../ClientNetwork.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o apiDemo
 
 serverStudentMachine:
