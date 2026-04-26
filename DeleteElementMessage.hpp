@@ -8,7 +8,6 @@
 class DeleteElementMessage : public SocketMessage<DeleteElementMessage> {
     public:
         DeleteElementMessage(std::string elementName);
-        std::string serializeImpl();
         json toJsonImpl();
     private:
         std::string elementName;

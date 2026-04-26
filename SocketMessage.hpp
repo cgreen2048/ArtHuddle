@@ -18,7 +18,8 @@ class SocketMessage {
             this->messageType = type;
         };
         void serialize() {
-            this->serializedMessage = static_cast<Message*>(this)->serializeImpl();
+            json jsonData = this->toJson();
+            serializedMessage = jsonData.dump() + "\n";
         }
         json toJson() {
             json j = static_cast<Message*>(this)->toJsonImpl();

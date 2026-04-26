@@ -4,12 +4,6 @@
 
 DrawElementMessage::DrawElementMessage(ElementParameters ep) : SocketMessage<DrawElementMessage>(MessageType::DRAW_ELEMENT), ep(ep) {}
 
-std::string DrawElementMessage::serializeImpl() {
-    json jsonData = this->toJson();
-    std::string serialized = jsonData.dump() + "\n";
-    return serialized;
-}
-
 json DrawElementMessage::toJsonImpl() {
     json j;
     j["name"] = ep.name;

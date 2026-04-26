@@ -169,7 +169,9 @@ bool TextBox::validateAndNormalize(ElementParameters &ep) {
     newMax.y = std::max(ep.min.y, ep.max.y);
     ep.min = newMin;
     ep.max = newMax;
-
+    if (ep.elementType != guiElement::TEXTBOX) {
+        ep.elementType == guiElement::TEXTBOX;
+    }
     return true;
 }
 
