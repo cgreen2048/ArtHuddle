@@ -595,6 +595,11 @@ void closeAll() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    server.stop();
+
+    if (serverThread.joinable()) {
+        serverThread.join();
+    }
 }
 
 void copy() {

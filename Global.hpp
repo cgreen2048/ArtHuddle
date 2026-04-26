@@ -33,6 +33,9 @@
 #include <filesystem>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_dialog.h>
+#include <thread>
+#include "RelayServer.hpp"
+
 
 
 const int X = 960, Y = 540;
@@ -65,6 +68,7 @@ extern Button* freehandShapeButton;
 extern Button* saveButton;
 extern Button* loadButton;
 extern Button* colorIndicator;
+extern Button* startDrawingButton;
 extern Uint64 saveFlashUntil;
 extern Uint64 loadFlashUntil;
 extern GuiElement* draggingElement;
@@ -79,6 +83,9 @@ extern std::filesystem::path currentFileSavePath;
 extern SDL_Cursor* arrowCursor;
 extern SDL_Cursor* handCursor;
 extern SDL_Cursor* currentCursor;
+
+extern RelayServer server;
+extern std::thread serverThread;
 
 
 void createWindow();

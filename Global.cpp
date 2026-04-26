@@ -42,9 +42,13 @@ Button *saveButton = nullptr;
 Button *loadButton = nullptr;
 Button *muteButton = nullptr;
 Button* colorIndicator = nullptr;
+Button* startDrawingButton = nullptr;
 
 Uint64 saveFlashUntil = 0;
 Uint64 loadFlashUntil = 0;
+
+RelayServer server;
+std::thread serverThread;
 
 struct FileDialogData {
     int*points;
@@ -294,6 +298,25 @@ void initButtons(Layout* layout, int& type, int& points, ivec2& point1, ivec2& p
     };
     muteButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, muteButtonParam));
     layout->addElement(muteButton);
+
+    ElementParameters startDrawingButtonParam;
+    startDrawingButtonParam.min = ivec2(5 * bigBW + 5 * p, bH + p);
+    startDrawingButtonParam.max = ivec2(6.5 * bigBW + 5 * p, 2* bH + p);
+    startDrawingButtonParam.color = ivec3(180, 255, 180);
+    startDrawingButtonParam.textColor = ivec3(0, 0, 0);
+    startDrawingButtonParam.text = "Start Drawing as Host";
+    startDrawingButtonParam.name = "startDrawingButton";
+    startDrawingButtonParam.callbackName = "startDrawing";
+    startDrawingButtonParam.callback = []() {
+        if (serverThread.joinable()) {
+            return;
+        }
+        serverThread = std::thread([]() {
+            server.start();
+        });
+    };
+    startDrawingButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, startDrawingButtonParam));
+    layout->addElement(startDrawingButton);
 
     ElementParameters colorIndicatorParam;
     colorIndicatorParam.min = ivec2(3 * bigBW + 3 * p, bH + p);

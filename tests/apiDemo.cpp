@@ -22,10 +22,10 @@ int main() {
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
     Layout* layout = initialize(type, points, point1, point2, point3);
-    // Connect to server
-    if (!connectToServer("127.0.0.1", 40666)) {
-        std::cerr << "Failed to connect\n";
-    }
+    // // Connect to server
+    // if (!connectToServer("127.0.0.1", 40666)) {
+    //     std::cerr << "Failed to connect\n";
+    // }
 
     loadSound("../SFX/song.wav");
     playSound("../SFX/song.wav", true);
@@ -470,7 +470,7 @@ int main() {
 
         update(type);
     }
-    closeConnection(); // Closes client
+    // closeConnection(); // Closes client
     closeAll();
     return 0;
 }
