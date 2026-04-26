@@ -6,6 +6,7 @@
 #include <string>
 #include "Screen.hpp"
 #include "GuiElement.hpp"
+#include "ElementParameters.hpp"
 #include "vec2.hpp"
 #include "Event.hpp"
 

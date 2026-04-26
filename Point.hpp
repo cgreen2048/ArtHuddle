@@ -2,8 +2,7 @@
 #define __POINT_HPP__
 
 #include "GuiElement.hpp"
-
-// #define POINT_PADDING 10
+#include "ElementParameters.hpp"
 
 class Point : public GuiElement {
 	private:

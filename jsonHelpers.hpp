@@ -1,9 +1,12 @@
-#include "./external/JsonDefinition.hpp"
+#ifndef __JSON_HELPERS_HPP__
+#define __JSON_HELPERS_HPP__
+
+#include "JsonDefinition.hpp"
 #include "ElementParameters.hpp"
 #include "vec2.hpp"
 #include "vec3.hpp"
 
-json elementParametersToJson(ElementParameters ep) {
+inline json elementParametersToJson(ElementParameters ep) {
     json j;
     j["name"] = ep.name;
     j["elementType"] = ep.elementType;
@@ -87,4 +90,6 @@ json elementParametersToJson(ElementParameters ep) {
     
     return j;
 }
+
+#endif
 

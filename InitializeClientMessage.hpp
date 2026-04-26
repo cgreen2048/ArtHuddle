@@ -2,7 +2,7 @@
 #define __INITIALIZE_CLIENT_MESSAGE_HPP__
 
 #include "SocketMessage.hpp"
-#include "./external/JsonDefinition.hpp"
+#include "JsonDefinition.hpp"
 #include "ElementParameters.hpp"
 #include <vector>
 

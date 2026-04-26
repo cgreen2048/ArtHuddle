@@ -3,7 +3,7 @@
 
 #include "SocketMessage.hpp"
 #include "ElementParameters.hpp"
-#include "./external/JsonDefinition.hpp"
+#include "JsonDefinition.hpp"
 
 class UpdateElementMessage : public SocketMessage<UpdateElementMessage> {
     public:

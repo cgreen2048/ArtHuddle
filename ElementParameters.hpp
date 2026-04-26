@@ -6,11 +6,11 @@
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "GuiElement.hpp"
+#include "ElementTypes.hpp"
 #include <functional>
 #include <string>
 
 class GuiElement;
-enum class TagType { Vec, IVec };
 
 // const ivec2 defaultIvec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 // const ivec3 defaultIvec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());

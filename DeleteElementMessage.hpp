@@ -2,7 +2,7 @@
 #define __DELETE_ELEMENT_MESSAGE_HPP__
 
 #include "SocketMessage.hpp"
-#include "./external/JsonDefinition.hpp"
+#include "JsonDefinition.hpp"
 #include <string>
 
 class DeleteElementMessage : public SocketMessage<DeleteElementMessage> {

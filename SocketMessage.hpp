@@ -1,7 +1,7 @@
 #ifndef __SOCKET_MESSAGE_HPP__
 #define __SOCKET_MESSAGE_HPP__
 
-#include "./external/JsonDefinition.hpp"
+#include "JsonDefinition.hpp"
 #include <string>
 
 enum class MessageType {
@@ -35,7 +35,7 @@ class SocketMessage {
 
     protected: 
         MessageType messageType;
-        std::string serializedMessage = ""
+        std::string serializedMessage = "";
 };
 
 #endif

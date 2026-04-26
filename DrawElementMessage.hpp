@@ -3,7 +3,7 @@
 
 #include "SocketMessage.hpp"
 #include "ElementParameters.hpp"
-#include "./external/JsonDefinition.hpp"
+#include "JsonDefinition.hpp"
 
 class DrawElementMessage : public SocketMessage<DrawElementMessage> {
     public:
@@ -11,6 +11,6 @@ class DrawElementMessage : public SocketMessage<DrawElementMessage> {
         json toJsonImpl();
     private:
         ElementParameters ep;
-}
+};
 
 #endif
