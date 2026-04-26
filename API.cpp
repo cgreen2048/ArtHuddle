@@ -566,17 +566,20 @@ bool isSelectedTextBox() {
 void appendToTextBox(const std::string& s) {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     TextBox* textbox = dynamic_cast<TextBox*>(element);
+    playButtonClickSound();
     textbox->appendText(s);
 }
 
-void deleteText() {
+bool deleteText() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     TextBox* textbox = dynamic_cast<TextBox*>(element);
     if (textbox->getText().empty()) {
         deleteShape();
-        return;
+        return false;
     }
+    playButtonClickSound();
     textbox->backspace();
+    return true;
 }
 
 void deleteTempShape() {
@@ -903,4 +906,20 @@ void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
     point2.y = std::numeric_limits<int>::lowest();
     point3.x = std::numeric_limits<int>::lowest();
     point3.y = std::numeric_limits<int>::lowest();
+}
+
+void playDrawClickSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/draw_click.wav", SoundActionType::PLAY, false));
+}
+
+void playButtonClickSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/button_click.wav", SoundActionType::PLAY, false));
+}
+
+void playFreehandDrawSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/freehand_draw.wav", SoundActionType::PLAY, false));
+}
+
+void playDeleteSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/delete.wav", SoundActionType::PLAY, false));
 }

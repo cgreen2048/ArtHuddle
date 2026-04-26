@@ -485,14 +485,15 @@ Checks whether a text box is the currently selected element
 ### `void appendToTextBox(const std::string& s)`
 A call to append text to a text box
 - Uses the `Selected` singleton to access the selected text box
-- Calls the `appendText()` method in `TextBox`
+- Calls the `appendText()` method in `TextBox`, plays a button click sound, then returns true
 
 ---
 
-### `void deleteText()`
+### `bool deleteText()`
 A call to delete text in a text box
 - Uses the `Selected` singleton to access the selected text box
-- Calls the `backspace()` method in `TextBox`
+- Returns false if this deletes the `TextBox`
+- Calls the `backspace()` method in `TextBox`, plays a button click sound, then returns true
 
 ---
 
@@ -577,13 +578,41 @@ Helper function that returns the type of element being currently drawn based on 
 
 ---
 
-### `void storePoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `void storeCommittedPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3)`
 Helper function to store the user's input points based on how many points they have input so far, used to keep track of the points needed to draw shapes as the user clicks on the canvas
+
+---
+
+### `void storeTemporaryPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3)`
+Helper function to store the user's input points based on how many points they have input so far, used to keep track of the points needed to draw shapes as the user clicks on the canvas
+- Same structure as `storeCommittedPoint`, but with a different name and only allows updating when `points > 0`
 
 ---
 
 ### `void resetPoints(int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Helper function to reset the user's input points, used to clear point tracking when the user finishes drawing a shape and prepares for the next shape
+
+---
+
+### `void playDrawClickSound()`
+Helper function to play `draw_click.wav` upon clicking for drawing an element
+
+---
+
+### `void playButtonClickSound()`
+Helper function to play `button_click.wav` upon clicking a button
+
+---
+
+### `void playFreehandDrawSound()`
+Helper function to play `freehand_draw.wav` upon moving the mouse during a freehand draw
+
+---
+
+### `void playDeleteSound()`
+Helper function to play `delete.wav` when deleting an element
+
+---
 
 # ClientNetwork
 
