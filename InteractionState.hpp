@@ -5,6 +5,7 @@ enum class InteractionState {
     IDLE, 
     FREEHAND_DRAWING, 
     SHAPE_DRAWING, 
+    SHAPE_COMPLETED,
     DRAGGING,
     TOOLBAR_CLICK 
 };

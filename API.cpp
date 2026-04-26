@@ -110,6 +110,25 @@ void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, iv
             }
             return;
         }
+        case guiElement::TEXTBOX: {
+            TextBox* derived = dynamic_cast<TextBox*>(lastEl);
+            if (derived) {
+                derived->setMax(point2, TagType::IVec);
+                derived->setColor(color, TagType::IVec);
+                tempLayout->addElement(derived);
+            }
+            else {
+                ep.min = point1;
+                ep.max = point2;
+                ep.minType = TagType::IVec;
+                ep.maxType = TagType::IVec;
+                TextBox* element = dynamic_cast<TextBox*>(factory(ge, ep));
+                if (element) {
+                    tempLayout->addElement(element);
+                }
+            }
+            return;
+		}
         case guiElement::ARROW: {
             ivec2 newMin;
             ivec2 newMax;
@@ -855,11 +874,20 @@ guiElement modeToType(DrawingMode mode) {
     }
 }
 
-void storePoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3) {
+void storeCommittedPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3) {
     if (points == 0) {
         point1 = mousePos;
     }
     else if (points == 1) {
+        point2 = mousePos;
+    }
+    else if (points == 2) { 
+        point3 = mousePos;
+    }
+}
+
+void storeTemporaryPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3) {
+    if (points == 1) {
         point2 = mousePos;
     }
     else if (points == 2) { 

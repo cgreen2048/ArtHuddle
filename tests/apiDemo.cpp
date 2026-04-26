@@ -59,7 +59,7 @@ int main() {
                         case DrawingMode::ELLIPSE:
                         case DrawingMode::ARROW:
                         case DrawingMode::TEXTBOX: {
-                            storePoint(points, mousePos, point1, point2, point3);
+                            storeCommittedPoint(points, mousePos, point1, point2, point3);
                             points++;
 
                             guiElement type = modeToType(mode);
@@ -67,7 +67,8 @@ int main() {
                                 drawElement(type, point1, point2, point3, color);
                                 resetPoints(points, point1, point2, point3);
                                 mode = DrawingMode::SELECT;
-                                currentInteractionState = InteractionState::IDLE;
+                                currentInteractionState = InteractionState::SHAPE_COMPLETED;
+                                
                             } else {
                                 currentInteractionState = InteractionState::SHAPE_DRAWING;
                             }
@@ -160,6 +161,10 @@ int main() {
                         }
                         case InteractionState::IDLE: {
                             clicked(mousePos);
+                            break;
+                        }
+                        case InteractionState::SHAPE_COMPLETED: {
+                            currentInteractionState = InteractionState::IDLE;
                             break;
                         }
                         case InteractionState::SHAPE_DRAWING: {
@@ -298,7 +303,7 @@ int main() {
             case DrawingMode::ELLIPSE: 
             case DrawingMode::ARROW:
             case DrawingMode::TEXTBOX: {
-                storePoint(points, mousePos, point1, point2, point3);
+                storeTemporaryPoint(points, mousePos, point1, point2, point3);
 
                 guiElement type = modeToType(mode);
                 if (points == requiredPointsForType(type) - 1) {

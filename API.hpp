@@ -45,7 +45,8 @@ void resetPressedButton();
 int requiredPointsForType(guiElement type);
 guiElement tempElementType(DrawingMode mode);
 guiElement modeToType(DrawingMode mode);
-void storePoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3);
+void storeCommittedPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3);
+void storeTemporaryPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3);
 void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 
 
