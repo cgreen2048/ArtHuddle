@@ -755,11 +755,6 @@ Pushes `message` onto the queue and transfers ownership of `message` to the queu
 
 ---
 
-### `std::optional<std::string> poll()`
-Retrieves and removes the next message from the queue. Returns `std::nullopt` if no messages remain, else returns the first message
-
----
-
 ### `bool processMessages()`
 Processes all queued messages and propogates changes to `canvasLayout`
 - Parses each message into JSON format

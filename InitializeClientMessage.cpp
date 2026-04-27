@@ -1,7 +1,7 @@
 #include "InitializeClientMessage.hpp"
 #include "jsonHelpers.hpp"
 
-InitializeClientMessage::InitializeClientMessage(std::vector<ElementParameters> els) : SocketMessage<InitializeClientMessage>(MessageType::INITIALIZE_CLIENT), elements(els) {}
+InitializeClientMessage::InitializeClientMessage(std::vector<ElementParameters> els) : SocketMessage<InitializeClientMessage>(MessageType::INITIALIZE_CLIENT), elements(std::move(els)) {}
 
 json InitializeClientMessage::toJsonImpl() {
     json j;

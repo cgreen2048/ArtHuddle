@@ -170,7 +170,7 @@ bool TextBox::validateAndNormalize(ElementParameters &ep) {
     ep.min = newMin;
     ep.max = newMax;
     if (ep.elementType != guiElement::TEXTBOX) {
-        ep.elementType == guiElement::TEXTBOX;
+        ep.elementType = guiElement::TEXTBOX;
     }
     return true;
 }

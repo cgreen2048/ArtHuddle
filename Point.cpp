@@ -109,7 +109,7 @@ bool Point::validateAndNormalize(ElementParameters& ep) {
         ep.color.z = 125;
     }
     if (ep.elementType != guiElement::POINT) {
-        ep.elementType == guiElement::POINT;
+        ep.elementType = guiElement::POINT;
     }
     return true;
 }

@@ -22,9 +22,10 @@ int main() {
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
     Layout* layout = initialize(mode, points, point1, point2, point3);
+    ClientNetwork client(layout);
     // Connect to server
     for (const char* host : hosts) {
-        if (connectToServer(host, 40666)) {
+        if (client.connectToServer(host, 40666)) {
             connectedHost = host;
             break;
         }
@@ -273,6 +274,9 @@ int main() {
                                 paste();
                                 break;
                             }
+                            case SDL_SCANCODE_S: {
+                                // send message using ClientNetwork sendMessage
+                            }
                             default: {
                                 break;
                             }
@@ -336,7 +340,7 @@ int main() {
 
         updateScreen(mode);
     }
-    closeConnection(); // Closes client
+    client.closeConnection(); // Closes client
     closeAll();
     return 0;
 }

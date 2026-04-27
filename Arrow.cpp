@@ -167,7 +167,7 @@ bool Arrow::validateAndNormalize(ElementParameters& ep) {
         ep.color.z = 125;
     }
     if (ep.elementType != guiElement::ARROW) {
-        ep.elementType == guiElement::ARROW;
+        ep.elementType = guiElement::ARROW;
     }
 
     return true;

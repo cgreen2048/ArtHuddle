@@ -149,7 +149,7 @@ bool Box::validateAndNormalize(ElementParameters& ep) {
         ep.color.z = 125;
     }
     if (ep.elementType != guiElement::BOX) {
-        ep.elementType == guiElement::BOX;
+        ep.elementType = guiElement::BOX;
     }
 
     return true;

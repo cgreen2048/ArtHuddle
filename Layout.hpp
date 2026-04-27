@@ -48,6 +48,7 @@ class Layout : public GuiElement {
         GuiElement* removeElement(const std::string& elementName);
         bool validateAndNormalize(ElementParameters& ep);
         ElementParameters getParameters();
+        std::vector<ElementParameters> getChildElementParameters();
         guiElement getType();
         void setBounds();
 		std::vector<ivec2> getBounds();

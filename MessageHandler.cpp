@@ -8,29 +8,28 @@
 MessageHandler::MessageHandler(Layout* layout) : canvasLayout(layout) {}
 
 void MessageHandler::push(std::string message) {
+    std::lock_guard<std::mutex> lock(queueMutex);
     messageQueue.push(std::move(message));
-}
-
-std::optional<std::string> MessageHandler::poll() {
-    if (messageQueue.empty()) {
-        return std::nullopt;
-    }
-
-    std::string message = std::move(messageQueue.front());
-    messageQueue.pop();
-    return message;
 }
 
 bool MessageHandler::processMessages() {
     bool handled = false;
-    while (!messageQueue.empty()) {
-        auto message = poll();
+    std::queue<std::string> localQueue;
+
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        std::swap(this->messageQueue, localQueue);
+    }
+
+    while (!localQueue.empty()) {
+        std::string message = std::move(localQueue.front());
+        localQueue.pop();
         
-        if (!message) {
-            break;
+        if (message.empty()) {
+            continue;
         }
 
-        json j = json::parse(*message);
+        json j = json::parse(message);
         MessageType messageType = static_cast<MessageType>(j.at("messageType").get<int>());
 
         switch (messageType) {
@@ -94,4 +93,8 @@ bool MessageHandler::handleInitializeClient(json j) {
         }
     }
     return true;
+}
+
+Layout* MessageHandler::getCanvasLayout() {
+    return this->canvasLayout;
 }

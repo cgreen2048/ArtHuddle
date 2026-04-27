@@ -249,7 +249,7 @@ bool Freehand::validateAndNormalize(ElementParameters& ep) {
         ep.color.z = 125;
     }
     if (ep.elementType != guiElement::FREEHAND) {
-        ep.elementType == guiElement::FREEHAND;
+        ep.elementType = guiElement::FREEHAND;
     }
 
     return true;

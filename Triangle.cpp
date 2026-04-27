@@ -163,7 +163,7 @@ bool Triangle::validateAndNormalize(ElementParameters& ep) {
         ep.color.z = 125;
     }
     if (ep.elementType != guiElement::TRIANGLE) {
-        ep.elementType == guiElement::TRIANGLE;
+        ep.elementType = guiElement::TRIANGLE;
     }
     return true;
 }

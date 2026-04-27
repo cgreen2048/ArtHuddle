@@ -97,7 +97,7 @@ bool Ellipse::validateAndNormalize(ElementParameters& ep) {
         ep.color.z = 125;
     }
     if (ep.elementType != guiElement::ELLIPSE) {
-        ep.elementType == guiElement::ELLIPSE;
+        ep.elementType = guiElement::ELLIPSE;
     }
     return true;
 }

@@ -318,6 +318,14 @@ ElementParameters Layout::getParameters() {
     return ep;
 }
 
+std::vector<ElementParameters> Layout::getChildElementParameters() {
+    std::vector<ElementParameters> elements;
+    for (GuiElement* el : this->elements) {
+        elements.push_back(el->getParameters());
+    }
+    return elements;
+}
+
 guiElement Layout::getType() {
     return guiElement::LAYOUT;
 }

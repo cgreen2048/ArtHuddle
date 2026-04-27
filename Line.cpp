@@ -143,7 +143,7 @@ bool Line::validateAndNormalize(ElementParameters& ep) {
         ep.color.z = 125;
     }
     if (ep.elementType != guiElement::LINE) {
-        ep.elementType == guiElement::LINE;
+        ep.elementType = guiElement::LINE;
     }
     return true;
 }
