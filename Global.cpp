@@ -388,7 +388,7 @@ Layout *createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& p
     selectedSingleton.setSelectedLayout(boundingLayout);
     // rootLayout->addElement(boundingLayout);
 
-    return rootLayout;
+    return canvasLayout;
 }
 
 void setEventSystem() {

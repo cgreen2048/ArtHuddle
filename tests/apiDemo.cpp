@@ -21,8 +21,8 @@ int main() {
     ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
-    Layout* layout = initialize(mode, points, point1, point2, point3);
-    ClientNetwork client(layout);
+    Layout* canvasLayout = initialize(mode, points, point1, point2, point3);
+    ClientNetwork client(canvasLayout);
     // Connect to server
     for (const char* host : hosts) {
         if (client.connectToServer(host, 40666)) {

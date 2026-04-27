@@ -12,9 +12,9 @@ Layout* initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2,
     createWindow();
     createScreen();
     setEventSystem();
-    Layout* layout = createRootLayout(mode, points, point1, point2, point3);
+    Layout* canvasLayout = createRootLayout(mode, points, point1, point2, point3);
     SDL_StartTextInput(window);
-    return layout;
+    return canvasLayout;
 }
 
 void loadSound(std::string filePath) {

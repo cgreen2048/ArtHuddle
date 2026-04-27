@@ -162,7 +162,7 @@ layoutDeleteStudentMachine:
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDelete
 
 apiDemoStudentMachine:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) ../ClientNetwork.cpp ../RelayNetwork.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) ../ClientNetwork.cpp ../RelayServer.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o apiDemo
 
 serverStudentMachine:
