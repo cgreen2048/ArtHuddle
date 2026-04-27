@@ -21,7 +21,7 @@ std::optional<std::string> MessageHandler::poll() {
     return message;
 }
 
-bool MessageHandler::processMessage() {
+bool MessageHandler::processMessages() {
     bool handled = false;
     while (!messageQueue.empty()) {
         auto message = poll();

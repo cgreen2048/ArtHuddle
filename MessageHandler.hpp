@@ -16,7 +16,7 @@ class MessageHandler {
         MessageHandler(Layout* layout);
         void push(std::string message);
         std::optional<std::string> poll();
-        bool processMessage();
+        bool processMessages();
         bool handleDrawElement(json j);
         bool handleDeleteElement(json j);
         bool handleUpdateElement(json j);
