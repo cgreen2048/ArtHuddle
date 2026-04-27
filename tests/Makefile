@@ -16,7 +16,7 @@ MAC_LDLIBS := -framework sdl3
 FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../helperFunctions.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../Ellipse.cpp ../TextBox.cpp ../Arrow.cpp ../Freehand.cpp ../ThreadPool.cpp 
 EVENT_ELEMENTS := ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp ../MouseEvent.cpp ../MouseUpEvent.cpp ../MouseDownEvent.cpp ../MouseMotionEvent.cpp
 UTILITY_ELEMENTS := ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../GUIFile.cpp
-MESSAGE_ELEMENTS := ../DrawElementMessage.cpp ../DeleteElementMessage.cpp ../UpdateElementMessage.cpp ../InitializeClientMessage.cpp
+MESSAGE_ELEMENTS := ../DrawElementMessage.cpp ../DeleteElementMessage.cpp ../UpdateElementMessage.cpp ../InitializeClientMessage.cpp ../MessageHandler.cpp
 
 test:
 	g++ tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3

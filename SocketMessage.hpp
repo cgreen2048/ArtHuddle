@@ -2,14 +2,9 @@
 #define __SOCKET_MESSAGE_HPP__
 
 #include "JsonDefinition.hpp"
+#include "ElementTypes.hpp"
 #include <string>
 
-enum class MessageType {
-    DRAW_ELEMENT,
-    DELETE_ELEMENT,
-    UPDATE_ELEMENT,
-    INITIALIZE_CLIENT
-};
 
 template <typename Message>
 class SocketMessage {
