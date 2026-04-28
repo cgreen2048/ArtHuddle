@@ -89,6 +89,10 @@ ivec2 TextBox::getCursorPosition() const {
     return ivec2(cursorX, cursorY);
 }
 
+void TextBox::clearText() {
+    text.clear();
+}
+
 void TextBox::setActive(bool value) { 
     active = value; 
 }

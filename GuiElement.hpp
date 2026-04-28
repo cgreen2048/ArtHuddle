@@ -3,10 +3,10 @@
 
 #include <iostream>
 #include "Screen.hpp"
-#include "ElementParameters.hpp"
 #include "Event.hpp"
+#include "ElementTypes.hpp"
 
-enum class guiElement {POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND, BUTTON, LAYOUT, UNKNOWN};
+struct ElementParameters;
 
 #define PADDING 10
 

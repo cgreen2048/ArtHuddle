@@ -3,19 +3,20 @@ SDL3_INC := $(STUDENT_MACHINE_SDL3_ROOT)/include
 SDL3_LIB := $(STUDENT_MACHINE_SDL3_ROOT)/build
 
 CXX := g++
-CXXFLAGS := -std=c++17 -I$(SDL3_INC)
+CXXFLAGS := -std=c++17 -I$(SDL3_INC) -I.. -I../external
 
 # Link flags: where to find it at link time + where to find it at run time
 LDFLAGS := -L$(SDL3_LIB) -Wl,-rpath,$(SDL3_LIB)
 LDLIBS := -lSDL3 -lstdc++fs -pthread
 
-MAC_CXXFLAGS := -std=c++17 -Wall
+MAC_CXXFLAGS := -std=c++17 -Wall -I.. -I../external
 MAC_LDFLAGS := -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks
 MAC_LDLIBS := -framework sdl3
 
-FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../helperFunctions.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../Ellipse.cpp ../TextBox.cpp ../Arrow.cpp ../Freehand.cpp ../ThreadPool.cpp 
+FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../helperFunctions.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../Ellipse.cpp ../TextBox.cpp ../Arrow.cpp ../Freehand.cpp ../ThreadPool.cpp ../InputTextBox.cpp
 EVENT_ELEMENTS := ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp ../MouseEvent.cpp ../MouseUpEvent.cpp ../MouseDownEvent.cpp ../MouseMotionEvent.cpp
-UTILITY_ELEMENTS := ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../GUIFile.cpp ../RelayServer.cpp
+UTILITY_ELEMENTS := ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../GUIFile.cpp
+MESSAGE_ELEMENTS := ../DrawElementMessage.cpp ../DeleteElementMessage.cpp ../UpdateElementMessage.cpp ../InitializeClientMessage.cpp ../MessageHandler.cpp
 
 test:
 	g++ tests.cpp -I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3
@@ -71,7 +72,7 @@ test:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)   LayoutDeleteTest.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o layoutDelete
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../ClientNetwork.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../ClientNetwork.cpp ../RelayServer.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
 		-I${SDL3_ROOT}/include -L${SDL3_ROOT}/lib -lSDL3 -o apiDemo
 	
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) server.cpp \
@@ -161,7 +162,7 @@ layoutDeleteStudentMachine:
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDelete
 
 apiDemoStudentMachine:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../ClientNetwork.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) ../ClientNetwork.cpp ../RelayServer.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o apiDemo
 
 serverStudentMachine:
@@ -177,7 +178,7 @@ mac: testsMac freehandDemoMac milestone001Mac milestone002Mac screenDemoMac \
 	milestone003Mac milestone004Mac milestone005LayoutTestsMac milestone005Mac \
 	layoutDemoMac milestone006Mac milestone006EventSystemMac milestone006DemoMac \
 	ellipseDemoMac arrowDemoMac textBoxDemoMac textInButtonDemoMac selectedDemoMac \
-	apiDemoMac
+	apiDemoMac serverMac
 
 testsMac:
 	$(CXX) tests.cpp $(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS)
@@ -254,10 +255,10 @@ layoutDeleteMac:
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o layoutDelete
 	
 apiDemoMac:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) ../ClientNetwork.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) ../ClientNetwork.cpp ../RelayServer.cpp ../Global.cpp ../API.cpp apiDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o apiDemo
 
-serverStudentMac:
+serverMac:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) server.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o server
 

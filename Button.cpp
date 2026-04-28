@@ -2,9 +2,9 @@
 #include "XmlWriteHelpers.hpp"
 #include <iostream>
 
-Button::Button() : Box(), onClick([](){}), callbackName(""), text("") {}
+Button::Button() : Box(), onClick([](){}), callbackName(""), text(""), active(true) {}
 
-Button::Button(const Button& cp) : Box(cp.min, cp.max, cp.color), onClick(cp.onClick), callbackName(cp.callbackName), text(cp.text) {}
+Button::Button(const Button& cp) : Box(cp.min, cp.max, cp.color), onClick(cp.onClick), callbackName(cp.callbackName), text(cp.text), active(cp.active) {}
 
 bool Button::operator==(Button rhs) {
     if (!Box::operator==(rhs)) {
@@ -31,9 +31,20 @@ Button::Button(ElementParameters ep) : Box(ep) {
     this->text = ep.text;
     this->textColor = ep.textColor;
     this->textColorType = ep.textColorType;
+    this->active = ep.active;
+}
+
+void Button::draw(Screen *screen) {
+    if (!this->active){
+        return;
+    }
+    Box::draw(screen);
 }
 
 void Button::drawOverlay(Screen *screen){
+    if (!this->active){
+        return;
+    }
     screen->drawTextCentered(min, max, text, textColor);
 }
 
@@ -41,6 +52,10 @@ Button::Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& c
 
 GuiElement* Button::clone() const {
     return new Button(*this);
+}
+
+void Button::setActive(bool value) { 
+    active = value; 
 }
 
 bool Button::resolveEvent(Event* event) {

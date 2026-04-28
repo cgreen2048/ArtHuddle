@@ -24,6 +24,7 @@ class Selected {
         GuiElement* getSelectedElement();
         void setSelectedLayout(Layout* boundingBoxLayout);
         void drawBoundingBox();
+        bool isInside(ivec2 coordinates);
 };
 
 #endif

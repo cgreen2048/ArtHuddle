@@ -2,8 +2,10 @@
 #define __GLOBAL_HPP__
 
 #include "Box.hpp"
+#include "InputTextBox.hpp"
 #include "Button.hpp"
 #include "ClickEvent.hpp"
+#include "DrawingMode.hpp"
 #include "ElementParameters.hpp"
 #include "Event.hpp"
 #include "EventSystem.hpp"
@@ -35,6 +37,9 @@
 #include <SDL3/SDL_dialog.h>
 #include <thread>
 #include "RelayServer.hpp"
+#include "ClientNetwork.hpp"
+#include <string>
+#include <chrono>
 
 
 
@@ -69,6 +74,7 @@ extern Button* saveButton;
 extern Button* loadButton;
 extern Button* colorIndicator;
 extern Button* startDrawingButton;
+extern Button* connectToHostButton;
 extern Uint64 saveFlashUntil;
 extern Uint64 loadFlashUntil;
 extern GuiElement* draggingElement;
@@ -84,21 +90,33 @@ extern SDL_Cursor* arrowCursor;
 extern SDL_Cursor* handCursor;
 extern SDL_Cursor* currentCursor;
 
-extern RelayServer server;
+extern std::unique_ptr<RelayServer> server;
+extern std::unique_ptr<ClientNetwork> client;
 extern std::thread serverThread;
+extern std::string connectedHost;
+extern bool isHost;
+
+const std::vector<const char*> hosts = {"10.24.102.212", "129.74.152.140", "129.74.152.141", "129.74.152.142", "129.74.152.143", "127.0.0.1"};
+
+extern InputTextBox* hostIpTextBox;
+extern Button* submitHostIpButton;
+
+extern Button* pressedButton;
 
 
 void createWindow();
 void createScreen();
-Layout* createRootLayout(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+Layout* createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void setEventSystem();
-void initButtons(Layout *layout, int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+void initButtons(Layout *layout, DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void resetGlobalPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 void saveCanvas(const std::string& filePath);
 void loadCanvas(const std::string& filePath, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
-void updateToolbarButtonColors(int& type);
+void updateToolbarButtonColors(DrawingMode mode);
 void updateActionButtonColors();
 static void SDLCALL loadFileCallback(void* userdata, const char* const* filelist, int filter);
 static void SDLCALL saveFileCallback(void* userdata, const char* const* filelist, int filter);
+void updateLoadSavePermissions();
+
 
 #endif

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <memory>
+#include "../ThreadPool.hpp"
 
 
 #ifdef _WIN32
@@ -23,6 +24,8 @@
 
 #define PORT 40666
 #define BUFFER_SIZE 512
+
+void handleClient(SocketType client);
 
 int main() {
 #ifdef _WIN32
@@ -56,7 +59,7 @@ int main() {
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(PORT);
-    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if (bind(listener, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
         std::cout << "Bind failed\n";
@@ -79,28 +82,46 @@ int main() {
 
     std::cout << "Server listening on port " << PORT << "...\n";
 
-    // Step 5: Accept client
-    SocketType client = accept(listener, nullptr, nullptr);
+    ThreadPool pool;
 
-    if (client == INVALID_SOCKET) {
-        std::cout << "Accept failed\n";
-        CLOSE_SOCKET(listener);
-#ifdef _WIN32
-        WSACleanup();
-#endif
-        return 1;
+    while (true) {
+        // Step 5: Accept client
+        
+        SocketType client = accept(listener, nullptr, nullptr);
+
+        if (client == INVALID_SOCKET) {
+            std::cout << "Accept failed\n";
+            CLOSE_SOCKET(listener);
+            #ifdef _WIN32
+                    WSACleanup();
+            #endif
+                    return 1;
+        }
+
+        std::cout << "Client connected!\n";
+
+        pool.enqueue([client]() {
+            handleClient(client);
+        });
     }
+ 
+    CLOSE_SOCKET(listener);
 
-    std::cout << "Client connected!\n";
+#ifdef _WIN32
+    WSACleanup();
+#endif
 
-    // Step 6: Receive messages
+    return 0;
+}
+
+void handleClient(SocketType client) {
     char buffer[BUFFER_SIZE + 1];
 
     while (true) {
         int bytes = recv(client, buffer, BUFFER_SIZE, 0);
 
         if (bytes <= 0) {
-            std::cout << "Client disconnected\n";
+            std::cout << "Client disconnected. Listening for new connections...\n";
             break;
         }
 
@@ -110,11 +131,4 @@ int main() {
 
     // Cleanup
     CLOSE_SOCKET(client);
-    CLOSE_SOCKET(listener);
-
-#ifdef _WIN32
-    WSACleanup();
-#endif
-
-    return 0;
 }

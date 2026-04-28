@@ -1,7 +1,7 @@
 #include "API.hpp"
 #include "Global.hpp"
 
-Layout* initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+Layout* initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         exit(1);
@@ -12,9 +12,9 @@ Layout* initialize(int& type, int& points, ivec2& point1, ivec2& point2, ivec2& 
     createWindow();
     createScreen();
     setEventSystem();
-    Layout* layout = createRootLayout(type, points, point1, point2, point3);
+    Layout* canvasLayout = createRootLayout(mode, points, point1, point2, point3);
     SDL_StartTextInput(window);
-    return layout;
+    return canvasLayout;
 }
 
 void loadSound(std::string filePath) {
@@ -25,12 +25,12 @@ void playSound(std::string filePath, int loop) {
     soundPlayer->playSound(filePath, loop);
 }
 
-void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
+void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
     GuiElement* lastEl = tempLayout->popLast();
-    guiElement ge = static_cast<guiElement>(type);
     ElementParameters ep;
     ep.color = color;
     ep.colorType = TagType::IVec;
+    ep.active = true;
     
     switch (ge) {
 		case guiElement::LINE: {
@@ -111,6 +111,25 @@ void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 c
             }
             return;
         }
+        case guiElement::TEXTBOX: {
+            TextBox* derived = dynamic_cast<TextBox*>(lastEl);
+            if (derived) {
+                derived->setMax(point2, TagType::IVec);
+                derived->setColor(color, TagType::IVec);
+                tempLayout->addElement(derived);
+            }
+            else {
+                ep.min = point1;
+                ep.max = point2;
+                ep.minType = TagType::IVec;
+                ep.maxType = TagType::IVec;
+                TextBox* element = dynamic_cast<TextBox*>(factory(ge, ep));
+                if (element) {
+                    tempLayout->addElement(element);
+                }
+            }
+            return;
+		}
         case guiElement::ARROW: {
             ivec2 newMin;
             ivec2 newMax;
@@ -171,12 +190,12 @@ void drawTempElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 c
 	}
 }
 
-void drawElement(int type, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
+void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
     GuiElement* lastEl = tempLayout->popLast();
-    guiElement ge = static_cast<guiElement>(type);
     if (!lastEl && ge != guiElement::POINT) {
         return;
     }
+
     ElementParameters ep;
     ep.color = color;
     ep.colorType = TagType::IVec;
@@ -276,19 +295,23 @@ void continueFreehandDraw(const ivec2& point) {
 }
 
 void endFreehandDraw(const ivec2& point) {
-    EventSystem::getInstance().push(std::make_unique<MouseUpEvent>(point));
+    EventSystem& eventSystem = EventSystem::getInstance();
+    Selected::getInstance().setSelectedElement(eventSystem.getTargetedElement());
+    eventSystem.push(std::make_unique<MouseUpEvent>(point));
 }
 
 void setClickAndDrag(ivec2 mouse) {
-    GuiElement* current = Selected::getInstance().getSelectedElement();
-    if (current) {
-        if (!current->isInside(mouse)) {
-            return;
-        }
+    Selected& selected = Selected::getInstance();
+    GuiElement* current = selected.getSelectedElement();
+    if (!current || !selected.isInside(mouse)) {
+        return;
+    }
+    if (dynamic_cast<InputTextBox*>(current)) {
+        return;
     }
     lastMousePos = mouse;
     if (draggingElement == nullptr) {
-        draggingElement = Selected::getInstance().getSelectedElement();
+        draggingElement = current;
         if (draggingElement) {
             originalElementParameters = draggingElement->getParameters();
             draggingElementParameters = draggingElement->getParameters();
@@ -527,7 +550,14 @@ void cancelMove() {
 }
 
 void unselect() {
+    GuiElement* element = Selected::getInstance().getSelectedElement();
+
+    if (InputTextBox* input = dynamic_cast<InputTextBox*>(element)) {
+        input->setActive(false); // lose typing focus ONLY
+    }
+
     EventSystem::getInstance().setTargetedElement(nullptr);
+    Selected::getInstance().setSelectedElement(nullptr);
 }
 
 void clicked(ivec2 coords) {
@@ -546,17 +576,27 @@ bool isSelectedTextBox() {
 void appendToTextBox(const std::string& s) {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     TextBox* textbox = dynamic_cast<TextBox*>(element);
+    playButtonClickSound();
     textbox->appendText(s);
 }
 
-void deleteText() {
+bool deleteText() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
+
+    InputTextBox* input = dynamic_cast<InputTextBox*>(element);
+    if (input) {
+        input->backspace();
+        return true;
+    }
+
     TextBox* textbox = dynamic_cast<TextBox*>(element);
     if (textbox->getText().empty()) {
         deleteShape();
-        return;
+        return false;
     }
+    playButtonClickSound();
     textbox->backspace();
+    return true;
 }
 
 void deleteTempShape() {
@@ -565,13 +605,17 @@ void deleteTempShape() {
 
 void deleteShape() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
+    if (dynamic_cast<InputTextBox*>(element)) {
+        return;
+    }
+
     if (element != nullptr) {
         canvasLayout->deleteElement(element->getName());
     }
     tempLayout->clearElements();
 }
 
-void update(int& type) {
+void updateScreen(DrawingMode mode) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     screen->clear(ivec3(255,255,255));
@@ -581,7 +625,7 @@ void update(int& type) {
     boundingLayout->draw(screen);
 
     updateActionButtonColors();
-    updateToolbarButtonColors(type);
+    updateToolbarButtonColors(mode);
     
     screen->renderToRenderer();
     rootLayout->drawOverlay(screen);
@@ -595,11 +639,15 @@ void closeAll() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-    server.stop();
+    if (server) {
+        server->stop();
+    }
 
     if (serverThread.joinable()) {
         serverThread.join();
     }
+
+    // client.closeConnection();
 }
 
 void copy() {
@@ -762,4 +810,146 @@ void updateCursorIcon(const ivec2& point, bool currentlyDragging) {
         SDL_SetCursor(desiredCursor);
         currentCursor = desiredCursor;
     }
+}
+
+bool pressedToolbarButton(const ivec2& point) {
+    Button* button = dynamic_cast<Button*>(toolBarLayout->getElementAt(point));
+    if (button) {
+        pressedButton = button;
+        return true;
+    }
+    return false;
+}
+
+bool isInsideSameButton(const ivec2& point) {
+    if (pressedButton && pressedButton->isInside(point)) {
+        return true;
+    }
+    return false;
+}
+
+void resetPressedButton() {
+    pressedButton = nullptr;
+}
+
+int requiredPointsForType(guiElement type) {
+    switch (type) {
+        case guiElement::POINT: {
+            return 1; // Point
+        }
+        case guiElement::LINE:
+        case guiElement::BOX:
+        case guiElement::TEXTBOX: {
+            return 2; // Line, Box, TextBox (all require 2 points to determine shape and orientation)
+        }
+
+        case guiElement::TRIANGLE:
+        case guiElement::ELLIPSE:
+        case guiElement::ARROW: {
+            return 3; // Triangle, Ellipse, Arrow (all require 3 points to determine shape and orientation) 
+        } 
+
+        default: {
+            return 0;
+        }
+    }
+}
+
+guiElement tempElementType(DrawingMode mode) {
+    switch (mode) {
+        case DrawingMode::POINT: {
+            return guiElement::POINT; 
+        }
+
+        case DrawingMode::LINE:
+        case DrawingMode::TRIANGLE:      // Triangle (draw temp line from point1 to point2, then draw temp triangle when point3 is added)
+        case DrawingMode::ELLIPSE: {     // Ellipse (draw temp line from point1 to point2, then draw temp ellipse when point3 is added)
+            return guiElement::LINE;
+        }
+
+        case DrawingMode::BOX: 
+        case DrawingMode::ARROW: // Arrow (draw temp box from point1 to point2, then draw temp arrow when point3 is added)
+        case DrawingMode::TEXTBOX: { // TextBox (draw temp box from point1 to point2, then draw temp textbox when point3 is added)
+            return guiElement::BOX;
+        }
+        default: {
+            return guiElement::UNKNOWN;
+        }
+    }
+}
+
+guiElement modeToType(DrawingMode mode) {
+    switch (mode) {
+        case DrawingMode::POINT: {
+            return guiElement::POINT;
+        }
+        case DrawingMode::LINE: {
+            return guiElement::LINE;
+        }
+        case DrawingMode::BOX: {
+            return guiElement::BOX;
+        }
+        case DrawingMode::TRIANGLE: {
+            return guiElement::TRIANGLE;
+        }
+        case DrawingMode::ELLIPSE: {
+            return guiElement::ELLIPSE;
+        }
+        case DrawingMode::ARROW: {
+            return guiElement::ARROW;
+        }
+        case DrawingMode::TEXTBOX: {
+            return guiElement::TEXTBOX;
+        }
+        default: {
+            return guiElement::UNKNOWN;
+        }
+    }
+}
+
+void storeCommittedPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3) {
+    if (points == 0) {
+        point1 = mousePos;
+    }
+    else if (points == 1) {
+        point2 = mousePos;
+    }
+    else if (points == 2) { 
+        point3 = mousePos;
+    }
+}
+
+void storeTemporaryPoint(int points, ivec2 mousePos, ivec2& point1, ivec2& point2, ivec2& point3) {
+    if (points == 1) {
+        point2 = mousePos;
+    }
+    else if (points == 2) { 
+        point3 = mousePos;
+    }
+}
+
+void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
+    point = 0;
+    point1.x = std::numeric_limits<int>::lowest();
+    point1.y = std::numeric_limits<int>::lowest();
+    point2.x = std::numeric_limits<int>::lowest();
+    point2.y = std::numeric_limits<int>::lowest();
+    point3.x = std::numeric_limits<int>::lowest();
+    point3.y = std::numeric_limits<int>::lowest();
+}
+
+void playDrawClickSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/draw_click.wav", SoundActionType::PLAY, false));
+}
+
+void playButtonClickSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/button_click.wav", SoundActionType::PLAY, false));
+}
+
+void playFreehandDrawSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/freehand_draw.wav", SoundActionType::PLAY, false));
+}
+
+void playDeleteSound() {
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/delete.wav", SoundActionType::PLAY, false));
 }

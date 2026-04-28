@@ -34,6 +34,7 @@ class TextBox : public Box {
         bool shouldShowCursor() const;
         std::string getVisibleText() const;
         ivec2 getCursorPosition() const;
+        void clearText();
 
         void writeXml(std::ostream& out, int depth) const;
         bool validateAndNormalize(ElementParameters &ep);

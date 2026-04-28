@@ -148,6 +148,9 @@ bool Box::validateAndNormalize(ElementParameters& ep) {
     if (ep.color.z == std::numeric_limits<int>::lowest()) {
         ep.color.z = 125;
     }
+    if (ep.elementType != guiElement::BOX) {
+        ep.elementType = guiElement::BOX;
+    }
 
     return true;
 }

@@ -9,6 +9,7 @@
 #include "Layout.hpp"
 #include "Button.hpp"
 #include "TextBox.hpp"
+#include "InputTextBox.hpp"
 #include "Ellipse.hpp"
 #include "Arrow.hpp"
 #include "Freehand.hpp"

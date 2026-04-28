@@ -39,6 +39,9 @@ GuiElement* factory(guiElement e, ElementParameters ep) {
 			case guiElement::TEXTBOX: {
 				return new TextBox(ep);
 			}
+			case guiElement::INPUTTEXTBOX: {
+				return new InputTextBox(ep);
+			}
 			default: {
 				return nullptr;
 			}
