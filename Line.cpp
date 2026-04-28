@@ -164,6 +164,7 @@ bool Line::isInside(ivec2 coordinates) {
 
 ElementParameters Line::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::LINE;
     ep.start = this->start;
     ep.end = this->end;
     ep.color = this->color;

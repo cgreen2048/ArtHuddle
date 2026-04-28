@@ -128,6 +128,7 @@ bool Point::isInside(ivec2 coordinates) {
 
 ElementParameters Point::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::POINT;
     ep.coords = this->coords;
     ep.color = this->color;
     ep.coordsType = this->coordsType;

@@ -189,15 +189,14 @@ void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, iv
 	}
 }
 
-void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
+ElementParameters drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color) {
     GuiElement* lastEl = tempLayout->popLast();
-    if (!lastEl && ge != guiElement::POINT) {
-        return;
-    }
-
     ElementParameters ep;
     ep.color = color;
     ep.colorType = TagType::IVec;
+    if (!lastEl && ge != guiElement::POINT) {
+        return ep;
+    }
     
     switch (ge) {
         case guiElement::POINT: {
@@ -213,6 +212,7 @@ void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 
         case guiElement::LINE: {
             Line* derived = dynamic_cast<Line*>(lastEl);
             if (derived) {
+                ep = derived->getParameters();
                 canvasLayout->addElement(derived);
                 Selected::getInstance().setSelectedElement(derived);
             }
@@ -221,6 +221,7 @@ void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 
 		case guiElement::BOX: {
             Box* derived = dynamic_cast<Box*>(lastEl);
             if (derived) {
+                ep = derived->getParameters();
                 canvasLayout->addElement(derived);
                 Selected::getInstance().setSelectedElement(derived);
             }
@@ -229,6 +230,7 @@ void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 
 		case guiElement::TRIANGLE: {
             Triangle* derived = dynamic_cast<Triangle*>(lastEl);
             if (derived) {
+                ep = derived->getParameters();
                 canvasLayout->addElement(derived);
                 Selected::getInstance().setSelectedElement(derived);
             }
@@ -237,6 +239,7 @@ void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 
         case guiElement::ELLIPSE: {
             Ellipse* derived = dynamic_cast<Ellipse*>(lastEl);
             if (derived) {
+                ep = derived->getParameters();
                 canvasLayout->addElement(derived);
                 Selected::getInstance().setSelectedElement(derived);
             }
@@ -245,6 +248,7 @@ void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 
         case guiElement::ARROW: {
             Arrow* derived = dynamic_cast<Arrow*>(lastEl);
             if (derived) {
+                ep = derived->getParameters();
                 canvasLayout->addElement(derived);
                 Selected::getInstance().setSelectedElement(derived);
             }
@@ -259,6 +263,7 @@ void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 
                 textParam.text = "";
                 TextBox* element = dynamic_cast<TextBox*>(factory(guiElement::TEXTBOX, textParam));
                 if (element) {
+                    ep = element->getParameters();
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
                 }
@@ -295,10 +300,13 @@ void continueFreehandDraw(const ivec2& point) {
     EventSystem::getInstance().push(std::make_unique<MouseMotionEvent>(point, true));
 }
 
-void endFreehandDraw(const ivec2& point) {
+ElementParameters endFreehandDraw(const ivec2& point) {
     EventSystem& eventSystem = EventSystem::getInstance();
-    Selected::getInstance().setSelectedElement(eventSystem.getTargetedElement());
+    Freehand* fr = static_cast<Freehand*>(eventSystem.getTargetedElement());
+    ElementParameters ep = fr->getParameters();
+    Selected::getInstance().setSelectedElement(fr);
     eventSystem.push(std::make_unique<MouseUpEvent>(point));
+    return ep;
 }
 
 void setClickAndDrag(ivec2 mouse) {
@@ -321,130 +329,133 @@ void setClickAndDrag(ivec2 mouse) {
     }
 }
 
-void endClickAndDrag() {
-    if (draggingType != guiElement::UNKNOWN) {
-        deleteTempShape();
-        ivec2 toolBarBounds = toolBarLayout->getBounds()[1];
-        switch (draggingType) {
-            case guiElement::POINT: {
-                Point* element = dynamic_cast<Point*>(factory(draggingType, draggingElementParameters));
-                if (element) {
-                    std::vector<ivec2> bounds = element->getBounds();
-                    if (bounds[0].y < toolBarBounds.y) {
-                        delete element;
-                        cancelMove();
-                        return;
-                    }
-                    canvasLayout->addElement(element);
-                    Selected::getInstance().setSelectedElement(element);
+ElementParameters endClickAndDrag() {
+    if (draggingType == guiElement::UNKNOWN) {
+        return originalElementParameters;
+    }
+    draggingElementParameters.name = originalElementParameters.name;
+    deleteTempShape();
+    ivec2 toolBarBounds = toolBarLayout->getBounds()[1];
+    switch (draggingType) {
+        case guiElement::POINT: {
+            Point* element = dynamic_cast<Point*>(factory(draggingType, draggingElementParameters));
+            if (element) {
+                std::vector<ivec2> bounds = element->getBounds();
+                if (bounds[0].y < toolBarBounds.y) {
+                    delete element;
+                    cancelMove();
+                    return originalElementParameters;
                 }
-                break;
+                canvasLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
-            case guiElement::LINE: {
-                Line* element = dynamic_cast<Line*>(factory(draggingType, draggingElementParameters));
-                if (element) {
-                    std::vector<ivec2> bounds = element->getBounds();
-                    if (bounds[0].y < toolBarBounds.y) {
-                        delete element;
-                        cancelMove();
-                        return;
-                    }
-                    canvasLayout->addElement(element);
-                    Selected::getInstance().setSelectedElement(element);
+            break;
+        }
+        case guiElement::LINE: {
+            Line* element = dynamic_cast<Line*>(factory(draggingType, draggingElementParameters));
+            if (element) {
+                std::vector<ivec2> bounds = element->getBounds();
+                if (bounds[0].y < toolBarBounds.y) {
+                    delete element;
+                    cancelMove();
+                    return originalElementParameters;
                 }
-                break;
+                canvasLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
-            case guiElement::BOX: {
-                Box* element = dynamic_cast<Box*>(factory(draggingType, draggingElementParameters));
-                if (element) {
-                    std::vector<ivec2> bounds = element->getBounds();
-                    if (bounds[0].y < toolBarBounds.y) {
-                        delete element;
-                        cancelMove();
-                        return;
-                    }
-                    canvasLayout->addElement(element);
-                    Selected::getInstance().setSelectedElement(element);
+            break;
+        }
+        case guiElement::BOX: {
+            Box* element = dynamic_cast<Box*>(factory(draggingType, draggingElementParameters));
+            if (element) {
+                std::vector<ivec2> bounds = element->getBounds();
+                if (bounds[0].y < toolBarBounds.y) {
+                    delete element;
+                    cancelMove();
+                    return originalElementParameters;
                 }
-                break;
+                canvasLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
-            case guiElement::TRIANGLE: {
-                Triangle* element = dynamic_cast<Triangle*>(factory(draggingType, draggingElementParameters));
-                if (element) {
-                    std::vector<ivec2> bounds = element->getBounds();
-                    if (bounds[0].y < toolBarBounds.y) {
-                        delete element;
-                        cancelMove();
-                        return;
-                    }
-                    canvasLayout->addElement(element);
-                    Selected::getInstance().setSelectedElement(element);
+            break;
+        }
+        case guiElement::TRIANGLE: {
+            Triangle* element = dynamic_cast<Triangle*>(factory(draggingType, draggingElementParameters));
+            if (element) {
+                std::vector<ivec2> bounds = element->getBounds();
+                if (bounds[0].y < toolBarBounds.y) {
+                    delete element;
+                    cancelMove();
+                    return originalElementParameters;
                 }
-                break;
+                canvasLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
-            case guiElement::ELLIPSE: {
-                Ellipse* element = dynamic_cast<Ellipse*>(factory(draggingType, draggingElementParameters));
-                if (element) {
-                    std::vector<ivec2> bounds = element->getBounds();
-                    if (bounds[0].y < toolBarBounds.y) {
-                        delete element;
-                        cancelMove();
-                        return;
-                    }
-                    canvasLayout->addElement(element);
-                    Selected::getInstance().setSelectedElement(element);
+            break;
+        }
+        case guiElement::ELLIPSE: {
+            Ellipse* element = dynamic_cast<Ellipse*>(factory(draggingType, draggingElementParameters));
+            if (element) {
+                std::vector<ivec2> bounds = element->getBounds();
+                if (bounds[0].y < toolBarBounds.y) {
+                    delete element;
+                    cancelMove();
+                    return originalElementParameters;
                 }
-                break;
+                canvasLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
-            case guiElement::ARROW: {
-                Arrow* element = dynamic_cast<Arrow*>(factory(draggingType, draggingElementParameters));
-                if (element) {
-                    std::vector<ivec2> bounds = element->getBounds();
-                    if (bounds[0].y < toolBarBounds.y) {
-                        delete element;
-                        cancelMove();
-                        return;
-                    }
-                    canvasLayout->addElement(element);
-                    Selected::getInstance().setSelectedElement(element);
+            break;
+        }
+        case guiElement::ARROW: {
+            Arrow* element = dynamic_cast<Arrow*>(factory(draggingType, draggingElementParameters));
+            if (element) {
+                std::vector<ivec2> bounds = element->getBounds();
+                if (bounds[0].y < toolBarBounds.y) {
+                    delete element;
+                    cancelMove();
+                    return originalElementParameters;
                 }
-                break;
+                canvasLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
-            case guiElement::TEXTBOX: {
-                TextBox* element = dynamic_cast<TextBox*>(factory(draggingType, draggingElementParameters));
-                if (element) {
-                    std::vector<ivec2> bounds = element->getBounds();
-                    if (bounds[0].y < toolBarBounds.y) {
-                        delete element;
-                        cancelMove();
-                        return;
-                    }
-                    canvasLayout->addElement(element);
-                    Selected::getInstance().setSelectedElement(element);
+            break;
+        }
+        case guiElement::TEXTBOX: {
+            TextBox* element = dynamic_cast<TextBox*>(factory(draggingType, draggingElementParameters));
+            if (element) {
+                std::vector<ivec2> bounds = element->getBounds();
+                if (bounds[0].y < toolBarBounds.y) {
+                    delete element;
+                    cancelMove();
+                    return originalElementParameters;
                 }
-                break;
+                canvasLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
-            case guiElement::FREEHAND: {
-                Freehand* element = dynamic_cast<Freehand*>(factory(draggingType, draggingElementParameters));
-                if (element) {
-                    std::vector<ivec2> bounds = element->getBounds();
-                    if (bounds[0].y < toolBarBounds.y) {
-                        delete element;
-                        cancelMove();
-                        return;
-                    }
-                    canvasLayout->addElement(element);
-                    Selected::getInstance().setSelectedElement(element);
+            break;
+        }
+        case guiElement::FREEHAND: {
+            Freehand* element = dynamic_cast<Freehand*>(factory(draggingType, draggingElementParameters));
+            if (element) {
+                std::vector<ivec2> bounds = element->getBounds();
+                if (bounds[0].y < toolBarBounds.y) {
+                    delete element;
+                    cancelMove();
+                    return originalElementParameters;
                 }
-                break;
+                canvasLayout->addElement(element);
+                Selected::getInstance().setSelectedElement(element);
             }
-            default: {
-                break;
-            }
+            break;
+        }
+        default: {
+            break;
         }
     }
     draggingElement = nullptr;
     draggingType = guiElement::UNKNOWN;
+    return draggingElementParameters;
 }
 
 void drawClickAndDrag(ivec2 currentMousePos) {
@@ -588,12 +599,14 @@ void deleteTempShape() {
     tempLayout->clearElements();
 }
 
-void deleteShape() {
+std::string deleteShape() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
+    std::string name = element->getName();
     if (element != nullptr) {
-        canvasLayout->deleteElement(element->getName());
+        canvasLayout->deleteElement(name);
     }
     tempLayout->clearElements();
+    return name;
 }
 
 void updateScreen(DrawingMode mode) {

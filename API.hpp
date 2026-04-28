@@ -11,6 +11,7 @@
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "Layout.hpp"
+#include "ElementParameters.hpp"
 #include "InteractionState.hpp"
 #include "DrawingMode.hpp"
 
@@ -20,12 +21,12 @@ Layout* initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2,
 void loadSound(std::string filePath);
 void playSound(std::string filePath, int loop);
 void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
-void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
+ElementParameters drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
 void startFreehandDraw(const ivec2& point, const ivec3& color, bool isFreehandShape);
 void continueFreehandDraw(const ivec2& point);
-void endFreehandDraw(const ivec2& point);
+ElementParameters endFreehandDraw(const ivec2& point);
 void setClickAndDrag(ivec2);
-void endClickAndDrag();
+ElementParameters endClickAndDrag();
 void drawClickAndDrag(ivec2);
 void cancelMove();
 void unselect();
@@ -34,7 +35,7 @@ bool isSelectedTextBox();
 void appendToTextBox(const std::string& s);
 bool deleteText();
 void deleteTempShape();
-void deleteShape();
+std::string deleteShape();
 void updateScreen(DrawingMode mode);
 void closeAll();
 void copy();

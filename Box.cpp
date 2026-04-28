@@ -171,6 +171,7 @@ bool Box::isInside(ivec2 coordinates) {
 
 ElementParameters Box::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::BOX;
     ep.min = this->min;
     ep.max = this->max;
     ep.color = this->color;

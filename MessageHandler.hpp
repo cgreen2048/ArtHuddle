@@ -13,8 +13,9 @@ class MessageHandler {
         std::queue<std::string> messageQueue;
         std::mutex queueMutex;
         Layout* canvasLayout;
+        bool isServerHandler;
     public:
-        MessageHandler(Layout* layout);
+        MessageHandler(Layout* layout, bool isServerHandler);
         void push(std::string message);
         bool processMessages();
         bool handleDrawElement(json j);

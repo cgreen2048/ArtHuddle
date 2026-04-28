@@ -181,6 +181,7 @@ const std::string& TextBox::getText() const {
 
 ElementParameters TextBox::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::TEXTBOX;
     ep.min = this->min;
     ep.max = this->max;
     ep.color = this->color;

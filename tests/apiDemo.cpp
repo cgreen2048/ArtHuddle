@@ -10,6 +10,8 @@
 #include "../RelayServer.hpp"
 #include "../ThreadPool.hpp"
 #include "../DrawElementMessage.hpp"
+#include "../DeleteElementMessage.hpp"
+#include "../UpdateElementMessage.hpp"
 
 void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 
@@ -55,6 +57,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    pool.enqueue([&client]() {
+        client.receiveMessages();
+    });
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
 
     loadSound("../SFX/song2.wav");
     playSound("../SFX/song2.wav", true);
@@ -95,6 +102,7 @@ int main(int argc, char* argv[]) {
 
                             guiElement type = modeToType(mode);
                             if (points >= requiredPointsForType(type)) {
+                                std::cout << "creating element with type " << static_cast<int>(type) << "\n";
                                 ElementParameters ep = drawElement(type, point1, point2, point3, color);
                                 DrawElementMessage message(ep);
                                 client.sendToServer(message.getSerializedMessage());
@@ -123,10 +131,8 @@ int main(int argc, char* argv[]) {
                             if (selected.getSelectedElement() != nullptr) {
                                 if (selected.isInside(mousePos)) {
                                     lastMousePos = mousePos;
-   
                                     eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
-                                    currentInteractionState = InteractionState::DRAGGING;
-                                    setClickAndDrag(lastMousePos);
+                                    currentInteractionState = InteractionState::ELEMENT_PRESSED;
                                     break;
                                 }
                             }
@@ -136,8 +142,7 @@ int main(int argc, char* argv[]) {
                                 lastMousePos = mousePos;
                                 Selected::getInstance().setSelectedElement(hit);
                                 eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
-                                currentInteractionState = InteractionState::DRAGGING;
-                                setClickAndDrag(lastMousePos);
+                                currentInteractionState = InteractionState::ELEMENT_PRESSED;
                                 break;
                             }
 
@@ -151,12 +156,26 @@ int main(int argc, char* argv[]) {
                     break;
                 }
                 case SDL_EVENT_MOUSE_MOTION: {
+                    ivec2 mousePos(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y));
+
                     switch (currentInteractionState) {
                         case InteractionState::FREEHAND_DRAWING: {
                             if (event.motion.state != 0) {
                                 playFreehandDrawSound();
                                 continueFreehandDraw(ivec2(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)));
                             }
+                            break;
+                        }
+                        case InteractionState::ELEMENT_PRESSED: {
+                            int dx = mousePos.x - lastMousePos.x;
+                            int dy = mousePos.y - lastMousePos.y;
+
+                            if (dx * dx + dy * dy > 4) { // small drag threshold
+                                currentInteractionState = InteractionState::DRAGGING;
+                                setClickAndDrag(lastMousePos);
+                                drawClickAndDrag(mousePos);
+                            }
+                        
                             break;
                         }
                         case InteractionState::DRAGGING: {
@@ -174,14 +193,26 @@ int main(int argc, char* argv[]) {
                     ivec2 mousePos(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
 
                     switch (currentInteractionState) {
+                        case InteractionState::IDLE: {
+                            clicked(mousePos);
+                            break;
+                        }
                         case InteractionState::FREEHAND_DRAWING: {
-                            endFreehandDraw(mousePos);
+                            ElementParameters ep = endFreehandDraw(mousePos);
+                            DrawElementMessage message(ep);
+                            client.sendToServer(message.getSerializedMessage());
                             currentInteractionState = InteractionState::IDLE;
                             mode = DrawingMode::SELECT;
                             break;
                         }
+                        case InteractionState::ELEMENT_PRESSED: {
+                            currentInteractionState = InteractionState::IDLE;
+                            break;
+                        }
                         case InteractionState::DRAGGING: {
-                            endClickAndDrag();
+                            ElementParameters ep = endClickAndDrag();
+                            UpdateElementMessage message(ep);
+                            client.sendToServer(message.getSerializedMessage());
                             currentInteractionState = InteractionState::IDLE;
                             break;
                         }
@@ -192,10 +223,6 @@ int main(int argc, char* argv[]) {
                                 clicked(mousePos);
                             }
                             currentInteractionState = InteractionState::IDLE;
-                            break;
-                        }
-                        case InteractionState::IDLE: {
-                            clicked(mousePos);
                             break;
                         }
                         case InteractionState::SHAPE_COMPLETED: {
@@ -232,7 +259,9 @@ int main(int argc, char* argv[]) {
                             }
                             case SDL_SCANCODE_BACKSPACE: {
                                 playDeleteSound();
-                                deleteShape();
+                                std::string name = deleteShape();
+                                DeleteElementMessage message(name);
+                                client.sendToServer(message.getSerializedMessage());
                                 currentInteractionState = InteractionState::IDLE;
                                 break;
                             }
@@ -336,35 +365,42 @@ int main(int argc, char* argv[]) {
 
         if (points == 0) {
             updateScreen(mode);
-            continue;
         }
-
-        switch (mode) {
-            case DrawingMode::LINE:
-            case DrawingMode::BOX:
-            case DrawingMode::TRIANGLE:
-            case DrawingMode::ELLIPSE: 
-            case DrawingMode::ARROW:
-            case DrawingMode::TEXTBOX: {
-                storeTemporaryPoint(points, mousePos, point1, point2, point3);
-
-                guiElement type = modeToType(mode);
-                if (points == requiredPointsForType(type) - 1) {
-                    drawTempElement(type, point1, point2, point3, color);
+        else {
+            switch (mode) {
+                case DrawingMode::LINE:
+                case DrawingMode::BOX:
+                case DrawingMode::TRIANGLE:
+                case DrawingMode::ELLIPSE: 
+                case DrawingMode::ARROW:
+                case DrawingMode::TEXTBOX: {
+                    storeTemporaryPoint(points, mousePos, point1, point2, point3);
+    
+                    guiElement type = modeToType(mode);
+                    if (points == requiredPointsForType(type) - 1) {
+                        drawTempElement(type, point1, point2, point3, color);
+                    }
+                    else {
+                        drawTempElement(tempElementType(mode), point1, point2, point3, color);
+                    }
+                    break;
                 }
-                else {
-                    drawTempElement(tempElementType(mode), point1, point2, point3, color);
+                default: {
+                    break;
                 }
-                break;
-            }
-            default: {
-                break;
             }
         }
 
         updateScreen(mode);
+        if (argc > 1) {
+            server.processMessages();
+        }
+        client.processMessages();
     }
     client.closeConnection(); // Closes client
+    if (argc > 1) {
+        server.stop();
+    }
     closeAll();
     return 0;
 }

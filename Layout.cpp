@@ -5,6 +5,7 @@
 #include "EventSystem.hpp"
 #include "Button.hpp"
 #include "TextBox.hpp"
+#include "Factory.hpp"
 
 
 Layout::Layout() : active{false} {}
@@ -306,8 +307,62 @@ GuiElement* Layout::removeElement(const std::string& name) {
     return nullptr;
 }
 
+bool Layout::replaceElement(ElementParameters ep, bool preserveSelection) {
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        if ((*it)->getName() == ep.name) {
+            GuiElement* found = *it;
+
+            EventSystem& eventSystem = EventSystem::getInstance();
+            Selected& selectedSystem = Selected::getInstance();
+
+            GuiElement* target = eventSystem.getTargetedElement();
+            GuiElement* selected = selectedSystem.getSelectedElement();
+
+            bool wasSelected = selected != nullptr && selected->getName() == found->getName();
+            bool wasTargeted = target != nullptr && target->getName() == found->getName();
+
+            std::cout << "preserveSelection: " << preserveSelection << "\n";
+            std::cout << "found name: " << found->getName() << "\n";
+            std::cout << "selected exists: " << (selected != nullptr) << "\n";
+
+            if (selected != nullptr) {
+                std::cout << "selected name: " << selected->getName() << "\n";
+            }
+
+            if (wasTargeted) {
+                eventSystem.setTargetedElement(nullptr);
+            }
+
+            if (wasSelected) {
+                selectedSystem.setSelectedElement(nullptr);
+            }
+
+            GuiElement* replacement = factory(ep.elementType, ep);
+
+            if (replacement == nullptr) {
+                return false;
+            }
+
+            *it = replacement;
+            delete found; 
+
+            if (preserveSelection && wasSelected) {
+                selectedSystem.setSelectedElement(replacement);
+            }
+
+            if (preserveSelection && wasTargeted) {
+                eventSystem.setTargetedElement(replacement);
+            }
+
+            return true;
+        }
+    }
+    return false;
+}
+
 ElementParameters Layout::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::LAYOUT;
     ep.layoutStart = this->start;
     ep.layoutEnd = this->end;
     ep.parentStart = this->parentStart;

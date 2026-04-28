@@ -314,6 +314,7 @@ bool Freehand::hasDrawBounds() const {
 
 ElementParameters Freehand::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::FREEHAND;
     ep.points = this->points;
     ep.hasFirstPoint = this->hasFirstPoint;
     ep.lastDrawnPoint = this->lastDrawnPoint;

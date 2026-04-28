@@ -1,6 +1,6 @@
 #include "ClientNetwork.hpp"
 
-ClientNetwork::ClientNetwork(Layout* layout) : messageHandler(MessageHandler(layout)) {}
+ClientNetwork::ClientNetwork(Layout* layout) : messageHandler(MessageHandler(layout, false)) {}
 
 bool ClientNetwork::connectToServer(const char* host, int port) {
     this->socketIdentifier = socket(AF_INET, SOCK_STREAM, 0);
@@ -48,6 +48,7 @@ void ClientNetwork::sendToServer(const std::string& message) {
 
 void ClientNetwork::receiveMessages() { // Handles messages relayed from the server. The thread should call this function.
     char buffer[1024];
+    std::string pending;
 
     while (this->socketIdentifier >= 0) {
         std::memset(buffer, 0, sizeof(buffer));
@@ -59,9 +60,17 @@ void ClientNetwork::receiveMessages() { // Handles messages relayed from the ser
             break;
         }
 
-        std::string message(buffer, bytesReceived);
+        pending.append(buffer, bytesReceived);
 
-        this->messageHandler.push(message);
+        size_t newlinePos;
+        while ((newlinePos = pending.find('\n')) != std::string::npos) {
+            std::string message = pending.substr(0, newlinePos);
+            pending.erase(0, newlinePos + 1);
+
+            if (!message.empty()) {
+                this->messageHandler.push(message);
+            }
+        }
     }
 }
 
@@ -76,4 +85,8 @@ void ClientNetwork::closeConnection() {
     }
     this->connected = false;
     std::cout << "Closed client \n";
+}
+
+int ClientNetwork::getSocketIdentifier() {
+    return this->socketIdentifier;
 }

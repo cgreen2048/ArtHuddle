@@ -7,7 +7,8 @@ enum class InteractionState {
     SHAPE_DRAWING, 
     SHAPE_COMPLETED,
     DRAGGING,
-    TOOLBAR_CLICK 
+    TOOLBAR_CLICK,
+    ELEMENT_PRESSED
 };
 
 #endif

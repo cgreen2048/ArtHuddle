@@ -23,6 +23,7 @@ public:
 
     void start();
     void stop();
+    void processMessages();
 
 private:
     std::atomic<bool> running;

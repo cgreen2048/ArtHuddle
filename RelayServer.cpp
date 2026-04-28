@@ -21,7 +21,7 @@
 #define BUFFER_SIZE 512
 
 RelayServer::RelayServer(Layout* layout)
-    : running(false), listener(INVALID_SOCKET), messageHandler(MessageHandler(layout)) {}
+    : running(false), listener(INVALID_SOCKET), messageHandler(MessageHandler(layout, true)) {}
 
 void RelayServer::start() {
     running = true;
@@ -82,6 +82,11 @@ void RelayServer::start() {
 
         std::cout << "Client connected!\n";
 
+        {
+            std::lock_guard<std::mutex> lock(this->clientsMutex);
+            this->clients.push_back(client);
+        }
+
         pool.enqueue([this, client]() {
             this->handleClient(client);
         });
@@ -115,6 +120,7 @@ void RelayServer::removeClient(SocketType client) {
 
 void RelayServer::handleClient(SocketType client) {
     char buffer[BUFFER_SIZE + 1];
+    std::string pending;
 
     std::vector<ElementParameters> elements = this->messageHandler.getCanvasLayout()->getChildElementParameters();
     InitializeClientMessage init(elements);
@@ -128,12 +134,18 @@ void RelayServer::handleClient(SocketType client) {
             break;
         }
 
-        std::string message(buffer, bytes);
+        pending.append(buffer, bytes);
 
-        std::cout << "Received: " << message << "\n";
+        size_t newlinePos;
+        while ((newlinePos = pending.find('\n')) != std::string::npos) {
+            std::string message = pending.substr(0, newlinePos);
+            pending.erase(0, newlinePos + 1);
 
-        messageHandler.push(message);
-        broadcast(message, client);
+            if (!message.empty()) {
+                this->messageHandler.push(message);
+                broadcast(message + "\n", client);
+            }
+        }
     }
 
     // Cleanup
@@ -161,4 +173,8 @@ void RelayServer::broadcast(const std::string& message, SocketType clientSender)
             std::cerr << "Failed to send message\n";
         }
     }
+}
+
+void RelayServer::processMessages() {
+    this->messageHandler.processMessages();
 }

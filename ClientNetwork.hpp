@@ -32,6 +32,7 @@ class ClientNetwork {
         void receiveMessages();
         void processMessages();
         void closeConnection();
+        int getSocketIdentifier();
 
 };
 

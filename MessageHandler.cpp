@@ -3,9 +3,10 @@
 #include "ElementParameters.hpp"
 #include "jsonHelpers.hpp"
 #include "Factory.hpp"
+#include "Selected.hpp"
 
 
-MessageHandler::MessageHandler(Layout* layout) : canvasLayout(layout) {}
+MessageHandler::MessageHandler(Layout* layout, bool isServerHandler) : canvasLayout(layout), isServerHandler(isServerHandler) {}
 
 void MessageHandler::push(std::string message) {
     std::lock_guard<std::mutex> lock(queueMutex);
@@ -46,7 +47,7 @@ bool MessageHandler::processMessages() {
                 break;
             }
             case MessageType::INITIALIZE_CLIENT: {
-                handled = handleUpdateElement(j);
+                handled = handleInitializeClient(j);
                 break;
             }
         }

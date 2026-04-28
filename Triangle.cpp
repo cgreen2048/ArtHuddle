@@ -201,6 +201,7 @@ bool Triangle::isInside(ivec2 coordinates) {
 
 ElementParameters Triangle::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::TRIANGLE;
     ep.pointA = this->a;
     ep.pointB = this->b;
     ep.pointC = this->c;

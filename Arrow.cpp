@@ -265,6 +265,7 @@ void Arrow::setColor(ivec3 color, TagType colorType) {
 
 ElementParameters Arrow::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::ARROW;
     ep.min = this->min;
     ep.max = this->max;
     ep.pointA = this->pointA;
