@@ -270,6 +270,8 @@ void drawElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 
             break;
         }
 	}
+
+    return ep;
 }
 
 void startFreehandDraw(const ivec2& point, const ivec3& color, bool isFreehandShape) {

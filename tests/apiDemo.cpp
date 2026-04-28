@@ -7,12 +7,16 @@
 #include "../MouseMotionEvent.hpp"
 #include "../MouseUpEvent.hpp"
 #include "../ClientNetwork.hpp"
+#include "../RelayServer.hpp"
+#include "../ThreadPool.hpp"
+#include "../DrawElementMessage.hpp"
 
 void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
 
-int main() {
+int main(int argc, char* argv[]) {
     std::cout << "API Demo\n";
     
+    ThreadPool pool;
     DrawingMode mode = DrawingMode::SELECT;
     InteractionState currentInteractionState = InteractionState::IDLE;
     int points = 0;
@@ -22,8 +26,24 @@ int main() {
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
     Layout* canvasLayout = initialize(mode, points, point1, point2, point3);
+    ElementParameters canvas;
+    canvas.layoutStart = vec2(0.0, 0.0);
+    canvas.layoutEnd = vec2(1.0, 1.0);
+    canvas.parentStart = ivec2(0, 0);
+    canvas.parentEnd = ivec2(X, Y);
+    canvas.active = true;
+    canvas.name = "canvasLayout";
+    Layout* serverCanvasLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, canvas));
+    RelayServer server(serverCanvasLayout);
     ClientNetwork client(canvasLayout);
     // Connect to server
+    if (argc > 1 && std::string(argv[1]) == "--host") {
+        pool.enqueue([&server]() {
+            server.start();
+        });
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
     for (const char* host : hosts) {
         if (client.connectToServer(host, 40666)) {
             connectedHost = host;
@@ -32,10 +52,12 @@ int main() {
     }
     if (connectedHost == nullptr) {
         std::cerr << "Failed to connect\n";
+        return 1;
     }
 
-    loadSound("../SFX/song.wav");
-    playSound("../SFX/song.wav", true);
+
+    loadSound("../SFX/song2.wav");
+    playSound("../SFX/song2.wav", true);
     ivec3 color = ivec3(125, 125, 125);
     std::cout << "Escape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
 
@@ -73,7 +95,9 @@ int main() {
 
                             guiElement type = modeToType(mode);
                             if (points >= requiredPointsForType(type)) {
-                                drawElement(type, point1, point2, point3, color);
+                                ElementParameters ep = drawElement(type, point1, point2, point3, color);
+                                DrawElementMessage message(ep);
+                                client.sendToServer(message.getSerializedMessage());
                                 resetPoints(points, point1, point2, point3);
                                 mode = DrawingMode::SELECT;
                                 currentInteractionState = InteractionState::SHAPE_COMPLETED;
