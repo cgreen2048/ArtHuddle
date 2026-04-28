@@ -28,6 +28,7 @@ class TextBox : public Box {
         GuiElement* clone() const;
         void setActive(bool value);
         bool isActive() const;
+        void setText(std::string newText);
         void appendText(const std::string& s);
         void backspace();
         bool containsPoint(int x, int y) const;

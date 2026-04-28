@@ -307,51 +307,81 @@ GuiElement* Layout::removeElement(const std::string& name) {
     return nullptr;
 }
 
-bool Layout::replaceElement(ElementParameters ep, bool preserveSelection) {
+bool Layout::updateElement(ElementParameters ep, bool preserveSelection) {
     for (auto it = elements.begin(); it != elements.end(); ++it) {
         if ((*it)->getName() == ep.name) {
             GuiElement* found = *it;
 
-            EventSystem& eventSystem = EventSystem::getInstance();
+            if (!found) return false;
+
+            switch (ep.elementType) {
+                case guiElement::POINT: {
+                    Point* p = dynamic_cast<Point*>(found);
+                    p->setCoords(ep.coords, ep.coordsType);
+                    p->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::LINE: {
+                    Line* l = dynamic_cast<Line*>(found);
+                    l->setStart(ep.start, ep.startType);
+                    l->setEnd(ep.end, ep.endType);
+                    l->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::BOX: {
+                    Box* b = dynamic_cast<Box*>(found);
+                    b->setMin(ep.min, ep.minType);
+                    b->setMax(ep.max, ep.maxType);
+                    b->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::TRIANGLE: {
+                    Triangle* t = dynamic_cast<Triangle*>(found);
+                    t->setA(ep.pointA, ep.pointAType);
+                    t->setB(ep.pointB, ep.pointBType);
+                    t->setC(ep.pointC, ep.pointCType);
+                    t->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::ELLIPSE: {
+                    Ellipse* e = dynamic_cast<Ellipse*>(found);
+                    e->setCenter(ep.center, ep.centerType);
+                    e->setRadiusX(ep.radiusX);
+                    e->setRadiusY(ep.radiusY);
+                    e->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::TEXTBOX: {
+                    TextBox* t = dynamic_cast<TextBox*>(found);
+                    t->setMin(ep.min, ep.minType);
+                    t->setMax(ep.max, ep.maxType);
+                    t->setText(ep.text);
+                    break;
+                }
+                case guiElement::ARROW: {
+                    Arrow* a = dynamic_cast<Arrow*>(found);
+                    a->setMin(ep.min, ep.minType);
+                    a->setMax(ep.max, ep.maxType);
+                    a->setA(ep.pointA, ep.pointAType);
+                    a->setB(ep.pointB, ep.pointBType);
+                    a->setC(ep.pointC, ep.pointCType);
+                    a->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                // case guiElement::FREEHAND: {
+                //     Freehand* f = dynamic_cast<Freehand*>(found);
+                //     f->setPoints(ep.points);
+                //     break;
+                // }
+                default: {
+                    return false;
+                }
+            }
+
             Selected& selectedSystem = Selected::getInstance();
-
-            GuiElement* target = eventSystem.getTargetedElement();
             GuiElement* selected = selectedSystem.getSelectedElement();
-
-            bool wasSelected = selected != nullptr && selected->getName() == found->getName();
-            bool wasTargeted = target != nullptr && target->getName() == found->getName();
-
-            std::cout << "preserveSelection: " << preserveSelection << "\n";
-            std::cout << "found name: " << found->getName() << "\n";
-            std::cout << "selected exists: " << (selected != nullptr) << "\n";
-
-            if (selected != nullptr) {
-                std::cout << "selected name: " << selected->getName() << "\n";
-            }
-
-            if (wasTargeted) {
-                eventSystem.setTargetedElement(nullptr);
-            }
-
-            if (wasSelected) {
-                selectedSystem.setSelectedElement(nullptr);
-            }
-
-            GuiElement* replacement = factory(ep.elementType, ep);
-
-            if (replacement == nullptr) {
-                return false;
-            }
-
-            *it = replacement;
-            delete found; 
-
-            if (preserveSelection && wasSelected) {
-                selectedSystem.setSelectedElement(replacement);
-            }
-
-            if (preserveSelection && wasTargeted) {
-                eventSystem.setTargetedElement(replacement);
+            if (selected != nullptr && ep.name == selected->getName()) {
+                selectedSystem.setSelectedElement(found);
             }
 
             return true;

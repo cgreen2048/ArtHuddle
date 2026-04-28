@@ -97,6 +97,10 @@ bool TextBox::isActive() const {
     return active; 
 }
 
+void TextBox::setText(std::string newText) {
+    this->text = newText;
+}
+
 void TextBox::appendText(const std::string& s) {
     text += s;
 }

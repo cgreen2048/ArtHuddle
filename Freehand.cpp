@@ -408,3 +408,8 @@ void Freehand::movePoints(ivec2 delta) {
         this->points[i] += delta;
     }
 }
+
+void Freehand::setColor(const ivec3& v, TagType t) {
+    this->color = v;
+    this->colorType = t;
+}

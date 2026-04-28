@@ -6,6 +6,7 @@ enum class MessageType {
     DRAW_ELEMENT,
     DELETE_ELEMENT,
     UPDATE_ELEMENT,
+    UPDATE_TEXT,
     INITIALIZE_CLIENT
 };
 

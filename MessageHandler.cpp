@@ -50,6 +50,9 @@ bool MessageHandler::processMessages() {
                 handled = handleInitializeClient(j);
                 break;
             }
+            default: {
+                break;
+            }
         }
     }
 
@@ -74,12 +77,7 @@ bool MessageHandler::handleDeleteElement(json j) {
 
 bool MessageHandler::handleUpdateElement(json j) {
     ElementParameters ep = jsonToElementParameters(j);
-    GuiElement* e = factory(ep.elementType, ep);
-    if (e != nullptr) {
-        canvasLayout->deleteElement(ep.name);
-        canvasLayout->addElement(e);
-        return true;
-    }
+    canvasLayout->updateElement(ep, !this->isServerHandler);
     return false;
 }
 
