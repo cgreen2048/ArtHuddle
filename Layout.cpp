@@ -368,11 +368,11 @@ bool Layout::updateElement(ElementParameters ep, bool preserveSelection) {
                     a->setColor(ep.color, ep.colorType);
                     break;
                 }
-                // case guiElement::FREEHAND: {
-                //     Freehand* f = dynamic_cast<Freehand*>(found);
-                //     f->setPoints(ep.points);
-                //     break;
-                // }
+                case guiElement::FREEHAND: {
+                    Freehand* f = dynamic_cast<Freehand*>(found);
+                    f->setPoints(ep.points);
+                    break;
+                }
                 default: {
                     return false;
                 }

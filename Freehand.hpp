@@ -44,6 +44,7 @@ class Freehand : public GuiElement {
         ElementParameters getParameters();
         guiElement getType();
         void setPoints();
+        void setPoints(std::vector<ivec2>& pts);
         void modifyColor(ivec3 newColor);
         void setBounds();
 		std::vector<ivec2> getBounds();

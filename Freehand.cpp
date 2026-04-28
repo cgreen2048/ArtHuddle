@@ -363,6 +363,10 @@ void Freehand::setPoints() {
     }
 }
 
+void Freehand::setPoints(std::vector<ivec2>& pts) {
+    this->points = pts;
+}
+
 void Freehand::modifyColor(ivec3 newColor) {
     this->color += newColor;
     if (color.x < 0) {
