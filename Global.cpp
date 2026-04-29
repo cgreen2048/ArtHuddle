@@ -572,25 +572,25 @@ void createDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& p
     root.name = "rootLayout";
     rootLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, root));
 
-    ElementParameters backgroundBoxParam;
-    backgroundBoxParam.min = ivec2(0.0, 0.0);
-    backgroundBoxParam.max = ivec2(X, Y);
-    backgroundBoxParam.color = ivec3(242, 242, 242);
-    backgroundBoxParam.minType = TagType::IVec;
-    backgroundBoxParam.maxType = TagType::IVec;
-    backgroundBoxParam.colorType = TagType::IVec;
-    Box* backgroundBox = dynamic_cast<Box*>(factory(guiElement::BOX, backgroundBoxParam));
-    rootLayout->addElement(backgroundBox);
+    // ElementParameters backgroundBoxParam;
+    // backgroundBoxParam.min = ivec2(0.0, 0.0);
+    // backgroundBoxParam.max = ivec2(X, Y);
+    // backgroundBoxParam.color = ivec3(242, 242, 242);
+    // backgroundBoxParam.minType = TagType::IVec;
+    // backgroundBoxParam.maxType = TagType::IVec;
+    // backgroundBoxParam.colorType = TagType::IVec;
+    // Box* backgroundBox = dynamic_cast<Box*>(factory(guiElement::BOX, backgroundBoxParam));
+    // rootLayout->addElement(backgroundBox);
 
-    ElementParameters canvasBackgroundBoxParam;
-    canvasBackgroundBoxParam.min = ivec2(0.015 * X, 0.24 * Y);
-    canvasBackgroundBoxParam.max = ivec2(0.985 * X, 0.975 * Y);
-    canvasBackgroundBoxParam.color = ivec3(255, 255, 255);
-    canvasBackgroundBoxParam.minType = TagType::IVec;
-    canvasBackgroundBoxParam.maxType = TagType::IVec;
-    canvasBackgroundBoxParam.colorType = TagType::IVec;
-    Box* canvasBackgroundBox = dynamic_cast<Box*>(factory(guiElement::BOX, canvasBackgroundBoxParam));
-    rootLayout->addElement(canvasBackgroundBox);
+    // ElementParameters canvasBackgroundBoxParam;
+    // canvasBackgroundBoxParam.min = ivec2(0.015 * X, 0.24 * Y);
+    // canvasBackgroundBoxParam.max = ivec2(0.985 * X, 0.975 * Y);
+    // canvasBackgroundBoxParam.color = ivec3(255, 255, 255);
+    // canvasBackgroundBoxParam.minType = TagType::IVec;
+    // canvasBackgroundBoxParam.maxType = TagType::IVec;
+    // canvasBackgroundBoxParam.colorType = TagType::IVec;
+    // Box* canvasBackgroundBox = dynamic_cast<Box*>(factory(guiElement::BOX, canvasBackgroundBoxParam));
+    // rootLayout->addElement(canvasBackgroundBox);
 
     ElementParameters toolBar;
     toolBar.layoutStart = vec2(0.0, 0.0);
@@ -604,8 +604,8 @@ void createDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& p
     initButtons(toolBarLayout, mode, points, point1, point2, point3);
 
     ElementParameters canvas;
-    canvas.layoutStart = vec2(0.015, 0.24);
-    canvas.layoutEnd = vec2(0.985, 0.975);
+    canvas.layoutStart = vec2(0.0, 0.24);
+    canvas.layoutEnd = vec2(1.0, 1.0);
     canvas.parentStart = ivec2(0, 0);
     canvas.parentEnd = ivec2(X, Y);
     canvas.active = true;
