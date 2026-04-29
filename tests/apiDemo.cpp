@@ -102,7 +102,6 @@ int main(int argc, char* argv[]) {
 
                             guiElement type = modeToType(mode);
                             if (points >= requiredPointsForType(type)) {
-                                std::cout << "creating element with type " << static_cast<int>(type) << "\n";
                                 ElementParameters ep = drawElement(type, point1, point2, point3, color);
                                 DrawElementMessage message(ep);
                                 client.sendToServer(message.getSerializedMessage());
@@ -242,7 +241,9 @@ int main(int argc, char* argv[]) {
                 }
                 case SDL_EVENT_TEXT_INPUT: {
                     if (isSelectedTextBox()) {
-                        appendToTextBox(event.text.text);
+                        ElementParameters ep = appendToTextBox(event.text.text);
+                        UpdateElementMessage message(ep);
+                        client.sendToServer(message.getSerializedMessage());
                     }
                     break;
                 }
@@ -338,10 +339,14 @@ int main(int argc, char* argv[]) {
                     else {
                         switch (event.key.scancode) {
                             case SDL_SCANCODE_BACKSPACE: {
-                                bool isTextBoxExisting = deleteText();
-                                if (!isTextBoxExisting) {
+                                ElementParameters ep = deleteText();
+                                if (ep.toBeDeleted) {
                                     currentInteractionState = InteractionState::IDLE;
-                                    playDeleteSound();
+                                    DeleteElementMessage message(ep.name);
+                                    client.sendToServer(message.getSerializedMessage());
+                                } else {
+                                    UpdateElementMessage message(ep);
+                                    client.sendToServer(message.getSerializedMessage());
                                 }
                                 break;
                             }

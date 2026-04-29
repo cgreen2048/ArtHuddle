@@ -21,6 +21,7 @@ class MessageHandler {
         bool handleDrawElement(json j);
         bool handleDeleteElement(json j);
         bool handleUpdateElement(json j);
+        bool handleUpdateText(json j);
         bool handleInitializeClient(json j);
         Layout* getCanvasLayout();
 };

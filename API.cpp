@@ -576,23 +576,28 @@ bool isSelectedTextBox() {
     return false;
 }
 
-void appendToTextBox(const std::string& s) {
+ElementParameters appendToTextBox(const std::string& s) {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     TextBox* textbox = dynamic_cast<TextBox*>(element);
     playButtonClickSound();
     textbox->appendText(s);
+    return textbox->getParameters();
 }
 
-bool deleteText() {
+ElementParameters deleteText() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     TextBox* textbox = dynamic_cast<TextBox*>(element);
     if (textbox->getText().empty()) {
+        ElementParameters ep;
+        ep.name = textbox->getName();
+        ep.toBeDeleted = true;
         deleteShape();
-        return false;
+        playDeleteSound();
+        return ep;
     }
     playButtonClickSound();
     textbox->backspace();
-    return true;
+    return textbox->getParameters();
 }
 
 void deleteTempShape() {
