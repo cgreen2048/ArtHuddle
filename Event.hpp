@@ -1,15 +1,7 @@
 #ifndef __EVENT_HPP__
 #define __EVENT_HPP__
 
-enum class EventType {
-    CLICK,
-    SHOW,
-    SOUND,
-    MOUSE_DOWN,
-    MOUSE_UP,
-    MOUSE_MOTION,
-    BUTTON_CLICK
-};
+#include "EventTypes.hpp"
 
 class Event {
     private: 

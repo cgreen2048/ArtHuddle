@@ -10,14 +10,13 @@
 #include <algorithm>
 #include "vec2.hpp"
 #include "vec3.hpp"
-#include "Layout.hpp"
 #include "ElementParameters.hpp"
 #include "InteractionState.hpp"
 #include "DrawingMode.hpp"
+#include "MessageTypes.hpp"
+#include "EventTypes.hpp"
 
-// const std::vector<const char*> hosts = {"10.24.102.212", "129.74.152.140", "129.74.152.141", "129.74.152.142", "129.74.152.143", "127.0.0.1"};
-
-Layout* initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+void initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void loadSound(std::string filePath);
 void playSound(std::string filePath, int loop);
 void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, ivec3 color);
@@ -57,6 +56,17 @@ void playDrawClickSound();
 void playButtonClickSound();
 void playFreehandDrawSound();
 void playDeleteSound();
-
+bool isElementSelected();
+bool isClickInside(ivec2 mousePos);
+bool isSelectedInputTextBox();
+bool setSelectedElement(ivec2 mousePos);
+bool hasCanvas();
+bool hasColorIndicator();
+bool isClientConnected();
+void clientProcessMessages();
+void serverProcessMessages();
+bool isServer();
+void sendToServer(ElementParameters ep, MessageType type);
+void createEvent(ivec2 coordinate, EventType type);
 
 #endif

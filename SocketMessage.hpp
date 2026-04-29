@@ -2,7 +2,7 @@
 #define __SOCKET_MESSAGE_HPP__
 
 #include "JsonDefinition.hpp"
-#include "ElementTypes.hpp"
+#include "MessageTypes.hpp"
 #include <string>
 
 
@@ -34,7 +34,3 @@ class SocketMessage {
 };
 
 #endif
-
-// need a way to send messages from Client to Server and Server to Client where we pass in
-// one ElementParameters struct that contains all necessary info to create an element on the client side
-// or a list of ElementParameters on connection to send all existing elements to the client

@@ -40,6 +40,7 @@
 #include "RelayServer.hpp"
 #include "ClientNetwork.hpp"
 #include "InitializeClientMessage.hpp"
+#include "MessageTypes.hpp"
 #include <string>
 #include <chrono>
 

@@ -1,5 +1,6 @@
 #include "MessageHandler.hpp"
 #include "ElementTypes.hpp"
+#include "MessageTypes.hpp"
 #include "ElementParameters.hpp"
 #include "jsonHelpers.hpp"
 #include "Factory.hpp"
