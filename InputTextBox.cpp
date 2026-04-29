@@ -1,7 +1,7 @@
 #include "InputTextBox.hpp"
 #include "Selected.hpp"
 
-InputTextBox::InputTextBox(ElementParameters& ep) : TextBox(ep), visible(ep.active) {}
+InputTextBox::InputTextBox(ElementParameters ep) : TextBox(ep), visible(ep.active) {}
 
 GuiElement* InputTextBox::clone() const {
     return new InputTextBox(*this);
@@ -31,7 +31,6 @@ bool InputTextBox::resolveEvent(Event* e) {
 
     return false;
 }
-
 
 
 void InputTextBox::drawOverlay(Screen *screen){
