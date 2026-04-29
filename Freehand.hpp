@@ -18,6 +18,7 @@ class Freehand : public GuiElement {
         bool finished = false;
         bool isFreehandShape = false;
         ivec3 color;
+        TagType colorType = TagType::Vec;
         // ivec2 minBound;
         // ivec2 maxBound;
         bool hasBounds = false;
@@ -43,10 +44,12 @@ class Freehand : public GuiElement {
         ElementParameters getParameters();
         guiElement getType();
         void setPoints();
+        void setPoints(std::vector<ivec2>& pts);
         void modifyColor(ivec3 newColor);
         void setBounds();
 		std::vector<ivec2> getBounds();
         void movePoints(ivec2 delta);
+        void setColor(const ivec3& v, TagType t);
 };
 
 #endif

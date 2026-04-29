@@ -6,15 +6,19 @@
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "GuiElement.hpp"
+#include "ElementTypes.hpp"
 #include <functional>
 #include <string>
 
 class GuiElement;
-enum class TagType { Vec, IVec };
+
+// const ivec2 defaultIvec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+// const ivec3 defaultIvec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
 struct ElementParameters {
+    guiElement elementType = guiElement::UNKNOWN;
     std::string name;
-    ivec2 coords = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 coords = ivec2();
     ivec2 start = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 end = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 min = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
@@ -24,7 +28,6 @@ struct ElementParameters {
     ivec2 pointC = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec3 color = ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec3 textColor = ivec3(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
-    Screen* screen = nullptr;
     ivec2 parentStart = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 parentEnd = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     bool hasParentStart = false;
@@ -62,6 +65,8 @@ struct ElementParameters {
     bool isFreehandShape = false;
     ivec2 minBound = ivec2(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
     ivec2 maxBound = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+
+    bool toBeDeleted = false;
 };
 
 #endif

@@ -6,6 +6,9 @@
 #include <iostream>
 #include <memory>
 #include <cstring>
+#include <functional>
+#include "Layout.hpp"
+#include "MessageHandler.hpp"
 
 
 // client.cpp (Linux / WSL version)
@@ -18,11 +21,23 @@
     #include <unistd.h>
 #endif
 
+class ClientNetwork {
+    private:
+        int socketIdentifier = 0;
+        bool connected = false;
+        std::function<void()> onDisconnect;
+        MessageHandler messageHandler;
+    public:
+        ClientNetwork(Layout* layout);
+        bool connectToServer(const char* host, int port);
+        void sendToServer(const std::string& message);
+        void receiveMessages();
+        void processMessages();
+        void closeConnection();
+        int getSocketIdentifier();
+        bool isConnected();
+        void setDisconnectCallback(std::function<void()> callback);
 
-bool connectToServer(const char* host, int port);
-void sendToServer(const std::string& message);
-void receiveMessagesLoop();
-void closeConnection();
-
+};
 
 #endif

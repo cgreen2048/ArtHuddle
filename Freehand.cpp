@@ -248,6 +248,9 @@ bool Freehand::validateAndNormalize(ElementParameters& ep) {
     if (ep.color.z == std::numeric_limits<int>::lowest()) {
         ep.color.z = 125;
     }
+    if (ep.elementType != guiElement::FREEHAND) {
+        ep.elementType = guiElement::FREEHAND;
+    }
 
     return true;
 }
@@ -311,6 +314,7 @@ bool Freehand::hasDrawBounds() const {
 
 ElementParameters Freehand::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::FREEHAND;
     ep.points = this->points;
     ep.hasFirstPoint = this->hasFirstPoint;
     ep.lastDrawnPoint = this->lastDrawnPoint;
@@ -359,6 +363,10 @@ void Freehand::setPoints() {
     }
 }
 
+void Freehand::setPoints(std::vector<ivec2>& pts) {
+    this->points = pts;
+}
+
 void Freehand::modifyColor(ivec3 newColor) {
     this->color += newColor;
     if (color.x < 0) {
@@ -403,4 +411,9 @@ void Freehand::movePoints(ivec2 delta) {
     for (int i = 0; i < this->points.size(); ++i) {
         this->points[i] += delta;
     }
+}
+
+void Freehand::setColor(const ivec3& v, TagType t) {
+    this->color = v;
+    this->colorType = t;
 }

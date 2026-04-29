@@ -2,6 +2,7 @@
 #define __TRIANGLE_HPP
 
 #include "GuiElement.hpp"
+#include "ElementParameters.hpp"
 #include "vec2.hpp"
 #include "vec3.hpp"
 

@@ -6,6 +6,7 @@
 #include <string>
 #include "Screen.hpp"
 #include "GuiElement.hpp"
+#include "ElementParameters.hpp"
 #include "vec2.hpp"
 #include "Event.hpp"
 
@@ -45,8 +46,10 @@ class Layout : public GuiElement {
         void clearElements();
         void deleteElement(const std::string& elementName);
         GuiElement* removeElement(const std::string& elementName);
+        bool updateElement(ElementParameters ep, bool preserveSelection);
         bool validateAndNormalize(ElementParameters& ep);
         ElementParameters getParameters();
+        std::vector<ElementParameters> getChildElementParameters();
         guiElement getType();
         void setBounds();
 		std::vector<ivec2> getBounds();

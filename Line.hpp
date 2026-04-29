@@ -2,8 +2,7 @@
 #define __LINE_HPP__
 
 #include "GuiElement.hpp"
-
-// #define LINE_PADDING 10
+#include "ElementParameters.hpp"
 
 class Line : public GuiElement {
 	private:

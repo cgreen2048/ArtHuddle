@@ -142,6 +142,9 @@ bool Line::validateAndNormalize(ElementParameters& ep) {
     if (ep.color.z == std::numeric_limits<int>::lowest()) {
         ep.color.z = 125;
     }
+    if (ep.elementType != guiElement::LINE) {
+        ep.elementType = guiElement::LINE;
+    }
     return true;
 }
 
@@ -161,6 +164,7 @@ bool Line::isInside(ivec2 coordinates) {
 
 ElementParameters Line::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::LINE;
     ep.start = this->start;
     ep.end = this->end;
     ep.color = this->color;

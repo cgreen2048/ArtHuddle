@@ -5,6 +5,8 @@
 - [API](#api)
 - [Enums](#enums)
 - [Network Client](#clientnetwork)
+- [MessageHandler](#messageHandler)
+- [SocketMessage Class](#socketmessage)
 - [Event Class](#event)
 - [MouseEvent Class](#mouseevent)
 - [MouseDownEvent Class](#mousedownevent)
@@ -609,6 +611,11 @@ Helper function to play `delete.wav` when deleting an element
 
 # Enums
 
+### `enum class MessageType { DRAW_ELEMENT, DELETE_ELEMENT, UPDATE_ELEMENT, INITIALIZE_CLIENT }`
+An enum to represent the type of message being create to be sent to the server
+
+---
+
 ### `enum class InteractionState { IDLE, FREEHAND_DRAWING, SHAPE_DRAWING, DRAGGING, TOOLBAR_CLICK }`
 An enum to represent the current state of user interaction, used to determine how mouse events should be handled.
 
@@ -711,6 +718,220 @@ Closes the connection to the server.
 - Calls close(sock)
 - Sets sock = -1
 - Causes receiveMessagesLoop() to exit
+
+---
+
+# MessageHandler
+
+## Description
+Handles receiving messages from other clients to the server or from server to clients and updates the client or server correspondingly
+- Stores messages in a queue
+- Provides controlled access to queued messages
+- Updates clients and the server corresponding to each message type
+
+Each client will hold its own `MessageHandler` to handle incoming messages, and the server holds its own `MessageHandler` as well
+
+## Data Members
+
+### `std::queue<std::string> messageQueue`
+Queue for holding messages that need to be handled by the handler
+
+---
+
+### `Layout* canvasLayout`
+Pointer to the layout being drawn to in order to draw, delete, or update elements on the screen
+
+---
+
+## Methods
+
+### `MessageHandler(Layout* layout)`
+Constructor that sets `canvasLayout` to `layout`
+
+---
+
+### `void push(std::string message)`
+Pushes `message` onto the queue and transfers ownership of `message` to the queue
+
+---
+
+### `bool processMessages()`
+Processes all queued messages and propogates changes to `canvasLayout`
+- Parses each message into JSON format
+- Calls the corresponding handler function for the message type to propogate change through the system
+
+---
+
+### `bool handleDrawElement(json j)`
+Reconstructs an `ElementParameters` object from the JSON data, attempts to create a new element with those parameters, and adds the new element
+to `canvasLayout`
+
+---
+
+### `handleDeleteElement(json j)`
+Reconstruct the targeted element's name from the JSON data and deletes it using `canvasLayout->deleteElement()`
+
+---
+
+### `handleUpdateElement(json j)`
+Reconstructs an `ElementParameters` object from JSON data, deletes the old version of the element via its name, and adds the new version of the
+element to the `canvasLayout`
+
+---
+
+### `handleInitializeClient(json j)`
+Clears all elements from `canvasLayout` to integrate the new client (or reconnected and desynced client) to the server's drawn state
+- Parses through the JSON array to create an `ElementParameters` object for each item in the array and add the corresponding element to the `canvasLayout`
+
+---
+
+# SocketMessage
+
+## Description
+The base CRTP class for sending messages from the client to the server or from the server to the client
+- Provides a simple interface for readying messages to be sent by only needing to call `getSerializedMessage()` after construction
+- Uses CRTP and derived classes for specific implementations of transforming the required data for each message type to JSON format
+- The base class then serializes the JSON into a string to be sent
+
+## Member Data
+
+### `MessageType messageType`
+The type of message being sent (Draw, Delete, Update, or Initialize Client)
+
+---
+
+### `std::string serializedMessage = ""`
+The serialized message to be sent. Stored in case the client or server fails at sending the message, not needing to reserialize the message
+
+---
+
+## Methods
+
+### `SocketMessage(MessageType type)`
+Constructor used by all derived classes that sets `messageType` to `type`
+
+---
+
+### `void serialize()`
+Calls `SocketMessage::toJson` to get the required JSON data and sets `serializedMessage` to the dumped JSON data
+
+---
+
+### `json toJson()`
+The primary CRTP function that gets the JSON data from the derived class's implementation of `toJsonImpl`, adds `messageType` to the data, 
+and returns the corresponding JSON
+
+---
+
+### `std::string getSerializedMessage()`
+Returns `serializedMessage`, calling `serialize()` if message was not already serialized from derived class's stored data
+
+---
+
+# DrawElementMessage
+
+## Description
+An implementation of `SocketMessage` that corresponds to drawing an element to the screen
+
+---
+
+## Member Data
+
+### `ElementParameters ep`
+The `ElementParameters` object created from the newly drawn element that will be serialized and passed through the network
+
+---
+
+## Methods
+
+### `DrawElementMessage(ElementParameters ep)`
+Constructor that calls `SocketMessage<DrawElementMessage>(MessageType::DRAW_ELEMENT)` to define the CRTP relationship and sets `this->ep` to `ep`
+
+---
+
+### `json toJsonImpl()`
+Converts `ep` to JSON formatting using the `elementParametersToJson` helper function
+
+---
+
+# DeleteElementMessage
+
+## Description
+An implementation of `SocketMessage` that corresponds to deleting an element on the screen
+
+---
+
+## Member Data
+
+### `std::string elementName`
+The name of the deleted element that needs to be deleted in the server and other clients
+
+---
+
+## Methods
+
+### `DeleteElementMessage(std::string elementName)`
+Constructor that calls `SocketMessage<DeleteElementMessage>(MessageType::DELETE_ELEMENT)` to define the CRTP relationship and sets `this->elementName` to `elementName`
+
+---
+
+### `json toJsonImpl()`
+Converts `elementName` to JSON format to be serialized in `serialize()`
+
+---
+
+# UpdateElementMessage
+
+## Description
+An implementation of `SocketMessage` that corresponds to updating an element on the screen
+
+---
+
+## Member Data
+
+### `ElementParameters ep`
+The `ElementParameters` object created from the updated element that will be serialized and passed through the network
+
+---
+
+## Methods
+
+### `DrawElementMessage(ElementParameters ep)`
+Constructor that calls `SocketMessage<UpdateElementMessage>(MessageType::DRAW_ELEMENT)` to define the CRTP relationship and sets `this->ep` to `ep`
+
+---
+
+### `json toJsonImpl()`
+Converts `ep` to JSON formatting using the `elementParametersToJson` helper function
+
+---
+
+# InitializeClientMessage
+
+## Description
+An implementation of `SocketMessage` that corresponds to synchronizing a new or reconnected client to the server's internal layout state
+- Only passed from the server to clients
+
+---
+
+## Member Data
+
+### `std::vector<ElementParameters> elements`
+Vector storing the `ElementParameters` to create every element within the server's layout and add each element to the client's layout
+
+---
+
+## Methods
+
+### `InitializeClientMessage(std::vector<ElementParameters> els)`
+Constructor that calls `SocketMessage<InitializeClientMessage>(MessageType::INITIALIZE_CLIENT)` to define the CRTP relationship and 
+sets `this->elements` to `els`
+
+---
+
+### `json toJsonImpl()`
+Creates a JSON array, converts each `ElementParameters` object into JSON format via `elementParametersToJson` helper function, and adds the JSON
+data to the JSON array
 
 ---
 
@@ -1130,6 +1351,11 @@ A struct passed to `Factory` to create a `GuiElement` object. Members are set to
 ---
 
 ## Data Members
+
+### `guiElement elementType`
+The `guiElement` type of the object
+
+---
 
 ### `std::string name`
 The desired name of the object
@@ -2574,7 +2800,7 @@ The parameterized constructor. Assigns `pointA` to `a`, `pointB` to `b`, `pointC
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
 - Calls `validateAndNormalize` on `ep`
   - Throws an exception if `validateAndNormalize` returns `false` to prevent the object from being created
-- Sets the `a`, `b`, `c`, `color`, `aType`, `bType`, `cType`, `colorType`, and `name` attributes based on the corresponding data in `ep`
+- Sets the `a`, `b`, `c`, `color`, `aType`, `bType`, `cType`, `colorType`, `name` attributes based on the corresponding data in `ep`
 
 ---
 
@@ -4668,6 +4894,18 @@ Returns the unit vector of an integer vector with each component rounded to the 
 
 ---
 
+## Helper Functions
+
+### `void to_json(json& j, const Tvec2<T>& v)`
+This function is the standard function used by the Lohmann JSON C++ package that determines how to translate `Tvec2` elements into JSON format
+
+---
+
+### `void from_json(const json& j, Tvec2<T>& v)`
+Similar to above, the standard Lohmann JSON function to create `Tvec2` elements from JSON format
+
+---
+
 # vec3
 
 ## Description
@@ -4784,5 +5022,17 @@ Specialized version of the `mag()` function for the `ivec3` class that rounds th
 
 ### `ivec3 ivec3::unit()`
 Specialized version of the `unit()` function for the `ivec3` class that rounds each component of the computed unit vector to the nearest integer and then casts each as an `int`
+
+---
+
+## Helper Functions
+
+### `void to_json(json& j, const Tvec3<T>& v)`
+This function is the standard function used by the Lohmann JSON C++ package that determines how to translate `Tvec3` elements into JSON format
+
+---
+
+### `void from_json(const json& j, Tvec3<T>& v)`
+Similar to above, the standard Lohmann JSON function to create `Tvec3` elements from JSON format
 
 ---

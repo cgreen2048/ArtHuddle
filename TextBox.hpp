@@ -28,12 +28,14 @@ class TextBox : public Box {
         GuiElement* clone() const;
         void setActive(bool value);
         bool isActive() const;
+        void setText(std::string newText);
         void appendText(const std::string& s);
         void backspace();
         bool containsPoint(int x, int y) const;
         bool shouldShowCursor() const;
         std::string getVisibleText() const;
         ivec2 getCursorPosition() const;
+        void clearText();
 
         void writeXml(std::ostream& out, int depth) const;
         bool validateAndNormalize(ElementParameters &ep);

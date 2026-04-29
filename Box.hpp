@@ -2,6 +2,7 @@
 #define __BOX_HPP__
 
 #include "GuiElement.hpp"
+#include "ElementParameters.hpp"
 
 class Box : public GuiElement {
 	protected:

@@ -162,6 +162,9 @@ bool Triangle::validateAndNormalize(ElementParameters& ep) {
     if (ep.color.z == std::numeric_limits<int>::lowest()) {
         ep.color.z = 125;
     }
+    if (ep.elementType != guiElement::TRIANGLE) {
+        ep.elementType = guiElement::TRIANGLE;
+    }
     return true;
 }
 
@@ -198,6 +201,7 @@ bool Triangle::isInside(ivec2 coordinates) {
 
 ElementParameters Triangle::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::TRIANGLE;
     ep.pointA = this->a;
     ep.pointB = this->b;
     ep.pointC = this->c;

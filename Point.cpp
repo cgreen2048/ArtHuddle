@@ -108,6 +108,9 @@ bool Point::validateAndNormalize(ElementParameters& ep) {
     if (ep.color.z == std::numeric_limits<int>::lowest()) {
         ep.color.z = 125;
     }
+    if (ep.elementType != guiElement::POINT) {
+        ep.elementType = guiElement::POINT;
+    }
     return true;
 }
 
@@ -125,6 +128,7 @@ bool Point::isInside(ivec2 coordinates) {
 
 ElementParameters Point::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::POINT;
     ep.coords = this->coords;
     ep.color = this->color;
     ep.coordsType = this->coordsType;

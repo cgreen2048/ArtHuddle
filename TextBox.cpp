@@ -1,5 +1,6 @@
 #include "TextBox.hpp"
 #include "XmlWriteHelpers.hpp"
+#include "Selected.hpp"
 #include <iostream>
 
 TextBox::TextBox() : Box(), text(""), textColor({0,0,0}), active(false) {}
@@ -52,6 +53,13 @@ bool TextBox::shouldShowCursor() const {
     if (!active) {
         return false;
     }
+    else {
+        Selected& selected = Selected::getInstance();
+        GuiElement* curr = selected.getSelectedElement();
+        if (!curr || curr->getType() != guiElement::TEXTBOX) {
+            return false;
+        }
+    }
 
     Uint64 ticks = SDL_GetTicks();
     return ((ticks / 500) % 2 == 0);
@@ -89,12 +97,20 @@ ivec2 TextBox::getCursorPosition() const {
     return ivec2(cursorX, cursorY);
 }
 
+void TextBox::clearText() {
+    text.clear();
+}
+
 void TextBox::setActive(bool value) { 
     active = value; 
 }
 
 bool TextBox::isActive() const { 
     return active; 
+}
+
+void TextBox::setText(std::string newText) {
+    this->text = newText;
 }
 
 void TextBox::appendText(const std::string& s) {
@@ -179,9 +195,14 @@ const std::string& TextBox::getText() const {
 
 ElementParameters TextBox::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::TEXTBOX;
+    ep.name = this->name;
     ep.min = this->min;
     ep.max = this->max;
+    ep.minType = this->minType;
+    ep.maxType = this->maxType;
     ep.color = this->color;
+    ep.colorType = this->colorType;
     ep.text = this->text;
     ep.textColor = this->textColor;
     ep.textColorType = this->textColorType;

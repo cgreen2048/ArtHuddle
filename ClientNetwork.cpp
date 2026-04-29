@@ -1,10 +1,10 @@
 #include "ClientNetwork.hpp"
 
-int sock = -1;
+ClientNetwork::ClientNetwork(Layout* layout) : messageHandler(MessageHandler(layout, false)) {}
 
-bool connectToServer(const char* host, int port) {
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock < 0) {
+bool ClientNetwork::connectToServer(const char* host, int port) {
+    this->socketIdentifier = socket(AF_INET, SOCK_STREAM, 0);
+    if (this->socketIdentifier < 0) {
         std::cerr << "Failed to create socket\n";
         return false;
     }
@@ -15,60 +15,92 @@ bool connectToServer(const char* host, int port) {
 
     if (inet_pton(AF_INET, host, &server.sin_addr) <= 0) {
         std::cerr << "Invalid server address\n";
-        close(sock);
-        sock = -1;
+        close(this->socketIdentifier);
+        this->socketIdentifier = -1;
         return false;
     }
 
-    if (connect(sock, reinterpret_cast<sockaddr*>(&server), sizeof(server)) < 0) {
-        std::cerr << "Failed to connect to server\n";
-        close(sock);
-        sock = -1;
+    if (connect(this->socketIdentifier, reinterpret_cast<sockaddr*>(&server), sizeof(server)) < 0) {
+        std::cerr << "Failed to connect to server: " << host << "\n";
+        close(this->socketIdentifier);
+        this->socketIdentifier = -1;
         return false;
     }
 
-    std::cout << "Connected to server\n";
+    std::cout << "Connected to host: " << host << "\n";
+    this->connected = true;
     return true;
 }
 
-void sendToServer(const std::string& message) {
-    if (sock < 0) {
+void ClientNetwork::sendToServer(const std::string& message) {
+    if (!this->connected) {
         std::cerr << "Not connected to server\n";
         return;
     }
 
     std::string packet = message + "\n";
-    ssize_t sent = send(sock, packet.c_str(), packet.size(), 0);
+    ssize_t sent = send(this->socketIdentifier, packet.c_str(), packet.size(), 0);
 
     if (sent < 0) {
         std::cerr << "Failed to send message\n";
     }
 }
 
-void receiveMessagesLoop() { // Handles messages relayed from the server. The thread should call this function.
+void ClientNetwork::receiveMessages() { // Handles messages relayed from the server. The thread should call this function.
     char buffer[1024];
+    std::string pending;
 
-    while (sock >= 0) {
+    while (this->socketIdentifier >= 0) {
         std::memset(buffer, 0, sizeof(buffer));
 
-        ssize_t bytesReceived = recv(sock, buffer, sizeof(buffer) - 1, 0);
+        ssize_t bytesReceived = recv(this->socketIdentifier, buffer, sizeof(buffer) - 1, 0);
 
         if (bytesReceived <= 0) {
             std::cerr << "Disconnected from server\n";
+            closeConnection();
+        
+            if (onDisconnect) {
+                onDisconnect();
+            }
+        
             break;
         }
 
-        std::string message(buffer, bytesReceived);
+        pending.append(buffer, bytesReceived);
 
+        size_t newlinePos;
+        while ((newlinePos = pending.find('\n')) != std::string::npos) {
+            std::string message = pending.substr(0, newlinePos);
+            pending.erase(0, newlinePos + 1);
 
-        std::cout << "Received: " << message << '\n';
+            if (!message.empty()) {
+                this->messageHandler.push(message);
+            }
+        }
     }
 }
 
-void closeConnection() {
-    if (sock >= 0) {
-        close(sock);
-        sock = -1;
+void ClientNetwork::processMessages() {
+    this->messageHandler.processMessages();
+}
+
+void ClientNetwork::closeConnection() {
+    if (this->socketIdentifier >= 0) {
+        close(this->socketIdentifier);
+        this->socketIdentifier = -1;
     }
+    this->connected = false;
     std::cout << "Closed client \n";
+}
+
+int ClientNetwork::getSocketIdentifier() {
+    return this->socketIdentifier;
+}
+
+bool ClientNetwork::isConnected() {
+    return this->connected;
+}
+
+void ClientNetwork::setDisconnectCallback(std::function<void()> callback) {
+    onDisconnect = callback;
 }

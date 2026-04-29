@@ -5,6 +5,7 @@
 #include "EventSystem.hpp"
 #include "Button.hpp"
 #include "TextBox.hpp"
+#include "Factory.hpp"
 
 
 Layout::Layout() : active{false} {}
@@ -306,8 +307,92 @@ GuiElement* Layout::removeElement(const std::string& name) {
     return nullptr;
 }
 
+bool Layout::updateElement(ElementParameters ep, bool preserveSelection) {
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        if ((*it)->getName() == ep.name) {
+            GuiElement* found = *it;
+
+            if (!found) return false;
+
+            switch (ep.elementType) {
+                case guiElement::POINT: {
+                    Point* p = dynamic_cast<Point*>(found);
+                    p->setCoords(ep.coords, ep.coordsType);
+                    p->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::LINE: {
+                    Line* l = dynamic_cast<Line*>(found);
+                    l->setStart(ep.start, ep.startType);
+                    l->setEnd(ep.end, ep.endType);
+                    l->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::BOX: {
+                    Box* b = dynamic_cast<Box*>(found);
+                    b->setMin(ep.min, ep.minType);
+                    b->setMax(ep.max, ep.maxType);
+                    b->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::TRIANGLE: {
+                    Triangle* t = dynamic_cast<Triangle*>(found);
+                    t->setA(ep.pointA, ep.pointAType);
+                    t->setB(ep.pointB, ep.pointBType);
+                    t->setC(ep.pointC, ep.pointCType);
+                    t->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::ELLIPSE: {
+                    Ellipse* e = dynamic_cast<Ellipse*>(found);
+                    e->setCenter(ep.center, ep.centerType);
+                    e->setRadiusX(ep.radiusX);
+                    e->setRadiusY(ep.radiusY);
+                    e->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::TEXTBOX: {
+                    TextBox* t = dynamic_cast<TextBox*>(found);
+                    t->setMin(ep.min, ep.minType);
+                    t->setMax(ep.max, ep.maxType);
+                    t->setText(ep.text);
+                    break;
+                }
+                case guiElement::ARROW: {
+                    Arrow* a = dynamic_cast<Arrow*>(found);
+                    a->setMin(ep.min, ep.minType);
+                    a->setMax(ep.max, ep.maxType);
+                    a->setA(ep.pointA, ep.pointAType);
+                    a->setB(ep.pointB, ep.pointBType);
+                    a->setC(ep.pointC, ep.pointCType);
+                    a->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::FREEHAND: {
+                    Freehand* f = dynamic_cast<Freehand*>(found);
+                    f->setPoints(ep.points);
+                    break;
+                }
+                default: {
+                    return false;
+                }
+            }
+
+            Selected& selectedSystem = Selected::getInstance();
+            GuiElement* selected = selectedSystem.getSelectedElement();
+            if (selected != nullptr && ep.name == selected->getName()) {
+                selectedSystem.setSelectedElement(found);
+            }
+
+            return true;
+        }
+    }
+    return false;
+}
+
 ElementParameters Layout::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::LAYOUT;
     ep.layoutStart = this->start;
     ep.layoutEnd = this->end;
     ep.parentStart = this->parentStart;
@@ -316,6 +401,14 @@ ElementParameters Layout::getParameters() {
     ep.elements = this->elements;
     ep.name = this->name;
     return ep;
+}
+
+std::vector<ElementParameters> Layout::getChildElementParameters() {
+    std::vector<ElementParameters> elements;
+    for (GuiElement* el : this->elements) {
+        elements.push_back(el->getParameters());
+    }
+    return elements;
 }
 
 guiElement Layout::getType() {

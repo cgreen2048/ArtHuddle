@@ -166,6 +166,9 @@ bool Arrow::validateAndNormalize(ElementParameters& ep) {
     if (ep.color.z == std::numeric_limits<int>::lowest()) {
         ep.color.z = 125;
     }
+    if (ep.elementType != guiElement::ARROW) {
+        ep.elementType = guiElement::ARROW;
+    }
 
     return true;
 }
@@ -262,6 +265,7 @@ void Arrow::setColor(ivec3 color, TagType colorType) {
 
 ElementParameters Arrow::getParameters() {
     ElementParameters ep;
+    ep.elementType = guiElement::ARROW;
     ep.min = this->min;
     ep.max = this->max;
     ep.pointA = this->pointA;
