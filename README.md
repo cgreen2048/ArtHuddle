@@ -26,6 +26,7 @@
 - [Freehand Class](#freehand)
 - [Ellipse Class](#ellipse)
 - [TextBox Class](#textbox)
+- [InputTextBox Class](#inputtextbox)
 - [Triangle Class](#triangle)
 - [Arrow Class](#arrow)
 - [Ellipse Class](#ellipse)
@@ -2735,6 +2736,72 @@ Adds the `newColor` increment to `color`, resetting a color value to `0` or `255
 
 ---
 
+# InputTextBox
+
+## Description
+`InputTextBox` is a class used for storing and drawing a text box to a `Screen` object to be read as input.
+It inherits from the `TextBox` class.
+
+---
+
+## Data Members
+
+### `bool visible`
+Indicates whether the text box is currently visible.  
+
+---
+
+## Methods
+
+
+### `InputTextBox(ElementParameters ep)`
+Constructor taking in an `ElementParameters` struct.  
+Calls the `TextBox(ep)` constructor and then sets:
+- `visible` from `ep.active`
+
+---
+
+###  `void draw(Screen *screen)`
+Draws the box if the `InputTextBox` is visible.
+
+---
+
+### `void drawOverlay(Screen* screen)`
+Draws the text content and, if appropriate, a blinking cursor:
+- Calls TextBox::drawOverlay(screen) if the `InputTextBox` is active. 
+
+---
+
+### `GuiElement* clone()`
+Returns a clone of the `InputTextBox` element
+
+---
+
+### `void setVisible(bool value)`
+Sets whether the text box is visible.
+
+---
+
+### `bool isVisible() const`
+Returns whether the text box is currently visible.
+
+---
+
+### `void writeXml(std::ostream& out, int depth) const`
+Does not save to an xml file. This is not intended to save an xml file. It is purely used for input.
+
+---
+
+### `bool resolveEvent(Event* event)`
+Overrides `GuiElement::resolveEvent` to handle click events. If the textbox is visible and receives a click, it activates itself (gains typing focus) and registers itself as the currently selected element using the `Selected` singleton, then returns `true` to indicate the event was handled. Otherwise, returns `false` to allow event propagation to continue.
+
+
+
+## UML Diagram
+![UML Diagram](images/InputTextBox_UML.png)
+
+---
+
 # Triangle
 
 ## Description
@@ -3380,12 +3447,12 @@ The callback function to be called when this button is clicked. Set by the user 
 ## Methods
 
 ### `Button()`
-The default constructor. Initializes `text` and `callbackName` to empty strings and `callback` to an empty lambda function
+The default constructor. Initializes `text` and `callbackName` to empty strings, `active` to true, and `callback` to an empty lambda function
 
 ---
 
 ### `Button(const Button& cp)`
-Copy assignment operator. Takes attributes from `cp` to pass into `Box` default constructor and set `text`, `callbackName`, and `callback` for this new `Button`
+Copy assignment operator. Takes attributes from `cp` to pass into `Box` default constructor and set `text`, `callbackName`, `active`, and `callback` for this new `Button`
 
 ---
 
@@ -3403,13 +3470,29 @@ Inequlity operator. Returns the inverse of the equality operator
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
 - Calls `validateAndNormalize` on `ep`
   - Throws an exception if `validateAndNormalize` returns `false` to prevent the object from being created
-- Sets the `text`, `callbackName`, and `callback` attributes based on the corresponding data in `ep`
+- Sets the `text`, `callbackName`, `active`, and `callback` attributes based on the corresponding data in `ep`
 - Passes `ep` to the `Box` constructor to set the geometry and color attributes for this `Button`
 
 ---
 
 ### `Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, const std::string& callbackName, const std::string& text)`
 Initializes the button with the given geometry and color via `Box` constructor, and sets the callback function, callback name, and label text
+
+---
+
+###  `void draw(Screen *screen)`
+Draws the box if the `Button` is active.
+
+---
+
+### `void drawOverlay(Screen* screen)`
+Draws the text label inside the button content if active is true.
+- Calls screen->drawTextCentered(min, max, text, textColor) 
+
+---
+
+### `void setActive(bool value)`
+Sets `active` to `value`, toggling the `Button` active (able to be drawn) or not
 
 ---
 
