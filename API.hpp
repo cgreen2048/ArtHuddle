@@ -40,8 +40,8 @@ void updateScreen(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, 
 void handlePendingActions(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void closeAll();
 void copy();
-void paste();
-bool changeColor(ivec3 colorIncrement);
+ElementParameters paste();
+ElementParameters changeColor(ivec3 colorIncrement);
 void updateCursorIcon(const ivec2& point, bool currentlyDragging);
 bool pressedStartLayoutButton(const ivec2& point);
 bool pressedToolbarButton(const ivec2& point);

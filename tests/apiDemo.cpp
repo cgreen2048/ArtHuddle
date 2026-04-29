@@ -216,6 +216,7 @@ int main(int argc, char* argv[]) {
                         if (client && client->isConnected()) {
                             UpdateElementMessage message(ep);
                             client->sendToServer(message.getSerializedMessage());
+                            canvasLayout->updateElement(ep, false);
                         }
                     }
                     break;
@@ -248,7 +249,13 @@ int main(int argc, char* argv[]) {
                                     break;
                                 }
 
-                                if (!changeColor(ivec3(1, 0, 0))) {
+                                ElementParameters ep = changeColor(ivec3(1, 0, 0));
+                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    UpdateElementMessage message(ep);
+                                    client->sendToServer(message.getSerializedMessage());
+                                    canvasLayout->updateElement(ep, false);
+                                }
+                                else {
                                     color.x += 1;
                                     if (color.x > 255) {
                                         color.x = 255;
@@ -261,7 +268,13 @@ int main(int argc, char* argv[]) {
                                     break;
                                 }
 
-                                if (!changeColor(ivec3(0, 1, 0))) {
+                                ElementParameters ep = changeColor(ivec3(0, 1, 0));
+                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    UpdateElementMessage message(ep);
+                                    client->sendToServer(message.getSerializedMessage());
+                                    canvasLayout->updateElement(ep, false);
+                                }
+                                else {
                                     color.y += 1;
                                     if (color.y > 255) {
                                         color.y = 255;
@@ -274,7 +287,13 @@ int main(int argc, char* argv[]) {
                                     break;
                                 }
 
-                                if (!changeColor(ivec3(0, 0, 1))) {
+                                ElementParameters ep = changeColor(ivec3(0, 0, 1));
+                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    UpdateElementMessage message(ep);
+                                    client->sendToServer(message.getSerializedMessage());
+                                    canvasLayout->updateElement(ep, false);
+                                }
+                                else {
                                     color.z += 1;
                                     if (color.z > 255) {
                                         color.z = 255;
@@ -287,7 +306,13 @@ int main(int argc, char* argv[]) {
                                     break;
                                 }
 
-                                if (!changeColor(ivec3(-1, 0, 0))) {
+                                ElementParameters ep = changeColor(ivec3(-1, 0, 0));
+                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    UpdateElementMessage message(ep);
+                                    client->sendToServer(message.getSerializedMessage());
+                                    canvasLayout->updateElement(ep, false);
+                                }
+                                else {
                                     color.x -= 1;
                                     if (color.x < 0) {
                                         color.x = 0;
@@ -300,7 +325,13 @@ int main(int argc, char* argv[]) {
                                     break;
                                 }
 
-                                if (!changeColor(ivec3(0, -1, 0))) {
+                                ElementParameters ep = changeColor(ivec3(0, -1, 0));
+                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    UpdateElementMessage message(ep);
+                                    client->sendToServer(message.getSerializedMessage());
+                                    canvasLayout->updateElement(ep, false);
+                                }
+                                else {
                                     color.y -= 1;
                                     if (color.y < 0) {
                                         color.y = 0;
@@ -313,7 +344,13 @@ int main(int argc, char* argv[]) {
                                     break;
                                 }
 
-                                if (!changeColor(ivec3(0, 0, -1))) {
+                                ElementParameters ep = changeColor(ivec3(0, 0, -1));
+                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    UpdateElementMessage message(ep);
+                                    client->sendToServer(message.getSerializedMessage());
+                                    canvasLayout->updateElement(ep, false);
+                                }
+                                else {
                                     color.z -= 1;
                                     if (color.z < 0) {
                                         color.z = 0;
@@ -332,7 +369,11 @@ int main(int argc, char* argv[]) {
                                 if (!canvasLayout) {
                                     break;
                                 }
-                                paste();
+                                ElementParameters ep = paste();
+                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    DrawElementMessage message(ep);
+                                    client->sendToServer(message.getSerializedMessage());
+                                }
                                 break;
                             }
                             default: {
@@ -354,6 +395,7 @@ int main(int argc, char* argv[]) {
                                     if (client && client->isConnected()) {
                                         UpdateElementMessage message(ep);
                                         client->sendToServer(message.getSerializedMessage());
+                                        canvasLayout->updateElement(ep, false);
                                     }
                                 }
                                 break;

@@ -1,5 +1,6 @@
 #include "TextBox.hpp"
 #include "XmlWriteHelpers.hpp"
+#include "Selected.hpp"
 #include <iostream>
 
 TextBox::TextBox() : Box(), text(""), textColor({0,0,0}), active(false) {}
@@ -51,6 +52,13 @@ GuiElement* TextBox::clone() const {
 bool TextBox::shouldShowCursor() const {
     if (!active) {
         return false;
+    }
+    else {
+        Selected& selected = Selected::getInstance();
+        GuiElement* curr = selected.getSelectedElement();
+        if (!curr || curr->getType() != guiElement::TEXTBOX) {
+            return false;
+        }
     }
 
     Uint64 ticks = SDL_GetTicks();

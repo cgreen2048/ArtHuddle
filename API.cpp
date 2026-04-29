@@ -581,14 +581,22 @@ void clicked(ivec2 coords) {
 
 bool isSelectedTextBox() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
-    if (dynamic_cast<TextBox*>(element)) {
-        return true;
+    if (element) {
+        if (dynamic_cast<TextBox*>(element)) {
+            return true;
+        }
+        return false;
     }
     return false;
 }
 
 ElementParameters appendToTextBox(const std::string& s) {
     GuiElement* element = Selected::getInstance().getSelectedElement();
+
+    if (!element) {
+        return ElementParameters();
+    }
+
     TextBox* textbox = dynamic_cast<TextBox*>(element);
     playButtonClickSound();
     textbox->appendText(s);
@@ -600,24 +608,36 @@ ElementParameters deleteText() {
 
     ElementParameters ep;
 
-    InputTextBox* input = dynamic_cast<InputTextBox*>(element);
-    if (input) {
-        playButtonClickSound();
-        input->backspace();
+    if (!element) {
         return ep;
     }
 
-    TextBox* textbox = dynamic_cast<TextBox*>(element);
-    if (textbox->getText().empty()) {
-        ep.name = textbox->getName();
-        ep.toBeDeleted = true;
-        deleteShape();
-        playDeleteSound();
-        return ep;
+    InputTextBox* input = dynamic_cast<InputTextBox*>(element);
+    if (input) {
+        if (!input->getText().empty()){
+            playButtonClickSound();
+            input->backspace();
+            return input->getParameters();
+        }
     }
-    playButtonClickSound();
-    textbox->backspace();
-    return textbox->getParameters();
+
+    TextBox* textbox = dynamic_cast<TextBox*>(element);
+    if (textbox){
+        if (textbox->getText().empty()) {
+            ep.name = textbox->getName();
+            ep.toBeDeleted = true;
+            deleteShape();
+            playDeleteSound();
+            return ep;
+        }
+        else {
+            textbox->backspace();
+            playButtonClickSound();
+            return textbox->getParameters();
+        }
+    }
+    
+    return ep;
 }
 
 void deleteTempShape() {
@@ -626,6 +646,11 @@ void deleteTempShape() {
 
 std::string deleteShape() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
+
+    if (!element) {
+        return "";
+    }
+
     std::string name = element->getName();
     if (dynamic_cast<InputTextBox*>(element)) {
         return "";
@@ -772,9 +797,9 @@ void copy() {
     clipboardType = chosen->getType();
 }
 
-void paste() {
+ElementParameters paste() {
     if (!canvasLayout) {
-        return;
+        return ElementParameters();
     }
 
     if (clipboardType != guiElement::UNKNOWN) {
@@ -799,6 +824,7 @@ void paste() {
                 if (element) {
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
+                    return element->getParameters();
                 }
                 break;
             }
@@ -807,6 +833,7 @@ void paste() {
                 if (element) {
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
+                    return element->getParameters();
                 }
                 break;
             }
@@ -815,6 +842,7 @@ void paste() {
                 if (element) {
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
+                    return element->getParameters();
                 }
                 break;
             }
@@ -823,6 +851,7 @@ void paste() {
                 if (element) {
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
+                    return element->getParameters();
                 }
                 break;
             }
@@ -831,6 +860,7 @@ void paste() {
                 if (element) {
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
+                    return element->getParameters();
                 }
                 break;
             }
@@ -839,6 +869,7 @@ void paste() {
                 if (element) {
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
+                    return element->getParameters();
                 }
                 break;
             }
@@ -847,6 +878,7 @@ void paste() {
                 if (element) {
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
+                    return element->getParameters();
                 }
                 break;
             }
@@ -855,6 +887,7 @@ void paste() {
                 if (element) {
                     canvasLayout->addElement(element);
                     Selected::getInstance().setSelectedElement(element);
+                    return element->getParameters();
                 }
                 break;
             }
@@ -863,15 +896,17 @@ void paste() {
             }
         }
     }
+
+    return ElementParameters();
 }
 
-bool changeColor(ivec3 colorIncrement) {
+ElementParameters changeColor(ivec3 colorIncrement) {
     GuiElement* chosen = Selected::getInstance().getSelectedElement();
     if (!chosen) {
         if (colorIndicator) {
             colorIndicator->modifyColor(colorIncrement);
         }
-        return false;
+        return ElementParameters();
     }
     switch(chosen->getType()) {
         case guiElement::POINT: {
@@ -880,41 +915,41 @@ bool changeColor(ivec3 colorIncrement) {
         }
         case guiElement::FREEHAND: {
             dynamic_cast<Freehand*>(chosen)->modifyColor(colorIncrement);
-            break;
+            return chosen->getParameters();
         }
         case guiElement::LINE: {
             dynamic_cast<Line*>(chosen)->modifyColor(colorIncrement);
-            break;
+            return chosen->getParameters();
         }
         case guiElement::TEXTBOX: {
             dynamic_cast<TextBox*>(chosen)->modifyColor(colorIncrement);
-            break;
+            return chosen->getParameters();
         }
         case guiElement::BUTTON: {
             dynamic_cast<Button*>(chosen)->modifyColor(colorIncrement);
-            break;
+            return chosen->getParameters();
         }
         case guiElement::BOX: {
             dynamic_cast<Box*>(chosen)->modifyColor(colorIncrement);
-            break;
+            return chosen->getParameters();
         }
         case guiElement::TRIANGLE: {
             dynamic_cast<Triangle*>(chosen)->modifyColor(colorIncrement);
-            break;
+            return chosen->getParameters();
         }
         case guiElement::ELLIPSE: {
             dynamic_cast<Ellipse*>(chosen)->modifyColor(colorIncrement);
-            break;
+            return chosen->getParameters();
         }
         case guiElement::ARROW: {
             dynamic_cast<Arrow*>(chosen)->modifyColor(colorIncrement);
-            break;
+            return chosen->getParameters();
         }
         default: {
-            return false;
+            return ElementParameters();
         }
     }
-    return true;
+    return ElementParameters();
 }
 
 void updateCursorIcon(const ivec2& point, bool currentlyDragging) {
