@@ -12,9 +12,9 @@ Layout* initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2,
     createWindow();
     createScreen();
     setEventSystem();
-    Layout* canvasLayout = createRootLayout(mode, points, point1, point2, point3);
+    Layout* rootLayout = createStartMenuLayout(mode, points, point1, point2, point3);
     SDL_StartTextInput(window);
-    return canvasLayout;
+    return rootLayout;
 }
 
 void loadSound(std::string filePath) {
@@ -615,21 +615,93 @@ void deleteShape() {
     tempLayout->clearElements();
 }
 
-void updateScreen(DrawingMode mode) {
+void updateScreen(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     screen->clear(ivec3(255,255,255));
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
-    boundingLayout->draw(screen);
+    
+    if(boundingLayout) {
+        boundingLayout->draw(screen);
+    }
 
-    updateActionButtonColors();
-    updateToolbarButtonColors(mode);
+    if (saveButton && loadButton) {
+        updateActionButtonColors();
+    }
+
+    if (toolBarLayout) {
+        updateToolbarButtonColors(mode);
+    }
+    
+    
     
     screen->renderToRenderer();
     rootLayout->drawOverlay(screen);
     SDL_RenderPresent(renderer);
+
+    handlePendingActions(mode, points, point1, point2, point3);
+}
+
+void handlePendingActions(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+    if (pendingStartHost) {
+        pendingStartHost = false;
+
+        switchToDrawingLayout(mode, points, point1, point2, point3);
+
+        serverThread = std::thread([]() {
+            server->start();
+        });
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        if (client->connectToServer("127.0.0.1", 40666)) {
+            connectedHost = "";
+            isHost = true;
+            updateLoadSavePermissions();
+        }
+    }
+
+    if (pendingJoinHost) {
+        pendingJoinHost = false;
+
+        std::string ip = pendingHostIp;
+        pendingHostIp.clear();
+
+        switchToDrawingLayout(mode, points, point1, point2, point3);
+
+        if (client->connectToServer(ip.c_str(), 40666)) {
+            connectedHost = ip;
+            isHost = false;
+            updateLoadSavePermissions();
+        }
+    }
+
+    if (pendingDisconnect) {
+        pendingDisconnect = false;
+
+        // 1. Close networking
+        if (client) {
+            client->closeConnection();
+        }
+
+        if (server) {
+            server->stop();
+        }
+
+        if (serverThread.joinable()) {
+            serverThread.join();
+        }
+
+        server.reset();
+        client.reset();
+
+        // 3. Switch layout
+        delete rootLayout;
+        resetGlobalState();
+        rootLayout = createStartMenuLayout(mode, points, point1, point2, point3);
+    }
 }
 
 void closeAll() {
@@ -813,6 +885,10 @@ void updateCursorIcon(const ivec2& point, bool currentlyDragging) {
 }
 
 bool pressedToolbarButton(const ivec2& point) {
+    if (!toolBarLayout) {
+        return false;
+    }
+
     Button* button = dynamic_cast<Button*>(toolBarLayout->getElementAt(point));
     if (button) {
         pressedButton = button;

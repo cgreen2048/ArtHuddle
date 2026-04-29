@@ -21,7 +21,7 @@ int main() {
     ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
 
-    Layout* canvasLayout = initialize(mode, points, point1, point2, point3);
+    initialize(mode, points, point1, point2, point3);
     // ClientNetwork client(canvasLayout);
     // Connect to server
     // for (const char* host : hosts) {
@@ -112,17 +112,19 @@ int main() {
                                 }
                             }
                             
-                            GuiElement* hit = canvasLayout->getElementAt(mousePos);
-                            if (hit) {
-                                lastMousePos = mousePos;
-                                Selected::getInstance().setSelectedElement(hit);
-                                eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
-                                currentInteractionState = InteractionState::DRAGGING;
-                                setClickAndDrag(lastMousePos);
+                            if (canvasLayout) {
+                                GuiElement* hit = canvasLayout->getElementAt(mousePos);
+                                if (hit) {
+                                    lastMousePos = mousePos;
+                                    Selected::getInstance().setSelectedElement(hit);
+                                    eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
+                                    currentInteractionState = InteractionState::DRAGGING;
+                                    setClickAndDrag(lastMousePos);
+                                    break;
+                                }
+
                                 break;
                             }
-
-                            break;
                         }
                         default: {
                             clicked(mousePos);
@@ -316,7 +318,7 @@ int main() {
         ivec2 mousePos(static_cast<int>(mouseX), static_cast<int>(mouseY));
 
         if (points == 0) {
-            updateScreen(mode);
+            updateScreen(mode, points, point1, point2, point3);
             continue;
         }
 
@@ -343,7 +345,7 @@ int main() {
             }
         }
 
-        updateScreen(mode);
+        updateScreen(mode, points, point1, point2, point3);
     }
     // closeConnection(); // Closes client
     // client.closeConnection(); // Closes client

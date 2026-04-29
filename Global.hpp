@@ -44,6 +44,7 @@
 
 
 const int X = 960, Y = 540;
+const int centerX = X/2, centerY = Y/2;
 extern SDL_Window* window;
 extern Screen* screen;
 extern SoundPlayer* soundPlayer;
@@ -103,10 +104,18 @@ extern Button* submitHostIpButton;
 
 extern Button* pressedButton;
 
+extern bool pendingStartHost;
+extern bool pendingJoinHost;
+extern bool pendingDisconnect;
+extern std::string pendingHostIp;
+extern Button* disconnectButton;
+extern Button* welcomeMessage;
+
 
 void createWindow();
 void createScreen();
-Layout* createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+Layout *createStartMenuLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+void createDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void setEventSystem();
 void initButtons(Layout *layout, DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
 void resetGlobalPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
@@ -117,6 +126,9 @@ void updateActionButtonColors();
 static void SDLCALL loadFileCallback(void* userdata, const char* const* filelist, int filter);
 static void SDLCALL saveFileCallback(void* userdata, const char* const* filelist, int filter);
 void updateLoadSavePermissions();
+void switchToDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3);
+void resetGlobalState();
+
 
 
 #endif

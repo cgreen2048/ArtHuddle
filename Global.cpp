@@ -58,6 +58,12 @@ std::thread serverThread;
 InputTextBox* hostIpTextBox = nullptr;
 Button* submitHostIpButton = nullptr;
 
+bool pendingStartHost = false;
+bool pendingJoinHost = false;
+bool pendingDisconnect = false;
+std::string pendingHostIp = "";
+Button* disconnectButton = nullptr;
+Button* welcomeMessage = nullptr;
 
 
 struct FileDialogData {
@@ -349,153 +355,21 @@ void initButtons(Layout* layout, DrawingMode& mode, int& points, ivec2& point1, 
     muteButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, muteButtonParam));
     layout->addElement(muteButton);
 
-
-    ElementParameters startDrawingButtonParam;
-    startDrawingButtonParam.min = ivec2(x, row2Y1);
-    startDrawingButtonParam.max = ivec2(x + 2 * bigBW, row2Y2);
-    x += 2 * bigBW + p;
-    startDrawingButtonParam.color = ivec3(180, 255, 180);
-    startDrawingButtonParam.textColor = ivec3(0, 0, 0);
-    startDrawingButtonParam.text = "Start Drawing as Host";
-    startDrawingButtonParam.name = "startDrawingButton";
-    startDrawingButtonParam.callbackName = "startDrawing";
-    startDrawingButtonParam.active = true;
-    startDrawingButtonParam.callback = []() {
-        if (!server) {
-            std::cout << "Server has not been initialized yet\n";
-            return;
-        }
-
-        if (serverThread.joinable()) {
-            std::cout << "Server already running\n";
-            return;
-        }
-
-        serverThread = std::thread([]() {
-            server->start();
-        });
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-        
-        // Connect to server
-        
-        if (client->connectToServer("129.74.152.143", 40666)) {
-            connectedHost = "129.74.152.143";
-        }
-       
-        if (connectedHost == "") {
-            std::cerr << "Failed to connect\n";
-        }
-
-        std::cout << "Auto joined as the client\n";
-
-        isHost = true;
-        updateLoadSavePermissions();
-
-        // client->startReceiveThread();
-    };
-    startDrawingButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, startDrawingButtonParam));
-    layout->addElement(startDrawingButton);
-
-    ElementParameters connectToHostButtonParam;
-    connectToHostButtonParam.min = ivec2(x, row2Y1);
-    connectToHostButtonParam.max = ivec2(x + bigBW, row2Y2);
+    ElementParameters  disconnectButtonParam;
+    disconnectButtonParam.min = ivec2(x, row2Y1);
+    disconnectButtonParam.max = ivec2(x + bigBW, row2Y2);
     x += bigBW + p;
-    connectToHostButtonParam.color = ivec3(180, 255, 180);
-    connectToHostButtonParam.textColor = ivec3(0, 0, 0);
-    connectToHostButtonParam.text = "Connect";
-    connectToHostButtonParam.name = "connectToHost";
-    connectToHostButtonParam.callbackName = "connect";
-    connectToHostButtonParam.active = true;
-    connectToHostButtonParam.callback = []() {
-        // Show textbox
-       if (hostIpTextBox) {
-        hostIpTextBox->setActive(true); // focus for typing
-        hostIpTextBox->setVisible(true);
-    }
-
-        if (submitHostIpButton) {
-            submitHostIpButton->setActive(true);
-        }
-
-        SDL_StartTextInput(window);
-
+    disconnectButtonParam.color = ivec3(180, 255, 180);
+    disconnectButtonParam.textColor = ivec3(0, 0, 0);
+    disconnectButtonParam.text = "Disconnect";
+    disconnectButtonParam.name = "disconnectButton";
+    disconnectButtonParam.callbackName = "disconnectClient";
+    disconnectButtonParam.active = true;
+    disconnectButtonParam.callback = []() {
+    pendingDisconnect = true;
     };
-    connectToHostButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, connectToHostButtonParam));
-    layout->addElement(connectToHostButton);
-
-    x = 0;
-
-    ElementParameters hostIpTextBoxParam;
-    hostIpTextBoxParam.min = ivec2(x, row3Y1);
-    hostIpTextBoxParam.max = ivec2(x + bigBW, row3Y2);
-    x += 4* bigBW + p;
-    hostIpTextBoxParam.color = ivec3(255, 0, 0);
-    hostIpTextBoxParam.textColor = ivec3(0, 0, 0);
-    hostIpTextBoxParam.name = "hostIpTextBox";
-    hostIpTextBoxParam.active = false;
-    hostIpTextBox =  dynamic_cast<InputTextBox*>(factory(guiElement::INPUTTEXTBOX, hostIpTextBoxParam));
-    layout->addElement(hostIpTextBox);
-
-    ElementParameters submitHostIpButtonParam;
-    submitHostIpButtonParam.min = ivec2(x, row3Y1);
-    submitHostIpButtonParam.max = ivec2(x + bigBW, row3Y2);
-    x += bigBW + p;
-    submitHostIpButtonParam.color = ivec3(180, 255, 180);
-    submitHostIpButtonParam.textColor = ivec3(0, 0, 0);
-    submitHostIpButtonParam.text = "Join";
-    submitHostIpButtonParam.name = "submitHostIpButton";
-    submitHostIpButtonParam.callbackName = "submitHostIp";
-    submitHostIpButtonParam.active = false;
-    submitHostIpButtonParam.callback = []() {
-        if (!hostIpTextBox) {
-            std::cout << "Host IP textbox missing\n";
-            return;
-        }
-
-        std::string ip = hostIpTextBox->getText();
-
-        if (ip.empty()) {
-            std::cout << "No IP entered\n";
-            return;
-        }
-
-        if (!connectedHost.empty() && connectedHost == ip) {
-            std::cout << "Already connected to this host: " << ip << "\n";
-            hostIpTextBox->clearText();
-            hostIpTextBox->setVisible(false);
-            hostIpTextBox->setActive(false);
-            submitHostIpButton->setActive(false);
-            SDL_StopTextInput(window);
-            return;
-        }
-
-        if (!client->connectToServer(ip.c_str(), 40666)) {
-            std::cout << "Failed to connect to host: " << ip << "\n";
-
-            // clear input after failed attempt
-            hostIpTextBox->clearText();
-            return;
-        }
-
-        isHost = false;
-        connectedHost = ip;
-        updateLoadSavePermissions();
-
-
-        // clear input after success
-        hostIpTextBox->clearText();
-        hostIpTextBox->setActive(false);
-        hostIpTextBox->setVisible(false);
-        submitHostIpButton->setActive(false);
-
-        SDL_StopTextInput(window);
-    };
-    submitHostIpButton = dynamic_cast<Button*>(
-        factory(guiElement::BUTTON, submitHostIpButtonParam)
-    );
-    layout->addElement(submitHostIpButton);
-
+    disconnectButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, disconnectButtonParam));
+    layout->addElement(disconnectButton);
 }
 
 void createWindow() {
@@ -523,7 +397,160 @@ void createScreen() {
     SDL_SetCursor(currentCursor);
 }
 
-Layout *createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+Layout *createStartMenuLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+    ElementParameters root;
+    root.layoutStart = vec2(0.0, 0.0);
+    root.layoutEnd = vec2(1.0, 1.0);
+    root.parentStart = ivec2(0, 0);
+    root.parentEnd = ivec2(X, Y);
+    root.active = true;
+    root.name = "startMenuRoot";
+
+    rootLayout = dynamic_cast<Layout*>(
+        factory(guiElement::LAYOUT, root)
+    );
+
+    int row1Y1 = 0;
+    int row1Y2 = bH;
+
+    int row2Y1 = bH + p;
+    int row2Y2 = 2 * bH + p;
+
+    int x = 0;
+
+    ElementParameters startDrawingButtonParam;
+    startDrawingButtonParam.min = ivec2(x, row1Y1);
+    startDrawingButtonParam.max = ivec2(x + 2 * bigBW, row1Y2);
+    x += 2 * bigBW + p;
+    startDrawingButtonParam.color = ivec3(180, 255, 180);
+    startDrawingButtonParam.textColor = ivec3(0, 0, 0);
+    startDrawingButtonParam.text = "Start Drawing as Host";
+    startDrawingButtonParam.name = "startDrawingButton";
+    startDrawingButtonParam.callbackName = "startDrawing";
+    startDrawingButtonParam.active = true;
+    startDrawingButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        pendingStartHost = true;
+        // client->startReceiveThread();
+    };
+    startDrawingButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, startDrawingButtonParam));
+    rootLayout->addElement(startDrawingButton);
+
+    ElementParameters connectToHostButtonParam;
+    connectToHostButtonParam.min = ivec2(x, row1Y1);
+    connectToHostButtonParam.max = ivec2(x + bigBW, row1Y2);
+    x += bigBW + p;
+    connectToHostButtonParam.color = ivec3(180, 255, 180);
+    connectToHostButtonParam.textColor = ivec3(0, 0, 0);
+    connectToHostButtonParam.text = "Connect";
+    connectToHostButtonParam.name = "connectToHost";
+    connectToHostButtonParam.callbackName = "connect";
+    connectToHostButtonParam.active = true;
+    connectToHostButtonParam.callback = []() {
+        // Show textbox
+       if (hostIpTextBox) {
+        hostIpTextBox->setActive(true); // focus for typing
+        hostIpTextBox->setVisible(true);
+    }
+
+        if (submitHostIpButton) {
+            submitHostIpButton->setActive(true);
+        }
+
+        SDL_StartTextInput(window);
+
+    };
+    connectToHostButton = dynamic_cast<Button *>(factory(guiElement::BUTTON, connectToHostButtonParam));
+    rootLayout->addElement(connectToHostButton);
+
+
+    ElementParameters welcomeParam;
+    welcomeParam.min = ivec2(centerX - 3*bigBW / 2, centerY - bH /2);
+    welcomeParam.max = ivec2(centerX + 3*bigBW / 2, centerY + bH /2);
+    welcomeParam.color = ivec3(180, 255, 180);
+    welcomeParam.textColor = ivec3(0, 0, 0);
+    welcomeParam.text = "Welcome to ArtHuddle!";
+    welcomeParam.name = "welcomeMessage";
+    welcomeParam.callbackName = "none";
+    welcomeParam.active = true;
+    welcomeParam.callback = []() {}; // Do nothing.
+    welcomeMessage = dynamic_cast<Button *>(factory(guiElement::BUTTON, welcomeParam));
+    rootLayout->addElement(welcomeMessage);
+
+    x = 0;
+
+    ElementParameters hostIpTextBoxParam;
+    hostIpTextBoxParam.min = ivec2(x, row2Y1);
+    hostIpTextBoxParam.max = ivec2(x + bigBW, row2Y2);
+    x += 4* bigBW + p;
+    hostIpTextBoxParam.color = ivec3(255, 0, 0);
+    hostIpTextBoxParam.textColor = ivec3(0, 0, 0);
+    hostIpTextBoxParam.name = "hostIpTextBox";
+    hostIpTextBoxParam.active = false;
+    hostIpTextBox =  dynamic_cast<InputTextBox*>(factory(guiElement::INPUTTEXTBOX, hostIpTextBoxParam));
+    rootLayout->addElement(hostIpTextBox);
+
+    ElementParameters submitHostIpButtonParam;
+    submitHostIpButtonParam.min = ivec2(x, row2Y1);
+    submitHostIpButtonParam.max = ivec2(x + bigBW, row2Y2);
+    x += bigBW + p;
+    submitHostIpButtonParam.color = ivec3(180, 255, 180);
+    submitHostIpButtonParam.textColor = ivec3(0, 0, 0);
+    submitHostIpButtonParam.text = "Join";
+    submitHostIpButtonParam.name = "submitHostIpButton";
+    submitHostIpButtonParam.callbackName = "submitHostIp";
+    submitHostIpButtonParam.active = false;
+    submitHostIpButtonParam.callback = [&mode, &points, &point1, &point2, &point3]() {
+        if (!hostIpTextBox) {
+            std::cout << "Host IP textbox missing\n";
+            return;
+        }
+
+        std::string ip = hostIpTextBox->getText();
+
+        if (ip.empty()) {
+            std::cout << "No IP entered\n";
+            return;
+        }
+
+        pendingHostIp = ip;
+        pendingJoinHost = true;
+    };
+    submitHostIpButton = dynamic_cast<Button*>(
+        factory(guiElement::BUTTON, submitHostIpButtonParam)
+    );
+    rootLayout->addElement(submitHostIpButton);
+
+    return rootLayout;
+}
+
+void switchToDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+    delete rootLayout;
+
+    rootLayout = nullptr;
+    toolBarLayout = nullptr;
+    canvasLayout = nullptr;
+    tempLayout = nullptr;
+    boundingLayout = nullptr;
+
+    saveButton = nullptr;
+    loadButton = nullptr;
+    colorIndicator = nullptr;
+
+    hostIpTextBox = nullptr;
+    submitHostIpButton = nullptr;
+
+    Selected::getInstance().setSelectedElement(nullptr);
+    EventSystem::getInstance().setTargetedElement(nullptr);
+
+    createDrawingLayout(mode, points, point1, point2, point3);
+
+    mode = DrawingMode::SELECT;
+    resetGlobalPoints(points, point1, point2, point3);
+    updateToolbarButtonColors(mode);
+
+}
+
+void createDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     ElementParameters root;
     root.layoutStart = vec2(0.0, 0.0);
     root.layoutEnd = vec2(1.0, 1.0);
@@ -532,6 +559,17 @@ Layout *createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& p
     root.active = true;
     root.name = "rootLayout";
     rootLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, root));
+
+    ElementParameters toolBar;
+    toolBar.layoutStart = vec2(0.0, 0.0);
+    toolBar.layoutEnd = vec2(1.0, 0.35);
+    toolBar.parentStart = ivec2(0, 0);
+    toolBar.parentEnd = ivec2(X, Y);
+    toolBar.active = true;
+    toolBar.name = "toolBarLayout";
+    toolBarLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, toolBar));
+    rootLayout->addElement(toolBarLayout);
+    initButtons(toolBarLayout, mode, points, point1, point2, point3);
 
     ElementParameters canvas;
     canvas.layoutStart = vec2(0.0, 0.0);
@@ -555,20 +593,7 @@ Layout *createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& p
     tempLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, temp));
     rootLayout->addElement(tempLayout);
 
-    ElementParameters toolBar;
-    toolBar.layoutStart = vec2(0.0, 0.0);
-    toolBar.layoutEnd = vec2(1.0, 0.35);
-    toolBar.parentStart = ivec2(0, 0);
-    toolBar.parentEnd = ivec2(X, Y);
-    toolBar.active = true;
-    toolBar.name = "toolBarLayout";
-    toolBarLayout = dynamic_cast<Layout *>(factory(guiElement::LAYOUT, toolBar));
-    rootLayout->addElement(toolBarLayout);
-    initButtons(toolBarLayout, mode, points, point1, point2, point3);
-
-    
-
-
+   
     Selected &selectedSingleton = Selected::getInstance();
     ElementParameters boundingLayoutParam;
     boundingLayoutParam.layoutStart = vec2(0.0, 0.0);
@@ -581,7 +606,7 @@ Layout *createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& p
     selectedSingleton.setSelectedLayout(boundingLayout);
     // rootLayout->addElement(boundingLayout);
 
-    return canvasLayout;
+    
 }
 
 void setEventSystem() {
@@ -707,4 +732,47 @@ void updateLoadSavePermissions() {
 
     saveButton->setActive(true);
 }
+
+void resetGlobalState() {
+    rootLayout = nullptr;
+    toolBarLayout = nullptr;
+    canvasLayout = nullptr;
+    tempLayout = nullptr;
+    boundingLayout = nullptr;
+
+    selectButton = nullptr;
+    pointButton = nullptr;
+    lineButton = nullptr;
+    boxButton = nullptr;
+    triangleButton = nullptr;
+    ellipseButton = nullptr;
+    arrowButton = nullptr;
+    textBoxButton = nullptr;
+    freehandLineButton = nullptr;
+    freehandShapeButton = nullptr;
+
+    saveButton = nullptr;
+    loadButton = nullptr;
+    muteButton = nullptr;
+    colorIndicator = nullptr;
+
+    startDrawingButton = nullptr;
+    connectToHostButton = nullptr;
+
+    hostIpTextBox = nullptr;
+    submitHostIpButton = nullptr;
+
+    pressedButton = nullptr;
+
+    draggingElement = nullptr;
+    draggingType = guiElement::UNKNOWN;
+
+    connectedHost = "";
+    isHost = false;
+
+    Selected::getInstance().setSelectedElement(nullptr);
+    EventSystem::getInstance().setTargetedElement(nullptr);
+}
+
+
 

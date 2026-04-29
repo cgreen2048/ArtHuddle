@@ -72,8 +72,12 @@ void RelayServer::start() {
         SocketType client = accept(listener, nullptr, nullptr);
 
         if (client == INVALID_SOCKET) {
+            if(!running) {
+                std::cout << "Server stopped accepting clients\n";
+                break;
+            }
             std::cout << "Accept failed\n";
-            CLOSE_SOCKET(listener);
+            break;
             #ifdef _WIN32
                     WSACleanup();
             #endif
@@ -104,6 +108,7 @@ void RelayServer::stop() {
     running = false;
 
     if (listener != INVALID_SOCKET) {
+        shutdown(listener, SHUT_RDWR);
         CLOSE_SOCKET(listener);
         listener = INVALID_SOCKET;
     }
