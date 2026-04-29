@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
                 case SDL_EVENT_MOUSE_BUTTON_DOWN: {
                     ivec2 mousePos(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
 
-                    if (pressedToolbarButton(mousePos)) {
+                    if (pressedStartLayoutButton(mousePos) || pressedToolbarButton(mousePos)) {
                         currentInteractionState = InteractionState::TOOLBAR_CLICK;
                         break;
                     }
@@ -232,16 +232,22 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_BACKSPACE: {
-                                playDeleteSound();
+                                if (currentInteractionState != InteractionState::IDLE || !canvasLayout || selected.getSelectedElement() == nullptr) {
+                                    break;
+                                }
+                                playDeleteSound(); 
                                 std::string name = deleteShape();
                                 if (client && client->isConnected()) {
                                     DeleteElementMessage message(name);
                                     client->sendToServer(message.getSerializedMessage());
                                 }
-                                currentInteractionState = InteractionState::IDLE;
                                 break;
                             }
                             case SDL_SCANCODE_R: {
+                                if (!canvasLayout || !colorIndicator) {
+                                    break;
+                                }
+
                                 if (!changeColor(ivec3(1, 0, 0))) {
                                     color.x += 1;
                                     if (color.x > 255) {
@@ -251,6 +257,10 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_G: {
+                                if (!canvasLayout || !colorIndicator) {
+                                    break;
+                                }
+
                                 if (!changeColor(ivec3(0, 1, 0))) {
                                     color.y += 1;
                                     if (color.y > 255) {
@@ -260,6 +270,10 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_B: {
+                                if (!canvasLayout || !colorIndicator) {
+                                    break;
+                                }
+
                                 if (!changeColor(ivec3(0, 0, 1))) {
                                     color.z += 1;
                                     if (color.z > 255) {
@@ -269,6 +283,10 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_E: {
+                                if (!canvasLayout || !colorIndicator) {
+                                    break;
+                                }
+
                                 if (!changeColor(ivec3(-1, 0, 0))) {
                                     color.x -= 1;
                                     if (color.x < 0) {
@@ -278,6 +296,10 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_F: {
+                                if (!canvasLayout || !colorIndicator) {
+                                    break;
+                                }
+
                                 if (!changeColor(ivec3(0, -1, 0))) {
                                     color.y -= 1;
                                     if (color.y < 0) {
@@ -287,6 +309,10 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_V: {
+                                if (!canvasLayout || !colorIndicator) {
+                                    break;
+                                }
+
                                 if (!changeColor(ivec3(0, 0, -1))) {
                                     color.z -= 1;
                                     if (color.z < 0) {
@@ -296,10 +322,16 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_C: {
+                                if (!canvasLayout) {
+                                    break;
+                                }
                                 copy();
                                 break;
                             }
                             case SDL_SCANCODE_P: {
+                                if (!canvasLayout) {
+                                    break;
+                                }
                                 paste();
                                 break;
                             }

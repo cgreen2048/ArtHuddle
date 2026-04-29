@@ -602,6 +602,7 @@ ElementParameters deleteText() {
 
     InputTextBox* input = dynamic_cast<InputTextBox*>(element);
     if (input) {
+        playButtonClickSound();
         input->backspace();
         return ep;
     }
@@ -772,6 +773,10 @@ void copy() {
 }
 
 void paste() {
+    if (!canvasLayout) {
+        return;
+    }
+
     if (clipboardType != guiElement::UNKNOWN) {
         ivec2 delta = ivec2(20, 20);
         ElementParameters newObj = clipboard;
@@ -863,7 +868,9 @@ void paste() {
 bool changeColor(ivec3 colorIncrement) {
     GuiElement* chosen = Selected::getInstance().getSelectedElement();
     if (!chosen) {
-        colorIndicator->modifyColor(colorIncrement);
+        if (colorIndicator) {
+            colorIndicator->modifyColor(colorIncrement);
+        }
         return false;
     }
     switch(chosen->getType()) {
@@ -919,6 +926,19 @@ void updateCursorIcon(const ivec2& point, bool currentlyDragging) {
         SDL_SetCursor(desiredCursor);
         currentCursor = desiredCursor;
     }
+}
+
+bool pressedStartLayoutButton(const ivec2& point) {
+    if (!rootLayout) {
+        return false;
+    }
+
+    Button* button = dynamic_cast<Button*>(rootLayout->getElementAt(point));
+    if (button) {
+        pressedButton = button;
+        return true;
+    }
+    return false;
 }
 
 bool pressedToolbarButton(const ivec2& point) {

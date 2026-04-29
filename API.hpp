@@ -43,6 +43,7 @@ void copy();
 void paste();
 bool changeColor(ivec3 colorIncrement);
 void updateCursorIcon(const ivec2& point, bool currentlyDragging);
+bool pressedStartLayoutButton(const ivec2& point);
 bool pressedToolbarButton(const ivec2& point);
 bool isInsideSameButton(const ivec2& point);
 void resetPressedButton();
