@@ -1,6 +1,6 @@
 # SP26_Team02
 
-# Quick Links to Classes
+# Quick Links
 - [Global](#global)
 - [API](#api)
 - [Enums](#enums)
@@ -610,9 +610,74 @@ Helper function to play `delete.wav` when deleting an element
 
 ---
 
+### `bool isElementSelected()`
+Returns `true` if the `Selected` singleton has a selected `GuiElement`, `false` otherwise
+
+---
+
+### `bool isClickInside(ivec2 mousePos)`
+If the `Selected` singleton has a selected element, the `isInside()` method is called using `mousePos`
+- If `isInside()` returns `true`, this function returns `true`
+- If `isInside()` returns `false` or the `Selected` singleton does not have a selected element, `false` is returned
+
+---
+
+### `bool isSelectedInputTextBox()`
+Checks whether the selected element in `Selected` is an `InputTextBox`, returning `true` if so and `false` if not
+
+---
+
+### `bool setSelectedElement(ivec2 mousePos)`
+Checks whether `canvasLayout` has an element at `mousePos` using `getElementAt()`
+- If so, the selected element is set to the returned element and `true` is returned. Else, returns `false`
+
+---
+
+### `bool hasCanvas()`
+Checks whether `canvasLayout` has been set. Returns `true` if it has and `false` if it has not
+
+---
+
+### `bool hasColorIndicator()`
+Checks whether `colorIndicator` has been set. Returns `true` if it has and `false` if it has not
+
+---
+
+### `bool isClientConnected()`
+Checks whether `client` has been set and if `isConnected()` returns true
+- If both are true, returns `true`, else `false` is returned
+
+---
+
+### `void clientProcessMessages()`
+Calls `isClientConnected()`. If that returns `true`, `processMessages()` is called on `client`
+
+---
+
+### `void serverProcessMessages()`
+Checks if `server` has been set. If it is not `nullptr`, `processMessages()` is called on `server`
+
+---
+
+### `bool isServer()`
+Returns `true` if `server` is not `nullptr`, `false` otherwise
+
+---
+
+### `void sendToServer(ElementParameters ep, MessageType type)`
+First, checks if `client` has been set. If so, a new message is created depending on `type` and `getSerializedMessage()` is called on the new message
+- If the return value from `getSerializedMessage()` is not an empty string, the string data is sent to the server using `sendToServer()`
+
+---
+
+### `void createEvent(ivec2 coordinate, EventType type)`
+Creates a new event based on `type` and pushes the new event to the `EventSystem` with `coordinates` (if applicable)
+
+---
+
 # Enums
 
-### `enum class MessageType { DRAW_ELEMENT, DELETE_ELEMENT, UPDATE_ELEMENT, INITIALIZE_CLIENT }`
+### `enum class MessageType { DRAW_ELEMENT, DELETE_ELEMENT, UPDATE_ELEMENT, UPDATE_TEXT, INITIALIZE_CLIENT }`
 An enum to represent the type of message being create to be sent to the server
 
 ---
@@ -635,6 +700,11 @@ Enumeration used to communicate whether the corresponding attribute is a float o
 ### `enum class guiElement{ POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW, TEXTBOX, FREEHAND, BUTTON, LAYOUT, UNKNOWN }`
 This enumeration identifies the type of GUI element being created.  
 It is primarily used by the **Factory** to determine which object to instantiate.
+
+---
+
+### `enum class EventType { CLICK, SHOW, SOUND, MOUSE_DOWN, MOUSE_UP, MOUSE_MOTION, BUTTON_CLICK }`
+An enumeration used to create the corresponding event type
 
 ---
 
@@ -951,30 +1021,46 @@ Similar to `GuiElement` every event type implements this class, currently suppor
 - `MouseMotionEvent`
 - `MouseUpEvent`
 
+---
+
 ## Data Members
 
 ### `EventType type`
 This is an enum identifying the type of object passed down, useful in polymorphism
+
+---
 
 ## Methods
 
 ### `Event()`
 Default constructor
 
+---
+
 ### `Event(EventType t)`
 Constructs an `Event` object with type = t
+
+---
 
 ### `Event(const Event& cp)`
 Default copy constructor
 
+---
+
 ### `operator=(const Event& rhs)`
 Default = operator overload
+
+---
 
 ### `virtual ~Event()`
 Default destructor, virtual for polymorphism
 
+---
+
 ### `EventType getType()`
 Returns the `Event`'s `type`
+
+---
 
 # ClickEvent
 
@@ -982,24 +1068,36 @@ Returns the `Event`'s `type`
 `ClickEvent` represents a mouse click event, inheriting from `Event`. It contains the coordinates of the click to be used for event
 handling in `GuiElement::resolveEvent`
 
+---
+
 ## Data Members
 
 ### `int mouseX`
 The x coordinate of the click
 
+---
+
 ### `int mouseY` 
 The y coordinate of the click
+
+---
 
 ## Methods
 
 ### `ClickEvent(int x, int y)`
 Constructor for `ClickEvent`. Sets `mouseX` to `x` and `mouseY` to `y`
 
+---
+
 ### `int getMouseX()`
 Returns the x coordinate of the click
 
+---
+
 ### `int getMouseY()`
 Returns the y coordinate of the click
+
+---
 
 # MouseEvent
 
@@ -1088,59 +1186,93 @@ Calls `MouseEvent` constructor with `EventType::MOUSE_UP` and `coords`
 ## Description
 `ShowEvent` represents an event to show or hide a `Layout`. It contains the name of the `Layout` to be shown or hidden and a `ShowActionType` to determine whether the `Layout` should be shown or hidden
 
+---
+
 ## Data Members
 
 ### `std::string layoutName`
 The name of the `Layout` to be shown or hidden
 
+---
+
 ### `ShowActionType action`
 An enum to determine whether the `Layout` should be shown or hidden. Can be `ShowActionType::SHOW` or `ShowActionType::HIDE`
+
+---
 
 ## Methods
 
 ### `ShowEvent(std::string name)`
 Constructor for `ShowEvent`. Sets `layoutName` to `layoutName` and `action` to `ShowActionType::SHOW` by default
 
+---
+
 ### `ShowEvent(std::string name, ShowActionType act)`
 Constructor for `ShowEvent`. Sets `layoutName` to `layoutName` and `action` to `act`
+
+---
 
 ### `const std::string& getLayoutName()`
 Returns the name of the `Layout` to be shown or hidden
 
+---
+
 ### `ShowActionType getAction()`
 Returns the `ShowActionType` of the event
+
+---
 
 # SoundEvent
 
 ## Description
 `SoundEvent` represents an event to play, pause, or stop a sound. It contains the name of the sound and a `SoundActionType` to determine whether the sound should be played, paused, or stopped
 
+---
+
 ## Data Members
+
 ### `std::string soundName`
 The name of the sound to be played, paused, or stopped. Can be a file path or a sound name
+
+---
 
 ### `SoundActionType action`
 An enum to determine whether the sound should be played, paused, or stopped. Can be `SoundActionType::PLAY`, `SoundActionType::PAUSE`, or `SoundActionType::STOP`
 
+---
+
 ### `bool loop = false`
 A boolean to determine whether the sound should be looped or not when played. Loops when set to true
 
+---
+
 ## Methods
+
 ### `SoundEvent(const std::string& name)`
 Constructor for `SoundEvent`. Sets `soundName` to `name` and initializes `action` to `SoundActionType::PLAY` and `loop` to `false`
+
+---
 
 ### `SoundEvent(const std::string& name, SoundActionType act, bool shouldLoop = false)`
 Constructor for `SoundEvent`. Sets `soundName` to `name`, `action` to `act`, and `loop` to `shouldLoop`
 - Allows the user to specify whether the sound should be looped when played
 
+---
+
 ### `const std::string& getSoundName()`
 Returns the name of the sound to be played, paused, or stopped
+
+---
 
 ### `SoundActionType getAction()`
 Returns the `SoundActionType` of the event
 
+---
+
 ### `bool shouldLoop()`
 Returns whether the sound should be looped when played or not
+
+---
 
 # Sound
 
