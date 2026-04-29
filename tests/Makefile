@@ -13,7 +13,7 @@ MAC_CXXFLAGS := -std=c++17 -Wall -I.. -I../external
 MAC_LDFLAGS := -Wl,-rpath,"/Library/Frameworks" -F/Library/Frameworks
 MAC_LDLIBS := -framework sdl3
 
-FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../helperFunctions.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../Ellipse.cpp ../TextBox.cpp ../Arrow.cpp ../Freehand.cpp ../ThreadPool.cpp 
+FACTORY_ELEMENTS := ../Factory.cpp ../GuiElement.cpp ../helperFunctions.cpp ../Layout.cpp ../Triangle.cpp ../Box.cpp ../Line.cpp ../Point.cpp ../Screen.cpp ../Button.cpp  ../Ellipse.cpp ../TextBox.cpp ../Arrow.cpp ../Freehand.cpp ../ThreadPool.cpp ../InputTextBox.cpp
 EVENT_ELEMENTS := ../Event.cpp ../EventSystem.cpp ../ClickEvent.cpp ../ShowEvent.cpp ../SoundEvent.cpp ../MouseEvent.cpp ../MouseUpEvent.cpp ../MouseDownEvent.cpp ../MouseMotionEvent.cpp
 UTILITY_ELEMENTS := ../Selected.cpp ../Sound.cpp ../SoundPlayer.cpp ../GUIFile.cpp
 MESSAGE_ELEMENTS := ../DrawElementMessage.cpp ../DeleteElementMessage.cpp ../UpdateElementMessage.cpp ../InitializeClientMessage.cpp ../MessageHandler.cpp
@@ -188,7 +188,7 @@ freehandDemoMac:
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o freehandDemo
 
 milestone001Mac:
-	$(CXX) ../Matrix.cpp Milestone001Tests.cpp -Wall -o milestone001
+	$(CXX) ../Matrix.cpp Milestone001Tests.cpp -o milestone001
 
 milestone002Mac:
 	$(CXX) ../Screen.cpp ../ThreadPool.cpp Milestone002Tests.cpp \

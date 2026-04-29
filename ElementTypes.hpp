@@ -12,7 +12,7 @@ enum class MessageType {
 
 enum class guiElement {
     POINT, LINE, BOX, TRIANGLE, ELLIPSE, ARROW,
-    TEXTBOX, FREEHAND, BUTTON, LAYOUT, UNKNOWN
+    TEXTBOX, FREEHAND, BUTTON, LAYOUT, INPUTTEXTBOX, UNKNOWN
 };
 
 enum class TagType {

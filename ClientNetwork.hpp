@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <cstring>
+#include <functional>
 #include "Layout.hpp"
 #include "MessageHandler.hpp"
 
@@ -24,6 +25,7 @@ class ClientNetwork {
     private:
         int socketIdentifier = 0;
         bool connected = false;
+        std::function<void()> onDisconnect;
         MessageHandler messageHandler;
     public:
         ClientNetwork(Layout* layout);
@@ -33,6 +35,8 @@ class ClientNetwork {
         void processMessages();
         void closeConnection();
         int getSocketIdentifier();
+        bool isConnected();
+        void setDisconnectCallback(std::function<void()> callback);
 
 };
 

@@ -15,7 +15,8 @@ class Button : public Box {
         std::string callbackName;
         std::string text;
         ivec3 textColor;
-        TagType textColorType = TagType::Vec;
+        bool active;
+        TagType textColorType = TagType::Vec;        
 
 
     public:
@@ -27,8 +28,10 @@ class Button : public Box {
         Button& operator=(const Button& rhs) = default;
         bool operator==(Button rhs);
         bool operator!=(Button rhs);
+        void draw(Screen *screen);
         void drawOverlay(Screen *screen);
         GuiElement* clone() const;
+        void setActive(bool value);
         bool resolveEvent(Event* event);
         void writeXml(std::ostream& out, int depth) const;
         bool validateAndNormalize(ElementParameters& ep);

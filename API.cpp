@@ -12,9 +12,10 @@ Layout* initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2,
     createWindow();
     createScreen();
     setEventSystem();
-    Layout* canvasLayout = createRootLayout(mode, points, point1, point2, point3);
+    pool = std::make_unique<ThreadPool>();
+    Layout* rootLayout = createStartMenuLayout(mode, points, point1, point2, point3);
     SDL_StartTextInput(window);
-    return canvasLayout;
+    return rootLayout;
 }
 
 void loadSound(std::string filePath) {
@@ -30,6 +31,7 @@ void drawTempElement(guiElement ge, ivec2 point1, ivec2 point2, ivec2 point3, iv
     ElementParameters ep;
     ep.color = color;
     ep.colorType = TagType::IVec;
+    ep.active = true;
     
     switch (ge) {
 		case guiElement::LINE: {
@@ -315,6 +317,9 @@ void setClickAndDrag(ivec2 mouse) {
     if (!current || !selected.isInside(mouse)) {
         return;
     }
+    if (dynamic_cast<InputTextBox*>(current)) {
+        return;
+    }
     lastMousePos = mouse;
     if (draggingElement == nullptr) {
         draggingElement = current;
@@ -559,6 +564,12 @@ void cancelMove() {
 }
 
 void unselect() {
+    GuiElement* element = Selected::getInstance().getSelectedElement();
+
+    if (InputTextBox* input = dynamic_cast<InputTextBox*>(element)) {
+        input->setActive(false); // lose typing focus ONLY
+    }
+
     EventSystem::getInstance().setTargetedElement(nullptr);
     Selected::getInstance().setSelectedElement(nullptr);
 }
@@ -586,9 +597,17 @@ ElementParameters appendToTextBox(const std::string& s) {
 
 ElementParameters deleteText() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
+
+    ElementParameters ep;
+
+    InputTextBox* input = dynamic_cast<InputTextBox*>(element);
+    if (input) {
+        input->backspace();
+        return ep;
+    }
+
     TextBox* textbox = dynamic_cast<TextBox*>(element);
     if (textbox->getText().empty()) {
-        ElementParameters ep;
         ep.name = textbox->getName();
         ep.toBeDeleted = true;
         deleteShape();
@@ -607,6 +626,10 @@ void deleteTempShape() {
 std::string deleteShape() {
     GuiElement* element = Selected::getInstance().getSelectedElement();
     std::string name = element->getName();
+    if (dynamic_cast<InputTextBox*>(element)) {
+        return "";
+    }
+
     if (element != nullptr) {
         canvasLayout->deleteElement(name);
     }
@@ -614,21 +637,106 @@ std::string deleteShape() {
     return name;
 }
 
-void updateScreen(DrawingMode mode) {
+void updateScreen(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     screen->clear(ivec3(255,255,255));
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.processEvents(rootLayout);
     rootLayout->draw(screen);
-    boundingLayout->draw(screen);
+    
+    if(boundingLayout) {
+        boundingLayout->draw(screen);
+    }
 
-    updateActionButtonColors();
-    updateToolbarButtonColors(mode);
+    if (saveButton && loadButton) {
+        updateActionButtonColors();
+    }
+
+    if (toolBarLayout) {
+        updateToolbarButtonColors(mode);
+    }
+    
+    
     
     screen->renderToRenderer();
     rootLayout->drawOverlay(screen);
     SDL_RenderPresent(renderer);
+
+    handlePendingActions(mode, points, point1, point2, point3);
+}
+
+void handlePendingActions(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+    if (pendingStartHost) {
+        pendingStartHost = false;
+        isHost = true;
+
+        switchToDrawingLayout(mode, points, point1, point2, point3);
+
+        ElementParameters canvas;
+        canvas.layoutStart = vec2(0.0, 0.0);
+        canvas.layoutEnd = vec2(1.0, 1.0);
+        canvas.parentStart = ivec2(0, 0);
+        canvas.parentEnd = ivec2(X, Y);
+        canvas.active = true;
+        canvas.name = "serverLayout";
+        serverLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, canvas));
+        server = std::make_unique<RelayServer>(serverLayout);
+
+        pool->enqueue([]() {
+            server->start();
+        });
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        if (client->connectToServer("127.0.0.1", 40666)) {
+            connectedHost = "localhost";
+            isHost = true;
+
+            pool->enqueue([]() {
+                client->receiveMessages();
+            });
+        }
+    }
+
+    if (pendingJoinHost) {
+        pendingJoinHost = false;
+
+        std::string ip = pendingHostIp;
+        pendingHostIp.clear();
+
+        switchToDrawingLayout(mode, points, point1, point2, point3);
+
+        if (client->connectToServer(ip.c_str(), 40666)) {
+            connectedHost = ip;
+            isHost = false;
+
+            pool->enqueue([]() {
+                client->receiveMessages();
+            });
+        }
+    }
+
+    if (pendingDisconnect) {
+        pendingDisconnect = false;
+
+        // 1. Close networking
+        if (client) {
+            client->closeConnection();
+        }
+
+        if (server) {
+            server->stop();
+        }
+
+        server.reset();
+        client.reset();
+
+        // 3. Switch layout
+        delete rootLayout;
+        resetGlobalState();
+        rootLayout = createStartMenuLayout(mode, points, point1, point2, point3);
+    }
 }
 
 void closeAll() {
@@ -638,6 +746,17 @@ void closeAll() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    if (server) {
+        server->stop();
+    }
+    
+    if (client) {
+        client->closeConnection();
+    }
+    
+    pool.reset();
+
+    // client.closeConnection();
 }
 
 void copy() {
@@ -803,6 +922,10 @@ void updateCursorIcon(const ivec2& point, bool currentlyDragging) {
 }
 
 bool pressedToolbarButton(const ivec2& point) {
+    if (!toolBarLayout) {
+        return false;
+    }
+
     Button* button = dynamic_cast<Button*>(toolBarLayout->getElementAt(point));
     if (button) {
         pressedButton = button;

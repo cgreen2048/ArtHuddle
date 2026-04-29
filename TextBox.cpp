@@ -89,6 +89,10 @@ ivec2 TextBox::getCursorPosition() const {
     return ivec2(cursorX, cursorY);
 }
 
+void TextBox::clearText() {
+    text.clear();
+}
+
 void TextBox::setActive(bool value) { 
     active = value; 
 }
@@ -173,9 +177,7 @@ bool TextBox::validateAndNormalize(ElementParameters &ep) {
     newMax.y = std::max(ep.min.y, ep.max.y);
     ep.min = newMin;
     ep.max = newMax;
-    if (ep.elementType != guiElement::TEXTBOX) {
-        ep.elementType = guiElement::TEXTBOX;
-    }
+
     return true;
 }
 

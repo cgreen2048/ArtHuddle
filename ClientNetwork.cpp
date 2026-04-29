@@ -27,7 +27,7 @@ bool ClientNetwork::connectToServer(const char* host, int port) {
         return false;
     }
 
-    std::cout << "Connected to server: " << host << "\n";
+    std::cout << "Connected to host: " << host << "\n";
     this->connected = true;
     return true;
 }
@@ -57,6 +57,12 @@ void ClientNetwork::receiveMessages() { // Handles messages relayed from the ser
 
         if (bytesReceived <= 0) {
             std::cerr << "Disconnected from server\n";
+            closeConnection();
+        
+            if (onDisconnect) {
+                onDisconnect();
+            }
+        
             break;
         }
 
@@ -89,4 +95,12 @@ void ClientNetwork::closeConnection() {
 
 int ClientNetwork::getSocketIdentifier() {
     return this->socketIdentifier;
+}
+
+bool ClientNetwork::isConnected() {
+    return this->connected;
+}
+
+void ClientNetwork::setDisconnectCallback(std::function<void()> callback) {
+    onDisconnect = callback;
 }

@@ -6,66 +6,26 @@
 #include "../MouseDownEvent.hpp"
 #include "../MouseMotionEvent.hpp"
 #include "../MouseUpEvent.hpp"
-#include "../ClientNetwork.hpp"
-#include "../RelayServer.hpp"
-#include "../ThreadPool.hpp"
 #include "../DrawElementMessage.hpp"
 #include "../DeleteElementMessage.hpp"
 #include "../UpdateElementMessage.hpp"
 
-void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3);
-
 int main(int argc, char* argv[]) {
     std::cout << "API Demo\n";
-    
-    ThreadPool pool;
+
     DrawingMode mode = DrawingMode::SELECT;
     InteractionState currentInteractionState = InteractionState::IDLE;
     int points = 0;
-    const char* connectedHost = nullptr;
     ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
     ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec3 color = ivec3(125, 125, 125);
 
-    Layout* canvasLayout = initialize(mode, points, point1, point2, point3);
-    ElementParameters canvas;
-    canvas.layoutStart = vec2(0.0, 0.0);
-    canvas.layoutEnd = vec2(1.0, 1.0);
-    canvas.parentStart = ivec2(0, 0);
-    canvas.parentEnd = ivec2(X, Y);
-    canvas.active = true;
-    canvas.name = "canvasLayout";
-    Layout* serverCanvasLayout = dynamic_cast<Layout*>(factory(guiElement::LAYOUT, canvas));
-    RelayServer server(serverCanvasLayout);
-    ClientNetwork client(canvasLayout);
-    // Connect to server
-    if (argc > 1 && std::string(argv[1]) == "--host") {
-        pool.enqueue([&server]() {
-            server.start();
-        });
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-
-    for (const char* host : hosts) {
-        if (client.connectToServer(host, 40666)) {
-            connectedHost = host;
-            break;
-        }
-    }
-    if (connectedHost == nullptr) {
-        std::cerr << "Failed to connect\n";
-        return 1;
-    }
-
-    pool.enqueue([&client]() {
-        client.receiveMessages();
-    });
+    initialize(mode, points, point1, point2, point3);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
 
     loadSound("../SFX/song2.wav");
     playSound("../SFX/song2.wav", true);
-    ivec3 color = ivec3(125, 125, 125);
     std::cout << "Escape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
 
     ivec2 lastMousePos;
@@ -103,8 +63,10 @@ int main(int argc, char* argv[]) {
                             guiElement type = modeToType(mode);
                             if (points >= requiredPointsForType(type)) {
                                 ElementParameters ep = drawElement(type, point1, point2, point3, color);
-                                DrawElementMessage message(ep);
-                                client.sendToServer(message.getSerializedMessage());
+                                if (client && client->isConnected()) {
+                                    DrawElementMessage message(ep);
+                                    client->sendToServer(message.getSerializedMessage());
+                                }
                                 resetPoints(points, point1, point2, point3);
                                 mode = DrawingMode::SELECT;
                                 currentInteractionState = InteractionState::SHAPE_COMPLETED;
@@ -129,6 +91,11 @@ int main(int argc, char* argv[]) {
                             // If an element is selected, allow for selecting/dragging that element if mouse within bounding box
                             if (selected.getSelectedElement() != nullptr) {
                                 if (selected.isInside(mousePos)) {
+                                    if (dynamic_cast<InputTextBox*>(selected.getSelectedElement())) {
+                                        clicked(mousePos);
+                                        currentInteractionState = InteractionState::IDLE;
+                                        break;
+                                    }
                                     lastMousePos = mousePos;
                                     eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
                                     currentInteractionState = InteractionState::ELEMENT_PRESSED;
@@ -136,15 +103,15 @@ int main(int argc, char* argv[]) {
                                 }
                             }
                             
-                            GuiElement* hit = canvasLayout->getElementAt(mousePos);
-                            if (hit) {
-                                lastMousePos = mousePos;
-                                Selected::getInstance().setSelectedElement(hit);
-                                eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
-                                currentInteractionState = InteractionState::ELEMENT_PRESSED;
-                                break;
+                            if (canvasLayout) {
+                                GuiElement* hit = canvasLayout->getElementAt(mousePos);
+                                if (hit) {
+                                    lastMousePos = mousePos;
+                                    Selected::getInstance().setSelectedElement(hit);
+                                    eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
+                                    currentInteractionState = InteractionState::ELEMENT_PRESSED;
+                                }
                             }
-
                             break;
                         }
                         default: {
@@ -198,8 +165,10 @@ int main(int argc, char* argv[]) {
                         }
                         case InteractionState::FREEHAND_DRAWING: {
                             ElementParameters ep = endFreehandDraw(mousePos);
-                            DrawElementMessage message(ep);
-                            client.sendToServer(message.getSerializedMessage());
+                            if (client && client->isConnected()) {
+                                DrawElementMessage message(ep);
+                                client->sendToServer(message.getSerializedMessage());
+                            }
                             currentInteractionState = InteractionState::IDLE;
                             mode = DrawingMode::SELECT;
                             break;
@@ -210,8 +179,10 @@ int main(int argc, char* argv[]) {
                         }
                         case InteractionState::DRAGGING: {
                             ElementParameters ep = endClickAndDrag();
-                            UpdateElementMessage message(ep);
-                            client.sendToServer(message.getSerializedMessage());
+                            if (client && client->isConnected()) {
+                                UpdateElementMessage message(ep);
+                                client->sendToServer(message.getSerializedMessage());
+                            }
                             currentInteractionState = InteractionState::IDLE;
                             break;
                         }
@@ -242,8 +213,10 @@ int main(int argc, char* argv[]) {
                 case SDL_EVENT_TEXT_INPUT: {
                     if (isSelectedTextBox()) {
                         ElementParameters ep = appendToTextBox(event.text.text);
-                        UpdateElementMessage message(ep);
-                        client.sendToServer(message.getSerializedMessage());
+                        if (client && client->isConnected()) {
+                            UpdateElementMessage message(ep);
+                            client->sendToServer(message.getSerializedMessage());
+                        }
                     }
                     break;
                 }
@@ -261,8 +234,10 @@ int main(int argc, char* argv[]) {
                             case SDL_SCANCODE_BACKSPACE: {
                                 playDeleteSound();
                                 std::string name = deleteShape();
-                                DeleteElementMessage message(name);
-                                client.sendToServer(message.getSerializedMessage());
+                                if (client && client->isConnected()) {
+                                    DeleteElementMessage message(name);
+                                    client->sendToServer(message.getSerializedMessage());
+                                }
                                 currentInteractionState = InteractionState::IDLE;
                                 break;
                             }
@@ -328,9 +303,6 @@ int main(int argc, char* argv[]) {
                                 paste();
                                 break;
                             }
-                            case SDL_SCANCODE_S: {
-                                // send message using ClientNetwork sendMessage
-                            }
                             default: {
                                 break;
                             }
@@ -342,11 +314,15 @@ int main(int argc, char* argv[]) {
                                 ElementParameters ep = deleteText();
                                 if (ep.toBeDeleted) {
                                     currentInteractionState = InteractionState::IDLE;
-                                    DeleteElementMessage message(ep.name);
-                                    client.sendToServer(message.getSerializedMessage());
+                                    if (client && client->isConnected()) {
+                                        DeleteElementMessage message(ep.name);
+                                        client->sendToServer(message.getSerializedMessage());
+                                    }
                                 } else {
-                                    UpdateElementMessage message(ep);
-                                    client.sendToServer(message.getSerializedMessage());
+                                    if (client && client->isConnected()) {
+                                        UpdateElementMessage message(ep);
+                                        client->sendToServer(message.getSerializedMessage());
+                                    }
                                 }
                                 break;
                             }
@@ -369,7 +345,7 @@ int main(int argc, char* argv[]) {
         ivec2 mousePos(static_cast<int>(mouseX), static_cast<int>(mouseY));
 
         if (points == 0) {
-            updateScreen(mode);
+            updateScreen(mode, points, point1, point2, point3);
         }
         else {
             switch (mode) {
@@ -396,15 +372,14 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        updateScreen(mode);
-        if (argc > 1) {
-            server.processMessages();
+        updateScreen(mode, points, point1, point2, point3);
+        if (server) {
+            server->processMessages();
         }
-        client.processMessages();
-    }
-    client.closeConnection(); // Closes client
-    if (argc > 1) {
-        server.stop();
+        
+        if (client && client->isConnected()) {
+            client->processMessages();
+        }
     }
     closeAll();
     return 0;

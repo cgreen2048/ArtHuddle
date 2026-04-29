@@ -9,7 +9,7 @@
 #include <thread>
 #include <future>
 
-#define NUM_THREADS 4
+#define NUM_THREADS 8
 
 class ThreadPool {
     public:
