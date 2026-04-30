@@ -7,7 +7,7 @@
 #include "Selected.hpp"
 
 
-MessageHandler::MessageHandler(Layout* layout, bool isServerHandler) : canvasLayout(layout), isServerHandler(isServerHandler) {}
+MessageHandler::MessageHandler(Layout* layout) : canvasLayout(layout) {}
 
 void MessageHandler::push(std::string message) {
     std::lock_guard<std::mutex> lock(queueMutex);

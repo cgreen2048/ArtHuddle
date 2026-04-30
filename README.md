@@ -4,7 +4,7 @@
 - [Global](#global)
 - [API](#api)
 - [Enums](#enums)
-- [Network Client](#clientnetwork)
+- [Client](#clientnetwork)
 - [MessageHandler](#messageHandler)
 - [SocketMessage Class](#socketmessage)
 - [Event Class](#event)
@@ -968,8 +968,93 @@ It is primarily used by the **Factory** to determine which object to instantiate
 
 ---
 
+<<<<<<< HEAD
 ### `enum class EventType { CLICK, SHOW, SOUND, MOUSE_DOWN, MOUSE_UP, MOUSE_MOTION, BUTTON_CLICK }`
 An enumeration used to create the corresponding event type
+=======
+# RelayServer
+
+## Description
+The socket-based server that handles server-side networking for real time communication with and broadcasting to clients
+- Opens a `listener` TCP socket
+- Binds to the specified port `PORT`
+- Begins listening for messages once bound to `PORT`
+- Endlessly loops, waiting to accept new clients and handle them within their own dedicated threads
+- Sends all of its internal data to the newly connected client
+- Opens an endless loop to receive messages from each client within a thread
+
+## Member Data
+
+### `std::atomic<bool> running`
+Atomic bool that determines if the server is still running in a thread-safe way
+
+---
+
+### `SocketType listener`
+The stored listener socket that binds to `PORT` and listens for connections & messages
+
+---
+
+### `std::vector<SocketType> clients`
+Vector that stores all connected clients
+
+---
+
+### `std::mutex clientsMutex`
+Mutex used to update `clients` in a thread-safe way when a client connects or disconnects
+
+### `MessageHandler messageHandler`
+Used to process incoming messages and update the internal state of the server's `canvasLayout`
+
+## Public Methods
+
+### `void start()`
+Starts the server and readies it to receive messages
+- See Description block above for functionality
+
+---
+
+### `void stop()`
+Stops the server and closes all connections to it
+- Shuts down and closes each client connection within `clients`
+- Clears `clients`
+- Shuts down and closes the server's own `listener` socket
+
+---
+
+### `void processMessages()`
+Calls `messageHandler.processMessages()` to uphold information hiding while still processing received messages
+
+---
+
+## Private Methods
+These methods are private as they should only be called by the server internally. 
+No external code should have access to the server's internals in this way
+
+### `void removeClient(SocketType client)`
+Locks `clients` via `clientsMutex` for thread safety and erases
+`client` from `clients`, unlocking afterward
+
+---
+
+### `void handleClient(SocketType client)` 
+This function handles all messages received from `client` in an endless while loop while `client` is connected.
+- Always ran in a separate thread than the server
+- Upon connection, the server sends all of its data to `client` in an `InitiializeClientMessage`
+- Then, it enters the endless while loop, receiving messages from `client` until it disconnects
+
+---
+
+### `void sendToClient(const std::string& message, SocketType client)`
+Sends a `message` to a specific `client` as opposed to all clients in `broadcast`
+- Used predominantly for `InitializeClientMessage` upon client connection
+
+---
+
+### `void broadcast(const std::string& message, SocketType clientSender)`
+Sends `message` to each client in `clients` except for `clientSender`
+- Locks `clients` via `clientsMutex` to loop through all clients in a thread-safe way
+>>>>>>> 3eeb7e5 (Adding docs and UML for ClientNetwork and RelayServer)
 
 ---
 
@@ -977,19 +1062,17 @@ An enumeration used to create the corresponding event type
 
 ## Description
 Handles client-side networking for real-time communication with the server.
-
-This module:
 - Connects the client to a server using TCP sockets
-- Sends messages (e.g., drawing events or XML data)
+- Sends messages from drawing, dragging, or deleting `GuiElement`'s'
 - Receives messages asynchronously from the server
 - Manages connection lifecycle (open/close)
 - Enables real-time synchronization between multiple clients
 
 ---
 
-## Variables
+## Member Data
 
-### `int sock`
+### `int socketIdentifier`
 Stores the active socket connection.
 
 - Initialized to `-1`
@@ -999,20 +1082,31 @@ Stores the active socket connection.
 
 ---
 
+### `bool connected = false`
+Represents if the client is connected to the server or not
+
+---
+
+### `std::function<void()> onDisconnect`
+Callback functor that determines the client's action upon disconecting from the host server
+- Predominantly used to return to starting layout upon disconnect
+
+---
+
+### `MessageHandler messageHandler`
+Used to process incoming messages and update the internal state of the client's `canvasLayout`
+
+---
+
 ## Functions
 
 ### `bool connectToServer(const char* host, int port)`
-
 Establishes a connection to the server.
-
-#### Steps:
 - Creates a socket using `socket()`
 - Converts IP address using `inet_pton()`
 - Connects to server using `connect()`
-
-#### Returns:
-- `true` → connection successful  
-- `false` → connection failed  
+- `return true` → connection successful  
+- `return false` → connection failed  
 
 #### Example:
 ```cpp
@@ -1020,40 +1114,27 @@ connectToServer("127.0.0.1", 40666);
 ```
 
 ### `void sendToServer(const std::string& message)`
-
 Sends a message to the server.
+- Appends a newline (`\n`) to each message as a delimiter
 
-#### Behavior
-Appends a newline (`\n`) to each message:
-```cpp
-std::string packet = message + "\n";
-```
-
-### `void receiveMessagesLoop()`
-
+### `void receiveMessages()`
 Continuously listens for incoming messages from the server.
-
-#### Behavior
-- Runs in a loop:
+- Runs in a loop until disconneted from the server:
 ```cpp
-while (sock >= 0)
+while (this->socketIdentifier >= 0)
 ```
 - Calls recv() to read data
 - Converts received bytes into a string
 - Prints messages to the console
 
-### Important:
-- This function is blocking
-- Must be run in a separate thread
+#### Important:
+- This function is blocking and must be run in a separate thread via `ThreadPool`
 
 ### `void closeConnection()`
-
 Closes the connection to the server.
-
-#### Behavior
-- Calls close(sock)
-- Sets sock = -1
-- Causes receiveMessagesLoop() to exit
+- Calls `close(this->socketIdentifier)`
+- Sets `this->socketIdentifier = -1`
+- Causes `receiveMessages()` to stop looping
 
 ---
 
@@ -1065,12 +1146,15 @@ Handles receiving messages from other clients to the server or from server to cl
 - Provides controlled access to queued messages
 - Updates clients and the server corresponding to each message type
 
-Each client will hold its own `MessageHandler` to handle incoming messages, and the server holds its own `MessageHandler` as well
+Each client holds its own `MessageHandler` to handle incoming messages, and the server holds its own `MessageHandler` as well
 
 ## Data Members
 
 ### `std::queue<std::string> messageQueue`
 Queue for holding messages that need to be handled by the handler
+
+### `std::mutex queueMutex`
+Mutex that locks `messageQueue` to perform operations on it in a thread-safe way
 
 ---
 
@@ -1093,6 +1177,7 @@ Pushes `message` onto the queue and transfers ownership of `message` to the queu
 
 ### `bool processMessages()`
 Processes all queued messages and propogates changes to `canvasLayout`
+- Locks `messageQueue` to swap its contents with `localQueue` to process all queued messages and still leave `messageQueue` unlocked to receive messages later on
 - Parses each message into JSON format
 - Calls the corresponding handler function for the message type to propogate change through the system
 
@@ -1118,6 +1203,11 @@ element to the `canvasLayout`
 ### `handleInitializeClient(json j)`
 Clears all elements from `canvasLayout` to integrate the new client (or reconnected and desynced client) to the server's drawn state
 - Parses through the JSON array to create an `ElementParameters` object for each item in the array and add the corresponding element to the `canvasLayout`
+
+---
+
+### `Layout* getCanvasLayout()`
+Returns `canvaslayout`
 
 ---
 
@@ -2007,6 +2097,11 @@ The maximum point of a `Freehand` object
 
 ---
 
+### `bool toBeDeleted`
+Used to signal if a `GuiElement` object should be deleted, primarily for `TextBox`
+
+---
+
 ## UML Diagram
 ![UML Diagram](images/ElementParameters_UML.png)
 
@@ -2505,10 +2600,19 @@ Iterates through stored elements, removing `element` from the vector if found
 
 ---
 
+### `GuiElement* updateElement(ElementParameters ep)`
+Iterates through stored elements, & updates the element whose name is equal to `ep.name`
+- Finds the type of the found object and updates its parameters according to the type
+
+---
+
 ### `ElementParameters getParameters()`
 Gathers all attributes into one struct, which is then returned
 
 ---
+
+### `std::vector<ElementParameters> getChildElementParameters()`
+Gathers all attributes of the `Layout`'s children by calling `element->getParameters()` on each of them
 
 ### `guiElement getType()`
 Returns `guiElement::LAYOUT`

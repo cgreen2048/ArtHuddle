@@ -307,7 +307,7 @@ GuiElement* Layout::removeElement(const std::string& name) {
     return nullptr;
 }
 
-bool Layout::updateElement(ElementParameters ep, bool preserveSelection) {
+bool Layout::updateElement(ElementParameters ep) {
     for (auto it = elements.begin(); it != elements.end(); ++it) {
         if ((*it)->getName() == ep.name) {
             GuiElement* found = *it;
