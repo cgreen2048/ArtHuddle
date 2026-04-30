@@ -1,14 +1,5 @@
 #include "../API.hpp"
-#include "../Global.hpp"
 #include <memory>
-#include "../Layout.hpp"
-#include "../EventSystem.hpp"
-#include "../MouseDownEvent.hpp"
-#include "../MouseMotionEvent.hpp"
-#include "../MouseUpEvent.hpp"
-#include "../DrawElementMessage.hpp"
-#include "../DeleteElementMessage.hpp"
-#include "../UpdateElementMessage.hpp"
 
 int main(int argc, char* argv[]) {
     std::cout << "API Demo\n";
@@ -30,8 +21,6 @@ int main(int argc, char* argv[]) {
 
     ivec2 lastMousePos;
     SDL_Event event;
-    EventSystem& eventSystem = EventSystem::getInstance();
-    Selected& selected = Selected::getInstance();
     bool end = false;
     while (!end) {
         while (SDL_PollEvent(&event)) {
@@ -63,9 +52,8 @@ int main(int argc, char* argv[]) {
                             guiElement type = modeToType(mode);
                             if (points >= requiredPointsForType(type)) {
                                 ElementParameters ep = drawElement(type, point1, point2, point3, color);
-                                if (client && client->isConnected()) {
-                                    DrawElementMessage message(ep);
-                                    client->sendToServer(message.getSerializedMessage());
+                                if (isClientConnected()) {
+                                    sendToServer(ep, MessageType::DRAW_ELEMENT);
                                 }
                                 resetPoints(points, point1, point2, point3);
                                 mode = DrawingMode::SELECT;
@@ -89,26 +77,25 @@ int main(int argc, char* argv[]) {
                             }
 
                             // If an element is selected, allow for selecting/dragging that element if mouse within bounding box
-                            if (selected.getSelectedElement() != nullptr) {
-                                if (selected.isInside(mousePos)) {
-                                    if (dynamic_cast<InputTextBox*>(selected.getSelectedElement())) {
+                            if (isElementSelected()) {
+                                if (isClickInside(mousePos)) {
+                                    if (isSelectedInputTextBox()) {
                                         clicked(mousePos);
                                         currentInteractionState = InteractionState::IDLE;
                                         break;
                                     }
                                     lastMousePos = mousePos;
-                                    eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
+                                    createEvent(lastMousePos, EventType::MOUSE_DOWN);
+
                                     currentInteractionState = InteractionState::ELEMENT_PRESSED;
                                     break;
                                 }
                             }
                             
-                            if (canvasLayout) {
-                                GuiElement* hit = canvasLayout->getElementAt(mousePos);
-                                if (hit) {
+                            if (hasCanvas()) {
+                                if (setSelectedElement(mousePos)) {
                                     lastMousePos = mousePos;
-                                    Selected::getInstance().setSelectedElement(hit);
-                                    eventSystem.push(std::make_unique<MouseDownEvent>(lastMousePos));
+                                    createEvent(lastMousePos, EventType::MOUSE_DOWN);
                                     currentInteractionState = InteractionState::ELEMENT_PRESSED;
                                 }
                             }
@@ -165,9 +152,8 @@ int main(int argc, char* argv[]) {
                         }
                         case InteractionState::FREEHAND_DRAWING: {
                             ElementParameters ep = endFreehandDraw(mousePos);
-                            if (client && client->isConnected()) {
-                                DrawElementMessage message(ep);
-                                client->sendToServer(message.getSerializedMessage());
+                            if (isClientConnected()) {
+                                sendToServer(ep, MessageType::DRAW_ELEMENT);
                             }
                             currentInteractionState = InteractionState::IDLE;
                             mode = DrawingMode::SELECT;
@@ -179,9 +165,8 @@ int main(int argc, char* argv[]) {
                         }
                         case InteractionState::DRAGGING: {
                             ElementParameters ep = endClickAndDrag();
-                            if (client && client->isConnected()) {
-                                UpdateElementMessage message(ep);
-                                client->sendToServer(message.getSerializedMessage());
+                            if (isClientConnected()) {
+                                sendToServer(ep, MessageType::UPDATE_ELEMENT);
                             }
                             currentInteractionState = InteractionState::IDLE;
                             break;
@@ -213,10 +198,8 @@ int main(int argc, char* argv[]) {
                 case SDL_EVENT_TEXT_INPUT: {
                     if (isSelectedTextBox()) {
                         ElementParameters ep = appendToTextBox(event.text.text);
-                        if (client && client->isConnected()) {
-                            UpdateElementMessage message(ep);
-                            client->sendToServer(message.getSerializedMessage());
-                            canvasLayout->updateElement(ep, false);
+                        if (isClientConnected()) {
+                            sendToServer(ep, MessageType::UPDATE_ELEMENT);
                         }
                     }
                     break;
@@ -233,27 +216,26 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_BACKSPACE: {
-                                if (currentInteractionState != InteractionState::IDLE || !canvasLayout || selected.getSelectedElement() == nullptr) {
+                                if (currentInteractionState != InteractionState::IDLE || !hasCanvas() || !isElementSelected()) {
                                     break;
                                 }
                                 playDeleteSound(); 
                                 std::string name = deleteShape();
-                                if (client && client->isConnected()) {
-                                    DeleteElementMessage message(name);
-                                    client->sendToServer(message.getSerializedMessage());
+                                if (isClientConnected()) {
+                                    ElementParameters ep;
+                                    ep.name = name;
+                                    sendToServer(ep, MessageType::DELETE_ELEMENT);
                                 }
                                 break;
                             }
                             case SDL_SCANCODE_R: {
-                                if (!canvasLayout || !colorIndicator) {
+                                if (!hasCanvas() || !hasColorIndicator()) {
                                     break;
                                 }
 
                                 ElementParameters ep = changeColor(ivec3(1, 0, 0));
-                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
-                                    UpdateElementMessage message(ep);
-                                    client->sendToServer(message.getSerializedMessage());
-                                    canvasLayout->updateElement(ep, false);
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
                                 }
                                 else {
                                     color.x += 1;
@@ -264,15 +246,13 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_G: {
-                                if (!canvasLayout || !colorIndicator) {
+                                if (!hasCanvas() || !hasColorIndicator()) {
                                     break;
                                 }
 
                                 ElementParameters ep = changeColor(ivec3(0, 1, 0));
-                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
-                                    UpdateElementMessage message(ep);
-                                    client->sendToServer(message.getSerializedMessage());
-                                    canvasLayout->updateElement(ep, false);
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
                                 }
                                 else {
                                     color.y += 1;
@@ -283,15 +263,13 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_B: {
-                                if (!canvasLayout || !colorIndicator) {
+                                if (!hasCanvas() || !hasColorIndicator()) {
                                     break;
                                 }
 
                                 ElementParameters ep = changeColor(ivec3(0, 0, 1));
-                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
-                                    UpdateElementMessage message(ep);
-                                    client->sendToServer(message.getSerializedMessage());
-                                    canvasLayout->updateElement(ep, false);
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
                                 }
                                 else {
                                     color.z += 1;
@@ -302,15 +280,13 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_E: {
-                                if (!canvasLayout || !colorIndicator) {
+                                if (!hasCanvas() || !hasColorIndicator()) {
                                     break;
                                 }
 
                                 ElementParameters ep = changeColor(ivec3(-1, 0, 0));
-                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
-                                    UpdateElementMessage message(ep);
-                                    client->sendToServer(message.getSerializedMessage());
-                                    canvasLayout->updateElement(ep, false);
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
                                 }
                                 else {
                                     color.x -= 1;
@@ -321,15 +297,13 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_F: {
-                                if (!canvasLayout || !colorIndicator) {
+                                if (!hasCanvas() || !hasColorIndicator()) {
                                     break;
                                 }
 
                                 ElementParameters ep = changeColor(ivec3(0, -1, 0));
-                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
-                                    UpdateElementMessage message(ep);
-                                    client->sendToServer(message.getSerializedMessage());
-                                    canvasLayout->updateElement(ep, false);
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
                                 }
                                 else {
                                     color.y -= 1;
@@ -340,15 +314,13 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_V: {
-                                if (!canvasLayout || !colorIndicator) {
+                                if (!hasCanvas() || !hasColorIndicator()) {
                                     break;
                                 }
 
                                 ElementParameters ep = changeColor(ivec3(0, 0, -1));
-                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
-                                    UpdateElementMessage message(ep);
-                                    client->sendToServer(message.getSerializedMessage());
-                                    canvasLayout->updateElement(ep, false);
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
                                 }
                                 else {
                                     color.z -= 1;
@@ -359,20 +331,19 @@ int main(int argc, char* argv[]) {
                                 break;
                             }
                             case SDL_SCANCODE_C: {
-                                if (!canvasLayout) {
+                                if (!hasCanvas()) {
                                     break;
                                 }
                                 copy();
                                 break;
                             }
                             case SDL_SCANCODE_P: {
-                                if (!canvasLayout) {
+                                if (!hasCanvas()) {
                                     break;
                                 }
                                 ElementParameters ep = paste();
-                                if (client && client->isConnected() && ep.elementType != guiElement::UNKNOWN) {
-                                    DrawElementMessage message(ep);
-                                    client->sendToServer(message.getSerializedMessage());
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::DRAW_ELEMENT);
                                 }
                                 break;
                             }
@@ -387,15 +358,12 @@ int main(int argc, char* argv[]) {
                                 ElementParameters ep = deleteText();
                                 if (ep.toBeDeleted) {
                                     currentInteractionState = InteractionState::IDLE;
-                                    if (client && client->isConnected()) {
-                                        DeleteElementMessage message(ep.name);
-                                        client->sendToServer(message.getSerializedMessage());
+                                    if (isClientConnected()) {
+                                        sendToServer(ep, MessageType::DELETE_ELEMENT);
                                     }
                                 } else {
-                                    if (client && client->isConnected()) {
-                                        UpdateElementMessage message(ep);
-                                        client->sendToServer(message.getSerializedMessage());
-                                        canvasLayout->updateElement(ep, false);
+                                    if (isClientConnected()) {
+                                        sendToServer(ep, MessageType::UPDATE_ELEMENT);
                                     }
                                 }
                                 break;
@@ -447,12 +415,12 @@ int main(int argc, char* argv[]) {
         }
 
         updateScreen(mode, points, point1, point2, point3);
-        if (server) {
-            server->processMessages();
+        if (isServer()) {
+            serverProcessMessages();
         }
         
-        if (client && client->isConnected()) {
-            client->processMessages();
+        if (isClientConnected()) {
+            clientProcessMessages();
         }
     }
     closeAll();

@@ -1,7 +1,10 @@
 #include "API.hpp"
 #include "Global.hpp"
+#include "DrawElementMessage.hpp"
+#include "DeleteElementMessage.hpp"
+#include "UpdateElementMessage.hpp"
 
-Layout* initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
+void initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         std::cerr << "Failed to init SDL3 " << SDL_GetError() << '\n';
         exit(1);
@@ -15,7 +18,6 @@ Layout* initialize(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2,
     pool = std::make_unique<ThreadPool>();
     Layout* rootLayout = createStartMenuLayout(mode, points, point1, point2, point3);
     SDL_StartTextInput(window);
-    return rootLayout;
 }
 
 void loadSound(std::string filePath) {
@@ -1120,4 +1122,127 @@ void playFreehandDrawSound() {
 
 void playDeleteSound() {
     EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/delete.wav", SoundActionType::PLAY, false));
+}
+
+bool isElementSelected() {
+    Selected& selected = Selected::getInstance();
+    if (selected.getSelectedElement() != nullptr) {
+        return true;
+    }
+    return false;
+}
+
+bool isClickInside(ivec2 mousePos) {
+    Selected& selected = Selected::getInstance();
+    if (selected.getSelectedElement() != nullptr) {
+        if (selected.isInside(mousePos)) {
+            return true;
+        }
+        return false;
+    }
+    return false;
+}
+
+bool isSelectedInputTextBox() {
+    Selected& selected = Selected::getInstance();
+    GuiElement* curr = selected.getSelectedElement();
+    if (curr != nullptr) {
+        if (dynamic_cast<InputTextBox*>(curr)) {
+            return true;
+        }
+        return false;
+    }
+    return false;
+}
+
+bool setSelectedElement(ivec2 mousePos) {
+    GuiElement* hit = canvasLayout->getElementAt(mousePos);
+    if (hit) {
+        Selected::getInstance().setSelectedElement(hit);
+        return true;
+    }
+    return false;
+}
+
+bool hasCanvas() {
+    if (!canvasLayout) {
+        return false;
+    }
+    return true;
+}
+
+bool hasColorIndicator() {
+    if (!colorIndicator) {
+        return false;
+    }
+    return true;
+}
+
+bool isClientConnected() {
+    if (client && client->isConnected()) {
+        return true;
+    }
+    return false;
+}
+
+void clientProcessMessages() {
+    if (isClientConnected()) {
+        client->processMessages();
+    }
+}
+
+void serverProcessMessages() {
+    if (server) {
+        server->processMessages();
+    }
+}
+
+bool isServer() {
+    if (server) {
+        return true;
+    }
+    return false;
+}
+
+void sendToServer(ElementParameters ep, MessageType type) {
+    if (client) {
+        std::string messageData = "";
+        switch (type) {
+            case MessageType::DRAW_ELEMENT: {
+                DrawElementMessage message(ep);
+                messageData = message.getSerializedMessage();
+                break;
+            }
+            case MessageType::DELETE_ELEMENT: {
+                DeleteElementMessage message(ep.name);
+                messageData = message.getSerializedMessage();
+                break;
+            }
+            case MessageType::UPDATE_ELEMENT: {
+                UpdateElementMessage message(ep);
+                messageData = message.getSerializedMessage();
+                canvasLayout->updateElement(ep, false);
+                break;
+            }
+            default: {
+                return;
+            }
+        }
+        if (!messageData.empty()) {
+            client->sendToServer(messageData);
+        }
+    }
+}
+
+void createEvent(ivec2 coordinate, EventType type) {
+    EventSystem& eventSystem = EventSystem::getInstance();
+    switch (type) {
+        case EventType::MOUSE_DOWN: {
+            eventSystem.push(std::make_unique<MouseDownEvent>(coordinate));
+            return;
+        }
+        default: {
+            return;
+        }
+    }
 }

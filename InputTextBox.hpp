@@ -12,7 +12,7 @@ class InputTextBox : public TextBox {
     private:
         bool visible = false;
     public:
-        InputTextBox(ElementParameters& ep);
+        InputTextBox(ElementParameters ep);
         GuiElement* clone() const;
         void draw(Screen *screen);
         void drawOverlay(Screen *screen);

@@ -1,12 +1,13 @@
 #include "MessageHandler.hpp"
 #include "ElementTypes.hpp"
+#include "MessageTypes.hpp"
 #include "ElementParameters.hpp"
 #include "jsonHelpers.hpp"
 #include "Factory.hpp"
 #include "Selected.hpp"
 
 
-MessageHandler::MessageHandler(Layout* layout, bool isServerHandler) : canvasLayout(layout), isServerHandler(isServerHandler) {}
+MessageHandler::MessageHandler(Layout* layout) : canvasLayout(layout) {}
 
 void MessageHandler::push(std::string message) {
     std::lock_guard<std::mutex> lock(queueMutex);

@@ -1,10 +1,10 @@
 # SP26_Team02
 
-# Quick Links to Classes
+# Quick Links
 - [Global](#global)
 - [API](#api)
 - [Enums](#enums)
-- [Network Client](#clientnetwork)
+- [Client](#clientnetwork)
 - [MessageHandler](#messageHandler)
 - [SocketMessage Class](#socketmessage)
 - [Event Class](#event)
@@ -26,6 +26,7 @@
 - [Freehand Class](#freehand)
 - [Ellipse Class](#ellipse)
 - [TextBox Class](#textbox)
+- [InputTextBox Class](#inputtextbox)
 - [Triangle Class](#triangle)
 - [Arrow Class](#arrow)
 - [Ellipse Class](#ellipse)
@@ -69,6 +70,11 @@ This module also:
 
 ### `const int X, Y`
 The size of the window to be opened, where `X` is the width and `Y` is the height
+
+---
+
+### `const int centerX, centerY`
+Center size of the window to be opened, where `centerX` is the width/2 and `centerY` is the height/2
 
 ---
 
@@ -212,6 +218,16 @@ A button that displays the current drawing color with no callback function
 
 ---
 
+### `Button* startDrawingButton`
+A button to connect to the server as the host
+
+---
+
+### `Button* connectToHostButtonr`
+A button that joins the server as the client
+
+---
+
 ### `Uint64 saveFlashUntil`
 Sets how long the save button flashes when clicked
 
@@ -268,6 +284,36 @@ A variable to hold the current cursor being used, initialized to `arrowCursor`
 
 ---
 
+### `std::unique_ptr<RelayServer> server`
+A pointer to the server to manage netowrk requests
+
+---
+
+### `std::unique_ptr<ClientNetwork> client`
+A pointer to the client to manage netowrk messaging from the server
+
+---
+
+### `std::unique_ptr<ThreadPool> pool`
+A pointer to a thread pool to handle multiple clients joining
+
+---
+
+### `std::string connectedHost`
+Stores the ip address of the connected host
+
+---
+
+### `bool isHost`
+Checks if the server connection was made by host.
+
+---
+
+### `const std::vector<const char*> hosts`
+Stores a vector of ip addresses the server can connect to.
+
+---
+
 ### `std::filesystem::path currentFileLoadPath`
 The filepath to the most recently loaded file. Used to determine where to save if the user tries to save without specifying a file path
 
@@ -278,10 +324,60 @@ The filepath to the most recently saved file. Used to determine where to save if
 
 ---
 
+### `InputTextBox* hostIpTextBox`
+
+Stores a pointer to the input text box used for entering the host IP address.
+
+---
+
+### `Button* submitHostIpButton`
+
+Stores a pointer to the button used to submit the entered host IP address and attempt to join a host.
+
+---
+
+### `bool pendingStartHost`
+
+Stores whether the program should start a host session after the current event cycle finishes.
+
+---
+
+### `bool pendingJoinHost`
+
+Stores whether the program should join a host after the current event cycle finishes.
+
+---
+
+### `std::atomic<bool> pendingDisconnect`
+
+Stores whether the program should safely disconnect after the current event cycle finishes, using an atomic flag for thread-safe access.
+
+---
+
+### `std::string pendingHostIp`
+
+Stores the IP address entered by the user before the program attempts to connect to the host.
+
+---
+
+### `Button* disconnectButton`
+
+Stores a pointer to the button used to leave the current network session and return to the start menu.
+
+---
+
+### `Button* welcomeMessage`
+
+Stores a pointer to the non-interactive welcome message displayed on the start menu.
+
+---
+
 ### `Button* pressedButton`
 A variable to hold the most recently pressed button, used to trigger the button effect if the mouse is still on the same button when the mouse button is released
 
 ---
+
+
 
 ## Functions
 
@@ -297,7 +393,17 @@ Creates a new `Screen` object, set to the size of the full window, and assigns i
 
 ---
 
-### `Layout* createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `Layout* createStartMenuLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Creates the `rootLayout`, welcome message textbox, and hostIpTextBox.
+Initializes the start menu buttons:
+- `startDrawingButton`
+- `connectToHostButton`
+- `muteButton`
+- `submitHostIpButton`
+
+---
+
+### `void createDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates and connects all layouts:
 - `rootLayout`
 - `canvasLayout`
@@ -305,7 +411,15 @@ Creates and connects all layouts:
 - `tempLayout`
 - Selection bounding layout
 
-Also initializes toolbar buttons
+Also initializes toolbar buttons and client
+
+---
+
+### `void switchToDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+- Delete rootLayout and clears layouts, textboxes, and buttons.
+- Calls createDrawingLayout(mode, points, point1, point2, point3) to be the main layout.
+- Calls resetGlobalPoints(points, point1, point2, point3)
+- Reset the current button to be select
 
 ---
 
@@ -346,6 +460,15 @@ Resets drawing state:
 
 ---
 
+### `void resetGlobalState()`
+Resets UI state:
+- sets layouts, buttons, and textboxes to nullptr
+- clears the host ip address and sets isHost to false
+- sets draggingElement to nullptr
+- clears the selected element and current event
+
+---
+
 ### `void saveCanvas(const std::string& filePath)`
 Saves the contents of `canvasLayout` to an XML file
 - Only the drawing is saved (not UI layouts)
@@ -373,6 +496,11 @@ Updates colors of **action buttons (Save/Load)**:
 - Reverts to normal color after a short delay
 
 ---
+
+### `updateLoadSavePermissions()`
+Changes the visibility of the load button depending client/host
+- If the host started the server, the load button is visible
+- If the client joined the server, the load button is not visible.
 
 # API
 
@@ -504,15 +632,15 @@ A call to delete the specified shape
 
 ---
 
-### `void updateScreen()`
-Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer`, draws an overlay, and updates button colors:
+### `void updateScreen(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer`, draws an overlay, updates button colors, and calls handlePendingActions(mode, points, point1, point2, point3):
 - Highlights the currently selected toolbar button  
 - Applies a temporary flash effect to the Save and Load buttons when clicked
 
 ---
 
 ### `void closeAll()`
-Deletes `soundPlayer`, `renderer`, `window`, and `screen`, then ends SDL text input and quits SDL
+Deletes `soundPlayer`, `renderer`, `window`, and `screen`, then ends SDL text input, quits SDL, stops the server/client, and resets the thread pool.
 
 ---
 
@@ -609,9 +737,212 @@ Helper function to play `delete.wav` when deleting an element
 
 ---
 
+### `bool isElementSelected()`
+Returns `true` if the `Selected` singleton has a selected `GuiElement`, `false` otherwise
+
+---
+
+### `bool isClickInside(ivec2 mousePos)`
+If the `Selected` singleton has a selected element, the `isInside()` method is called using `mousePos`
+- If `isInside()` returns `true`, this function returns `true`
+- If `isInside()` returns `false` or the `Selected` singleton does not have a selected element, `false` is returned
+
+---
+
+### `bool isSelectedInputTextBox()`
+Checks whether the selected element in `Selected` is an `InputTextBox`, returning `true` if so and `false` if not
+
+---
+
+### `bool setSelectedElement(ivec2 mousePos)`
+Checks whether `canvasLayout` has an element at `mousePos` using `getElementAt()`
+- If so, the selected element is set to the returned element and `true` is returned. Else, returns `false`
+
+---
+
+### `bool hasCanvas()`
+Checks whether `canvasLayout` has been set. Returns `true` if it has and `false` if it has not
+
+---
+
+### `bool hasColorIndicator()`
+Checks whether `colorIndicator` has been set. Returns `true` if it has and `false` if it has not
+
+---
+
+### `bool isClientConnected()`
+Checks whether `client` has been set and if `isConnected()` returns true
+- If both are true, returns `true`, else `false` is returned
+
+---
+
+### `void clientProcessMessages()`
+Calls `isClientConnected()`. If that returns `true`, `processMessages()` is called on `client`
+
+---
+
+### `void serverProcessMessages()`
+Checks if `server` has been set. If it is not `nullptr`, `processMessages()` is called on `server`
+
+---
+
+### `bool isServer()`
+Returns `true` if `server` is not `nullptr`, `false` otherwise
+
+---
+
+### `void sendToServer(ElementParameters ep, MessageType type)`
+First, checks if `client` has been set. If so, a new message is created depending on `type` and `getSerializedMessage()` is called on the new message
+- If the return value from `getSerializedMessage()` is not an empty string, the string data is sent to the server using `sendToServer()`
+
+---
+
+### `void createEvent(ivec2 coordinate, EventType type)`
+Creates a new event based on `type` and pushes the new event to the `EventSystem` with `coordinates` (if applicable)
+
+---
+
+### `handlePendingActions(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+
+Processes deferred networking and layout actions after the current event cycle finishes. This keeps layout switching and network shutdown/startup from happening directly inside button callbacks.
+
+### Actions:
+
+#### Start Host (`pendingStartHost`)
+
+If `pendingStartHost` is true, the program starts a new drawing session as the host.
+
+##### Behavior:
+
+* Resets the pending flag.
+* Sets `isHost = true`.
+* Switches to the drawing layout using `switchToDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`.
+* Creates a dedicated `serverLayout` for server-side element handling.
+* Initializes the server:
+
+```cpp
+server = std::make_unique<RelayServer>(serverLayout);
+```
+
+* Starts the server asynchronously using the thread pool:
+
+```cpp
+pool->enqueue([]() {
+    server->start();
+});
+```
+
+* Waits briefly to allow the server to initialize:
+
+```cpp
+std::this_thread::sleep_for(std::chrono::milliseconds(100));
+```
+
+* Connects the local client to the server:
+
+```cpp
+client->connectToServer("127.0.0.1", 40666);
+```
+
+* If the connection succeeds:
+
+  * Sets `connectedHost = "localhost"`.
+  * Starts receiving messages asynchronously:
+
+```cpp
+pool->enqueue([]() {
+    client->receiveMessages();
+});
+```
+
+
+#### Join Host (`pendingJoinHost`)
+
+If `pendingJoinHost` is true, the program connects to an existing host using the stored IP address.
+
+#### Behavior:
+
+* Resets the pending flag.
+* Copies the target IP from `pendingHostIp`.
+* Clears `pendingHostIp` so the same IP is not reused accidentally.
+* Switches to the drawing layout using `switchToDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`.
+* Attempts to connect to the specified host:
+
+```cpp
+client->connectToServer(ip.c_str(), 40666);
+```
+
+* If the connection succeeds:
+
+  * Stores the connected host:
+
+```cpp
+connectedHost = ip;
+```
+
+* Marks the current user as a client:
+
+```cpp
+isHost = false;
+```
+
+* Starts receiving messages asynchronously through the thread pool:
+
+```cpp
+pool->enqueue([]() {
+    client->receiveMessages();
+});
+```
+
+#### Disconnect (`pendingDisconnect`)
+
+If `pendingDisconnect` is true, the program leaves the current drawing session and returns to the start menu.
+
+#### Behavior:
+
+* Resets the pending flag.
+* Closes the client connection:
+
+```cpp
+client->closeConnection();
+```
+
+* Stops the server:
+
+```cpp
+server->stop();
+```
+
+* Frees networking resources:
+
+```cpp
+server.reset();
+client.reset();
+```
+
+* Deletes the current layout:
+
+```cpp
+delete rootLayout;
+```
+
+* Resets all global UI state:
+
+```cpp
+resetGlobalState();
+```
+
+* Rebuilds the start menu layout:
+
+```cpp
+rootLayout = createStartMenuLayout(mode, points, point1, point2, point3);
+```
+
+---
+
 # Enums
 
-### `enum class MessageType { DRAW_ELEMENT, DELETE_ELEMENT, UPDATE_ELEMENT, INITIALIZE_CLIENT }`
+### `enum class MessageType { DRAW_ELEMENT, DELETE_ELEMENT, UPDATE_ELEMENT, UPDATE_TEXT, INITIALIZE_CLIENT }`
 An enum to represent the type of message being create to be sent to the server
 
 ---
@@ -637,23 +968,111 @@ It is primarily used by the **Factory** to determine which object to instantiate
 
 ---
 
+### `enum class EventType { CLICK, SHOW, SOUND, MOUSE_DOWN, MOUSE_UP, MOUSE_MOTION, BUTTON_CLICK }`
+An enumeration used to create the corresponding event type
+
+---
+
+# RelayServer
+
+## Description
+The socket-based server that handles server-side networking for real time communication with and broadcasting to clients
+- Opens a `listener` TCP socket
+- Binds to the specified port `PORT`
+- Begins listening for messages once bound to `PORT`
+- Endlessly loops, waiting to accept new clients and handle them within their own dedicated threads
+- Sends all of its internal data to the newly connected client
+- Opens an endless loop to receive messages from each client within a thread
+
+## Member Data
+
+### `std::atomic<bool> running`
+Atomic bool that determines if the server is still running in a thread-safe way
+
+---
+
+### `SocketType listener`
+The stored listener socket that binds to `PORT` and listens for connections & messages
+
+---
+
+### `std::vector<SocketType> clients`
+Vector that stores all connected clients
+
+---
+
+### `std::mutex clientsMutex`
+Mutex used to update `clients` in a thread-safe way when a client connects or disconnects
+
+### `MessageHandler messageHandler`
+Used to process incoming messages and update the internal state of the server's `canvasLayout`
+
+## Public Methods
+
+### `void start()`
+Starts the server and readies it to receive messages
+- See Description block above for functionality
+
+---
+
+### `void stop()`
+Stops the server and closes all connections to it
+- Shuts down and closes each client connection within `clients`
+- Clears `clients`
+- Shuts down and closes the server's own `listener` socket
+
+---
+
+### `void processMessages()`
+Calls `messageHandler.processMessages()` to uphold information hiding while still processing received messages
+
+---
+
+## Private Methods
+These methods are private as they should only be called by the server internally. 
+No external code should have access to the server's internals in this way
+
+### `void removeClient(SocketType client)`
+Locks `clients` via `clientsMutex` for thread safety and erases
+`client` from `clients`, unlocking afterward
+
+---
+
+### `void handleClient(SocketType client)` 
+This function handles all messages received from `client` in an endless while loop while `client` is connected.
+- Always ran in a separate thread than the server
+- Upon connection, the server sends all of its data to `client` in an `InitiializeClientMessage`
+- Then, it enters the endless while loop, receiving messages from `client` until it disconnects
+
+---
+
+### `void sendToClient(const std::string& message, SocketType client)`
+Sends a `message` to a specific `client` as opposed to all clients in `broadcast`
+- Used predominantly for `InitializeClientMessage` upon client connection
+
+---
+
+### `void broadcast(const std::string& message, SocketType clientSender)`
+Sends `message` to each client in `clients` except for `clientSender`
+- Locks `clients` via `clientsMutex` to loop through all clients in a thread-safe way
+
+---
+
 # ClientNetwork
 
 ## Description
 Handles client-side networking for real-time communication with the server.
-
-This module:
 - Connects the client to a server using TCP sockets
-- Sends messages (e.g., drawing events or XML data)
+- Sends messages from drawing, dragging, or deleting `GuiElement`'s'
 - Receives messages asynchronously from the server
 - Manages connection lifecycle (open/close)
 - Enables real-time synchronization between multiple clients
 
 ---
 
-## Variables
+## Member Data
 
-### `int sock`
+### `int socketIdentifier`
 Stores the active socket connection.
 
 - Initialized to `-1`
@@ -663,20 +1082,31 @@ Stores the active socket connection.
 
 ---
 
+### `bool connected = false`
+Represents if the client is connected to the server or not
+
+---
+
+### `std::function<void()> onDisconnect`
+Callback functor that determines the client's action upon disconecting from the host server
+- Predominantly used to return to starting layout upon disconnect
+
+---
+
+### `MessageHandler messageHandler`
+Used to process incoming messages and update the internal state of the client's `canvasLayout`
+
+---
+
 ## Functions
 
 ### `bool connectToServer(const char* host, int port)`
-
 Establishes a connection to the server.
-
-#### Steps:
 - Creates a socket using `socket()`
 - Converts IP address using `inet_pton()`
 - Connects to server using `connect()`
-
-#### Returns:
-- `true` → connection successful  
-- `false` → connection failed  
+- `return true` → connection successful  
+- `return false` → connection failed  
 
 #### Example:
 ```cpp
@@ -684,40 +1114,27 @@ connectToServer("127.0.0.1", 40666);
 ```
 
 ### `void sendToServer(const std::string& message)`
-
 Sends a message to the server.
+- Appends a newline (`\n`) to each message as a delimiter
 
-#### Behavior
-Appends a newline (`\n`) to each message:
-```cpp
-std::string packet = message + "\n";
-```
-
-### `void receiveMessagesLoop()`
-
+### `void receiveMessages()`
 Continuously listens for incoming messages from the server.
-
-#### Behavior
-- Runs in a loop:
+- Runs in a loop until disconneted from the server:
 ```cpp
-while (sock >= 0)
+while (this->socketIdentifier >= 0)
 ```
 - Calls recv() to read data
 - Converts received bytes into a string
 - Prints messages to the console
 
-### Important:
-- This function is blocking
-- Must be run in a separate thread
+#### Important:
+- This function is blocking and must be run in a separate thread via `ThreadPool`
 
 ### `void closeConnection()`
-
 Closes the connection to the server.
-
-#### Behavior
-- Calls close(sock)
-- Sets sock = -1
-- Causes receiveMessagesLoop() to exit
+- Calls `close(this->socketIdentifier)`
+- Sets `this->socketIdentifier = -1`
+- Causes `receiveMessages()` to stop looping
 
 ---
 
@@ -729,12 +1146,15 @@ Handles receiving messages from other clients to the server or from server to cl
 - Provides controlled access to queued messages
 - Updates clients and the server corresponding to each message type
 
-Each client will hold its own `MessageHandler` to handle incoming messages, and the server holds its own `MessageHandler` as well
+Each client holds its own `MessageHandler` to handle incoming messages, and the server holds its own `MessageHandler` as well
 
 ## Data Members
 
 ### `std::queue<std::string> messageQueue`
 Queue for holding messages that need to be handled by the handler
+
+### `std::mutex queueMutex`
+Mutex that locks `messageQueue` to perform operations on it in a thread-safe way
 
 ---
 
@@ -757,6 +1177,7 @@ Pushes `message` onto the queue and transfers ownership of `message` to the queu
 
 ### `bool processMessages()`
 Processes all queued messages and propogates changes to `canvasLayout`
+- Locks `messageQueue` to swap its contents with `localQueue` to process all queued messages and still leave `messageQueue` unlocked to receive messages later on
 - Parses each message into JSON format
 - Calls the corresponding handler function for the message type to propogate change through the system
 
@@ -782,6 +1203,11 @@ element to the `canvasLayout`
 ### `handleInitializeClient(json j)`
 Clears all elements from `canvasLayout` to integrate the new client (or reconnected and desynced client) to the server's drawn state
 - Parses through the JSON array to create an `ElementParameters` object for each item in the array and add the corresponding element to the `canvasLayout`
+
+---
+
+### `Layout* getCanvasLayout()`
+Returns `canvaslayout`
 
 ---
 
@@ -950,30 +1376,46 @@ Similar to `GuiElement` every event type implements this class, currently suppor
 - `MouseMotionEvent`
 - `MouseUpEvent`
 
+---
+
 ## Data Members
 
 ### `EventType type`
 This is an enum identifying the type of object passed down, useful in polymorphism
+
+---
 
 ## Methods
 
 ### `Event()`
 Default constructor
 
+---
+
 ### `Event(EventType t)`
 Constructs an `Event` object with type = t
+
+---
 
 ### `Event(const Event& cp)`
 Default copy constructor
 
+---
+
 ### `operator=(const Event& rhs)`
 Default = operator overload
+
+---
 
 ### `virtual ~Event()`
 Default destructor, virtual for polymorphism
 
+---
+
 ### `EventType getType()`
 Returns the `Event`'s `type`
+
+---
 
 # ClickEvent
 
@@ -981,24 +1423,36 @@ Returns the `Event`'s `type`
 `ClickEvent` represents a mouse click event, inheriting from `Event`. It contains the coordinates of the click to be used for event
 handling in `GuiElement::resolveEvent`
 
+---
+
 ## Data Members
 
 ### `int mouseX`
 The x coordinate of the click
 
+---
+
 ### `int mouseY` 
 The y coordinate of the click
+
+---
 
 ## Methods
 
 ### `ClickEvent(int x, int y)`
 Constructor for `ClickEvent`. Sets `mouseX` to `x` and `mouseY` to `y`
 
+---
+
 ### `int getMouseX()`
 Returns the x coordinate of the click
 
+---
+
 ### `int getMouseY()`
 Returns the y coordinate of the click
+
+---
 
 # MouseEvent
 
@@ -1087,59 +1541,93 @@ Calls `MouseEvent` constructor with `EventType::MOUSE_UP` and `coords`
 ## Description
 `ShowEvent` represents an event to show or hide a `Layout`. It contains the name of the `Layout` to be shown or hidden and a `ShowActionType` to determine whether the `Layout` should be shown or hidden
 
+---
+
 ## Data Members
 
 ### `std::string layoutName`
 The name of the `Layout` to be shown or hidden
 
+---
+
 ### `ShowActionType action`
 An enum to determine whether the `Layout` should be shown or hidden. Can be `ShowActionType::SHOW` or `ShowActionType::HIDE`
+
+---
 
 ## Methods
 
 ### `ShowEvent(std::string name)`
 Constructor for `ShowEvent`. Sets `layoutName` to `layoutName` and `action` to `ShowActionType::SHOW` by default
 
+---
+
 ### `ShowEvent(std::string name, ShowActionType act)`
 Constructor for `ShowEvent`. Sets `layoutName` to `layoutName` and `action` to `act`
+
+---
 
 ### `const std::string& getLayoutName()`
 Returns the name of the `Layout` to be shown or hidden
 
+---
+
 ### `ShowActionType getAction()`
 Returns the `ShowActionType` of the event
+
+---
 
 # SoundEvent
 
 ## Description
 `SoundEvent` represents an event to play, pause, or stop a sound. It contains the name of the sound and a `SoundActionType` to determine whether the sound should be played, paused, or stopped
 
+---
+
 ## Data Members
+
 ### `std::string soundName`
 The name of the sound to be played, paused, or stopped. Can be a file path or a sound name
+
+---
 
 ### `SoundActionType action`
 An enum to determine whether the sound should be played, paused, or stopped. Can be `SoundActionType::PLAY`, `SoundActionType::PAUSE`, or `SoundActionType::STOP`
 
+---
+
 ### `bool loop = false`
 A boolean to determine whether the sound should be looped or not when played. Loops when set to true
 
+---
+
 ## Methods
+
 ### `SoundEvent(const std::string& name)`
 Constructor for `SoundEvent`. Sets `soundName` to `name` and initializes `action` to `SoundActionType::PLAY` and `loop` to `false`
+
+---
 
 ### `SoundEvent(const std::string& name, SoundActionType act, bool shouldLoop = false)`
 Constructor for `SoundEvent`. Sets `soundName` to `name`, `action` to `act`, and `loop` to `shouldLoop`
 - Allows the user to specify whether the sound should be looped when played
 
+---
+
 ### `const std::string& getSoundName()`
 Returns the name of the sound to be played, paused, or stopped
+
+---
 
 ### `SoundActionType getAction()`
 Returns the `SoundActionType` of the event
 
+---
+
 ### `bool shouldLoop()`
 Returns whether the sound should be looped when played or not
+
+---
 
 # Sound
 
@@ -1606,6 +2094,11 @@ The minimum point of a `Freehand` object
 ### `ivec2 maxBound`
 The maximum point of a `Freehand` object
 - Initialized to `ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest())`
+
+---
+
+### `bool toBeDeleted`
+Used to signal if a `GuiElement` object should be deleted, primarily for `TextBox`
 
 ---
 
@@ -2107,10 +2600,19 @@ Iterates through stored elements, removing `element` from the vector if found
 
 ---
 
+### `GuiElement* updateElement(ElementParameters ep)`
+Iterates through stored elements, & updates the element whose name is equal to `ep.name`
+- Finds the type of the found object and updates its parameters according to the type
+
+---
+
 ### `ElementParameters getParameters()`
 Gathers all attributes into one struct, which is then returned
 
 ---
+
+### `std::vector<ElementParameters> getChildElementParameters()`
+Gathers all attributes of the `Layout`'s children by calling `element->getParameters()` on each of them
 
 ### `guiElement getType()`
 Returns `guiElement::LAYOUT`
@@ -2732,6 +3234,72 @@ Adds the `newColor` increment to `color`, resetting a color value to `0` or `255
 
 ## UML Diagram
 ![UML Diagram](images/TextBox_UML.png)
+
+---
+
+# InputTextBox
+
+## Description
+`InputTextBox` is a class used for storing and drawing a text box to a `Screen` object to be read as input.
+It inherits from the `TextBox` class.
+
+---
+
+## Data Members
+
+### `bool visible`
+Indicates whether the text box is currently visible.  
+
+---
+
+## Methods
+
+
+### `InputTextBox(ElementParameters ep)`
+Constructor taking in an `ElementParameters` struct.  
+Calls the `TextBox(ep)` constructor and then sets:
+- `visible` from `ep.active`
+
+---
+
+###  `void draw(Screen *screen)`
+Draws the box if the `InputTextBox` is visible.
+
+---
+
+### `void drawOverlay(Screen* screen)`
+Draws the text content and, if appropriate, a blinking cursor:
+- Calls TextBox::drawOverlay(screen) if the `InputTextBox` is active. 
+
+---
+
+### `GuiElement* clone()`
+Returns a clone of the `InputTextBox` element
+
+---
+
+### `void setVisible(bool value)`
+Sets whether the text box is visible.
+
+---
+
+### `bool isVisible() const`
+Returns whether the text box is currently visible.
+
+---
+
+### `void writeXml(std::ostream& out, int depth) const`
+Does not save to an xml file. This is not intended to save an xml file. It is purely used for input.
+
+---
+
+### `bool resolveEvent(Event* event)`
+Overrides `GuiElement::resolveEvent` to handle click events. If the textbox is visible and receives a click, it activates itself (gains typing focus) and registers itself as the currently selected element using the `Selected` singleton, then returns `true` to indicate the event was handled. Otherwise, returns `false` to allow event propagation to continue.
+
+
+
+## UML Diagram
+![UML Diagram](images/InputTextBox_UML.png)
 
 ---
 
@@ -3380,12 +3948,12 @@ The callback function to be called when this button is clicked. Set by the user 
 ## Methods
 
 ### `Button()`
-The default constructor. Initializes `text` and `callbackName` to empty strings and `callback` to an empty lambda function
+The default constructor. Initializes `text` and `callbackName` to empty strings, `active` to true, and `callback` to an empty lambda function
 
 ---
 
 ### `Button(const Button& cp)`
-Copy assignment operator. Takes attributes from `cp` to pass into `Box` default constructor and set `text`, `callbackName`, and `callback` for this new `Button`
+Copy assignment operator. Takes attributes from `cp` to pass into `Box` default constructor and set `text`, `callbackName`, `active`, and `callback` for this new `Button`
 
 ---
 
@@ -3403,13 +3971,29 @@ Inequlity operator. Returns the inverse of the equality operator
 Constructor that takes in an `ElementParameters` struct. Called via `Factory`
 - Calls `validateAndNormalize` on `ep`
   - Throws an exception if `validateAndNormalize` returns `false` to prevent the object from being created
-- Sets the `text`, `callbackName`, and `callback` attributes based on the corresponding data in `ep`
+- Sets the `text`, `callbackName`, `active`, and `callback` attributes based on the corresponding data in `ep`
 - Passes `ep` to the `Box` constructor to set the geometry and color attributes for this `Button`
 
 ---
 
 ### `Button(ivec2 min, ivec2 max, ivec3 color, const std::function<void()>& callback, const std::string& callbackName, const std::string& text)`
 Initializes the button with the given geometry and color via `Box` constructor, and sets the callback function, callback name, and label text
+
+---
+
+###  `void draw(Screen *screen)`
+Draws the box if the `Button` is active.
+
+---
+
+### `void drawOverlay(Screen* screen)`
+Draws the text label inside the button content if active is true.
+- Calls screen->drawTextCentered(min, max, text, textColor) 
+
+---
+
+### `void setActive(bool value)`
+Sets `active` to `value`, toggling the `Button` active (able to be drawn) or not
 
 ---
 

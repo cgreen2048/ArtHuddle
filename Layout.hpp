@@ -46,7 +46,7 @@ class Layout : public GuiElement {
         void clearElements();
         void deleteElement(const std::string& elementName);
         GuiElement* removeElement(const std::string& elementName);
-        bool updateElement(ElementParameters ep, bool preserveSelection);
+        bool updateElement(ElementParameters ep);
         bool validateAndNormalize(ElementParameters& ep);
         ElementParameters getParameters();
         std::vector<ElementParameters> getChildElementParameters();
