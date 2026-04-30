@@ -73,6 +73,11 @@ The size of the window to be opened, where `X` is the width and `Y` is the heigh
 
 ---
 
+### `const int centerX, centerY`
+Center size of the window to be opened, where `centerX` is the width/2 and `centerY` is the height/2
+
+---
+
 ### `SDL_Window* window`
 A pointer to an `SDL_Window` object to show visual information
 
@@ -213,6 +218,16 @@ A button that displays the current drawing color with no callback function
 
 ---
 
+### `Button* startDrawingButton`
+A button to connect to the server as the host
+
+---
+
+### `Button* connectToHostButtonr`
+A button that joins the server as the client
+
+---
+
 ### `Uint64 saveFlashUntil`
 Sets how long the save button flashes when clicked
 
@@ -269,6 +284,36 @@ A variable to hold the current cursor being used, initialized to `arrowCursor`
 
 ---
 
+### `std::unique_ptr<RelayServer> server`
+A pointer to the server to manage netowrk requests
+
+---
+
+### `std::unique_ptr<ClientNetwork> client`
+A pointer to the client to manage netowrk messaging from the server
+
+---
+
+### `std::unique_ptr<ThreadPool> pool`
+A pointer to a thread pool to handle multiple clients joining
+
+---
+
+### `std::string connectedHost`
+Stores the ip address of the connected host
+
+---
+
+### `bool isHost`
+Checks if the server connection was made by host.
+
+---
+
+### `const std::vector<const char*> hosts`
+Stores a vector of ip addresses the server can connect to.
+
+---
+
 ### `std::filesystem::path currentFileLoadPath`
 The filepath to the most recently loaded file. Used to determine where to save if the user tries to save without specifying a file path
 
@@ -279,10 +324,60 @@ The filepath to the most recently saved file. Used to determine where to save if
 
 ---
 
+### `InputTextBox* hostIpTextBox`
+
+Stores a pointer to the input text box used for entering the host IP address.
+
+---
+
+### `Button* submitHostIpButton`
+
+Stores a pointer to the button used to submit the entered host IP address and attempt to join a host.
+
+---
+
+### `bool pendingStartHost`
+
+Stores whether the program should start a host session after the current event cycle finishes.
+
+---
+
+### `bool pendingJoinHost`
+
+Stores whether the program should join a host after the current event cycle finishes.
+
+---
+
+### `std::atomic<bool> pendingDisconnect`
+
+Stores whether the program should safely disconnect after the current event cycle finishes, using an atomic flag for thread-safe access.
+
+---
+
+### `std::string pendingHostIp`
+
+Stores the IP address entered by the user before the program attempts to connect to the host.
+
+---
+
+### `Button* disconnectButton`
+
+Stores a pointer to the button used to leave the current network session and return to the start menu.
+
+---
+
+### `Button* welcomeMessage`
+
+Stores a pointer to the non-interactive welcome message displayed on the start menu.
+
+---
+
 ### `Button* pressedButton`
 A variable to hold the most recently pressed button, used to trigger the button effect if the mouse is still on the same button when the mouse button is released
 
 ---
+
+
 
 ## Functions
 
@@ -298,7 +393,17 @@ Creates a new `Screen` object, set to the size of the full window, and assigns i
 
 ---
 
-### `Layout* createRootLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+### `Layout* createStartMenuLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Creates the `rootLayout`, welcome message textbox, and hostIpTextBox.
+Initializes the start menu buttons:
+- `startDrawingButton`
+- `connectToHostButton`
+- `muteButton`
+- `submitHostIpButton`
+
+---
+
+### `void createDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
 Creates and connects all layouts:
 - `rootLayout`
 - `canvasLayout`
@@ -306,7 +411,15 @@ Creates and connects all layouts:
 - `tempLayout`
 - Selection bounding layout
 
-Also initializes toolbar buttons
+Also initializes toolbar buttons and client
+
+---
+
+### `void switchToDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+- Delete rootLayout and clears layouts, textboxes, and buttons.
+- Calls createDrawingLayout(mode, points, point1, point2, point3) to be the main layout.
+- Calls resetGlobalPoints(points, point1, point2, point3)
+- Reset the current button to be select
 
 ---
 
@@ -347,6 +460,15 @@ Resets drawing state:
 
 ---
 
+### `void resetGlobalState()`
+Resets UI state:
+- sets layouts, buttons, and textboxes to nullptr
+- clears the host ip address and sets isHost to false
+- sets draggingElement to nullptr
+- clears the selected element and current event
+
+---
+
 ### `void saveCanvas(const std::string& filePath)`
 Saves the contents of `canvasLayout` to an XML file
 - Only the drawing is saved (not UI layouts)
@@ -374,6 +496,11 @@ Updates colors of **action buttons (Save/Load)**:
 - Reverts to normal color after a short delay
 
 ---
+
+### `updateLoadSavePermissions()`
+Changes the visibility of the load button depending client/host
+- If the host started the server, the load button is visible
+- If the client joined the server, the load button is not visible.
 
 # API
 
@@ -505,15 +632,15 @@ A call to delete the specified shape
 
 ---
 
-### `void updateScreen()`
-Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer`, draws an overlay, and updates button colors:
+### `void updateScreen(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+Clears the screen, processes events, draws all elements in `rootLayout`, then renders using `renderer`, draws an overlay, updates button colors, and calls handlePendingActions(mode, points, point1, point2, point3):
 - Highlights the currently selected toolbar button  
 - Applies a temporary flash effect to the Save and Load buttons when clicked
 
 ---
 
 ### `void closeAll()`
-Deletes `soundPlayer`, `renderer`, `window`, and `screen`, then ends SDL text input and quits SDL
+Deletes `soundPlayer`, `renderer`, `window`, and `screen`, then ends SDL text input, quits SDL, stops the server/client, and resets the thread pool.
 
 ---
 
@@ -672,6 +799,144 @@ First, checks if `client` has been set. If so, a new message is created dependin
 
 ### `void createEvent(ivec2 coordinate, EventType type)`
 Creates a new event based on `type` and pushes the new event to the `EventSystem` with `coordinates` (if applicable)
+
+---
+
+### `handlePendingActions(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`
+
+Processes deferred networking and layout actions after the current event cycle finishes. This keeps layout switching and network shutdown/startup from happening directly inside button callbacks.
+
+### Actions:
+
+#### Start Host (`pendingStartHost`)
+
+If `pendingStartHost` is true, the program starts a new drawing session as the host.
+
+##### Behavior:
+
+* Resets the pending flag.
+* Sets `isHost = true`.
+* Switches to the drawing layout using `switchToDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`.
+* Creates a dedicated `serverLayout` for server-side element handling.
+* Initializes the server:
+
+```cpp
+server = std::make_unique<RelayServer>(serverLayout);
+```
+
+* Starts the server asynchronously using the thread pool:
+
+```cpp
+pool->enqueue([]() {
+    server->start();
+});
+```
+
+* Waits briefly to allow the server to initialize:
+
+```cpp
+std::this_thread::sleep_for(std::chrono::milliseconds(100));
+```
+
+* Connects the local client to the server:
+
+```cpp
+client->connectToServer("127.0.0.1", 40666);
+```
+
+* If the connection succeeds:
+
+  * Sets `connectedHost = "localhost"`.
+  * Starts receiving messages asynchronously:
+
+```cpp
+pool->enqueue([]() {
+    client->receiveMessages();
+});
+```
+
+
+#### Join Host (`pendingJoinHost`)
+
+If `pendingJoinHost` is true, the program connects to an existing host using the stored IP address.
+
+#### Behavior:
+
+* Resets the pending flag.
+* Copies the target IP from `pendingHostIp`.
+* Clears `pendingHostIp` so the same IP is not reused accidentally.
+* Switches to the drawing layout using `switchToDrawingLayout(DrawingMode& mode, int& points, ivec2& point1, ivec2& point2, ivec2& point3)`.
+* Attempts to connect to the specified host:
+
+```cpp
+client->connectToServer(ip.c_str(), 40666);
+```
+
+* If the connection succeeds:
+
+  * Stores the connected host:
+
+```cpp
+connectedHost = ip;
+```
+
+* Marks the current user as a client:
+
+```cpp
+isHost = false;
+```
+
+* Starts receiving messages asynchronously through the thread pool:
+
+```cpp
+pool->enqueue([]() {
+    client->receiveMessages();
+});
+```
+
+#### Disconnect (`pendingDisconnect`)
+
+If `pendingDisconnect` is true, the program leaves the current drawing session and returns to the start menu.
+
+#### Behavior:
+
+* Resets the pending flag.
+* Closes the client connection:
+
+```cpp
+client->closeConnection();
+```
+
+* Stops the server:
+
+```cpp
+server->stop();
+```
+
+* Frees networking resources:
+
+```cpp
+server.reset();
+client.reset();
+```
+
+* Deletes the current layout:
+
+```cpp
+delete rootLayout;
+```
+
+* Resets all global UI state:
+
+```cpp
+resetGlobalState();
+```
+
+* Rebuilds the start menu layout:
+
+```cpp
+rootLayout = createStartMenuLayout(mode, points, point1, point2, point3);
+```
 
 ---
 
