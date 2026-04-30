@@ -1221,7 +1221,7 @@ void sendToServer(ElementParameters ep, MessageType type) {
             case MessageType::UPDATE_ELEMENT: {
                 UpdateElementMessage message(ep);
                 messageData = message.getSerializedMessage();
-                canvasLayout->updateElement(ep, false);
+                canvasLayout->updateElement(ep);
                 break;
             }
             default: {

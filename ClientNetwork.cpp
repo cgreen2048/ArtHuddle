@@ -1,6 +1,6 @@
 #include "ClientNetwork.hpp"
 
-ClientNetwork::ClientNetwork(Layout* layout) : messageHandler(MessageHandler(layout, false)) {}
+ClientNetwork::ClientNetwork(Layout* layout) : messageHandler(MessageHandler(layout)) {}
 
 bool ClientNetwork::connectToServer(const char* host, int port) {
     this->socketIdentifier = socket(AF_INET, SOCK_STREAM, 0);

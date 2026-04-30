@@ -78,7 +78,7 @@ bool MessageHandler::handleDeleteElement(json j) {
 
 bool MessageHandler::handleUpdateElement(json j) {
     ElementParameters ep = jsonToElementParameters(j);
-    canvasLayout->updateElement(ep, !this->isServerHandler);
+    canvasLayout->updateElement(ep);
     return false;
 }
 
