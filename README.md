@@ -968,10 +968,11 @@ It is primarily used by the **Factory** to determine which object to instantiate
 
 ---
 
-<<<<<<< HEAD
 ### `enum class EventType { CLICK, SHOW, SOUND, MOUSE_DOWN, MOUSE_UP, MOUSE_MOTION, BUTTON_CLICK }`
 An enumeration used to create the corresponding event type
-=======
+
+---
+
 # RelayServer
 
 ## Description
@@ -1054,7 +1055,6 @@ Sends a `message` to a specific `client` as opposed to all clients in `broadcast
 ### `void broadcast(const std::string& message, SocketType clientSender)`
 Sends `message` to each client in `clients` except for `clientSender`
 - Locks `clients` via `clientsMutex` to loop through all clients in a thread-safe way
->>>>>>> 3eeb7e5 (Adding docs and UML for ClientNetwork and RelayServer)
 
 ---
 
