@@ -21,7 +21,7 @@
 #define BUFFER_SIZE 512
 
 RelayServer::RelayServer(Layout* layout)
-    : running(false), listener(INVALID_SOCKET), messageHandler(MessageHandler(layout, true)) {}
+    : running(false), listener(INVALID_SOCKET), messageHandler(MessageHandler(layout)) {}
 
 void RelayServer::start() {
     running = true;
