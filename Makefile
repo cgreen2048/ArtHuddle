@@ -26,12 +26,12 @@ MESSAGE_ELEMENTS := src/network/ClientNetwork.cpp src/network/DeleteElementMessa
 test:
 	$(CXX) tests/tests.cpp $(TEST_CXXFLAGS) $(TEST_LDFLAGS) $(LDLIBS)
 
-	$(CXX) Matrix.cpp tests/Milestone001Tests.cpp $(TEST_CXXFLAGS) $(TEST_LDFLAGS) $(LDLIBS) -o milestone001
+	$(CXX) src/core/Matrix.cpp tests/Milestone001Tests.cpp $(TEST_CXXFLAGS) $(TEST_LDFLAGS) $(LDLIBS) -o milestone001
 
-	$(CXX) Screen.cpp UtilityElements/ThreadPool.cpp tests/Milestone002Tests.cpp \
+	$(CXX) src/elements/Screen.cpp src/utility/ThreadPool.cpp tests/Milestone002Tests.cpp \
 		$(TEST_CXXFLAGS) $(TEST_LDFLAGS) $(LDLIBS) -o milestone002
 
-	$(CXX) Screen.cpp UtilityElements/ThreadPool.cpp tests/screenDemo.cpp \
+	$(CXX) src/elements/Screen.cpp src/utility/ThreadPool.cpp tests/screenDemo.cpp \
 	 	$(TEST_CXXFLAGS) $(TEST_LDFLAGS) $(LDLIBS) -o screenDemo
 
 	$(CXX) tests/Milestone003Tests.cpp $(FACTORY_ELEMENTS) $(EVENT_ELEMENTS) $(UTILITY_ELEMENTS) \
@@ -95,13 +95,13 @@ testsStudentMachine:
 	$(CXX) tests/tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
 
 milestone001StudentMachine:
-	$(CXX) Matrix.cpp tests/Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone001
+	$(CXX) src/core/Matrix.cpp tests/Milestone001Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone001
 
 milestone002StudentMachine:
-	$(CXX) Screen.cpp UtilityElements/ThreadPool.cpp tests/Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone002
+	$(CXX) src/elements/Screen.cpp src/utility/ThreadPool.cpp tests/Milestone002Tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o milestone002
 
 screenDemoStudentMachine:
-	$(CXX) Screen.cpp UtilityElements/ThreadPool.cpp tests/screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
+	$(CXX) src/elements/Screen.cpp src/utility/ThreadPool.cpp tests/screenDemo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o screenDemo
 
 milestone003StudentMachine:
 	$(CXX) tests/Milestone003Tests.cpp $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) \
@@ -184,15 +184,15 @@ freehandDemoMac:
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o freehandDemo
 
 milestone001Mac:
-	$(CXX) Matrix.cpp tests/Milestone001Tests.cpp \
+	$(CXX) src/core/Matrix.cpp tests/Milestone001Tests.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone001
 
 milestone002Mac:
-	$(CXX) Screen.cpp UtilityElements/ThreadPool.cpp tests/Milestone002Tests.cpp \
+	$(CXX) src/elements/Screen.cpp src/utility/ThreadPool.cpp tests/Milestone002Tests.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o milestone002
 
 screenDemoMac:
-	$(CXX) Screen.cpp UtilityElements/ThreadPool.cpp tests/screenDemo.cpp \
+	$(CXX) src/elements/Screen.cpp src/utility/ThreadPool.cpp tests/screenDemo.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o screenDemo
 
 milestone003Mac:
