@@ -79,7 +79,7 @@ test:
 	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS)   tests/LayoutDeleteTest.cpp \
 		$(TEST_CXXFLAGS) $(TEST_LDFLAGS) $(LDLIBS) -o layoutDelete
 	
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) src/network/ClientNetwork.cpp src/network/RelayServer.cpp src/core/Global.cpp src/core/API.cpp apps/main.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) src/core/Global.cpp src/core/API.cpp main.cpp \
 		$(TEST_CXXFLAGS) $(TEST_LDFLAGS) $(LDLIBS) -o main
 
 
@@ -89,7 +89,7 @@ studentMachine: testsStudentMachine freehandDemoStudentMachine milestone001Stude
 	layoutDemoStudentMachine milestone006StudentMachine milestone006EventSystemStudentMachine \
 	milestone006DemoStudentMachine ellipseDemoStudentMachine arrowDemoStudentMachine \
 	textBoxDemoStudentMachine textInButtonDemoStudentMachine selectedDemoStudentMachine \
-	layoutDeleteStudentMachine mainStudentMachine 
+	layoutDeleteStudentMachine mainStudentMachine
 
 testsStudentMachine:
 	$(CXX) tests/tests.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
@@ -164,7 +164,7 @@ layoutDeleteStudentMachine:
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o layoutDelete
 
 mainStudentMachine:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) src/network/ClientNetwork.cpp src/network/RelayServer.cpp src/core/Global.cpp src/core/API.cpp apps/main.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) src/core/Global.cpp src/core/API.cpp main.cpp \
 		$(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -o main
 
 
@@ -252,7 +252,7 @@ layoutDeleteMac:
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o layoutDelete
 	
 mainMac:
-	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) src/network/ClientNetwork.cpp src/network/RelayServer.cpp src/core/Global.cpp src/core/API.cpp apps/main.cpp \
+	$(CXX) $(EVENT_ELEMENTS) $(FACTORY_ELEMENTS) $(UTILITY_ELEMENTS) $(MESSAGE_ELEMENTS) src/core/Global.cpp src/core/API.cpp main.cpp \
 		$(MAC_CXXFLAGS) $(MAC_LDFLAGS) $(MAC_LDLIBS) -o main
 
 clean:

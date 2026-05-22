@@ -1,4 +1,4 @@
-#include "ArtHuddle/core/API.hpp"
+#include "include/ArtHuddle/core/API.hpp"
 #include <memory>
 
 int main(int argc, char* argv[]) {
@@ -15,8 +15,8 @@ int main(int argc, char* argv[]) {
     initialize(mode, points, point1, point2, point3);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    loadSound("../SFX/song2.wav");
-    playSound("../SFX/song2.wav", true);
+    loadSound("SFX/song2.wav");
+    playSound("SFX/song2.wav", true);
     std::cout << "Escape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
 
     ivec2 lastMousePos;

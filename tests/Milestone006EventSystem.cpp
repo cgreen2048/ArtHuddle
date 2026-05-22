@@ -207,7 +207,7 @@ int processEventsSoundTest() {
     EventSystem& system = EventSystem::getInstance();
     TestLayout root;
 
-    system.push(std::make_unique<SoundEvent>("../SFX/song.wav", SoundActionType::PLAY, false));
+    system.push(std::make_unique<SoundEvent>("SFX/song.wav", SoundActionType::PLAY, false));
 
     system.processEvents(&root);
     SDL_Delay(5000);
@@ -230,7 +230,7 @@ int processEventsMixedDispatchTest() {
     TestLayout root;
 
     system.push(std::make_unique<Event>(EventType::CLICK));
-    system.push(std::make_unique<SoundEvent>("../SFX/song.wav", SoundActionType::PLAY, true));
+    system.push(std::make_unique<SoundEvent>("SFX/song.wav", SoundActionType::PLAY, true));
     system.push(std::make_unique<Event>(EventType::SHOW));
 
     system.processEvents(&root);

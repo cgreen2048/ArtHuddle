@@ -160,5 +160,5 @@ void spawnEvents() {
     std::cout << "Button clicked, spawning events\n";
     EventSystem& eventSystem = EventSystem::getInstance();
     eventSystem.push(std::make_unique<ShowEvent>("nestedLayout", ShowActionType::SHOW));
-    eventSystem.push(std::make_unique<SoundEvent>("../SFX/song.wav", SoundActionType::PLAY, false));
+    eventSystem.push(std::make_unique<SoundEvent>("SFX/song.wav", SoundActionType::PLAY, false));
 }

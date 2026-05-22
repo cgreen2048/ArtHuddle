@@ -1109,19 +1109,19 @@ void resetPoints(int& point, ivec2& point1, ivec2& point2, ivec2& point3) {
 }
 
 void playDrawClickSound() {
-    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/draw_click.wav", SoundActionType::PLAY, false));
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("SFX/draw_click.wav", SoundActionType::PLAY, false));
 }
 
 void playButtonClickSound() {
-    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/button_click.wav", SoundActionType::PLAY, false));
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("SFX/button_click.wav", SoundActionType::PLAY, false));
 }
 
 void playFreehandDrawSound() {
-    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/freehand_draw.wav", SoundActionType::PLAY, false));
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("SFX/freehand_draw.wav", SoundActionType::PLAY, false));
 }
 
 void playDeleteSound() {
-    EventSystem::getInstance().push(std::make_unique<SoundEvent>("../SFX/delete.wav", SoundActionType::PLAY, false));
+    EventSystem::getInstance().push(std::make_unique<SoundEvent>("SFX/delete.wav", SoundActionType::PLAY, false));
 }
 
 bool isElementSelected() {
