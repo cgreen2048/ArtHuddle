@@ -1,0 +1,55 @@
+#ifndef __FREEHAND_HPP__
+#define __FREEHAND_HPP__
+
+#include "ArtHuddle/elements/GuiElement.hpp"
+#include "ArtHuddle/events/Event.hpp"
+#include "ArtHuddle/core/ElementParameters.hpp"
+#include <set>
+
+#define PIXEL_DRAW_DIST_THRESHOLD 3
+#define SHAPE_COMPLETION_DIST_THRESHOLD 10
+// #define FREEHAND_PADDING 10
+
+class Freehand : public GuiElement {
+    private:
+        std::vector<ivec2> points;
+        bool hasFirstPoint = false;
+        ivec2 lastDrawnPoint; 
+        bool finished = false;
+        bool isFreehandShape = false;
+        ivec3 color;
+        TagType colorType = TagType::Vec;
+        // ivec2 minBound;
+        // ivec2 maxBound;
+        bool hasBounds = false;
+    public:
+        Freehand();
+        Freehand(ivec3 color, bool isFreehandShape = false);
+        Freehand(const Freehand& cp);
+        Freehand(ElementParameters ep);
+        void draw(Screen *screen);
+        void floodFill(ivec2 start, Screen* screen);
+        void updateBounds(const ivec2& point);
+        GuiElement* clone() const;
+        void writeXml(std::ostream& out, int depth) const;
+        bool resolveEvent(Event *e);
+        bool validateAndNormalize(ElementParameters& ep);
+        bool isInside(ivec2 coordinates);
+        bool isFinished() const;
+        bool isFreehandShapeMode() const;
+        std::vector<ivec2>& getPoints();
+        ivec2 getMinBound() const;
+        ivec2 getMaxBound() const;
+        bool hasDrawBounds() const;
+        ElementParameters getParameters();
+        guiElement getType();
+        void setPoints();
+        void setPoints(std::vector<ivec2>& pts);
+        void modifyColor(ivec3 newColor);
+        void setBounds();
+		std::vector<ivec2> getBounds();
+        void movePoints(ivec2 delta);
+        void setColor(const ivec3& v, TagType t);
+};
+
+#endif

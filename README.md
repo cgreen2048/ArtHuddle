@@ -43,6 +43,16 @@
 - [vec2 (templated) Class](#vec2)
 - [vec3 (templated) Class](#vec3)
 
+--- 
+
+# How to Run
+1. Download the newest release of `SDL3` and a suitable X11 display server (i.e. Xming, XQuartz etc.)
+2. In the `./tests` folder run `make mainMac` for Mac, `make mainStudentMachine` for Linux
+3. Once compiled, run `./main`
+4. To start as host, click `Start Drawing as Host` button, or 
+5. To connect to another host, click `Connect to Host` and input host's IP address in the text box
+
+---
 
 # main.cpp
 

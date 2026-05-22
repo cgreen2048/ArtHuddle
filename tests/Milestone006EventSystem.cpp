@@ -1,15 +1,15 @@
 #include <iostream>
 #include <memory>
-#include "../Layout.hpp"
-#include "../EventSystem.hpp"
-#include "../Event.hpp"
-#include "../ClickEvent.hpp"
-#include "../MouseUpEvent.hpp"
-#include "../ShowEvent.hpp"
-#include "../SoundEvent.hpp"
-#include "../SoundPlayer.hpp"
-#include "../Freehand.hpp"
-#include "../Factory.hpp"
+#include "ArtHuddle/elements/Layout.hpp"
+#include "ArtHuddle/events/EventSystem.hpp"
+#include "ArtHuddle/events/Event.hpp"
+#include "ArtHuddle/events/ClickEvent.hpp"
+#include "ArtHuddle/events/MouseUpEvent.hpp"
+#include "ArtHuddle/events/ShowEvent.hpp"
+#include "ArtHuddle/events/SoundEvent.hpp"
+#include "ArtHuddle/utility/SoundPlayer.hpp"
+#include "ArtHuddle/elements/Freehand.hpp"
+#include "ArtHuddle/elements/Factory.hpp"
 #include <SDL3/SDL.h>
 
 

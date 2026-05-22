@@ -2,20 +2,20 @@
 #include <typeinfo>
 #include <chrono>
 #include <thread>
-#include "../SoundPlayer.hpp"
-#include "../Factory.hpp"
-#include "../GuiElement.hpp"
-#include "../Layout.hpp"
-#include "../Triangle.hpp"
-#include "../Box.hpp"
-#include "../Line.hpp"
-#include "../Point.hpp"
-#include "../Screen.hpp"
-#include "../Event.hpp"
-#include "../ClickEvent.hpp"
-#include "../ShowEvent.hpp"
-#include "../SoundEvent.hpp"
-#include "../Button.hpp"
+#include "ArtHuddle/utility/SoundPlayer.hpp"
+#include "ArtHuddle/elements/Factory.hpp"
+#include "ArtHuddle/elements/GuiElement.hpp"
+#include "ArtHuddle/elements/Layout.hpp"
+#include "ArtHuddle/elements/Triangle.hpp"
+#include "ArtHuddle/elements/Box.hpp"
+#include "ArtHuddle/elements/Line.hpp"
+#include "ArtHuddle/elements/Point.hpp"
+#include "ArtHuddle/elements/Screen.hpp"
+#include "ArtHuddle/events/Event.hpp"
+#include "ArtHuddle/events/ClickEvent.hpp"
+#include "ArtHuddle/events/ShowEvent.hpp"
+#include "ArtHuddle/events/SoundEvent.hpp"
+#include "ArtHuddle/elements/Button.hpp"
 
 
 const int X = 960;

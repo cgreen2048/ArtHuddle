@@ -1,15 +1,15 @@
 #include <iostream>
 #include <vector>
-#include "../vec2.hpp"
-#include "../vec3.hpp"
-#include "../GUIFile.hpp"
-#include "../Layout.hpp"
-#include "../Line.hpp"
-#include "../Box.hpp"
-#include "../Point.hpp"
-#include "../Triangle.hpp"
-#include "../GuiElement.hpp"
-#include "../Button.hpp"
+#include "ArtHuddle/core/vec2.hpp"
+#include "ArtHuddle/core/vec3.hpp"
+#include "ArtHuddle/utility/GUIFile.hpp"
+#include "ArtHuddle/elements/Layout.hpp"
+#include "ArtHuddle/elements/Line.hpp"
+#include "ArtHuddle/elements/Box.hpp"
+#include "ArtHuddle/elements/Point.hpp"
+#include "ArtHuddle/elements/Triangle.hpp"
+#include "ArtHuddle/elements/GuiElement.hpp"
+#include "ArtHuddle/elements/Button.hpp"
 
 int main() {
     int failure = 0;

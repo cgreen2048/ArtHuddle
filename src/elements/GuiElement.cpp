@@ -1,0 +1,43 @@
+#include "ArtHuddle/elements/GuiElement.hpp"
+#include "ArtHuddle/utility/Selected.hpp"
+#include <iostream>
+GuiElement::GuiElement() {
+    
+}
+GuiElement::~GuiElement() {
+    
+}
+void GuiElement::draw(Screen *screen){
+    
+}
+void GuiElement::drawOverlay(Screen *screen){
+    
+}
+void GuiElement::writeXml(std::ostream& out, int depth) const{
+
+}
+bool GuiElement::resolveEvent(Event *e){
+    if (e->getType() == EventType::CLICK) {
+        Selected::getInstance().setSelectedElement(this);
+        return true;
+    }
+    return false;
+}
+void GuiElement::setParentStart(const ivec2& start) {
+    this->parentStart = start;
+}
+void GuiElement::setParentEnd(const ivec2& end) {
+    this->parentEnd = end;
+}
+void GuiElement::setName(const std::string& n){
+    this->name = n;
+}
+ivec2 GuiElement::getParentStart() {
+    return this->parentStart;
+}
+ivec2 GuiElement::getParentEnd() {
+    return this->parentEnd;
+}
+const std::string& GuiElement::getName() const {
+    return name;
+}

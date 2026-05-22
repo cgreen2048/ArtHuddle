@@ -1,11 +1,11 @@
 #include <iostream>
 #include <typeinfo>
-#include "../Factory.hpp"
-#include "../GuiElement.hpp"
-#include "../Point.hpp"
-#include "../Line.hpp"
-#include "../Box.hpp"
-#include "../Triangle.hpp"
+#include "ArtHuddle/elements/Factory.hpp"
+#include "ArtHuddle/elements/GuiElement.hpp"
+#include "ArtHuddle/elements/Point.hpp"
+#include "ArtHuddle/elements/Line.hpp"
+#include "ArtHuddle/elements/Box.hpp"
+#include "ArtHuddle/elements/Triangle.hpp"
 
 const int X = 960;
 const int Y = 540;
