@@ -1,12 +1,12 @@
-#include "../Button.hpp"
-#include "../Screen.hpp"
-#include "../Factory.hpp"
-#include "../Layout.hpp"
-#include "../vec2.hpp"
-#include "../vec3.hpp"
-#include "../Box.hpp"
-#include "../GuiElement.hpp"
-#include "../ElementParameters.hpp"
+#include "ArtHuddle/elements/Button.hpp"
+#include "ArtHuddle/elements/Screen.hpp"
+#include "ArtHuddle/elements/Factory.hpp"
+#include "ArtHuddle/elements/Layout.hpp"
+#include "ArtHuddle/core/vec2.hpp"
+#include "ArtHuddle/core/vec3.hpp"
+#include "ArtHuddle/elements/Box.hpp"
+#include "ArtHuddle/elements/GuiElement.hpp"
+#include "ArtHuddle/core/ElementParameters.hpp"
 #include <iostream>
 #include <SDL3/SDL.h>
 

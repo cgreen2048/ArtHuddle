@@ -1,6 +1,6 @@
-#include "../vec2.hpp"
-#include "../vec3.hpp"
-#include "../Matrix.hpp"
+#include "ArtHuddle/core/vec2.hpp"
+#include "ArtHuddle/core/vec3.hpp"
+#include "ArtHuddle/core/Matrix.hpp"
 #include <iostream>
 
 // Unit tests for vec2, ivec2, vec3, ivec3, Matrix classes

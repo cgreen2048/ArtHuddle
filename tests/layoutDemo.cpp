@@ -1,13 +1,13 @@
 #include <iostream>
 #include <SDL3/SDL.h>
-#include "../Factory.hpp"
-#include "../Layout.hpp"
-#include "../Screen.hpp"
-#include "../vec2.hpp"
-#include "../vec3.hpp"
-#include "../Box.hpp"
-#include "../Triangle.hpp"
-#include "../GuiElement.hpp"
+#include "ArtHuddle/elements/Factory.hpp"
+#include "ArtHuddle/elements/Layout.hpp"
+#include "ArtHuddle/elements/Screen.hpp"
+#include "ArtHuddle/core/vec2.hpp"
+#include "ArtHuddle/core/vec3.hpp"
+#include "ArtHuddle/elements/Box.hpp"
+#include "ArtHuddle/elements/Triangle.hpp"
+#include "ArtHuddle/elements/GuiElement.hpp"
 
 const int X = 960;
 const int Y = 540;

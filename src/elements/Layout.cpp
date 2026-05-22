@@ -1,0 +1,434 @@
+#include "ArtHuddle/elements/Layout.hpp"
+#include "ArtHuddle/events/ClickEvent.hpp"
+#include "ArtHuddle/events/ShowEvent.hpp"
+#include "ArtHuddle/utility/Selected.hpp"
+#include "ArtHuddle/events/EventSystem.hpp"
+#include "ArtHuddle/elements/Button.hpp"
+#include "ArtHuddle/elements/TextBox.hpp"
+#include "ArtHuddle/elements/Factory.hpp"
+
+
+Layout::Layout() : active{false} {}
+
+Layout::Layout(ElementParameters ep) {
+    if (!validateAndNormalize(ep)) {
+        throw -1;
+    }
+    this->start = ep.layoutStart;
+    this->end = ep.layoutEnd;
+    if (ep.parentStart.x != std::numeric_limits<int>::max()) {
+        this->hasParentStart = true;
+        this->parentStart = ep.parentStart;
+    }
+    else {
+        this->hasParentStart = false;
+    }
+    if (ep.parentEnd.x != std::numeric_limits<int>::lowest()) {
+        this->hasParentEnd = true;
+        this->parentEnd = ep.parentEnd;
+    }
+    else {
+        this->hasParentEnd = false;
+    }
+    this->active = ep.active;
+    for (int i = 0; i < ep.elements.size(); ++i) {
+        this->addElement(ep.elements[i]);
+    }
+    this->name = ep.name;
+    this->setBounds();
+}
+
+Layout::~Layout() {
+    for (GuiElement *el : this->elements) {
+        delete el;
+    }
+    this->elements.clear();
+}
+
+
+void Layout::setStart(const vec2& start) {
+    this->start = start;
+    this->setBounds();
+}
+
+void Layout::setEnd(const vec2& end) {
+    this->end = end;
+    this->setBounds();
+}
+
+void Layout::setParentStart(const ivec2& start) {
+    GuiElement::setParentStart(start);
+    this->hasParentStart = true;
+    this->setBounds();
+}
+
+void Layout::setParentEnd(const ivec2& end) {
+    GuiElement::setParentEnd(end);
+    this->hasParentEnd = true;
+    this->setBounds();
+}
+
+void Layout::setActive(bool value) {
+    this->active = value;
+}
+
+bool Layout::isActive() {
+    return this->active;
+}
+
+void Layout::addElement(GuiElement *element) {
+    this->elements.push_back(element);
+    element->setParentStart(ivec2{this->getAbsoluteStartX(), this->getAbsoluteStartY()});
+    element->setParentEnd(ivec2{this->getAbsoluteEndX(), this->getAbsoluteEndY()});
+}
+
+void Layout::draw(Screen *screen) {
+    if (!this->active || !this->hasParentStart || !this->hasParentEnd) {
+        return;
+    }
+
+    for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
+        (*start)->draw(screen);
+    }
+}
+
+GuiElement* Layout::clone() const {
+    return new Layout(*this);
+}
+
+void Layout::drawOverlay(Screen *screen) {
+     if (!this->active || !this->hasParentStart || !this->hasParentEnd) {
+        return;
+    }
+
+    for (auto start = this->elements.begin(); start != this->elements.end(); ++start) {
+        if (dynamic_cast<Button*>(*start) || dynamic_cast<TextBox*>(*start) || dynamic_cast<Layout*>(*start) ) {
+            (*start)->drawOverlay(screen);
+        }
+    }
+}
+
+static std::string indent(int depth) {
+    return std::string(depth * 2, ' ');  // 2 spaces per level
+}
+
+void Layout::writeXml(std::ostream& out, int depth) const {
+    std::string pad = indent(depth);
+
+    out << pad << "<layout "
+        << "name=\"" << name << "\" "
+        << "sX=\"" << start.x << "\" "
+        << "sY=\"" << start.y << "\" "
+        << "eX=\"" << end.x << "\" "
+        << "eY=\"" << end.y << "\">\n";
+
+    for (GuiElement* e : elements) {
+        e->writeXml(out, depth + 1);  // increase depth
+    }
+
+    out << pad << "</layout>\n";
+}
+
+bool Layout::resolveEvent(Event* e) {
+     if (e == nullptr) {
+        return false;
+    }
+    
+    if (e->getType() == EventType::SHOW) {
+        ShowEvent* show = static_cast<ShowEvent*>(e);
+        if (this->getName() == show->getLayoutName()) {
+            if (show->getAction() == ShowActionType::SHOW) {
+                active = true;
+            }
+            else {
+                active = false;
+            }
+            return true;
+        }
+    }
+
+    if (!active) {
+        return false;
+    }
+
+    if (e->getType() == EventType::CLICK) {
+        ClickEvent* click = static_cast<ClickEvent*>(e);
+        GuiElement* object = this->getElementAt(ivec2(click->getMouseX(), click->getMouseY()));
+        if (object != nullptr) {
+            if (object->resolveEvent(e)) {
+                return true;
+            }
+        }
+        // for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
+        //     GuiElement* object = *ritr;
+        //     if (object->isInside(ivec2(click->getMouseX(), click->getMouseY()))) {
+        //         if (object->resolveEvent(e)) {
+        //             return true;
+        //         }
+        //     }
+        // }
+        
+        TextBox* textbox = dynamic_cast<TextBox*>(Selected::getInstance().getSelectedElement());
+        if (textbox) {
+            textbox->setActive(false);
+        }
+        Selected::getInstance().setSelectedElement(nullptr);
+        return false;
+    }
+
+    for (auto ritr = elements.rbegin(); ritr != elements.rend(); ++ritr) {
+        if ((*ritr)->resolveEvent(e)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+GuiElement* Layout::getElementAt(const ivec2& point) {
+    if (!this->isInside(point) || !this->active) {
+        return nullptr;
+    }
+
+    for (auto itr = elements.rbegin(); itr != elements.rend(); ++itr) {
+        GuiElement* element = *itr;
+
+        if (!element->isInside(point)) {
+            continue;
+        }
+
+        if (Layout* layout = dynamic_cast<Layout*>(element)) {
+            GuiElement* childHit = layout->getElementAt(point);
+            if (childHit != nullptr) {
+                return childHit;
+            }
+
+            continue;
+        }
+
+        return element;
+    }
+
+    return nullptr;
+}
+
+vec2 Layout::getStart() const {
+    return start;
+}
+
+vec2 Layout::getEnd() const {
+    return end;
+}
+
+
+const std::vector<GuiElement*>& Layout::getElements() const {
+    return elements;
+}
+
+
+int Layout::getAbsoluteStartX() {
+    return this->parentStart.x + static_cast<int>(this->start.x * (this->parentEnd.x - this->parentStart.x));
+}
+
+int Layout::getAbsoluteStartY() {
+    return this->parentStart.y + static_cast<int>(this->start.y * (this->parentEnd.y - this->parentStart.y));
+}
+
+int Layout::getAbsoluteEndX() {
+    return this->parentStart.x + static_cast<int>(this->end.x * (this->parentEnd.x - this->parentStart.x));
+}
+
+int Layout::getAbsoluteEndY() {
+    return this->parentStart.y + static_cast<int>(this->end.y * (this->parentEnd.y - this->parentStart.y));
+}
+
+bool Layout::validateAndNormalize(ElementParameters& ep) {
+    if ((ep.layoutStart.x == std::numeric_limits<float>::lowest()) || (ep.layoutStart.y == std::numeric_limits<float>::lowest())) {
+        return false;
+    }
+    if ((ep.layoutEnd.x == std::numeric_limits<float>::lowest()) || (ep.layoutEnd.y == std::numeric_limits<float>::lowest())) {
+        return false;
+    }
+    return true;
+}
+
+bool Layout::isInside(ivec2 coordinates) {
+    if ((this->getParentStart().x > coordinates.x) || (this->getParentStart().y > coordinates.y) || (this->getParentEnd().x <= coordinates.x) || (this->getParentEnd().y <= coordinates.y)) {
+        return false;
+    }
+    if ((this->getAbsoluteStartX() > coordinates.x) || (this->getAbsoluteStartY() > coordinates.y) || (this->getAbsoluteEndX() <= coordinates.x) || (this->getAbsoluteEndY() <= coordinates.y)) {
+        return false;
+    }
+    return true;
+}
+
+void Layout::clearElements() {
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        delete *it;
+    }
+    this->elements.clear();
+}
+
+void Layout::deleteElement(const std::string& name) {
+    GuiElement* target = this->removeElement(name);
+    if (target) {
+        delete target;
+        return;
+    }
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        Layout* nested = dynamic_cast<Layout*>(*it);
+        if (nested) {
+            nested->deleteElement(name);
+        }
+    }
+}
+
+GuiElement* Layout::removeElement(const std::string& name) {
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        if ((*it)->getName() == name) {
+            GuiElement* found = *it;
+            EventSystem& eventSystem = EventSystem::getInstance();
+            GuiElement* target = eventSystem.getTargetedElement();
+
+            if (target != nullptr && target->getName() == name) {
+                eventSystem.setTargetedElement(nullptr);
+            }
+
+            Selected& selectedSystem = Selected::getInstance();
+            GuiElement* selected = selectedSystem.getSelectedElement();
+            if (selected != nullptr && selected->getName() == name) {
+                selectedSystem.setSelectedElement(nullptr);
+            }
+
+            elements.erase(it);
+            return found;
+        }
+    }
+    return nullptr;
+}
+
+bool Layout::updateElement(ElementParameters ep) {
+    for (auto it = elements.begin(); it != elements.end(); ++it) {
+        if ((*it)->getName() == ep.name) {
+            GuiElement* found = *it;
+
+            if (!found) return false;
+
+            switch (ep.elementType) {
+                case guiElement::POINT: {
+                    Point* p = dynamic_cast<Point*>(found);
+                    p->setCoords(ep.coords, ep.coordsType);
+                    p->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::LINE: {
+                    Line* l = dynamic_cast<Line*>(found);
+                    l->setStart(ep.start, ep.startType);
+                    l->setEnd(ep.end, ep.endType);
+                    l->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::BOX: {
+                    Box* b = dynamic_cast<Box*>(found);
+                    b->setMin(ep.min, ep.minType);
+                    b->setMax(ep.max, ep.maxType);
+                    b->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::TRIANGLE: {
+                    Triangle* t = dynamic_cast<Triangle*>(found);
+                    t->setA(ep.pointA, ep.pointAType);
+                    t->setB(ep.pointB, ep.pointBType);
+                    t->setC(ep.pointC, ep.pointCType);
+                    t->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::ELLIPSE: {
+                    Ellipse* e = dynamic_cast<Ellipse*>(found);
+                    e->setCenter(ep.center, ep.centerType);
+                    e->setRadiusX(ep.radiusX);
+                    e->setRadiusY(ep.radiusY);
+                    e->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::TEXTBOX: {
+                    TextBox* t = dynamic_cast<TextBox*>(found);
+                    t->setMin(ep.min, ep.minType);
+                    t->setMax(ep.max, ep.maxType);
+                    t->setText(ep.text);
+                    break;
+                }
+                case guiElement::ARROW: {
+                    Arrow* a = dynamic_cast<Arrow*>(found);
+                    a->setMin(ep.min, ep.minType);
+                    a->setMax(ep.max, ep.maxType);
+                    a->setA(ep.pointA, ep.pointAType);
+                    a->setB(ep.pointB, ep.pointBType);
+                    a->setC(ep.pointC, ep.pointCType);
+                    a->setColor(ep.color, ep.colorType);
+                    break;
+                }
+                case guiElement::FREEHAND: {
+                    Freehand* f = dynamic_cast<Freehand*>(found);
+                    f->setPoints(ep.points);
+                    break;
+                }
+                default: {
+                    return false;
+                }
+            }
+
+            Selected& selectedSystem = Selected::getInstance();
+            GuiElement* selected = selectedSystem.getSelectedElement();
+            if (selected != nullptr && ep.name == selected->getName()) {
+                selectedSystem.setSelectedElement(found);
+            }
+
+            return true;
+        }
+    }
+    return false;
+}
+
+ElementParameters Layout::getParameters() {
+    ElementParameters ep;
+    ep.elementType = guiElement::LAYOUT;
+    ep.layoutStart = this->start;
+    ep.layoutEnd = this->end;
+    ep.parentStart = this->parentStart;
+    ep.parentEnd = this->parentEnd;
+    ep.active = this->active;
+    ep.elements = this->elements;
+    ep.name = this->name;
+    return ep;
+}
+
+std::vector<ElementParameters> Layout::getChildElementParameters() {
+    std::vector<ElementParameters> elements;
+    for (GuiElement* el : this->elements) {
+        elements.push_back(el->getParameters());
+    }
+    return elements;
+}
+
+guiElement Layout::getType() {
+    return guiElement::LAYOUT;
+}
+
+void Layout::setBounds() {
+    this->minBound = ivec2(this->getAbsoluteStartX(), this->getAbsoluteStartY());
+    this->maxBound = ivec2(this->getAbsoluteEndX(), this->getAbsoluteEndY());
+}
+
+std::vector<ivec2> Layout::getBounds() {
+    return {this->minBound, this->maxBound};
+}
+
+GuiElement* Layout::popLast() {
+    if (this->elements.empty()) {
+        return nullptr;
+    }
+    GuiElement* element = this->elements.back();
+    this->elements.pop_back();
+    return element;
+}

@@ -1,0 +1,48 @@
+#ifndef __TEXT_BOX_HPP__
+#define __TEXT_BOX_HPP__
+
+#include "ArtHuddle/elements/Box.hpp"
+#include "ArtHuddle/events/Event.hpp"
+#include "ArtHuddle/events/ClickEvent.hpp"
+#include "ArtHuddle/core/ElementParameters.hpp"
+#include <string>
+
+
+class TextBox : public Box {
+    private:
+        std::string text;
+        ivec3 textColor;
+        bool active;
+        TagType textColorType = TagType::Vec;
+
+    public:
+        TextBox();
+        TextBox(const TextBox& cp);
+        TextBox(ElementParameters ep);
+        TextBox(ivec2 min, ivec2 max, ivec3 color, ivec3 textColor, const std::string& text);
+        ~TextBox() = default;
+        TextBox& operator=(const TextBox& rhs) = default;
+        bool operator==(TextBox rhs);
+		bool operator!=(TextBox rhs);
+        void drawOverlay(Screen *screen);
+        GuiElement* clone() const;
+        void setActive(bool value);
+        bool isActive() const;
+        void setText(std::string newText);
+        void appendText(const std::string& s);
+        void backspace();
+        bool containsPoint(int x, int y) const;
+        bool shouldShowCursor() const;
+        std::string getVisibleText() const;
+        ivec2 getCursorPosition() const;
+        void clearText();
+
+        void writeXml(std::ostream& out, int depth) const;
+        bool validateAndNormalize(ElementParameters &ep);
+        const std::string& getText() const;
+        ElementParameters getParameters();
+        guiElement getType();
+        void modifyColor(ivec3 newColor);
+};
+
+#endif

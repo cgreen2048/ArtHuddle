@@ -1,74 +1,428 @@
-#include <iostream>
-#include <cstdint>
-#include <SDL3/SDL.h>
+#include "include/ArtHuddle/core/API.hpp"
+#include <memory>
 
-constexpr int RESX = 960;
-constexpr int RESY = 540;
+int main(int argc, char* argv[]) {
+    std::cout << "API Demo\n";
 
-void clearSurface(SDL_Surface*);
+    DrawingMode mode = DrawingMode::SELECT;
+    InteractionState currentInteractionState = InteractionState::IDLE;
+    int points = 0;
+    ivec2 point1 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 point2 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec2 point3 = ivec2(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::lowest());
+    ivec3 color = ivec3(125, 125, 125);
 
-int main(int argc, char** argv)
-{
-	SDL_Window* window = nullptr;
+    initialize(mode, points, point1, point2, point3);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-	if (!SDL_Init(SDL_INIT_VIDEO))
-	{
-		std::cerr << "Failed to init SDL: " << SDL_GetError() << '\n';
-		return -1;
-	}
+    loadSound("SFX/song2.wav");
+    playSound("SFX/song2.wav", true);
+    std::cout << "Escape to exit drawing mode\nBackspace after selecting an element to delete it\nR/E to increment/decrement red amount\nG/F to increment/decrement green amount\nB/V to increment/decrement blue amount\n";
 
-	window = SDL_CreateWindow("Hello Window", RESX, RESY, 0);
+    ivec2 lastMousePos;
+    SDL_Event event;
+    bool end = false;
+    while (!end) {
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_EVENT_QUIT: {
+                    end = true;
+                    break;
+                }
+                case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+                    ivec2 mousePos(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
 
-	if (!window)
-	{
-		std::cerr << "Failed to create a window: " << SDL_GetError() << '\n';
-		return -2;
-	}
+                    if (pressedStartLayoutButton(mousePos) || pressedToolbarButton(mousePos)) {
+                        currentInteractionState = InteractionState::TOOLBAR_CLICK;
+                        break;
+                    }
 
-	SDL_Surface* buffer = SDL_CreateSurface(RESX, RESY, SDL_PIXELFORMAT_RGBA8888);
-	SDL_Event event;
-	bool end = false;
-	while (!end)
-	{
-		while (SDL_PollEvent(&event))
-		{
-			switch(event.type)
-			{
-			case SDL_EVENT_QUIT: {
-				end = true; 
-				break;
-			}
-			case SDL_EVENT_KEY_DOWN: {
-				std::cout << "Key pressed\n"; 
-				break;
-			}
-			case SDL_EVENT_KEY_UP: {
-				std::cout << "Key released\n"; 
-				break;
-			}
-			}
-		}
-		clearSurface(buffer);
-		SDL_BlitSurface(buffer, NULL, SDL_GetWindowSurface(window), NULL);
-		SDL_UpdateWindowSurface(window);
-	}
+                    switch (mode) {
+                        case DrawingMode::POINT:
+                        case DrawingMode::LINE:
+                        case DrawingMode::BOX:
+                        case DrawingMode::TRIANGLE:
+                        case DrawingMode::ELLIPSE:
+                        case DrawingMode::ARROW:
+                        case DrawingMode::TEXTBOX: {
+                            playDrawClickSound();
+                            storeCommittedPoint(points, mousePos, point1, point2, point3);
+                            points++;
 
-	SDL_DestroySurface(buffer);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
+                            guiElement type = modeToType(mode);
+                            if (points >= requiredPointsForType(type)) {
+                                ElementParameters ep = drawElement(type, point1, point2, point3, color);
+                                if (isClientConnected()) {
+                                    sendToServer(ep, MessageType::DRAW_ELEMENT);
+                                }
+                                resetPoints(points, point1, point2, point3);
+                                mode = DrawingMode::SELECT;
+                                currentInteractionState = InteractionState::SHAPE_COMPLETED;
+                                
+                            } else {
+                                currentInteractionState = InteractionState::SHAPE_DRAWING;
+                            }
+                            break;
+                        }
+                        case DrawingMode::FREEHAND_LINE: 
+                        case DrawingMode::FREEHAND_SHAPE: {
+                            startFreehandDraw(mousePos, color, mode == DrawingMode::FREEHAND_SHAPE);
+                            currentInteractionState = InteractionState::FREEHAND_DRAWING;
+                            break;
+                        }
+                        case DrawingMode::SELECT: {
+                            // If within another state (dragging, freehand drawing, shape drawing, toolbar click, do not allow select or drag)
+                            if (currentInteractionState != InteractionState::IDLE) {
+                                break;
+                            }
 
-	return 0;
-}
+                            // If an element is selected, allow for selecting/dragging that element if mouse within bounding box
+                            if (isElementSelected()) {
+                                if (isClickInside(mousePos)) {
+                                    if (isSelectedInputTextBox()) {
+                                        clicked(mousePos);
+                                        currentInteractionState = InteractionState::IDLE;
+                                        break;
+                                    }
+                                    lastMousePos = mousePos;
+                                    createEvent(lastMousePos, EventType::MOUSE_DOWN);
 
-void clearSurface(SDL_Surface* buf)
-{
-	std::uint32_t* pixels = static_cast<std::uint32_t*>(buf->pixels);
-	size_t curIndex = 0;
-	for (int i = 0; i < buf->w; ++i)
-	{
-		for (int j = 0; j < buf->h; ++j)
-		{
-			pixels[j * buf->w + i] = SDL_MapSurfaceRGBA(buf, 0xFF, 0x00, 0xFF, 0xFF);
-		}
-	}
+                                    currentInteractionState = InteractionState::ELEMENT_PRESSED;
+                                    break;
+                                }
+                            }
+                            
+                            if (hasCanvas()) {
+                                if (setSelectedElement(mousePos)) {
+                                    lastMousePos = mousePos;
+                                    createEvent(lastMousePos, EventType::MOUSE_DOWN);
+                                    currentInteractionState = InteractionState::ELEMENT_PRESSED;
+                                }
+                            }
+                            break;
+                        }
+                        default: {
+                            clicked(mousePos);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case SDL_EVENT_MOUSE_MOTION: {
+                    ivec2 mousePos(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y));
+
+                    switch (currentInteractionState) {
+                        case InteractionState::FREEHAND_DRAWING: {
+                            if (event.motion.state != 0) {
+                                playFreehandDrawSound();
+                                continueFreehandDraw(ivec2(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)));
+                            }
+                            break;
+                        }
+                        case InteractionState::ELEMENT_PRESSED: {
+                            int dx = mousePos.x - lastMousePos.x;
+                            int dy = mousePos.y - lastMousePos.y;
+
+                            if (dx * dx + dy * dy > 4) { // small drag threshold
+                                currentInteractionState = InteractionState::DRAGGING;
+                                setClickAndDrag(lastMousePos);
+                                drawClickAndDrag(mousePos);
+                            }
+                        
+                            break;
+                        }
+                        case InteractionState::DRAGGING: {
+                            drawClickAndDrag(ivec2(static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)));
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case SDL_EVENT_MOUSE_BUTTON_UP: {
+                    ivec2 mousePos(static_cast<int>(event.button.x), static_cast<int>(event.button.y));
+
+                    switch (currentInteractionState) {
+                        case InteractionState::IDLE: {
+                            clicked(mousePos);
+                            break;
+                        }
+                        case InteractionState::FREEHAND_DRAWING: {
+                            ElementParameters ep = endFreehandDraw(mousePos);
+                            if (isClientConnected()) {
+                                sendToServer(ep, MessageType::DRAW_ELEMENT);
+                            }
+                            currentInteractionState = InteractionState::IDLE;
+                            mode = DrawingMode::SELECT;
+                            break;
+                        }
+                        case InteractionState::ELEMENT_PRESSED: {
+                            currentInteractionState = InteractionState::IDLE;
+                            break;
+                        }
+                        case InteractionState::DRAGGING: {
+                            ElementParameters ep = endClickAndDrag();
+                            if (isClientConnected()) {
+                                sendToServer(ep, MessageType::UPDATE_ELEMENT);
+                            }
+                            currentInteractionState = InteractionState::IDLE;
+                            break;
+                        }
+                        case InteractionState::TOOLBAR_CLICK: {
+                            if (isInsideSameButton(mousePos)) {
+                                playButtonClickSound();
+                                unselect();
+                                clicked(mousePos);
+                            }
+                            currentInteractionState = InteractionState::IDLE;
+                            break;
+                        }
+                        case InteractionState::SHAPE_COMPLETED: {
+                            currentInteractionState = InteractionState::IDLE;
+                            break;
+                        }
+                        case InteractionState::SHAPE_DRAWING: {
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+                    resetPressedButton();
+                    
+                    break;
+                }
+                case SDL_EVENT_TEXT_INPUT: {
+                    if (isSelectedTextBox()) {
+                        ElementParameters ep = appendToTextBox(event.text.text);
+                        if (isClientConnected()) {
+                            sendToServer(ep, MessageType::UPDATE_ELEMENT);
+                        }
+                    }
+                    break;
+                }
+                case SDL_EVENT_KEY_DOWN: {
+                    if (!isSelectedTextBox()) {
+                        switch (event.key.scancode) {
+                            case SDL_SCANCODE_ESCAPE: {
+                                mode = DrawingMode::SELECT;
+                                resetPoints(points, point1, point2, point3);
+                                cancelMove();
+                                unselect();
+                                currentInteractionState = InteractionState::IDLE;
+                                break;
+                            }
+                            case SDL_SCANCODE_BACKSPACE: {
+                                if (currentInteractionState != InteractionState::IDLE || !hasCanvas() || !isElementSelected()) {
+                                    break;
+                                }
+                                playDeleteSound(); 
+                                std::string name = deleteShape();
+                                if (isClientConnected()) {
+                                    ElementParameters ep;
+                                    ep.name = name;
+                                    sendToServer(ep, MessageType::DELETE_ELEMENT);
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_R: {
+                                if (!hasCanvas() || !hasColorIndicator()) {
+                                    break;
+                                }
+
+                                ElementParameters ep = changeColor(ivec3(1, 0, 0));
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
+                                }
+                                else {
+                                    color.x += 1;
+                                    if (color.x > 255) {
+                                        color.x = 255;
+                                    }
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_G: {
+                                if (!hasCanvas() || !hasColorIndicator()) {
+                                    break;
+                                }
+
+                                ElementParameters ep = changeColor(ivec3(0, 1, 0));
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
+                                }
+                                else {
+                                    color.y += 1;
+                                    if (color.y > 255) {
+                                        color.y = 255;
+                                    }
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_B: {
+                                if (!hasCanvas() || !hasColorIndicator()) {
+                                    break;
+                                }
+
+                                ElementParameters ep = changeColor(ivec3(0, 0, 1));
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
+                                }
+                                else {
+                                    color.z += 1;
+                                    if (color.z > 255) {
+                                        color.z = 255;
+                                    }
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_E: {
+                                if (!hasCanvas() || !hasColorIndicator()) {
+                                    break;
+                                }
+
+                                ElementParameters ep = changeColor(ivec3(-1, 0, 0));
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
+                                }
+                                else {
+                                    color.x -= 1;
+                                    if (color.x < 0) {
+                                        color.x = 0;
+                                    }
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_F: {
+                                if (!hasCanvas() || !hasColorIndicator()) {
+                                    break;
+                                }
+
+                                ElementParameters ep = changeColor(ivec3(0, -1, 0));
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
+                                }
+                                else {
+                                    color.y -= 1;
+                                    if (color.y < 0) {
+                                        color.y = 0;
+                                    }
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_V: {
+                                if (!hasCanvas() || !hasColorIndicator()) {
+                                    break;
+                                }
+
+                                ElementParameters ep = changeColor(ivec3(0, 0, -1));
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::UPDATE_ELEMENT);
+                                }
+                                else {
+                                    color.z -= 1;
+                                    if (color.z < 0) {
+                                        color.z = 0;
+                                    }
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_C: {
+                                if (!hasCanvas()) {
+                                    break;
+                                }
+                                copy();
+                                break;
+                            }
+                            case SDL_SCANCODE_P: {
+                                if (!hasCanvas()) {
+                                    break;
+                                }
+                                ElementParameters ep = paste();
+                                if (isClientConnected() && ep.elementType != guiElement::UNKNOWN) {
+                                    sendToServer(ep, MessageType::DRAW_ELEMENT);
+                                }
+                                break;
+                            }
+                            default: {
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        switch (event.key.scancode) {
+                            case SDL_SCANCODE_BACKSPACE: {
+                                ElementParameters ep = deleteText();
+                                if (ep.toBeDeleted) {
+                                    currentInteractionState = InteractionState::IDLE;
+                                    if (isClientConnected()) {
+                                        sendToServer(ep, MessageType::DELETE_ELEMENT);
+                                    }
+                                } else {
+                                    if (isClientConnected()) {
+                                        sendToServer(ep, MessageType::UPDATE_ELEMENT);
+                                    }
+                                }
+                                break;
+                            }
+                            case SDL_SCANCODE_ESCAPE: {
+                                unselect();
+                                break;
+                            }
+                            default: {
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        float mouseX = 0;
+        float mouseY = 0;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        ivec2 mousePos(static_cast<int>(mouseX), static_cast<int>(mouseY));
+
+        if (points == 0) {
+            updateScreen(mode, points, point1, point2, point3);
+        }
+        else {
+            switch (mode) {
+                case DrawingMode::LINE:
+                case DrawingMode::BOX:
+                case DrawingMode::TRIANGLE:
+                case DrawingMode::ELLIPSE: 
+                case DrawingMode::ARROW:
+                case DrawingMode::TEXTBOX: {
+                    storeTemporaryPoint(points, mousePos, point1, point2, point3);
+    
+                    guiElement type = modeToType(mode);
+                    if (points == requiredPointsForType(type) - 1) {
+                        drawTempElement(type, point1, point2, point3, color);
+                    }
+                    else {
+                        drawTempElement(tempElementType(mode), point1, point2, point3, color);
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+
+        updateScreen(mode, points, point1, point2, point3);
+        if (isServer()) {
+            serverProcessMessages();
+        }
+        
+        if (isClientConnected()) {
+            clientProcessMessages();
+        }
+    }
+    closeAll();
+    return 0;
 }

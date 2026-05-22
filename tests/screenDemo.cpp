@@ -1,8 +1,8 @@
 #include <iostream>
 #include <SDL3/SDL.h>
-#include "../Screen.hpp"
-#include "../vec2.hpp"
-#include "../vec3.hpp"
+#include "ArtHuddle/elements/Screen.hpp"
+#include "ArtHuddle/core/vec2.hpp"
+#include "ArtHuddle/core/vec3.hpp"
 
 const int X = 960;
 const int Y = 540;

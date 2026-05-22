@@ -2,20 +2,20 @@
 #include <typeinfo>
 #include <chrono>
 #include <thread>
-#include "../SoundPlayer.hpp"
-#include "../Factory.hpp"
-#include "../GuiElement.hpp"
-#include "../Layout.hpp"
-#include "../Triangle.hpp"
-#include "../Box.hpp"
-#include "../Line.hpp"
-#include "../Point.hpp"
-#include "../Screen.hpp"
-#include "../Event.hpp"
-#include "../ClickEvent.hpp"
-#include "../ShowEvent.hpp"
-#include "../SoundEvent.hpp"
-#include "../Button.hpp"
+#include "ArtHuddle/utility/SoundPlayer.hpp"
+#include "ArtHuddle/elements/Factory.hpp"
+#include "ArtHuddle/elements/GuiElement.hpp"
+#include "ArtHuddle/elements/Layout.hpp"
+#include "ArtHuddle/elements/Triangle.hpp"
+#include "ArtHuddle/elements/Box.hpp"
+#include "ArtHuddle/elements/Line.hpp"
+#include "ArtHuddle/elements/Point.hpp"
+#include "ArtHuddle/elements/Screen.hpp"
+#include "ArtHuddle/events/Event.hpp"
+#include "ArtHuddle/events/ClickEvent.hpp"
+#include "ArtHuddle/events/ShowEvent.hpp"
+#include "ArtHuddle/events/SoundEvent.hpp"
+#include "ArtHuddle/elements/Button.hpp"
 
 
 const int X = 960;
@@ -250,14 +250,14 @@ bool eventTests() {
         std::cout << "Passed Default Show Event.\n"; 
     }
 
-    SoundEvent* sound = new SoundEvent("../SFX/song.wav", SoundActionType::PLAY, true);
-    if (sound->getType() != EventType::SOUND || sound->getSoundName() != "../SFX/song.wav" || sound->getAction() != SoundActionType::PLAY || sound->shouldLoop() != true) {
+    SoundEvent* sound = new SoundEvent("SFX/song.wav", SoundActionType::PLAY, true);
+    if (sound->getType() != EventType::SOUND || sound->getSoundName() != "SFX/song.wav" || sound->getAction() != SoundActionType::PLAY || sound->shouldLoop() != true) {
         failure = 1;
     }else{
         std::cout << "Passed Sound Event.\n"; 
     }
-    SoundEvent* defaultSound = new SoundEvent("../SFX/song.wav");
-    if (defaultSound->getType() != EventType::SOUND || defaultSound->getSoundName() != "../SFX/song.wav" || defaultSound->getAction() != SoundActionType::PLAY || defaultSound->shouldLoop() != false) {
+    SoundEvent* defaultSound = new SoundEvent("SFX/song.wav");
+    if (defaultSound->getType() != EventType::SOUND || defaultSound->getSoundName() != "SFX/song.wav" || defaultSound->getAction() != SoundActionType::PLAY || defaultSound->shouldLoop() != false) {
         failure = 1;
     }else{
         std::cout << "Passed Default Sound Event.\n"; 
@@ -337,7 +337,7 @@ bool buttonTests() {
 
 bool soundTests(SoundPlayer* player) {
     std::cout << "***SoundPlayer tests***\n";
-    bool loaded = player->loadSound("../SFX/song.wav");
+    bool loaded = player->loadSound("SFX/song.wav");
     if (!loaded) {
         std::cout << "loading valid wav file test FAILED\n";
     }
@@ -345,7 +345,7 @@ bool soundTests(SoundPlayer* player) {
         std::cout << "loading valid wav file test succeeded\n";
     }
 
-    bool loadedMP3 = player->loadSound("../SFX/toreador.mp3");
+    bool loadedMP3 = player->loadSound("SFX/toreador.mp3");
     if (loadedMP3) {
         std::cout << "loading mp3 file test FAILED\n";
     }
@@ -353,7 +353,7 @@ bool soundTests(SoundPlayer* player) {
         std::cout << "loading mp3 file test succeeded\n";
     }
 
-    bool playing = player->playSound("../SFX/song.wav", 1);
+    bool playing = player->playSound("SFX/song.wav", 1);
     if (!playing) {
         std::cout << "playing valid sound test FAILED\n";
     }
@@ -362,7 +362,7 @@ bool soundTests(SoundPlayer* player) {
     }
 
     player->toggleMute();
-    bool playingMuted = player->playSound("../SFX/song.wav", 1);
+    bool playingMuted = player->playSound("SFX/song.wav", 1);
     if (!playingMuted) {
         std::cout << "playing muted sound test FAILED\n";
     }
@@ -371,7 +371,7 @@ bool soundTests(SoundPlayer* player) {
     }
     player->toggleMute();
 
-    bool playingUnloaded = player->playSound("../SFX/chords.wav", 1);
+    bool playingUnloaded = player->playSound("SFX/chords.wav", 1);
     if (!playingUnloaded) {
         std::cout << "playing valid unloaded sound test FAILED\n";
     }
@@ -402,7 +402,7 @@ bool soundTests(SoundPlayer* player) {
         std::cout << itr->getName() << '\n';
     }
     // std::this_thread::sleep_for(std::chrono::seconds(15));
-    bool stoppage = player->stopSound("../SFX/chords.wav");
+    bool stoppage = player->stopSound("SFX/chords.wav");
     if (!stoppage) {
         std::cout << "stopping valid sound test FAILED\n";
     }

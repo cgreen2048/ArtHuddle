@@ -1,18 +1,18 @@
 #include <iostream>
 #include <memory>
 #include <SDL3/SDL.h>
-#include "../ClickEvent.hpp"
-#include "../ShowEvent.hpp"
-#include "../SoundEvent.hpp"
-#include "../SoundPlayer.hpp"
-#include "../EventSystem.hpp"
-#include "../Factory.hpp"
-#include "../Layout.hpp"
-#include "../Box.hpp"
-#include "../Button.hpp"
-#include "../Screen.hpp"
-#include "../GuiElement.hpp"
-#include "../Selected.hpp"
+#include "ArtHuddle/events/ClickEvent.hpp"
+#include "ArtHuddle/events/ShowEvent.hpp"
+#include "ArtHuddle/events/SoundEvent.hpp"
+#include "ArtHuddle/utility/SoundPlayer.hpp"
+#include "ArtHuddle/events/EventSystem.hpp"
+#include "ArtHuddle/elements/Factory.hpp"
+#include "ArtHuddle/elements/Layout.hpp"
+#include "ArtHuddle/elements/Box.hpp"
+#include "ArtHuddle/elements/Button.hpp"
+#include "ArtHuddle/elements/Screen.hpp"
+#include "ArtHuddle/elements/GuiElement.hpp"
+#include "ArtHuddle/utility/Selected.hpp"
 
 const int X = 960, Y = 540;
 
@@ -219,5 +219,5 @@ void spawnEvents()
     std::cout << "Button clicked, spawning events\n";
     EventSystem &eventSystem = EventSystem::getInstance();
     eventSystem.push(std::make_unique<ShowEvent>("nestedLayout", ShowActionType::SHOW));
-    eventSystem.push(std::make_unique<SoundEvent>("../SFX/song.wav", SoundActionType::PLAY, false));
+    eventSystem.push(std::make_unique<SoundEvent>("SFX/song.wav", SoundActionType::PLAY, false));
 }
