@@ -6,7 +6,7 @@ CXX := g++
 CXXFLAGS := -std=c++17 -I$(SDL3_INC) -Iinclude -Iexternal
 
 # Test flags
-TEST_CXXFLAGS := -std=c++17 -I. -I./external -I$(SDL3_ROOT)/include
+TEST_CXXFLAGS := -std=c++17 -Iinclude -Iexternal -I$(SDL3_ROOT)/include
 TEST_LDFLAGS := -L$(SDL3_ROOT)/lib -Wl,-rpath,$(SDL3_ROOT)/lib
 
 # Link flags: where to find it at link time + where to find it at run time
