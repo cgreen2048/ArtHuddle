@@ -47,7 +47,7 @@
 
 # How to Run
 1. Download the newest release of `SDL3` and a suitable X11 display server (i.e. Xming, XQuartz etc.)
-2. In the `./tests` folder run `make mainMac` for Mac, `make mainStudentMachine` for Linux
+2. If on Mac, run `make mainMac`. If on Linux, run `make mainStudentMachine`
 3. Once compiled, run `./main`
 4. To start as host, click `Start Drawing as Host` button, or 
 5. To connect to another host, click `Connect to Host` and input host's IP address in the text box
